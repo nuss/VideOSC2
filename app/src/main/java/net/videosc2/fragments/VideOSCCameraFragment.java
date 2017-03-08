@@ -22,61 +22,39 @@
 
 package net.videosc2.fragments;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ImageFormat;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-//import com.ultimate.camera.R;
-//import com.ultimate.camera.utilities.DialogHelper;
 
 import net.videosc2.R;
-import net.videosc2.activities.VideOSCCameraActivity;
 import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.utilities.DialogHelper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.IntBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 
 /**
- * Take a picture directly from inside the app using this fragment.
- * <p>
- * Reference: http://developer.android.com/training/camera/cameradirect.html
- * Reference: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
- * Reference: http://stackoverflow.com/questions/10913181/camera-preview-is-not-restarting
- * <p>
- * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
+ * Display the down-scaled preview, calculated
+ * from the smallest possible preview size
+ * Created by Stefan Nussbaumer
+ * after a piece of code by
+ * Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final static String TAG = "VideOSCCameraFragment";
@@ -86,9 +64,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// View to display the camera output.
 	private CameraPreview mPreview;
-
-	// Reference to the containing view.
-	private View mCameraView;
 
 	// Reference to the ImageView containing the downscaled video frame
 	ImageView mImage;
@@ -149,7 +124,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		boolean qOpened;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
-		mCameraView = view;
 		qOpened = (mCamera != null);
 
 		if (qOpened) {
@@ -211,16 +185,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 	 */
 	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-//		final static String TAG = "CameraPreview";
 
 		// SurfaceHolder
 		private SurfaceHolder mHolder;
 
 		// Our Camera.
 		private Camera mCamera;
-
-		// Parent Context.
-		private Context mContext;
 
 		// Camera Sizing (For rotation, orientation changes)
 		private Camera.Size mPreviewSize;
@@ -231,15 +201,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
-		// View holding this camera.
-		private View mCameraView;
-
 		public CameraPreview(Context context, Camera camera, View cameraView) {
 			super(context);
 
 			// Capture the context
-			mCameraView = cameraView;
-			mContext = context;
 			setCamera(camera);
 
 			// Install a SurfaceHolder.Callback so we get notified when the
@@ -280,10 +245,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Camera.Parameters parameters = mCamera.getParameters();
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
-			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes);
+			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
 			parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
 			mSupportedFlashModes = parameters.getSupportedFlashModes();
-//			mCamera.getParameters().setPreviewFormat(ImageFormat.RGB_565);
 
 			// Set the camera to Auto Flash mode.
 			if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
@@ -341,55 +305,31 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// Set the auto-focus mode to "continuous"
 				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-
-/*
-				// Preview size must exist.
-				if (mPreviewSize != null) {
-					Camera.Size previewSize = mPreviewSize;
-					parameters.setPreviewSize(previewSize.width, previewSize.height);
-				}
-//				Log.d(TAG, "preview size " + mPreviewSize.width + ", " + mPreviewSize.height);
-*/
-
 				mCamera.setParameters(parameters);
 				Log.d(TAG, "past setParameters");
-//				mCamera.startPreview();
 				final BitmapFactory.Options options = new BitmapFactory.Options();
 				options.outWidth = 6;
 				options.outHeight = 4;
-				options.inMutable = true;
+//				options.inMutable = true;
+//				options.inDither = false;
 				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-				options.outMimeType = "image/png";
+//				options.outMimeType = "image/png";
 				mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
-						boolean success = false;
-
-//						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
-/*
-						YuvImage yImg = new YuvImage(data, ImageFormat.NV21, options.outWidth, options.outHeight, null);
-						try {
-							success = yImg.compressToJpeg(new Rect(0, 0, options.outWidth, options.outHeight), 100, out);
-						} catch(IllegalArgumentException e) {
-							e.printStackTrace();
-						}
-*/
-//						final int[] rgb = decodeYUV420SP(data, options.outWidth, options.outHeight);
-//						Bitmap bmp = Bitmap.createBitmap(rgb, options.outWidth, options.outHeight, options.inPreferredConfig);
-//						Log.d(TAG, "screen dimensions: " + dimensions.x + ", " + dimensions.y);
-//						if (success) {
-//							byte[] imgBytes = out.toByteArray();
-//							Bitmap bmp = BitmapFactory.decodeByteArray(imgBytes, 0, imgBytes.length, options);
-//							bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
-							Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, Bitmap.Config.ARGB_8888);
-							bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-							bmp = Bitmap.createScaledBitmap(bmp, options.outWidth, options.outHeight, true);
-							bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
-							mImage.bringToFront();
-							mImage.setImageBitmap(bmp);
-//						}
+						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, options.inPreferredConfig);
+						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
+						bmp = Bitmap.createScaledBitmap(bmp, options.outWidth, options.outHeight, true);
+						BitmapDrawable bmpDraw = new BitmapDrawable(bmp);
+						bmpDraw.setAntiAlias(false);
+						bmpDraw.setDither(false);
+						bmpDraw.setFilterBitmap(false);
+//						Log.d(TAG, "is bitmap mutable: " + bmp.isMutable());
+//						bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
+						mImage.bringToFront();
+						mImage.setImageDrawable(bmpDraw);
 					}
 				});
 			} catch (Exception e) {
@@ -398,108 +338,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 		}
 
-		/**
-		 * convert a YUV frame given by 'data' to an integer array of rgb pixels
-		 *
-		 * @param data the byte array from the original YUV
-		 * @param width width of the frame to be converted
-		 * @param height height of the frame to be converted
-		 * @return an int array containg the rgb information of the image
-		 */
-		private int[] decodeYUV420SP(byte[] data, int width, int height) {
-			final int frameSize = width * height;
-
-			int rgb[]=new int[width*height];
-			for (int j = 0, yp = 0; j < height; j++) {
-				int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-				for (int i = 0; i < width; i++, yp++) {
-					int y = (0xff & ((int) data[yp])) - 16;
-					if (y < 0) y = 0;
-					if ((i & 1) == 0) {
-						v = (0xff & data[uvp++]) - 128;
-						u = (0xff & data[uvp++]) - 128;
-					}
-
-					int y1192 = 1192 * y;
-					int r = (y1192 + 1634 * v);
-					int g = (y1192 - 833 * v - 400 * u);
-					int b = (y1192 + 2066 * u);
-
-					if (r < 0) r = 0; else if (r > 262143) r = 262143;
-					if (g < 0) g = 0; else if (g > 262143) g = 262143;
-					if (b < 0) b = 0; else if (b > 262143) b = 262143;
-
-					rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) &
-							0xff00) | ((b >> 10) & 0xff);
-
-
-				}
-			}
-			return rgb;
-		}
-
-/*
-		*/
-/**
-		 * Calculate the measurements of the layout
-		 *
-		 * @param widthMeasureSpec
-		 * @param heightMeasureSpec
-		 *//*
-
-		@Override
-		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
-			final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-			final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-			setMeasuredDimension(width, height);
-
-			if (mSupportedPreviewSizes != null) {
-				mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes,*/
-/* width, height*//*
-);
-			}
-		}
-*/
 
 		/**
 		 * @param sizes
-		 * @param width
-		 * @param height
-		 * @return
+		 * @return the smallest possible preview size
 		 */
-		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes/*, int width, int height*/) {
+		private Camera.Size getSmallestPreviewSize(List<Camera.Size> sizes) {
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			Camera.Size optimalSize = null;
 
-//			final double ASPECT_TOLERANCE = 0.1;
-//			double targetRatio = (double) height / width;
-
-			// Try to find a size match which suits the whole screen minus the menu on the left.
-/*
-			for (Camera.Size size : sizes) {
-
-				if (size.height != width) continue;
-				double ratio = (double) size.width / size.height;
-				if (ratio <= targetRatio + ASPECT_TOLERANCE && ratio >= targetRatio - ASPECT_TOLERANCE) {
-					optimalSize = size;
-				}
-			}
-*/
-
 			for (int i = 1; i < sizes.size(); i++) {
-				if (sizes.get(i).width * sizes.get(i).width < sizes.get(i-1)
-						.width * sizes.get(i-1).height) {
+				if (sizes.get(i).width * sizes.get(i).width < sizes.get(i - 1)
+						.width * sizes.get(i - 1).height) {
 					optimalSize = sizes.get(i);
 				}
 			}
-
-			// If we cannot find the one that matches the aspect ratio, ignore the requirement.
-			if (optimalSize == null) {
-				// TODO : Backup in case we don't get a size.
-			}
-
-			Log.d(TAG, "optimal size: " + optimalSize.width + ", " + optimalSize.height);
 
 			return optimalSize;
 		}
