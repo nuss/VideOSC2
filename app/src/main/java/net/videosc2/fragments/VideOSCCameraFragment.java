@@ -260,6 +260,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * Begin the preview of the camera input.
 		 */
 		public void startCameraPreview() {
+			Log.d(TAG, "start camera preview, size: " + mCamera.getParameters().getPreviewSize().width + ", " + mCamera.getParameters().getPreviewSize().height);
 			try {
 				mCamera.setPreviewDisplay(mHolder);
 				mCamera.startPreview();
@@ -274,15 +275,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param camera
 		 */
 		private void setCamera(Camera camera) {
-			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
+			Log.d(TAG, "set camera");
 			mCamera = camera;
-			mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-			mSupportedFlashModes = mCamera.getParameters().getSupportedFlashModes();
+			Camera.Parameters parameters = mCamera.getParameters();
+			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
+			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
+			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes);
+			parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+			mSupportedFlashModes = parameters.getSupportedFlashModes();
 //			mCamera.getParameters().setPreviewFormat(ImageFormat.RGB_565);
 
 			// Set the camera to Auto Flash mode.
 			if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
-				Camera.Parameters parameters = mCamera.getParameters();
 				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
 				mCamera.setParameters(parameters);
 			}
@@ -338,12 +342,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// Set the auto-focus mode to "continuous"
 				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 
+/*
 				// Preview size must exist.
 				if (mPreviewSize != null) {
 					Camera.Size previewSize = mPreviewSize;
 					parameters.setPreviewSize(previewSize.width, previewSize.height);
 				}
 //				Log.d(TAG, "preview size " + mPreviewSize.width + ", " + mPreviewSize.height);
+*/
 
 				mCamera.setParameters(parameters);
 				Log.d(TAG, "past setParameters");
@@ -360,8 +366,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						boolean success = false;
 
 //						ByteArrayOutputStream out = new ByteArrayOutputStream();
-						int[] out = new int[VideOSCMainActivity.dimensions.x * VideOSCMainActivity.dimensions.y];
-						GPUImageNativeLibrary.YUVtoRBGA(data, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, out);
+						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
+						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 /*
 						YuvImage yImg = new YuvImage(data, ImageFormat.NV21, options.outWidth, options.outHeight, null);
 						try {
@@ -377,7 +383,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //							byte[] imgBytes = out.toByteArray();
 //							Bitmap bmp = BitmapFactory.decodeByteArray(imgBytes, 0, imgBytes.length, options);
 //							bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
-							Bitmap bmp = Bitmap.createBitmap(VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, Bitmap.Config.ARGB_8888);
+							Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, Bitmap.Config.ARGB_8888);
 							bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
 							bmp = Bitmap.createScaledBitmap(bmp, options.outWidth, options.outHeight, true);
 							bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
@@ -432,12 +438,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return rgb;
 		}
 
-		/**
+/*
+		*/
+/**
 		 * Calculate the measurements of the layout
 		 *
 		 * @param widthMeasureSpec
 		 * @param heightMeasureSpec
-		 */
+		 *//*
+
 		@Override
 		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
@@ -446,9 +455,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			setMeasuredDimension(width, height);
 
 			if (mSupportedPreviewSizes != null) {
-				mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
+				mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes,*/
+/* width, height*//*
+);
 			}
 		}
+*/
 
 		/**
 		 * @param sizes
@@ -456,14 +468,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param height
 		 * @return
 		 */
-		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int width, int height) {
+		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes/*, int width, int height*/) {
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			Camera.Size optimalSize = null;
 
-			final double ASPECT_TOLERANCE = 0.1;
-			double targetRatio = (double) height / width;
+//			final double ASPECT_TOLERANCE = 0.1;
+//			double targetRatio = (double) height / width;
 
 			// Try to find a size match which suits the whole screen minus the menu on the left.
+/*
 			for (Camera.Size size : sizes) {
 
 				if (size.height != width) continue;
@@ -472,11 +485,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					optimalSize = size;
 				}
 			}
+*/
+
+			for (int i = 1; i < sizes.size(); i++) {
+				if (sizes.get(i).width * sizes.get(i).width < sizes.get(i-1)
+						.width * sizes.get(i-1).height) {
+					optimalSize = sizes.get(i);
+				}
+			}
 
 			// If we cannot find the one that matches the aspect ratio, ignore the requirement.
 			if (optimalSize == null) {
 				// TODO : Backup in case we don't get a size.
 			}
+
+			Log.d(TAG, "optimal size: " + optimalSize.width + ", " + optimalSize.height);
 
 			return optimalSize;
 		}
