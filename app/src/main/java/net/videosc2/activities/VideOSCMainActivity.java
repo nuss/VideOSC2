@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import net.videosc2.R;
 import net.videosc2.fragments.VideOSCBaseFragment;
@@ -48,21 +49,21 @@ import net.videosc2.processing.TestApplet;
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCMainActivity extends VideOSCCameraActivity
-        implements /*NavigationDrawerFragment.NavigationDrawerCallbacks, */VideOSCBaseFragment.OnFragmentInteractionListener {
+		implements /*NavigationDrawerFragment.NavigationDrawerCallbacks, */VideOSCBaseFragment.OnFragmentInteractionListener {
 
 	static final String TAG = "VideOSCMainActivity";
 
-	View appView;
+	View camView;
 	public static Point dimensions;
 
-    /**
-     * Actions
-     */
+	/**
+	 * Actions
+	 */
 //    public static final int SELECT_PHOTO_ACTION = 0;
 
-    /**
-     * Fragment Identifiers
-     */
+	/**
+	 * Fragment Identifiers
+	 */
 /*
     public static final int SIMPLE_CAMERA_INTENT_FRAGMENT = 0;
     public static final int SIMPLE_PHOTO_GALLERY_FRAGMENT = 1;
@@ -71,36 +72,30 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
     public static final int HORIZONTAL_GALLERY_FRAGMENT = 4;
 */
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
+	/**
+	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+	 */
 //    private VideOSCNavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-//    private CharSequence mTitle;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 //	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	    setContentView(R.layout.fragment_native_camera);
+		setContentView(R.layout.fragment_native_camera);
 
-        FragmentManager fragmentManager = getFragmentManager();
-	    if (findViewById(R.id.camera_preview) != null) {
-		    appView = findViewById(R.id.camera_preview);
+		FragmentManager fragmentManager = getFragmentManager();
+		if (findViewById(R.id.camera_preview) != null) {
+			camView = findViewById(R.id.camera_preview);
 
-		    if (savedInstanceState != null) return;
-		    Fragment fragment = new VideOSCCameraFragment();
-		    fragmentManager.beginTransaction()
-				    .replace(R.id.camera_preview, fragment)
-				    .commit();
-	    }
+			if (savedInstanceState != null) return;
+			Fragment cameraPreview = new VideOSCCameraFragment();
+			fragmentManager.beginTransaction()
+					.replace(R.id.camera_preview, cameraPreview)
+					.commit();
+		}
 
-	    DisplayMetrics dm = new DisplayMetrics();
-	    getWindowManager().getDefaultDisplay().getMetrics(dm);
+		DisplayMetrics dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 
 /*
@@ -113,29 +108,31 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 */
-    }
+	}
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-	    if (Build.VERSION.SDK_INT >= 19) {
-		    appView.setSystemUiVisibility(
-				    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-						    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-						    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-						    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-						    | View.SYSTEM_UI_FLAG_FULLSCREEN
-						    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-	    } else if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 19){
-		    appView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-				    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-				    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-				    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-				    | View.SYSTEM_UI_FLAG_FULLSCREEN);
-	    } else {
-		    appView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-	    }
-	};
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			camView.setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+			camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+					| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+					| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+					| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+					| View.SYSTEM_UI_FLAG_FULLSCREEN);
+		} else {
+			camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		}
+	}
+
+	;
 
 
 //    @Override
@@ -234,22 +231,22 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
     }
 */
 
-    /**
-     * Handle Incoming messages from contained fragments.
-     */
+	/**
+	 * Handle Incoming messages from contained fragments.
+	 */
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
+	@Override
+	public void onFragmentInteraction(Uri uri) {
 
-    }
+	}
 
-    @Override
-    public void onFragmentInteraction(String id) {
+	@Override
+	public void onFragmentInteraction(String id) {
 
-    }
+	}
 
-    @Override
-    public void onFragmentInteraction(int actionId) {
+	@Override
+	public void onFragmentInteraction(int actionId) {
 
-    }
+	}
 }

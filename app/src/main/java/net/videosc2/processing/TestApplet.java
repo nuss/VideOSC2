@@ -16,8 +16,9 @@ public class TestApplet extends PApplet {
 	int sLength = 200;
 
 	public void settings() {
-		fullScreen();
-		background(0, 0);
+//		size(500, 500);
+//		fullScreen();
+//		background(0, 0);
 	}
 
 	public void setup() {
@@ -25,13 +26,16 @@ public class TestApplet extends PApplet {
 	}
 
 	public void draw() {
-		fill(random(255), random(255), random(0xFF));
+		strokeWeight(10);
+		stroke(random(255), random(255), random(0xFF));
 		rect(0, 0, sLength, sLength);
 	}
 
 	@Override
 	public void onCreate(Bundle saveInstanceState) {
 		super.onCreate(saveInstanceState);
+//		fullScreen();
+//		rectMode(CENTER);
 	}
 
 	@Override

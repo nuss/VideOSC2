@@ -35,5 +35,6 @@
     <string name="title_section3">Image Picker</string>
     <string name="title_section4">Native Camera</string>
     <string name="title_section5">Horizontal Gallery</string>
+    <string name="preview_image_content_description">The view for the down-scaled preview image</string>
 
 </resources>

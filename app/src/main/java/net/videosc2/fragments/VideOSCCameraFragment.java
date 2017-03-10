@@ -24,11 +24,9 @@ package net.videosc2.fragments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -45,9 +43,12 @@ import net.videosc2.activities.VideOSCMainActivity;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
+import processing.core.PApplet;
 
 /**
  * Display the down-scaled preview, calculated
@@ -78,10 +79,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	/**
 	 * OnCreateView fragment override
 	 *
-	 * @param inflater
-	 * @param container
-	 * @param savedInstanceState
-	 * @return
+	 * @param inflater the layout inflater inflating the layout for the view
+	 * @param container the layout's container
+	 * @param savedInstanceState a Bundle instance
+	 * @return a View
 	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,20 +118,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	/**
 	 * Recommended "safe" way to open the camera.
 	 *
-	 * @param view
-	 * @return
+	 * @param view the view on which the camera is going to be displayed to the user
+	 * @return a boolean, indicating whether opening the camera was successful
 	 */
 	private boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
+		FrameLayout preview;
+
 		qOpened = (mCamera != null);
 
 		if (qOpened) {
-			mPreview = new CameraPreview(getActivity().getBaseContext(), mCamera, view);
-			FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
-			mPreview.startCameraPreview();
+			mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
+			if (view.findViewById(R.id.camera_preview) != null) {
+				preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+				preview.addView(mPreview, -1);
+				mPreview.startCameraPreview();
+			} else Log.d(TAG, "FrameLayout is null");
 		}
 		return qOpened;
 	}
@@ -201,7 +206,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
-		public CameraPreview(Context context, Camera camera, View cameraView) {
+		/**
+		 *
+		 * @param context the context of the application
+		 * @param camera an instance of Camera, to be used throughout CameraPreview
+		 */
+		public CameraPreview(Context context, Camera camera) {
 			super(context);
 
 			// Capture the context
@@ -215,17 +225,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// deprecated setting, but required on Android versions prior to 3.0
 			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-			DisplayMetrics dm = new DisplayMetrics();
 			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 			Display display = wm.getDefaultDisplay();
 			display.getSize(VideOSCMainActivity.dimensions);
 		}
 
 		/**
-		 * Begin the preview of the camera input.
+		 * start the camera preview
 		 */
 		public void startCameraPreview() {
-			Log.d(TAG, "start camera preview, size: " + mCamera.getParameters().getPreviewSize().width + ", " + mCamera.getParameters().getPreviewSize().height);
 			try {
 				mCamera.setPreviewDisplay(mHolder);
 				mCamera.startPreview();
@@ -237,10 +245,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		/**
 		 * Extract supported preview and flash modes from the camera.
 		 *
-		 * @param camera
+		 * @param camera an instance of Camera
 		 */
 		private void setCamera(Camera camera) {
-			Log.d(TAG, "set camera");
 			mCamera = camera;
 			Camera.Parameters parameters = mCamera.getParameters();
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
@@ -261,7 +268,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		/**
 		 * The Surface has been created, now tell the camera where to draw the preview.
 		 *
-		 * @param holder
+		 * @param holder the surface holder
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
 			try {
@@ -274,7 +281,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		/**
 		 * Dispose of the camera preview.
 		 *
-		 * @param holder
+		 * @param holder the surface holder
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			if (mCamera != null) {
@@ -286,9 +293,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * React to surface changed events
 		 *
 		 * @param holder the surface holder
-		 * @param format
-		 * @param w
-		 * @param h
+		 * @param format the pixel format of the surface
+		 * @param w the surface width
+		 * @param h the surface height
 		 */
 		public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 			// If your preview can change or rotate, take care of those events here.
@@ -306,53 +313,46 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// Set the auto-focus mode to "continuous"
 				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 				mCamera.setParameters(parameters);
-				Log.d(TAG, "past setParameters");
-				final BitmapFactory.Options options = new BitmapFactory.Options();
-				options.outWidth = 6;
-				options.outHeight = 4;
-//				options.inMutable = true;
-//				options.inDither = false;
-				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//				options.outMimeType = "image/png";
 				mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
+						int outWidth = 6;
+						int outHeight = 4;
+						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
+
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
-						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, options.inPreferredConfig);
+						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-						bmp = Bitmap.createScaledBitmap(bmp, options.outWidth, options.outHeight, true);
+						bmp = Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true);
 						BitmapDrawable bmpDraw = new BitmapDrawable(bmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
 						bmpDraw.setFilterBitmap(false);
-//						Log.d(TAG, "is bitmap mutable: " + bmp.isMutable());
-//						bmp = Bitmap.createScaledBitmap(bmp, VideOSCMainActivity.dimensions.x, VideOSCMainActivity.dimensions.y, false);
 						mImage.bringToFront();
 						mImage.setImageDrawable(bmpDraw);
 					}
 				});
 			} catch (Exception e) {
-				Log.d(TAG, "exception: " + e);
 				e.printStackTrace();
 			}
 		}
 
 
 		/**
-		 * @param sizes
+		 * @param sizes the ArrayList of possible preview sizes
 		 * @return the smallest possible preview size
 		 */
 		private Camera.Size getSmallestPreviewSize(List<Camera.Size> sizes) {
-			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
-			Camera.Size optimalSize = null;
+			Camera.Size optimalSize;
+			ArrayList<Integer> productList = new ArrayList<>();
 
-			for (int i = 1; i < sizes.size(); i++) {
-				if (sizes.get(i).width * sizes.get(i).width < sizes.get(i - 1)
-						.width * sizes.get(i - 1).height) {
-					optimalSize = sizes.get(i);
-				}
+			for (Camera.Size size : sizes) {
+				productList.add(size.width * size.height);
 			}
+
+			int minIndex = productList.indexOf(Collections.min(productList));
+			optimalSize = sizes.get(minIndex);
 
 			return optimalSize;
 		}

@@ -22,29 +22,18 @@
   ~ THE SOFTWARE.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal"
-    >
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/camera_preview"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 
-    <FrameLayout
-        android:id="@+id/camera_preview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+	<ImageView
+		android:id="@+id/camera_downscaled"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:antialias="false"
+		android:contentDescription="@string/preview_image_content_description"
+		android:scaleType="fitXY"/>
 
-        <ImageView
-            android:id="@+id/camera_downscaled"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:antialias="false"
-            android:scaleType="fitXY"/>
-
-    </FrameLayout>
-
-    <RelativeLayout
-        android:id="@+id/innerRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
-</RelativeLayout>
+</FrameLayout>
