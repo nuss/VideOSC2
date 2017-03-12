@@ -28,17 +28,24 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import net.videosc2.R;
+import net.videosc2.fragments.SettingsFragment;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCNavigationDrawerFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
@@ -55,6 +62,9 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 
 	View camView;
 	public static Point dimensions;
+	private DrawerLayout mDrawer;
+	private Toolbar toolbar;
+	private NavigationView nvDrawer;
 
 	/**
 	 * Actions
@@ -64,13 +74,11 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	/**
 	 * Fragment Identifiers
 	 */
-/*
-    public static final int SIMPLE_CAMERA_INTENT_FRAGMENT = 0;
-    public static final int SIMPLE_PHOTO_GALLERY_FRAGMENT = 1;
-    public static final int SIMPLE_PHOTO_PICKER_FRAGMENT = 2;
-    public static final int NATIVE_CAMERA_FRAGMENT = 3;
-    public static final int HORIZONTAL_GALLERY_FRAGMENT = 4;
-*/
+    public static final int SET_START_STOP_FRAGMENT = 0;
+    public static final int SET_FLASHLIGHT_FRAGMENT = 1;
+    public static final int SET_RGB_MODE_FRAGMENT = 2;
+    public static final int INFO_FRAGMENT = 3;
+    public static final int SETTINGS_FRAGMENT = 4;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -94,9 +102,16 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 					.commit();
 		}
 
+		toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+		mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
+
+		nvDrawer = (NavigationView) findViewById(R.id.nvView);
+		setupDrawerContent(nvDrawer);
 
 /*
         mNavigationDrawerFragment = (VideOSCNavigationDrawerFragment)
@@ -108,6 +123,68 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 */
+	}
+
+	private void setupDrawerContent(NavigationView navigationView) {
+		navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+			@Override
+			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+				selectDrawerItem(item);
+				return true;
+			}
+		});
+	}
+
+	public void selectDrawerItem(MenuItem menuItem) {
+		// Create a new fragment and specify the fragment to show based on nav item clicked
+		Fragment fragment = null;
+//		Class fragmentClass;
+
+		switch(menuItem.getItemId()) {
+			case R.id.play:
+//				fragmentClass = FirstFragment.class;
+				Log.d(TAG, "clicked 'play'");
+				break;
+			case R.id.flashlight:
+//				fragmentClass = SecondFragment.class;
+				Log.d(TAG, "clicked flashlight");
+				break;
+			case R.id.rgb:
+//				fragmentClass = ThirdFragment.class;
+				Log.d(TAG, "clicked RGB mode selector");
+				break;
+			case R.id.info:
+//				fragmentClass = ThirdFragment.class;
+				Log.d(TAG, "clicked info");
+				break;
+			case R.id.settings:
+//				fragmentClass = SettingsFragment.class;
+				Log.d(TAG, "clicked settings");
+				break;
+			default:
+//				fragmentClass = FirstFragment.class;
+				Log.d(TAG, "clicked 'play'");
+		}
+
+		if (menuItem.getItemId() == R.id.settings) {
+			try {
+				fragment = SettingsFragment.newInstance();
+				FragmentManager fragmentManager = getFragmentManager();
+				fragmentManager.beginTransaction().replace(R.id.camera_preview, fragment).commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Highlight the selected item has been done by NavigationView
+		menuItem.setChecked(true);
+
+		// Set action bar title
+		setTitle(menuItem.getTitle());
+
+		// Close the navigation drawer
+		mDrawer.closeDrawers();
+
 	}
 
 	@Override
@@ -132,7 +209,16 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		}
 	}
 
-	;
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+			case android.R.id.home:
+				mDrawer.openDrawer(GravityCompat.END);
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
 
 //    @Override

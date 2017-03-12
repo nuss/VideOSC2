@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<group android:checkableBehavior="single">
+
+		<item
+			android:id="@+id/play"
+			android:icon="@drawable/start"
+			android:title="Start/Stop sending OSC messages" />
+		<item
+			android:id="@+id/flashlight"
+			android:icon="@drawable/light"
+			android:title="Switch flashlight on/off" />
+		<item
+			android:id="@+id/rgb"
+			android:icon="@drawable/rgb"
+			android:title="Select color mode" />
+		<item
+			android:id="@+id/info"
+			android:icon="@drawable/i"
+			android:title="Display current framerate &amp; calculation period" />
+		<item
+			android:id="@+id/settings"
+			android:icon="@drawable/settings"
+			android:title="Settings" />
+
+	</group>
+</menu>

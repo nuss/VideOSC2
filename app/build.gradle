@@ -31,4 +31,5 @@ dependencies {
     compile files('libs/Ketai.jar')
     compile files('libs/oscP5.jar')
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+    compile 'com.android.support:design:25.2.0'
 }
