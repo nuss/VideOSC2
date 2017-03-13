@@ -35,6 +35,12 @@
 		android:layout_height="match_parent"
 		android:orientation="horizontal">
 
+		<!-- The ActionBar displayed at the top -->
+		<include
+			layout="@layout/toolbar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
 		<!-- As the main content view, the view below consumes the entire
 			 space available using match_parent in both dimensions. -->
 		<FrameLayout
@@ -53,12 +59,6 @@
 
 		</FrameLayout>
 
-		<!-- The ActionBar displayed at the top -->
-		<include
-			layout="@layout/toolbar"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
-
 		<!-- android:layout_gravity="end" tells DrawerLayout to treat
 			 this as a sliding drawer on the right side for left-to-right
 			 languages and on the left side for right-to-left languages.
@@ -66,21 +66,16 @@
 			 android:layout_gravity="left" instead. -->
 		<!-- The drawer is given a fixed width in dp and extends the full height of
 			 the container. -->
-		<!--<fragment-->
-			<!--android:id="@+id/navigation_drawer"-->
-			<!--android:name="net.videosc2.fragments.VideOSCNavigationDrawerFragment"-->
-			<!--android:layout_width="36dp"-->
-			<!--android:layout_height="match_parent"-->
-			<!--android:layout_gravity="end"/>-->
-
 	</LinearLayout>
 
 	<!-- The navigation drawer that comes from the right (layout_gravity:end) -->
 	<android.support.design.widget.NavigationView
 		android:id="@+id/nvView"
-		android:layout_width="wrap_content"
+		android:layout_width="50dp"
 		android:layout_height="match_parent"
 		android:layout_gravity="end"
 		android:background="@android:color/black"
-		app:menu="@menu/drawer_view"/>
+		app:itemTextColor="@android:color/white"
+		app:menu="@menu/drawer_view"
+		app:theme="@style/NavigationDrawerStyle"/>
 </android.support.v4.widget.DrawerLayout>

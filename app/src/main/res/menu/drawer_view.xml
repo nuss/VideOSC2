@@ -7,32 +7,32 @@
 		<item
 			android:id="@+id/play"
 			android:icon="@drawable/start"
-			android:title="Start/Stop sending OSC messages"
+			android:title="@string/action_start"
 			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/flashlight"
 			android:icon="@drawable/light"
-			android:title="Switch flashlight on/off"
+			android:title="@string/action_light"
 			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/rgb"
 			android:icon="@drawable/rgb"
-			android:title="Select color mode"
+			android:title="@string/action_rgb"
 			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/interaction"
 			android:icon="@drawable/interaction"
-			android:title="Interaction modes"
+			android:title="@string/action_interaction"
 			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/info"
 			android:icon="@drawable/i"
-			android:title="Display current framerate &amp; calculation period"
+			android:title="@string/action_interaction"
 			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/settings"
 			android:icon="@drawable/settings"
-			android:title="Settings"
+			android:title="@string/action_settings"
 			app:showAsAction="always|collapseActionView"
 			tools:visible="?android:attr/windowNoTitle"/>
 

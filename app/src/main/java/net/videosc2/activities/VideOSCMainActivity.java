@@ -24,6 +24,7 @@ package net.videosc2.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +34,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -67,6 +69,7 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	private DrawerLayout mDrawer;
 	private Toolbar toolbar;
 	private NavigationView nvDrawer;
+	private ActionBarDrawerToggle drawerToggle;
 
 	/**
 	 * Actions
@@ -105,15 +108,18 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		}
 
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
+
 		setSupportActionBar(toolbar);
 		mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerToggle = setupDrawerToggle();
+		mDrawer.addDrawerListener(drawerToggle);
 
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 
 		nvDrawer = (NavigationView) findViewById(R.id.nvView);
-		Log.d(TAG, "nvDrawer: " + nvDrawer);
 		setupDrawerContent(nvDrawer);
 
 
@@ -129,13 +135,18 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 */
 	}
 
+	// There are 2 signatures and only `onPostCreate(Bundle state)` shows the hamburger icon.
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		mDrawer.openDrawer(Gravity.RIGHT);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		drawerToggle.syncState();
 	}
 
 	private void setupDrawerContent(NavigationView navigationView) {
+		navigationView.setItemIconTintList(null);
+		navigationView.getBackground().setAlpha(127);
 		navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 			@Override
 			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -222,17 +233,33 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		}
 	}
 
+/*
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "menu item: " + item.getItemId());
 		switch(item.getItemId()) {
 			case android.R.id.home:
 				mDrawer.openDrawer(GravityCompat.END);
 				return true;
 		}
 
-		return super.onOptionsItemSelected(item);
+		return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+	}
+*/
+
+	private ActionBarDrawerToggle setupDrawerToggle() {
+		// NOTE: Make sure you pass in a valid toolbar reference.
+		// ActionBarDrawToggle() does not require it
+		// and will not render the hamburger icon without it.
+		return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggles
+		drawerToggle.onConfigurationChanged(newConfig);
+	}
 
 //    @Override
 //    public void onNavigationDrawerItemSelected(int position) {

@@ -164,6 +164,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.d(TAG, "onDestroy called");
 		releaseCameraAndPreview();
 	}
 
@@ -286,6 +287,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			if (mCamera != null) {
 				mCamera.stopPreview();
+				// hack: set a null callback as the already set callback
+				// otherwise prevails even after camera.release() and
+				// causes a crash on quit
+				mCamera.setPreviewCallback(null);
 			}
 		}
 

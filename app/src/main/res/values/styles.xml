@@ -8,4 +8,8 @@
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
+	<style name="NavigationDrawerStyle">
+		<item name="android:switchTextOff">true</item>
+	</style>
+
 </resources>
