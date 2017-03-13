@@ -36,6 +36,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +48,7 @@ import android.widget.FrameLayout;
 import net.videosc2.R;
 import net.videosc2.fragments.SettingsFragment;
 import net.videosc2.fragments.VideOSCBaseFragment;
+import net.videosc2.fragments.VideOSCDrawerFragment;
 import net.videosc2.fragments.VideOSCNavigationDrawerFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
 import net.videosc2.processing.TestApplet;
@@ -89,7 +91,7 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		super.onCreate(savedInstanceState);
 //	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.fragment_native_camera);
+		setContentView(R.layout.activity_main);
 
 		FragmentManager fragmentManager = getFragmentManager();
 		if (findViewById(R.id.camera_preview) != null) {
@@ -111,7 +113,9 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 
 		nvDrawer = (NavigationView) findViewById(R.id.nvView);
+		Log.d(TAG, "nvDrawer: " + nvDrawer);
 		setupDrawerContent(nvDrawer);
+
 
 /*
         mNavigationDrawerFragment = (VideOSCNavigationDrawerFragment)
@@ -123,6 +127,12 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 */
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		mDrawer.openDrawer(Gravity.RIGHT);
 	}
 
 	private void setupDrawerContent(NavigationView navigationView) {
@@ -152,6 +162,9 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 			case R.id.rgb:
 //				fragmentClass = ThirdFragment.class;
 				Log.d(TAG, "clicked RGB mode selector");
+				break;
+			case R.id.interaction:
+				Log.d(TAG, "clicked interaction selector");
 				break;
 			case R.id.info:
 //				fragmentClass = ThirdFragment.class;

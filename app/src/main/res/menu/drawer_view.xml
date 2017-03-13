@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android">
 	<group android:checkableBehavior="single">
 
 		<item
 			android:id="@+id/play"
 			android:icon="@drawable/start"
-			android:title="Start/Stop sending OSC messages" />
+			android:title="Start/Stop sending OSC messages"
+			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/flashlight"
 			android:icon="@drawable/light"
-			android:title="Switch flashlight on/off" />
+			android:title="Switch flashlight on/off"
+			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/rgb"
 			android:icon="@drawable/rgb"
-			android:title="Select color mode" />
+			android:title="Select color mode"
+			app:showAsAction="always|collapseActionView"/>
+		<item
+			android:id="@+id/interaction"
+			android:icon="@drawable/interaction"
+			android:title="Interaction modes"
+			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/info"
 			android:icon="@drawable/i"
-			android:title="Display current framerate &amp; calculation period" />
+			android:title="Display current framerate &amp; calculation period"
+			app:showAsAction="always|collapseActionView"/>
 		<item
 			android:id="@+id/settings"
 			android:icon="@drawable/settings"
-			android:title="Settings" />
+			android:title="Settings"
+			app:showAsAction="always|collapseActionView"
+			tools:visible="?android:attr/windowNoTitle"/>
 
 	</group>
 </menu>
