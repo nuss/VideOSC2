@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="drawer_icons">
+		<item>@drawable/start</item>
+		<item>@drawable/light</item>
+		<item>@drawable/rgb</item>
+		<item>@drawable/interaction</item>
+		<item>@drawable/i</item>
+		<item>@drawable/settings</item>
+	</array>
+</resources>

@@ -23,17 +23,20 @@
 
 <resources>
 
-    <string name="app_name">VideOSC+</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_start">Start/Stop sending OSC messages</string>
-    <string name="action_light">Switch flashlight on/off</string>
-	<string name="action_rgb">Select color mode</string>
-	<string name="action_interaction">Select interaction mode</string>
-	<string name="action_info">Get info on current framerate and calculation period</string>
-    <string name="action_settings">Settings</string>
+	<string name="app_name">VideOSC+</string>
+	<string name="navigation_drawer_open">Open navigation drawer</string>
+	<string name="navigation_drawer_close">Close navigation drawer</string>
+	<string-array name="menu_strings">
+		<item>Start/Stop sending OSC messages</item>
+		<item>Switch flashlight on/off</item>
+		<item>Select color mode</item>
+		<item>Select interaction mode</item>
+		<item>Get info on current framerate and calculation period</item>
+		<item>Settings</item>
+	</string-array>
 
-    <!-- Fragment section titles -->
-    <string name="preview_image_content_description">The view for the down-scaled preview image</string>
+	<!-- Fragment section titles -->
+	<string name="preview_image_content_description">The view for the down-scaled preview image</string>
+	<string name="a_tools_menu_item">a tools menu item</string>
 
 </resources>

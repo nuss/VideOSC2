@@ -25,35 +25,27 @@ package net.videosc2.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
+import android.widget.ListView;
 
 import net.videosc2.R;
-import net.videosc2.fragments.SettingsFragment;
+import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
-import net.videosc2.fragments.VideOSCDrawerFragment;
-import net.videosc2.fragments.VideOSCNavigationDrawerFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
-import net.videosc2.processing.TestApplet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -66,24 +58,8 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 
 	View camView;
 	public static Point dimensions;
-	private DrawerLayout mDrawer;
-	private Toolbar toolbar;
-	private NavigationView nvDrawer;
+	private DrawerLayout toolsDrawerLayout;
 	private ActionBarDrawerToggle drawerToggle;
-
-	/**
-	 * Actions
-	 */
-//    public static final int SELECT_PHOTO_ACTION = 0;
-
-	/**
-	 * Fragment Identifiers
-	 */
-    public static final int SET_START_STOP_FRAGMENT = 0;
-    public static final int SET_FLASHLIGHT_FRAGMENT = 1;
-    public static final int SET_RGB_MODE_FRAGMENT = 2;
-    public static final int INFO_FRAGMENT = 3;
-    public static final int SETTINGS_FRAGMENT = 4;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -107,20 +83,32 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 					.commit();
 		}
 
-		toolbar = (Toolbar) findViewById(R.id.toolbar);
+		TypedArray tools = getResources().obtainTypedArray(R.array.drawer_icons);
 
-		setSupportActionBar(toolbar);
-		mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawerToggle = setupDrawerToggle();
-		mDrawer.addDrawerListener(drawerToggle);
+		for (int i = 0; i < tools.length(); i++) {
+			Log.d(TAG, "tools[" + i + "]: " + tools.getDrawable(i));
+		}
+		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
+
+		List<BitmapDrawable> toolsList = new ArrayList<>();
+		for (int i = 0; i < tools.length(); i++) {
+			toolsList.add((BitmapDrawable) tools.getDrawable(i));
+		}
+
+		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, toolsList));
+		tools.recycle();
+
+//		drawerToggle = setupDrawerToggle();
+//		mDrawer.addDrawerListener(drawerToggle);
 
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 
-		nvDrawer = (NavigationView) findViewById(R.id.nvView);
-		setupDrawerContent(nvDrawer);
+//		toolsDrawer = (NavigationView) findViewById(R.id.nvView);
+//		setupDrawerContent(toolsDrawer);
 
 
 /*
@@ -139,11 +127,12 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		mDrawer.openDrawer(Gravity.RIGHT);
+//		mDrawer.openDrawer(Gravity.RIGHT);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
-		drawerToggle.syncState();
+//		drawerToggle.syncState();
 	}
 
+/*
 	private void setupDrawerContent(NavigationView navigationView) {
 		navigationView.setItemIconTintList(null);
 		navigationView.getBackground().setAlpha(127);
@@ -155,7 +144,9 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 			}
 		});
 	}
+*/
 
+/*
 	public void selectDrawerItem(MenuItem menuItem) {
 		// Create a new fragment and specify the fragment to show based on nav item clicked
 		Fragment fragment = null;
@@ -210,6 +201,7 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		mDrawer.closeDrawers();
 
 	}
+*/
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -247,18 +239,20 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	}
 */
 
+/*
 	private ActionBarDrawerToggle setupDrawerToggle() {
 		// NOTE: Make sure you pass in a valid toolbar reference.
 		// ActionBarDrawToggle() does not require it
 		// and will not render the hamburger icon without it.
 		return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 	}
+*/
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggles
-		drawerToggle.onConfigurationChanged(newConfig);
+//		drawerToggle.onConfigurationChanged(newConfig);
 	}
 
 //    @Override
