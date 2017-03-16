@@ -27,7 +27,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		Log.d(TAG, "position: " + position);
 		// Get the data item for this position
 		BitmapDrawable tool = getItem(position);
 		// Check if an existing view is being reused, otherwise inflate the view

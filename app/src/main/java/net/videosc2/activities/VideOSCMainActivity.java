@@ -34,9 +34,12 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ListView;
 
 import net.videosc2.R;
@@ -51,7 +54,7 @@ import java.util.List;
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
-public class VideOSCMainActivity extends VideOSCCameraActivity
+public class VideOSCMainActivity extends AppCompatActivity
 		implements /*NavigationDrawerFragment.NavigationDrawerCallbacks, */VideOSCBaseFragment.OnFragmentInteractionListener {
 
 	static final String TAG = "VideOSCMainActivity";
@@ -64,12 +67,12 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
-//    private VideOSCNavigationDrawerFragment mNavigationDrawerFragment;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		Log.d(TAG, "onCreate");
+	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 
 		FragmentManager fragmentManager = getFragmentManager();
@@ -84,10 +87,6 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		}
 
 		TypedArray tools = getResources().obtainTypedArray(R.array.drawer_icons);
-
-		for (int i = 0; i < tools.length(); i++) {
-			Log.d(TAG, "tools[" + i + "]: " + tools.getDrawable(i));
-		}
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
@@ -99,6 +98,8 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, toolsList));
 		tools.recycle();
 
+		toolsDrawerLayout.openDrawer(Gravity.RIGHT);
+
 //		drawerToggle = setupDrawerToggle();
 //		mDrawer.addDrawerListener(drawerToggle);
 
@@ -106,27 +107,19 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
+	}
 
-//		toolsDrawer = (NavigationView) findViewById(R.id.nvView);
-//		setupDrawerContent(toolsDrawer);
-
-
-/*
-        mNavigationDrawerFragment = (VideOSCNavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-*/
+	@Override
+	public void  onContentChanged() {
+		super.onContentChanged();
+		Log.d(TAG, "onContentChanged");
 	}
 
 	// There are 2 signatures and only `onPostCreate(Bundle state)` shows the hamburger icon.
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
+		Log.d(TAG, "onPostCreate");
 //		mDrawer.openDrawer(Gravity.RIGHT);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 //		drawerToggle.syncState();
@@ -206,6 +199,7 @@ public class VideOSCMainActivity extends VideOSCCameraActivity
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
+		Log.d(TAG, "onWindowFocusChanged");
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			camView.setSystemUiVisibility(
 					View.SYSTEM_UI_FLAG_LAYOUT_STABLE

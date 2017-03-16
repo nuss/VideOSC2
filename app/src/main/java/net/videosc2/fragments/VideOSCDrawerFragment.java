@@ -57,7 +57,6 @@ public class VideOSCDrawerFragment extends Fragment {
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.drawer_layout, container, false);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
