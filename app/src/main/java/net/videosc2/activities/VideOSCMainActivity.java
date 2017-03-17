@@ -26,6 +26,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -34,11 +36,15 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import net.videosc2.R;
@@ -62,6 +68,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public static Point dimensions;
 	private DrawerLayout toolsDrawerLayout;
 	private ActionBarDrawerToggle drawerToggle;
+	protected ArrayList<View> uiElements = new ArrayList<>();
+	public boolean isPlaying = false;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -86,6 +94,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 
 		TypedArray tools = getResources().obtainTypedArray(R.array.drawer_icons);
+//		Log.d(TAG, "tools: " + tools.toString());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
@@ -94,9 +103,60 @@ public class VideOSCMainActivity extends AppCompatActivity
 			toolsList.add((BitmapDrawable) tools.getDrawable(i));
 		}
 
-		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, toolsList));
+		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, toolsList));
 		tools.recycle();
 
+		toolsDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				BitmapDrawable img;
+				ImageView imgView;
+				switch (i) {
+					case 0:
+						isPlaying = !isPlaying;
+						imgView = (ImageView) view.findViewById(R.id.tool);
+						Log.d(TAG, "start/stop sending OSC: " + imgView.getDrawable().getLevel() + "\nisPlaying: " + isPlaying);
+						if (isPlaying) {
+							img = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+									(BitmapDrawable) getResources().getDrawable(R.drawable.stop, getApplicationContext().getTheme()) :
+									(BitmapDrawable) getResources().getDrawable(R.drawable.stop);
+						} else {
+							img = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+									(BitmapDrawable) getResources().getDrawable(R.drawable.start, getApplicationContext().getTheme()) :
+									(BitmapDrawable) getResources().getDrawable(R.drawable.start);
+						}
+						imgView.setImageDrawable(img);
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+						break;
+					case 1:
+						Log.d(TAG, "switch on/off torch: " +  + view.getResources().getIdentifier("id", null, null));
+						imgView = (ImageView) view.findViewById(R.id.tool);
+						Log.d(TAG, "switch on/off torch: " + imgView.getDrawable().getLevel());
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+						break;
+					case 2:
+						Log.d(TAG, "select color mode: " + view.getY());
+						float y = view.getY();
+
+						break;
+					case 3:
+						Log.d(TAG, "set interaction mode");
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+						break;
+					case 4:
+						Log.d(TAG, "framerate, calculation period info");
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+						break;
+					case 5:
+						Log.d(TAG, "settings");
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+						break;
+					default:
+						Log.d(TAG, "what u wanna?");
+						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				}
+			}
+		});
 		toolsDrawerLayout.openDrawer(Gravity.RIGHT);
 
 //		drawerToggle = setupDrawerToggle();
@@ -118,7 +178,19 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		Log.d(TAG, "onPostCreate");
+
+		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
+		menuButton.bringToFront();
+		menuButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (toolsDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				} else if (!toolsDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+					toolsDrawerLayout.openDrawer(Gravity.RIGHT);
+				}
+			}
+		});
 //		mDrawer.openDrawer(Gravity.RIGHT);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 //		drawerToggle.syncState();
@@ -242,106 +314,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		// Pass any configuration change to the drawer toggles
 //		drawerToggle.onConfigurationChanged(newConfig);
 	}
-
-//    @Override
-//    public void onNavigationDrawerItemSelected(int position) {
-
-//        // update the main content by replacing fragments
-//        FragmentManager fragmentManager = getFragmentManager();
-//        VideOSCBaseFragment targetFragment = null;
-//
-//        // Populate the fragment
-//        switch (position) {
-//            case SIMPLE_CAMERA_INTENT_FRAGMENT: {
-//                targetFragment = SimpleCameraIntentFragment.newInstance(position + 1);
-//                break;
-//            }
-//            case SIMPLE_PHOTO_GALLERY_FRAGMENT: {
-//                targetFragment = SimplePhotoGalleryListFragment.newInstance(position + 1);
-//                break;
-//            }
-//            case SIMPLE_PHOTO_PICKER_FRAGMENT: {
-//                targetFragment = SimpleAndroidImagePickerFragment.newInstance(position + 1);
-//                break;
-//            }
-//            case NATIVE_CAMERA_FRAGMENT: {
-//                targetFragment = NativeCameraFragment.newInstance(position + 1);
-//                break;
-//            }
-//            case HORIZONTAL_GALLERY_FRAGMENT:{
-//                targetFragment = HorizontalPhotoGalleryFragment.newInstance(position + 1);
-//                break;
-//            }
-//            default:
-//                break;
-//        }
-//
-//        // Select the fragment.
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, targetFragment)
-//                .commit();
-//    }
-
-/*
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_section4);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_section5);
-                break;
-        }
-    }
-*/
-
-/*
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-*/
-
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-*/
-
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
-    }
-*/
-
-	/**
-	 * Handle Incoming messages from contained fragments.
-	 */
 
 	@Override
 	public void onFragmentInteraction(Uri uri) {

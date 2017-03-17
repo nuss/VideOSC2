@@ -20,15 +20,18 @@ import java.util.List;
 public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 	final static String TAG = "ToolsMenuAdapter";
 
-	public ToolsMenuAdapter(Context context, List<BitmapDrawable> tools) {
-		super(context, 0, tools);
+	public ToolsMenuAdapter(Context context, int resource, int bitmapResourceId, List<BitmapDrawable> tools) {
+		super(context, resource, bitmapResourceId, tools);
+		Log.d(TAG, "context: " + context + "\nresource: " + resource + "\nbitmapResourceId: " + bitmapResourceId + "\ntools: " + tools);
 	}
 
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+		Log.d(TAG, "position: " + position + "\nconvertView: " + convertView + "\nparent: " + parent);
 		// Get the data item for this position
 		BitmapDrawable tool = getItem(position);
+		Log.d(TAG, "tool: " + tool);
 		// Check if an existing view is being reused, otherwise inflate the view
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_item, parent, false);

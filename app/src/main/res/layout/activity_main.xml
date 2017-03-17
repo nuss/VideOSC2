@@ -44,6 +44,16 @@
 			android:contentDescription="@string/preview_image_content_description"
 			android:scaleType="fitXY"/>
 
+		<ImageButton
+			android:id="@+id/show_menu"
+			android:layout_width="50dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="start|top"
+			android:contentDescription="@string/show_hide_the_tools_menu"
+			android:src="@drawable/menu"
+			android:background="@android:color/transparent"
+			style="?android:attr/borderlessButtonStyle"/>
+
 	</FrameLayout>
 
 	<!-- The navigation drawer that comes from the right (layout_gravity:end) -->

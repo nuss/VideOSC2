@@ -38,5 +38,6 @@
 	<!-- Fragment section titles -->
 	<string name="preview_image_content_description">The view for the down-scaled preview image</string>
 	<string name="a_tools_menu_item">a tools menu item</string>
+	<string name="show_hide_the_tools_menu">Show/Hide the tools menu</string>
 
 </resources>

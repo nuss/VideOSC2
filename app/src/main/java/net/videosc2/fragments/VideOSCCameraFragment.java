@@ -69,6 +69,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// Reference to the ImageView containing the downscaled video frame
 	ImageView mImage;
 
+	Context appContext;
+
 	/**
 	 * Default empty constructor.
 	 */
@@ -207,6 +209,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
+		private Context appContext;
+
 		/**
 		 *
 		 * @param context the context of the application
@@ -215,6 +219,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public CameraPreview(Context context, Camera camera) {
 			super(context);
 
+			appContext = context;
 			// Capture the context
 			setCamera(camera);
 
