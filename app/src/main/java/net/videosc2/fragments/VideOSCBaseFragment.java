@@ -54,6 +54,5 @@ public class VideOSCBaseFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
         void onFragmentInteraction(String id);
         void onFragmentInteraction(int actionId);
-        void onCameraInitialized(Camera camera);
     }
 }

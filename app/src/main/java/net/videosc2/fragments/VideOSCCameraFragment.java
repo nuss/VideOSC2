@@ -29,6 +29,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -70,33 +71,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// Reference to the ImageView containing the downscaled video frame
 	ImageView mImage;
 
-	OnFragmentInteractionListener cameraInitialized = new OnFragmentInteractionListener() {
-		@Override
-		public void onFragmentInteraction(Uri uri) {
-
-		}
-
-		@Override
-		public void onFragmentInteraction(String id) {
-
-		}
-
-		@Override
-		public void onFragmentInteraction(int actionId) {
-
-		}
-
-		@Override
-		public void onCameraInitialized(Camera camera) {
-
-		}
-	};
-
 	/**
 	 * Default empty constructor.
 	 */
 	public VideOSCCameraFragment() {
 		super();
+
 	}
 
 	/**
@@ -144,7 +124,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 				preview.addView(mPreview, -1);
 				mPreview.startCameraPreview();
-				cameraInitialized.onCameraInitialized(mCamera);
 			} else Log.d(TAG, "FrameLayout is null");
 		}
 		return qOpened;

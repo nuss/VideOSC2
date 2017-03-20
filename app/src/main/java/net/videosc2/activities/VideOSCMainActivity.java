@@ -113,7 +113,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 
-		FragmentManager fragmentManager = getFragmentManager();
+		final FragmentManager fragmentManager = getFragmentManager();
 //		if (findViewById(R.id.camera_preview) != null) {
 			camView = findViewById(R.id.camera_preview);
 
@@ -121,7 +121,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			cameraPreview = new VideOSCCameraFragment();
 
 			fragmentManager.beginTransaction()
-					.replace(R.id.camera_preview, cameraPreview)
+					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
 					.commit();
 //		}
 
@@ -160,13 +160,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 					imgView.setImageDrawable(img);
 					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				} else if (i == 1 && hasTorch) {
-					// FIXME
+					// we can not use 'cameraPreview' to retrieve the 'mCamera' object
+					VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+					camera = camPreview.mCamera;
 					if (camera != null) {
 						Camera.Parameters cParameters = camera.getParameters();
 						String flashMode = cParameters.getFlashMode();
-						Log.d(TAG, "flash mode: " + cParameters.getFlashMode());
 						isTorchOn = !isTorchOn;
-						if (flashMode.equals("off")) {
+						if (!flashMode.equals("torch")) {
 							cParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on);
 						} else {
@@ -305,10 +306,5 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onFragmentInteraction(int actionId) {
 
-	}
-
-	@Override
-	public void onCameraInitialized(Camera camera) {
-		this.camera = camera;
 	}
 }
