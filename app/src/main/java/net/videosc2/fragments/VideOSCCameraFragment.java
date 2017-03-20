@@ -22,10 +22,12 @@
 
 package net.videosc2.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -48,7 +50,6 @@ import java.util.Collections;
 import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
-import processing.core.PApplet;
 
 /**
  * Display the down-scaled preview, calculated
@@ -61,7 +62,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final static String TAG = "VideOSCCameraFragment";
 
 	// Native camera.
-	private Camera mCamera;
+	public Camera mCamera;
 
 	// View to display the camera output.
 	private CameraPreview mPreview;
@@ -69,7 +70,27 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// Reference to the ImageView containing the downscaled video frame
 	ImageView mImage;
 
-	Context appContext;
+	OnFragmentInteractionListener cameraInitialized = new OnFragmentInteractionListener() {
+		@Override
+		public void onFragmentInteraction(Uri uri) {
+
+		}
+
+		@Override
+		public void onFragmentInteraction(String id) {
+
+		}
+
+		@Override
+		public void onFragmentInteraction(int actionId) {
+
+		}
+
+		@Override
+		public void onCameraInitialized(Camera camera) {
+
+		}
+	};
 
 	/**
 	 * Default empty constructor.
@@ -100,20 +121,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return view;
 		}
 
-/*
-		// Trap the capture button.
-		Button captureButton = (Button) view.findViewById(R.id.button_capture);
-		captureButton.setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// get an image from the camera
-						mCamera.takePicture(null, null, mPicture);
-					}
-				}
-		);
-*/
-
 		return view;
 	}
 
@@ -137,6 +144,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 				preview.addView(mPreview, -1);
 				mPreview.startCameraPreview();
+				cameraInitialized.onCameraInitialized(mCamera);
 			} else Log.d(TAG, "FrameLayout is null");
 		}
 		return qOpened;
@@ -147,7 +155,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 *
 	 * @return Camera instance
 	 */
-	public static Camera getCameraInstance() {
+	private static Camera getCameraInstance() {
 		Camera c = null;
 
 		try {
@@ -156,6 +164,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			e.printStackTrace();
 		}
 		return c; // returns null if camera is unavailable
+	}
+
+	public Camera getCamera() {
+		return mCamera;
 	}
 
 	@Override
@@ -209,8 +221,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
-		private Context appContext;
-
 		/**
 		 *
 		 * @param context the context of the application
@@ -219,7 +229,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public CameraPreview(Context context, Camera camera) {
 			super(context);
 
-			appContext = context;
+
 			// Capture the context
 			setCamera(camera);
 
@@ -330,7 +340,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						int outHeight = 4;
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
-
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));

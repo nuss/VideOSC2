@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/color_mode_panel"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="#66000000"
+              android:orientation="horizontal"
+	>
+
+	<ImageButton
+		android:id="@+id/mode_rgb"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/color_mode_rgb"
+		android:src="@drawable/rgb"/>
+
+	<ImageButton
+		android:id="@+id/mode_rgb_inv"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/color_mode_rgb_neg"
+		android:src="@drawable/rgb_inv"/>
+
+	<ImageButton
+		android:id="@+id/mode_r"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/color_mode_r"
+		android:src="@drawable/r"/>
+
+	<ImageButton
+		android:id="@+id/mode_g"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/color_mode_g"
+		android:src="@drawable/g"/>
+
+	<ImageButton
+		android:id="@+id/mode_b"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/color_mode_b"
+		android:src="@drawable/b"/>
+
+</LinearLayout>

@@ -22,17 +22,24 @@
 
 package net.videosc2.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,16 +58,23 @@ import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
+import net.videosc2.utilities.VideOSCUI;
+import net.videosc2.utilities.VideOSCUIHelpers;
+import net.videosc2.utilities.enums.GestureModes;
+import net.videosc2.utilities.enums.InteractionModes;
+import net.videosc2.utilities.enums.RGBModes;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import oscP5.OscP5;
 
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCMainActivity extends AppCompatActivity
-		implements /*NavigationDrawerFragment.NavigationDrawerCallbacks, */VideOSCBaseFragment.OnFragmentInteractionListener {
+		implements VideOSCBaseFragment.OnFragmentInteractionListener {
 
 	static final String TAG = "VideOSCMainActivity";
 
@@ -69,7 +83,21 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private DrawerLayout toolsDrawerLayout;
 	private ActionBarDrawerToggle drawerToggle;
 	protected ArrayList<View> uiElements = new ArrayList<>();
+
+	// is device currently sending OSC?
 	public boolean isPlaying = false;
+	// is flashlight on?
+	public boolean isTorchOn = false;
+
+	public Fragment cameraPreview;
+	Camera camera;
+
+	// the current color mode
+	public Enum colorMode = RGBModes.RGB;
+	// the current interaction mode
+	public Enum interactionMode = InteractionModes.BASIC;
+	// the current gesture mode
+	public Enum gestureMode = GestureModes.SWAP;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -78,22 +106,29 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
-	    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		final boolean hasTorch = VideOSCUIHelpers.hasTorch();
+
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 
 		FragmentManager fragmentManager = getFragmentManager();
-		if (findViewById(R.id.camera_preview) != null) {
+//		if (findViewById(R.id.camera_preview) != null) {
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
-			Fragment cameraPreview = new VideOSCCameraFragment();
+			cameraPreview = new VideOSCCameraFragment();
+
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview)
 					.commit();
-		}
+//		}
 
-		TypedArray tools = getResources().obtainTypedArray(R.array.drawer_icons);
+		// does the device have an inbuilt flash light?
+		int drawer_icons_id = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
+
+		TypedArray tools = getResources().obtainTypedArray(drawer_icons_id);
 //		Log.d(TAG, "tools: " + tools.toString());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
@@ -110,50 +145,63 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				BitmapDrawable img;
-				ImageView imgView;
-				switch (i) {
-					case 0:
-						isPlaying = !isPlaying;
-						imgView = (ImageView) view.findViewById(R.id.tool);
-						Log.d(TAG, "start/stop sending OSC: " + imgView.getDrawable().getLevel() + "\nisPlaying: " + isPlaying);
-						if (isPlaying) {
-							img = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-									(BitmapDrawable) getResources().getDrawable(R.drawable.stop, getApplicationContext().getTheme()) :
-									(BitmapDrawable) getResources().getDrawable(R.drawable.stop);
-						} else {
-							img = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-									(BitmapDrawable) getResources().getDrawable(R.drawable.start, getApplicationContext().getTheme()) :
-									(BitmapDrawable) getResources().getDrawable(R.drawable.start);
-						}
-						imgView.setImageDrawable(img);
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-						break;
-					case 1:
-						Log.d(TAG, "switch on/off torch: " +  + view.getResources().getIdentifier("id", null, null));
-						imgView = (ImageView) view.findViewById(R.id.tool);
-						Log.d(TAG, "switch on/off torch: " + imgView.getDrawable().getLevel());
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-						break;
-					case 2:
-						Log.d(TAG, "select color mode: " + view.getY());
-						float y = view.getY();
+				ImageView imgView = (ImageView) view.findViewById(R.id.tool);
+				Context context = getApplicationContext();
 
-						break;
-					case 3:
-						Log.d(TAG, "set interaction mode");
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-						break;
-					case 4:
-						Log.d(TAG, "framerate, calculation period info");
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-						break;
-					case 5:
-						Log.d(TAG, "settings");
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-						break;
-					default:
-						Log.d(TAG, "what u wanna?");
-						toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				if (i == 0) {
+					isPlaying = !isPlaying;
+					if (isPlaying) {
+						// TODO: stop sending OSC
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.stop);
+					} else {
+						// TODO: start sending OSC
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
+					}
+					imgView.setImageDrawable(img);
+					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				} else if (i == 1 && hasTorch) {
+					// FIXME
+					if (camera != null) {
+						Camera.Parameters cParameters = camera.getParameters();
+						String flashMode = cParameters.getFlashMode();
+						Log.d(TAG, "flash mode: " + cParameters.getFlashMode());
+						isTorchOn = !isTorchOn;
+						if (flashMode.equals("off")) {
+							cParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on);
+						} else {
+							cParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light);
+						}
+						camera.setParameters(cParameters);
+						imgView.setImageDrawable(img);
+					}
+					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				} else if ((i == 2 && hasTorch) || i == 1) {
+					Log.d(TAG, "select color mode: " + view.getY());
+					float y = view.getY();
+					// TODO: create color mode switch panel, close panel upon selecting a color mode
+
+				} else if ((i == 3 && hasTorch) || i == 2) {
+					Log.d(TAG, "set interaction mode");
+					if (interactionMode.equals(InteractionModes.BASIC)) {
+						interactionMode = InteractionModes.SINGLE_PIXEL;
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
+					} else if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
+						interactionMode = InteractionModes.BASIC;
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
+					} else {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
+					}
+					imgView.setImageDrawable(img);
+					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				} else if ((i == 4 && hasTorch) || i == 3) {
+					Log.d(TAG, "framerate, calculation period info");
+					// TODO: implement panel displaying the current framerate, calculation period
+ 					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
+				} else if ((i == 5 && hasTorch) || i == 4) {
+					Log.d(TAG, "settings");
+					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				}
 			}
 		});
@@ -169,7 +217,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void  onContentChanged() {
+	public void onContentChanged() {
 		super.onContentChanged();
 		Log.d(TAG, "onContentChanged");
 	}
@@ -195,77 +243,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 //		drawerToggle.syncState();
 	}
-
-/*
-	private void setupDrawerContent(NavigationView navigationView) {
-		navigationView.setItemIconTintList(null);
-		navigationView.getBackground().setAlpha(127);
-		navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-			@Override
-			public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-				selectDrawerItem(item);
-				return true;
-			}
-		});
-	}
-*/
-
-/*
-	public void selectDrawerItem(MenuItem menuItem) {
-		// Create a new fragment and specify the fragment to show based on nav item clicked
-		Fragment fragment = null;
-//		Class fragmentClass;
-
-		switch(menuItem.getItemId()) {
-			case R.id.play:
-//				fragmentClass = FirstFragment.class;
-				Log.d(TAG, "clicked 'play'");
-				break;
-			case R.id.flashlight:
-//				fragmentClass = SecondFragment.class;
-				Log.d(TAG, "clicked flashlight");
-				break;
-			case R.id.rgb:
-//				fragmentClass = ThirdFragment.class;
-				Log.d(TAG, "clicked RGB mode selector");
-				break;
-			case R.id.interaction:
-				Log.d(TAG, "clicked interaction selector");
-				break;
-			case R.id.info:
-//				fragmentClass = ThirdFragment.class;
-				Log.d(TAG, "clicked info");
-				break;
-			case R.id.settings:
-//				fragmentClass = SettingsFragment.class;
-				Log.d(TAG, "clicked settings");
-				break;
-			default:
-//				fragmentClass = FirstFragment.class;
-				Log.d(TAG, "clicked 'play'");
-		}
-
-		if (menuItem.getItemId() == R.id.settings) {
-			try {
-				fragment = SettingsFragment.newInstance();
-				FragmentManager fragmentManager = getFragmentManager();
-				fragmentManager.beginTransaction().replace(R.id.camera_preview, fragment).commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Highlight the selected item has been done by NavigationView
-		menuItem.setChecked(true);
-
-		// Set action bar title
-		setTitle(menuItem.getTitle());
-
-		// Close the navigation drawer
-		mDrawer.closeDrawers();
-
-	}
-*/
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -328,5 +305,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onFragmentInteraction(int actionId) {
 
+	}
+
+	@Override
+	public void onCameraInitialized(Camera camera) {
+		this.camera = camera;
 	}
 }

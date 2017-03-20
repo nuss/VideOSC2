@@ -8,4 +8,11 @@
 		<item>@drawable/i</item>
 		<item>@drawable/settings</item>
 	</array>
+	<array name="drawer_icons_no_torch">
+		<item>@drawable/start</item>
+		<item>@drawable/rgb</item>
+		<item>@drawable/interaction</item>
+		<item>@drawable/i</item>
+		<item>@drawable/settings</item>
+	</array>
 </resources>

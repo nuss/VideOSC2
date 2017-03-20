@@ -23,6 +23,7 @@
 package net.videosc2.fragments;
 
 import android.app.Fragment;
+import android.hardware.Camera;
 import android.net.Uri;
 
 /**
@@ -50,8 +51,9 @@ public class VideOSCBaseFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
-        public void onFragmentInteraction(String id);
-        public void onFragmentInteraction(int actionId);
+        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(String id);
+        void onFragmentInteraction(int actionId);
+        void onCameraInitialized(Camera camera);
     }
 }

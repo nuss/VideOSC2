@@ -46,13 +46,13 @@
 
 		<ImageButton
 			android:id="@+id/show_menu"
+			style="?android:attr/borderlessButtonStyle"
 			android:layout_width="50dp"
-			android:layout_height="wrap_content"
-			android:layout_gravity="start|top"
-			android:contentDescription="@string/show_hide_the_tools_menu"
-			android:src="@drawable/menu"
+			android:layout_height="match_parent"
+			android:layout_gravity="end|center_vertical"
 			android:background="@android:color/transparent"
-			style="?android:attr/borderlessButtonStyle"/>
+			android:contentDescription="@string/show_hide_the_tools_menu"
+			android:src="@drawable/menu"/>
 
 	</FrameLayout>
 

@@ -39,5 +39,10 @@
 	<string name="preview_image_content_description">The view for the down-scaled preview image</string>
 	<string name="a_tools_menu_item">a tools menu item</string>
 	<string name="show_hide_the_tools_menu">Show/Hide the tools menu</string>
+	<string name="color_mode_rgb">Set color mode to RGB</string>
+	<string name="color_mode_rgb_neg">Set color mode to RGB negative</string>
+	<string name="color_mode_r">Set color mode to red</string>
+	<string name="color_mode_g">Set color mode to green</string>
+	<string name="color_mode_b">Set color mode to blue</string>
 
 </resources>
