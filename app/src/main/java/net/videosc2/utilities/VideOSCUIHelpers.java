@@ -2,6 +2,8 @@ package net.videosc2.utilities;
 
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -41,5 +43,22 @@ public class VideOSCUIHelpers {
 		List<String> supportedFlashModes = parameters.getSupportedFlashModes();
 
 		return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
+	}
+
+	/**
+	 * Set the margin for a view
+	 *
+	 * @param v a View object respectively an object of one of its subclasses
+	 * @param l an integer denoting the left margin
+	 * @param t an integer denoting the top margin
+	 * @param r an integer denoting the right margin
+	 * @param b an integer denoting the bottom margin
+	 */
+	public static void setMargins (View v, int l, int t, int r, int b) {
+		if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+			ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+			p.setMargins(l, t, r, b);
+			v.requestLayout();
+		}
 	}
 }

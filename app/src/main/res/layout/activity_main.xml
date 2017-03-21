@@ -62,7 +62,7 @@
 		android:layout_width="50dp"
 		android:layout_height="match_parent"
 		android:layout_gravity="center_vertical|end"
-		android:background="#66000000"
+		android:background="#99000000"
 		android:choiceMode="singleChoice"
 		android:divider="@android:color/transparent"
 		android:dividerHeight="10dp"

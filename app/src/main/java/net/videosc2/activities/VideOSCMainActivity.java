@@ -14,7 +14,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * AUTHORS OR COPYEND HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
@@ -22,20 +22,15 @@
 
 package net.videosc2.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,35 +38,35 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
-import net.videosc2.utilities.VideOSCUI;
 import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.GestureModes;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import oscP5.OscP5;
-
 /**
- * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
+ * Created by Stefan Nussbaumer on 2017-03-15.
  */
 public class VideOSCMainActivity extends AppCompatActivity
 		implements VideOSCBaseFragment.OnFragmentInteractionListener {
@@ -81,6 +76,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	View camView;
 	public static Point dimensions;
 	private DrawerLayout toolsDrawerLayout;
+	private FrameLayout mainFrame;
 	private ActionBarDrawerToggle drawerToggle;
 	protected ArrayList<View> uiElements = new ArrayList<>();
 
@@ -88,6 +84,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public boolean isPlaying = false;
 	// is flashlight on?
 	public boolean isTorchOn = false;
+	// don't create more than one color mode panel
+	private boolean isColorModePanelOpen = false;
 
 	public Fragment cameraPreview;
 	Camera camera;
@@ -114,7 +112,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		setContentView(R.layout.activity_main);
 
 		final FragmentManager fragmentManager = getFragmentManager();
-//		if (findViewById(R.id.camera_preview) != null) {
+		if (findViewById(R.id.camera_preview) != null) {
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
@@ -123,7 +121,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
 					.commit();
-//		}
+		}
 
 		// does the device have an inbuilt flash light?
 		int drawer_icons_id = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
@@ -131,7 +129,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 		TypedArray tools = getResources().obtainTypedArray(drawer_icons_id);
 //		Log.d(TAG, "tools: " + tools.toString());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
+		toolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
+
+		// FIXME: touches seem to get swallowed by the DrawerLayout first
+/*
+		toolsDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent motionEvent) {
+				return isColorModePanelOpen;
+			}
+		});
+*/
+		final ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
 		List<BitmapDrawable> toolsList = new ArrayList<>();
 		for (int i = 0; i < tools.length(); i++) {
@@ -145,8 +154,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				BitmapDrawable img;
-				ImageView imgView = (ImageView) view.findViewById(R.id.tool);
+				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
+				// we can not use 'cameraPreview' to retrieve the 'mCamera' object
+				VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				camera = camPreview.mCamera;
+				LayoutInflater inflater = getLayoutInflater();
 
 				if (i == 0) {
 					isPlaying = !isPlaying;
@@ -158,11 +171,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
 					}
 					imgView.setImageDrawable(img);
-					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				} else if (i == 1 && hasTorch) {
-					// we can not use 'cameraPreview' to retrieve the 'mCamera' object
-					VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-					camera = camPreview.mCamera;
 					if (camera != null) {
 						Camera.Parameters cParameters = camera.getParameters();
 						String flashMode = cParameters.getFlashMode();
@@ -177,12 +186,55 @@ public class VideOSCMainActivity extends AppCompatActivity
 						camera.setParameters(cParameters);
 						imgView.setImageDrawable(img);
 					}
-					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				} else if ((i == 2 && hasTorch) || i == 1) {
-					Log.d(TAG, "select color mode: " + view.getY());
-					float y = view.getY();
-					// TODO: create color mode switch panel, close panel upon selecting a color mode
-
+					if (!isColorModePanelOpen) {
+						int y = (int) view.getY();
+						final View modePanel = inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, true);
+						isColorModePanelOpen = true;
+//			    		toolsDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, toolsDrawerList);
+//				    	Log.d(TAG, "drawer locked? " + toolsDrawerLayout.getDrawerLockMode(toolsDrawerList));
+						final View modePanelInner = modePanel.findViewById(R.id.color_mode_panel);
+						VideOSCUIHelpers.setMargins(modePanelInner, 0, y, 0, 0);
+						for (int k = 0; k < ((ViewGroup) modePanelInner).getChildCount(); k++) {
+							final Context iContext = context;
+							((ViewGroup) modePanelInner).getChildAt(k).setOnClickListener(new View.OnClickListener() {
+								@Override
+								// FIXME: touches seem to get swallowed by the DrawerLayout first
+								public void onClick(View view) {
+									// TODO: implement mode switches
+									switch (view.getId()) {
+										case R.id.mode_rgb:
+											Log.d(TAG, "rgb");
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+											break;
+										case R.id.mode_rgb_inv:
+											Log.d(TAG, "rgb inverted");
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
+											break;
+										case R.id.mode_r:
+											Log.d(TAG, "red");
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
+											break;
+										case R.id.mode_g:
+											Log.d(TAG, "green");
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
+											break;
+										case R.id.mode_b:
+											Log.d(TAG, "blue");
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
+											break;
+										default:
+											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+									}
+									toolsDrawerLayout.openDrawer(Gravity.END);
+									((ViewGroup) modePanelInner.getParent()).removeView(modePanelInner);
+									isColorModePanelOpen = false;
+//								    toolsDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
+//								    toolsDrawerLayout.closeDrawer(Gravity.END);
+								}
+							});
+						}
+					}
 				} else if ((i == 3 && hasTorch) || i == 2) {
 					Log.d(TAG, "set interaction mode");
 					if (interactionMode.equals(InteractionModes.BASIC)) {
@@ -195,18 +247,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
 					}
 					imgView.setImageDrawable(img);
-					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				} else if ((i == 4 && hasTorch) || i == 3) {
 					Log.d(TAG, "framerate, calculation period info");
 					// TODO: implement panel displaying the current framerate, calculation period
- 					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				} else if ((i == 5 && hasTorch) || i == 4) {
 					Log.d(TAG, "settings");
-					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
 				}
 			}
 		});
-		toolsDrawerLayout.openDrawer(Gravity.RIGHT);
+		toolsDrawerLayout.openDrawer(Gravity.END);
 
 //		drawerToggle = setupDrawerToggle();
 //		mDrawer.addDrawerListener(drawerToggle);
@@ -233,14 +282,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (toolsDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
-					toolsDrawerLayout.closeDrawer(Gravity.RIGHT);
-				} else if (!toolsDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
-					toolsDrawerLayout.openDrawer(Gravity.RIGHT);
+				if (toolsDrawerLayout.isDrawerOpen(Gravity.END)) {
+					toolsDrawerLayout.closeDrawer(Gravity.END);
+				} else if (!toolsDrawerLayout.isDrawerOpen(Gravity.END)) {
+					toolsDrawerLayout.openDrawer(Gravity.END);
 				}
 			}
 		});
-//		mDrawer.openDrawer(Gravity.RIGHT);
+//		mDrawer.openDrawer(Gravity.END);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 //		drawerToggle.syncState();
 	}

@@ -4,7 +4,6 @@
            android:id="@+id/tool"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
-           android:alpha="100"
            android:background="?android:attr/activatedBackgroundIndicator"
            android:contentDescription="@string/a_tools_menu_item"
            android:gravity="center_vertical"

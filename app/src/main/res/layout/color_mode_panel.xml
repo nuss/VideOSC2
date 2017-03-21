@@ -3,43 +3,62 @@
               android:id="@+id/color_mode_panel"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:background="#66000000"
-              android:orientation="horizontal"
-	>
+              android:layout_gravity="end"
+              android:layout_marginEnd="60dp"
+              android:layout_marginRight="60dp"
+              android:layout_marginTop="100dp"
+              android:background="#99000000"
+              android:clickable="true"
+              android:orientation="horizontal">
 
 	<ImageButton
 		android:id="@+id/mode_rgb"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="#00000000"
+		android:clickable="true"
 		android:contentDescription="@string/color_mode_rgb"
+		android:padding="8dp"
 		android:src="@drawable/rgb"/>
 
 	<ImageButton
 		android:id="@+id/mode_rgb_inv"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="#00000000"
+		android:clickable="true"
 		android:contentDescription="@string/color_mode_rgb_neg"
+		android:padding="8dp"
 		android:src="@drawable/rgb_inv"/>
 
 	<ImageButton
 		android:id="@+id/mode_r"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="#00000000"
+		android:clickable="true"
 		android:contentDescription="@string/color_mode_r"
+		android:padding="8dp"
 		android:src="@drawable/r"/>
 
 	<ImageButton
 		android:id="@+id/mode_g"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="#00000000"
+		android:clickable="true"
 		android:contentDescription="@string/color_mode_g"
+		android:padding="8dp"
 		android:src="@drawable/g"/>
 
 	<ImageButton
 		android:id="@+id/mode_b"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:background="#00000000"
+		android:clickable="true"
 		android:contentDescription="@string/color_mode_b"
+		android:padding="8dp"
 		android:src="@drawable/b"/>
 
 </LinearLayout>
