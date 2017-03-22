@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -132,14 +133,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		toolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
 
 		// FIXME: touches seem to get swallowed by the DrawerLayout first
-/*
-		toolsDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent motionEvent) {
-				return isColorModePanelOpen;
-			}
-		});
-*/
 		final ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
 		List<BitmapDrawable> toolsList = new ArrayList<>();
@@ -190,47 +183,51 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (!isColorModePanelOpen) {
 						int y = (int) view.getY();
 						final View modePanel = inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, true);
+
 						isColorModePanelOpen = true;
-//			    		toolsDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, toolsDrawerList);
-//				    	Log.d(TAG, "drawer locked? " + toolsDrawerLayout.getDrawerLockMode(toolsDrawerList));
 						final View modePanelInner = modePanel.findViewById(R.id.color_mode_panel);
 						VideOSCUIHelpers.setMargins(modePanelInner, 0, y, 0, 0);
+//						toolsDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, Gravity.END);
+						Log.d(TAG, "lock mode: " + toolsDrawerLayout.getDrawerLockMode(Gravity.END));
+
 						for (int k = 0; k < ((ViewGroup) modePanelInner).getChildCount(); k++) {
 							final Context iContext = context;
-							((ViewGroup) modePanelInner).getChildAt(k).setOnClickListener(new View.OnClickListener() {
+
+							View button = ((ViewGroup) modePanelInner).getChildAt(k);
+							button.setFocusableInTouchMode(true);
+							button.setOnTouchListener(new View.OnTouchListener() {
 								@Override
-								// FIXME: touches seem to get swallowed by the DrawerLayout first
-								public void onClick(View view) {
-									// TODO: implement mode switches
-									switch (view.getId()) {
-										case R.id.mode_rgb:
-											Log.d(TAG, "rgb");
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
-											break;
-										case R.id.mode_rgb_inv:
-											Log.d(TAG, "rgb inverted");
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
-											break;
-										case R.id.mode_r:
-											Log.d(TAG, "red");
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
-											break;
-										case R.id.mode_g:
-											Log.d(TAG, "green");
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
-											break;
-										case R.id.mode_b:
-											Log.d(TAG, "blue");
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
-											break;
-										default:
-											imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+								public boolean onTouch(View view, MotionEvent motionEvent) {
+									if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+										switch (view.getId()) {
+											case R.id.mode_rgb:
+												Log.d(TAG, "rgb");
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+												break;
+											case R.id.mode_rgb_inv:
+												Log.d(TAG, "rgb inverted");
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
+												break;
+											case R.id.mode_r:
+												Log.d(TAG, "red");
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
+												break;
+											case R.id.mode_g:
+												Log.d(TAG, "green");
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
+												break;
+											case R.id.mode_b:
+												Log.d(TAG, "blue");
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
+												break;
+											default:
+												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+										}
+										toolsDrawerLayout.openDrawer(Gravity.END);
+										((ViewGroup) modePanelInner.getParent()).removeView(modePanelInner);
+										isColorModePanelOpen = false;
 									}
-									toolsDrawerLayout.openDrawer(Gravity.END);
-									((ViewGroup) modePanelInner.getParent()).removeView(modePanelInner);
-									isColorModePanelOpen = false;
-//								    toolsDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
-//								    toolsDrawerLayout.closeDrawer(Gravity.END);
+									return false;
 								}
 							});
 						}
@@ -264,6 +261,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		return !(isColorModePanelOpen && event.getAction() == MotionEvent.ACTION_UP) && super.dispatchTouchEvent(event);
 	}
 
 	@Override

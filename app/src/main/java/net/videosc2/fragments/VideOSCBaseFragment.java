@@ -23,15 +23,12 @@
 package net.videosc2.fragments;
 
 import android.app.Fragment;
-import android.hardware.Camera;
 import android.net.Uri;
 
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCBaseFragment extends Fragment {
-
-    public static final String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
 
     /**
      * Default empty constructor

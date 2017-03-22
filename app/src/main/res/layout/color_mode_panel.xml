@@ -8,7 +8,6 @@
               android:layout_marginRight="60dp"
               android:layout_marginTop="100dp"
               android:background="#99000000"
-              android:clickable="true"
               android:orientation="horizontal">
 
 	<ImageButton
@@ -16,7 +15,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="#00000000"
-		android:clickable="true"
 		android:contentDescription="@string/color_mode_rgb"
 		android:padding="8dp"
 		android:src="@drawable/rgb"/>
@@ -26,7 +24,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="#00000000"
-		android:clickable="true"
 		android:contentDescription="@string/color_mode_rgb_neg"
 		android:padding="8dp"
 		android:src="@drawable/rgb_inv"/>
@@ -36,7 +33,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="#00000000"
-		android:clickable="true"
 		android:contentDescription="@string/color_mode_r"
 		android:padding="8dp"
 		android:src="@drawable/r"/>
@@ -46,7 +42,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="#00000000"
-		android:clickable="true"
 		android:contentDescription="@string/color_mode_g"
 		android:padding="8dp"
 		android:src="@drawable/g"/>
@@ -56,7 +51,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:background="#00000000"
-		android:clickable="true"
 		android:contentDescription="@string/color_mode_b"
 		android:padding="8dp"
 		android:src="@drawable/b"/>
