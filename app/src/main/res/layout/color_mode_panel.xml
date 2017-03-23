@@ -6,7 +6,6 @@
               android:layout_gravity="end"
               android:layout_marginEnd="60dp"
               android:layout_marginRight="60dp"
-              android:layout_marginTop="100dp"
               android:background="#99000000"
               android:orientation="horizontal">
 

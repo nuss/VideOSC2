@@ -44,5 +44,9 @@
 	<string name="color_mode_r">Set color mode to red</string>
 	<string name="color_mode_g">Set color mode to green</string>
 	<string name="color_mode_b">Set color mode to blue</string>
+	<string name="the_current_color_mode">The current color mode</string>
+	<string name="the_current_osc_status">The current OSC status</string>
+	<string name="the_current_interaction_mode">The current interaction mode</string>
+	<string name="the_current_torch_status">The current torch status</string>
 
 </resources>
