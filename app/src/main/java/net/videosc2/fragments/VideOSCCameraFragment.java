@@ -22,14 +22,11 @@
 
 package net.videosc2.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -40,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
@@ -62,11 +60,16 @@ import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final static String TAG = "VideOSCCameraFragment";
 
+	private static long now, prev = 0;
+	private static float frameRate;
+
 	// Native camera.
 	public Camera mCamera;
 
 	// View to display the camera output.
 	private CameraPreview mPreview;
+	// preview container
+	private ViewGroup previewContainer;
 
 	// Reference to the ImageView containing the downscaled video frame
 	ImageView mImage;
@@ -91,6 +94,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
+		previewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
@@ -145,10 +149,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return c; // returns null if camera is unavailable
 	}
 
-	public Camera getCamera() {
-		return mCamera;
-	}
-
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -165,9 +165,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * Clear any existing preview / camera.
 	 */
 	private void releaseCameraAndPreview() {
+		Log.d(TAG, "releaseCameraAndPreview");
 
 		if (mCamera != null) {
 			mCamera.stopPreview();
+			// hack: set a null callback as the already set callback
+			// otherwise prevails even after camera.release() and
+			// causes a crash on quit
+			mCamera.setPreviewCallback(null);
 			mCamera.release();
 			mCamera = null;
 		}
@@ -280,11 +285,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			if (mCamera != null) {
-				mCamera.stopPreview();
+				releaseCameraAndPreview();
 				// hack: set a null callback as the already set callback
 				// otherwise prevails even after camera.release() and
 				// causes a crash on quit
-				mCamera.setPreviewCallback(null);
+//				if (mCamera != null)
+//					mCamera.setPreviewCallback(null);
 			}
 		}
 
@@ -308,13 +314,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// stop preview before making changes
 			try {
 				Camera.Parameters parameters = mCamera.getParameters();
-
 				// Set the auto-focus mode to "continuous"
 				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 				mCamera.setParameters(parameters);
 				mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
+						VideOSCCameraFragment.now = System.currentTimeMillis();
+						frameRate = Math.round(1000.0f/(now - prev) * 10.0f) / 10.0f;
+						VideOSCCameraFragment.prev = VideOSCCameraFragment.now;
+						TextView frameRateText = (TextView) previewContainer.findViewById(R.id.fps);
+						if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
+
 						int outWidth = 6;
 						int outHeight = 4;
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;

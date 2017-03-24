@@ -1,7 +1,6 @@
 package net.videosc2.adapters;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -22,13 +21,11 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 
 	public ToolsMenuAdapter(Context context, int resource, int bitmapResourceId, List<BitmapDrawable> tools) {
 		super(context, resource, bitmapResourceId, tools);
-		Log.d(TAG, "context: " + context + "\nresource: " + resource + "\nbitmapResourceId: " + bitmapResourceId + "\ntools: " + tools);
 	}
 
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		Log.d(TAG, "position: " + position + "\nconvertView: " + convertView + "\nparent: " + parent);
 		// Get the data item for this position
 		BitmapDrawable tool = getItem(position);
 		Log.d(TAG, "tool: " + tool);

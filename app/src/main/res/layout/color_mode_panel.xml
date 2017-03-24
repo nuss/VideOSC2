@@ -6,6 +6,7 @@
               android:layout_gravity="end"
               android:layout_marginEnd="60dp"
               android:layout_marginRight="60dp"
+              android:animateLayoutChanges="true"
               android:background="#99000000"
               android:orientation="horizontal">
 
@@ -16,7 +17,8 @@
 		android:background="#00000000"
 		android:contentDescription="@string/color_mode_rgb"
 		android:padding="8dp"
-		android:src="@drawable/rgb"/>
+		android:src="@drawable/rgb"
+		android:animateLayoutChanges="true"/>
 
 	<ImageButton
 		android:id="@+id/mode_rgb_inv"

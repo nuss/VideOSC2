@@ -48,5 +48,16 @@
 	<string name="the_current_osc_status">The current OSC status</string>
 	<string name="the_current_interaction_mode">The current interaction mode</string>
 	<string name="the_current_torch_status">The current torch status</string>
+	<string name="frame_rate_pre">FPS:</string>
+	<string name="calc_period_pre">, calc. period:</string>
+
+	<!--dialogs-->
+	<string name="quit_dialog_string">"Are you sure you want to quit VideOSC?"</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="selection_network_settings">Network Settings</string>
+	<string name="selection_resolution_settings">Resolution Settings</string>
+	<string name="selection_sensor_settings">Sensor Settings</string>
+	<string name="selection_about_videosc">About VideOSC</string>
 
 </resources>

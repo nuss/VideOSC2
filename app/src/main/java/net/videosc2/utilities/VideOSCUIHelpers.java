@@ -1,9 +1,17 @@
 package net.videosc2.utilities;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.animation.LayoutTransition;
+import android.content.Context;
 import android.hardware.Camera;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import net.videosc2.R;
 
 import java.util.List;
 
@@ -13,6 +21,8 @@ import java.util.List;
 
 public class VideOSCUIHelpers {
 	final static String TAG = "VideOSCUIHelpers";
+
+	private static LayoutTransition transition = new LayoutTransition();
 
 	/**
 	 * Does the device have a torch?
@@ -61,4 +71,72 @@ public class VideOSCUIHelpers {
 			v.requestLayout();
 		}
 	}
+
+	/**
+	 * Add a child view to a FrameLayout
+	 * Use the return value to set a status variable
+	 *
+	 * @param view a View
+	 * @param parent a FrameLayout
+	 * @return true
+	 */
+	public static boolean addView(View view, FrameLayout parent) {
+		parent.addView(view);
+		return true;
+	}
+
+	/**
+	 * Remove a view from a FrameLayout
+	 * Use the return value to set a status variable
+	 *
+	 * @param view a View
+	 * @param parent
+	 * @return false
+	 */
+	public static boolean removeView(View view, FrameLayout parent) {
+		parent.removeView(view);
+		return false;
+	}
+
+	/**
+	 * Add a child view to a ViewGroup
+	 * Use the return value to set a status variable
+	 *
+	 * @param view a View
+	 * @param parent a FrameLayout
+	 * @return true
+	 */
+	public static boolean addView(View view, ViewGroup parent) {
+		parent.addView(view);
+		return true;
+	}
+
+	/**
+	 * Remove a view from a ViewGroup
+	 * Use the return value to set a status variable
+	 *
+	 * @param view a View
+	 * @param parent
+	 * @return false
+	 */
+	public static boolean removeView(View view, ViewGroup parent) {
+		parent.removeView(view);
+		return false;
+	}
+
+	/**
+	 * Fade in a ViewGroup
+	 *
+	 * @param view a ViewGroup, must already have been inflated but not displayed
+	 */
+	public static void setTransitionAnimation(ViewGroup view) {
+//		AnimatorSet InAnimator = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.fade_in);
+//		InAnimator.playTogether(InAnimator);
+//		LayoutTransition transition = new LayoutTransition();
+//		transition.setAnimator(LayoutTransition.APPEARING, InAnimator);
+		transition.setAnimator(LayoutTransition.APPEARING, null);
+		transition.setAnimator(LayoutTransition.DISAPPEARING, null);
+		view.setLayoutTransition(transition);
+	}
+
 }
