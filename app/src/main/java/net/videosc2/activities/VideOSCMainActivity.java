@@ -22,9 +22,6 @@
 
 package net.videosc2.activities;
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
-import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -38,7 +35,6 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +56,7 @@ import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
+import net.videosc2.fragments.VideOSCSettingsFragment;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.GestureModes;
@@ -323,6 +320,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				} else if ((i == 5 && hasTorch) || i == 4) {
 					Log.d(TAG, "settings");
 					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);
+					VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
+					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
 				} else if ((i == 6) && hasTorch || i == 5) {
 					VideOSCDialogHelper.showQuitDialog(activity);
 				}

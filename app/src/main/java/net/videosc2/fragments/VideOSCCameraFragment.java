@@ -94,6 +94,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
+		// store the container for later re-use
 		previewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
 
@@ -314,8 +315,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// stop preview before making changes
 			try {
 				Camera.Parameters parameters = mCamera.getParameters();
+				// FIXME: auto exposure correction seems to make the camera much slower
+				Log.d(TAG, "camera min exposure: " + parameters.getMinExposureCompensation() + ", max exposure: " + parameters.getMaxExposureCompensation());
+				if (parameters.isAutoExposureLockSupported()) {
+					parameters.setAutoExposureLock(true);
+				}
 				// Set the auto-focus mode to "continuous"
-				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+//				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 				mCamera.setParameters(parameters);
 				mCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
