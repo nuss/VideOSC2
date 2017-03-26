@@ -7,7 +7,7 @@
               android:layout_marginEnd="60dp"
               android:layout_marginRight="60dp"
               android:animateLayoutChanges="true"
-              android:background="#99000000"
+              android:background="@color/colorDarkTransparentBackground"
               android:orientation="horizontal">
 
 	<ImageButton

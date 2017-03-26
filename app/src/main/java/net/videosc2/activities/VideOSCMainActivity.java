@@ -105,10 +105,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// the current gesture mode
 	public Enum gestureMode = GestureModes.SWAP;
 
+	// settings
+	private boolean isSettingsFirstLevel = false;
+	private boolean isSettingsSecondLevel = false;
+
 	// pop-out menu for setting color mode
 	private ViewGroup modePanel;
 	// panel for displaying frame rate, calculation period
 	private ViewGroup frameRateCalculationPanel;
+	// the settings list
+	private ViewGroup settingsList;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -142,14 +148,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 		indicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) camView, true);
 
 		// does the device have an inbuilt flash light?
-		int drawer_icons_id = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
+		int drawerIconsId = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
 
-		TypedArray tools = getResources().obtainTypedArray(drawer_icons_id);
+		TypedArray tools = getResources().obtainTypedArray(drawerIconsId);
 //		Log.d(TAG, "tools: " + tools.toString());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		toolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
 
-		// FIXME: touches seem to get swallowed by the DrawerLayout first
 		final ListView toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
 		List<BitmapDrawable> toolsList = new ArrayList<>();
@@ -162,6 +167,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		modePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, false);
 		frameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) camView, false);
+		settingsList = (ViewGroup) inflater.inflate(R.layout.settings_selection, (FrameLayout) camView, false);
 
 		toolsDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -320,6 +326,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 				} else if ((i == 5 && hasTorch) || i == 4) {
 					Log.d(TAG, "settings");
 					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);
+					isSettingsFirstLevel = true;
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+						camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+					}
 					VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
 					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
 				} else if ((i == 6) && hasTorch || i == 5) {
@@ -330,6 +340,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				view.setBackgroundColor(0x00000000);
 			}
 		});
+		if (isSettingsFirstLevel || isSettingsSecondLevel)
+			camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		toolsDrawerLayout.openDrawer(Gravity.END);
 
 //		drawerToggle = setupDrawerToggle();
@@ -378,24 +390,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//			Log.d(TAG, "Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT");
-			camView.setSystemUiVisibility(
-					View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-							| View.SYSTEM_UI_FLAG_FULLSCREEN
-							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-		} else {
-//			Log.d(TAG, "else branch");
-			camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-		}
+		VideOSCUIHelpers.resetSystemUIState(camView);
 	}
 
 	@Override
 	public void onBackPressed() {
-		VideOSCDialogHelper.showQuitDialog(this);
+		if (!isSettingsFirstLevel && !isSettingsSecondLevel)
+			VideOSCDialogHelper.showQuitDialog(this);
+		else if (isSettingsFirstLevel) {
+			VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) camView);
+			VideOSCUIHelpers.resetSystemUIState(camView);
+			isSettingsFirstLevel = false;
+		}
 	}
 
 /*

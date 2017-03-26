@@ -314,12 +314,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			// stop preview before making changes
 			try {
-				Camera.Parameters parameters = mCamera.getParameters();
+				final Camera.Parameters parameters = mCamera.getParameters();
 				// FIXME: auto exposure correction seems to make the camera much slower
-				Log.d(TAG, "camera min exposure: " + parameters.getMinExposureCompensation() + ", max exposure: " + parameters.getMaxExposureCompensation());
-				if (parameters.isAutoExposureLockSupported()) {
-					parameters.setAutoExposureLock(true);
-				}
+//				Log.d(TAG, "camera parameters: " + parameters.flatten());
+//				if (parameters.isAutoExposureLockSupported()) {
+//					parameters.setAutoExposureLock(true);
+//				}
+				parameters.setPreviewFpsRange(30000, 30000);
+//				parameters.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
 				// Set the auto-focus mode to "continuous"
 //				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 				mCamera.setParameters(parameters);

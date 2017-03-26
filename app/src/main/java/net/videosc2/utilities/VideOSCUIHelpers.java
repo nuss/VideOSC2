@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.hardware.Camera;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -137,6 +138,27 @@ public class VideOSCUIHelpers {
 		transition.setAnimator(LayoutTransition.APPEARING, null);
 		transition.setAnimator(LayoutTransition.DISAPPEARING, null);
 		view.setLayoutTransition(transition);
+	}
+
+	/**
+	 * Reset the app appearance in dependency of the build version
+	 *
+	 * @param view the view on which 'setSystemVisibility()' is called
+	 */
+	public static void resetSystemUIState(View view) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//			Log.d(TAG, "Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT");
+			view.setSystemUiVisibility(
+					View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+							| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+							| View.SYSTEM_UI_FLAG_FULLSCREEN
+							| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		} else {
+//			Log.d(TAG, "else branch");
+			view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		}
 	}
 
 }
