@@ -58,5 +58,16 @@
 	<string name="set_calculation_period">Set calculation period:</string>
 	<string name="normalize_output_text">Normalize output (0.0&#8211;1.0, does not apply to sensor values).</string>
 	<string name="remember_activated_text">Remember activated/deactivated/fixed pixels on quit.</string>
+	<string name="orientation_sensor_checkbox_text">Orientation sensor: Rotation in degrees – \'/vosc/ori\', x, y, z, timestamp, accuracy</string>
+	<string name="accelerometer_checkbox">Accelerometer: Force in m/s^2 – \'/vosc/acc\', x, y, z, timestamp, accuracy</string>
+	<string name="linear_acceleration_checkbox">Linear acceleration sensor: m/s^2 minus gravity – \'/vosc/lin_acc\', x, y, z, timestamp, accuracy</string>
+	<string name="magnetic_field_sensor">Magnetic field sensor: Geomagnetic field in µT – \'/vosc/mag\', x, y, z, timestamp, accuracy</string>
+	<string name="gravity_sensor_checkbox">Gravity sensor: Force of gravity in m/s^2 – \'/vosc/grav\', x, y, z, timestamp, accuracy</string>
+	<string name="proximity_sensor_checkbox">Proximity sensor: Distance from sensor, typically 0, 5 – \'/vosc/prox\', distance, timestamp, accuracy</string>
+	<string name="light_sensor_checkbox">Light sensor: Illumination from sensor in lx – \'/vosc/light\', illumination, timestamp, accuracy</string>
+	<string name="air_pressure_sensor">Air pressure sensor: Ambient pressure in hPa or mbar – \'/vosc/press\', pressure, timestamp, accuracy</string>
+	<string name="temperature_sensor_checkbox">Temperature sensor: Temperature in °C – \'/vosc/temp\', temperature</string>
+	<string name="geo_location_sensor">Geo location: \'/vosc/loc\', latitude, longitude, altitude</string>
+	<string name="humidity_sensor">Humidity sensor: Humidity in % – humidity</string>
 
 </resources>

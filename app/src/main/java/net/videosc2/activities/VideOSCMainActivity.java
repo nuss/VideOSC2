@@ -163,6 +163,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 
 		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, toolsList));
+		Log.d(TAG, "toolsDrawerList adapter set");
 		tools.recycle();
 
 		modePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, false);
@@ -404,6 +405,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 		} else {
 			findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
 			VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (FrameLayout) camView);
+			VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (FrameLayout) camView);
+			VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (FrameLayout) camView);
 			isSettingsSecondLevel = false;
 			isSettingsFirstLevel = true;
 		}

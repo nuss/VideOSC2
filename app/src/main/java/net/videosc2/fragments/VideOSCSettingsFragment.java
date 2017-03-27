@@ -41,6 +41,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final ListView settingsListView = (ListView) view.findViewById(R.id.settings_selection_list);
 		final View networkSettingsView = inflater.inflate(R.layout.network_settings, container, false);
 		final View resolutionSettingsView = inflater.inflate(R.layout.resolution_settings, container, false);
+		final View sensorSettingsView = inflater.inflate(R.layout.sensor_settings, container, false);
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
 		itemsAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.settings_selection_item, items);
 		VideOSCUIHelpers.setTransitionAnimation(container);
@@ -59,6 +60,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 					case 1:
 						// resolution settings
 						VideOSCUIHelpers.addView(resolutionSettingsView, container);
+						break;
+					case 2:
+						// sensor settings
+						VideOSCUIHelpers.addView(sensorSettingsView, container);
 						break;
 					default:
 				}

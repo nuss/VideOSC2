@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/sensor_settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorDarkTransparentBackground"
+            android:padding="20dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<CheckBox
+			android:id="@+id/orientation_sensor_checkbox"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/orientation_sensor_checkbox_text"/>
+
+		<CheckBox
+			android:id="@+id/accelerometer_checkbox"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/accelerometer_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/linear_acceleration_checkbox"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/linear_acceleration_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/magnetic_field_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/magnetic_field_sensor"/>
+
+		<CheckBox
+			android:id="@+id/gravity_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/gravity_sensor_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/proximity_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/proximity_sensor_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/light_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/light_sensor_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/air_pressure_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/air_pressure_sensor"/>
+
+		<CheckBox
+			android:id="@+id/temperature_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/temperature_sensor_checkbox"/>
+
+		<CheckBox
+			android:id="@+id/humidity_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/humidity_sensor"/>
+
+		<CheckBox
+			android:id="@+id/gps_sensor"
+			style="@style/CheckBoxMargin"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="false"
+			android:text="@string/geo_location_sensor"/>
+
+		<LinearLayout
+			style="?android:attr/buttonBarStyle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="20dp">
+
+			<Button
+				android:id="@+id/network_settings_cancel"
+				style="?android:buttonBarButtonStyle"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:padding="10dp"
+				android:text="@string/cancel"
+				android:textAllCaps="true"/>
+
+			<Button
+				android:id="@+id/network_settings_submit"
+				style="?android:buttonBarButtonStyle"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:background="@android:color/holo_green_light"
+				android:padding="10dp"
+				android:text="@string/save_settings"
+				android:textAllCaps="true"
+				android:textColor="@android:color/primary_text_dark"/>
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>
