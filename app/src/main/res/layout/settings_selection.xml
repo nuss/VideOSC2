@@ -10,7 +10,6 @@
 		android:id="@+id/settings_selection_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@color/colorDarkTransparentBackground"
 		android:paddingTop="5dp"
 		android:paddingRight="20dp"
 		android:paddingLeft="20dp"

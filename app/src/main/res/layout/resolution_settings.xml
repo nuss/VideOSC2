@@ -1,161 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/resolution_settings"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorDarkTransparentBackground"
-            android:padding="20dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/resolution_settings"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
 	<LinearLayout
+		android:id="@+id/resolution"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical">
+		android:baselineAligned="false"
+		android:orientation="horizontal">
 
 		<LinearLayout
-			android:id="@+id/resolution"
-			android:layout_width="match_parent"
+			android:id="@+id/resolution_horizontal"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:baselineAligned="false"
-			android:orientation="horizontal">
+			android:layout_weight="0.5"
+			android:orientation="vertical">
 
-			<LinearLayout
-				android:id="@+id/resolution_horizontal"
-				android:layout_width="0dp"
+			<TextView
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:orientation="vertical">
+				android:text="@string/horizontal_resolution"/>
 
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/horizontal_resolution"/>
-
-				<EditText
-					android:id="@+id/resolution_horizontal_field"
-					style="@style/EditTextPadding"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:digits="123456789"
-					android:inputType="number"
-					android:nextFocusDown="@+id/resolution_vertical_field"
-					android:text="6"/>
-			</LinearLayout>
-
-			<LinearLayout
-				android:id="@+id/resolution_vertical"
-				android:layout_width="0dp"
+			<EditText
+				android:id="@+id/resolution_horizontal_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:orientation="vertical">
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/vertical_resolution"/>
-
-				<EditText
-					android:id="@+id/resolution_vertical_field"
-					style="@style/EditTextPadding"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:digits="123456789"
-					android:inputType="number"
-					android:nextFocusDown="@+id/calulation_period_field"
-					android:text="4"/>
-			</LinearLayout>
+				android:digits="123456789"
+				android:inputType="number"
+				android:nextFocusDown="@+id/resolution_vertical_field"
+				android:text="6"/>
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/camera_output_params"
-			android:layout_width="match_parent"
+			android:id="@+id/resolution_vertical"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/vertical_resolution"/>
+
+			<EditText
+				android:id="@+id/resolution_vertical_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:digits="123456789"
+				android:inputType="number"
+				android:nextFocusDown="@+id/calulation_period_field"
+				android:text="4"/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/camera_output_params"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
 			android:baselineAligned="false"
-			android:orientation="horizontal">
+			android:orientation="vertical">
 
-			<LinearLayout
-				android:layout_width="0dp"
+			<TextView
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:baselineAligned="false"
-				android:orientation="vertical">
+				android:text="@string/set_calculation_period"/>
 
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/set_calculation_period"/>
-
-				<EditText
-					android:id="@+id/calulation_period_field"
-					style="@style/EditTextPadding"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:digits="123456789"
-					android:inputType="number"
-					android:text="1"/>
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_width="0dp"
+			<EditText
+				android:id="@+id/calulation_period_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:baselineAligned="false"
-				android:orientation="vertical">
-
-				<CheckBox
-					android:id="@+id/fix_framerate_checkbox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					style="@style/CheckBoxMargin"
-					android:checked="true"
-					android:text="@string/fixed_frame_rate"/>
-
-				<CheckBox
-					android:id="@+id/normalize_output_checkbox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					style="@style/CheckBoxMargin"
-					android:checked="false"
-					android:text="@string/normalize_output_text"/>
-
-				<CheckBox
-					android:id="@+id/remember_activated_checkbox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					style="@style/CheckBoxMargin"
-					android:checked="false"
-					android:text="@string/remember_activated_text"/>
-			</LinearLayout>
-
+				android:digits="123456789"
+				android:inputType="number"
+				android:text="1"/>
 		</LinearLayout>
 
 		<LinearLayout
-			style="?android:attr/buttonBarStyle"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:paddingTop="20dp">
+			android:layout_weight="0.5"
+			android:baselineAligned="false"
+			android:orientation="vertical">
 
-			<Button
-				android:id="@+id/network_settings_cancel"
-				style="?android:buttonBarButtonStyle"
-				android:layout_width="0dp"
+			<CheckBox
+				android:id="@+id/fix_framerate_checkbox"
+				style="@style/CheckBoxMargin"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:padding="10dp"
-				android:text="@string/cancel"
-				android:textAllCaps="true"/>
+				android:checked="true"
+				android:text="@string/fixed_frame_rate"/>
 
-			<Button
-				android:id="@+id/network_settings_submit"
-				style="?android:buttonBarButtonStyle"
-				android:layout_width="0dp"
+			<CheckBox
+				android:id="@+id/normalize_output_checkbox"
+				style="@style/CheckBoxMargin"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:background="@android:color/holo_green_light"
-				android:padding="10dp"
-				android:text="@string/save_settings"
-				android:textAllCaps="true"
-				android:textColor="@android:color/primary_text_dark"/>
+				android:checked="false"
+				android:text="@string/normalize_output_text"/>
+
+			<CheckBox
+				android:id="@+id/remember_activated_checkbox"
+				style="@style/CheckBoxMargin"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:checked="false"
+				android:text="@string/remember_activated_text"/>
 		</LinearLayout>
 
 	</LinearLayout>
-</ScrollView>
+
+	<LinearLayout
+		style="?android:attr/buttonBarStyle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="20dp">
+
+		<Button
+			android:id="@+id/network_settings_cancel"
+			style="?android:buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:padding="10dp"
+			android:text="@string/cancel"
+			android:textAllCaps="true"/>
+
+		<Button
+			android:id="@+id/network_settings_submit"
+			style="?android:buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:background="@android:color/holo_green_light"
+			android:padding="10dp"
+			android:text="@string/save_settings"
+			android:textAllCaps="true"
+			android:textColor="@android:color/primary_text_dark"/>
+	</LinearLayout>
+
+</LinearLayout>

@@ -51,6 +51,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 
 import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
@@ -168,7 +169,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		modePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, false);
 		frameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) camView, false);
-		settingsList = (ViewGroup) inflater.inflate(R.layout.settings_selection, (FrameLayout) camView, false);
 
 		toolsDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -396,17 +396,19 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onBackPressed() {
+		View bg = findViewById(R.id.settings_background);
 		if (!isSettingsFirstLevel && !isSettingsSecondLevel)
 			VideOSCDialogHelper.showQuitDialog(this);
 		else if (isSettingsFirstLevel) {
 			VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) camView);
+			VideOSCUIHelpers.removeView(bg, (FrameLayout) camView);
 			VideOSCUIHelpers.resetSystemUIState(camView);
 			isSettingsFirstLevel = false;
 		} else {
 			findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
-			VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (FrameLayout) camView);
-			VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (FrameLayout) camView);
-			VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (FrameLayout) camView);
+			VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (ViewGroup) bg);
+			VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (ViewGroup) bg);
+			VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (ViewGroup) bg);
 			isSettingsSecondLevel = false;
 			isSettingsFirstLevel = true;
 		}
