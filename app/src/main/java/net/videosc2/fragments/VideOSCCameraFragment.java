@@ -79,7 +79,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	public VideOSCCameraFragment() {
 		super();
-
 	}
 
 	/**
@@ -94,6 +93,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
+		Log.d(TAG, "onCreateView: " + view);
 		// store the container for later re-use
 		previewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
@@ -117,7 +117,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	private boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
-		releaseCameraAndPreview();
+//		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
 		FrameLayout preview;
 
@@ -153,6 +153,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		Log.d(TAG, "onPause()");
 	}
 
 	@Override
@@ -162,12 +163,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		releaseCameraAndPreview();
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (mCamera == null)
+			safeCameraOpenInView(previewContainer.findViewById(R.id.camera_preview));
+		Log.d(TAG, "onResume: " + previewContainer.findViewById(R.id.camera_preview) + ", mCamera: " + this.mCamera);
+	}
+
 	/**
 	 * Clear any existing preview / camera.
 	 */
 	private void releaseCameraAndPreview() {
-		Log.d(TAG, "releaseCameraAndPreview");
-
 		if (mCamera != null) {
 			mCamera.stopPreview();
 			// hack: set a null callback as the already set callback
@@ -214,7 +221,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public CameraPreview(Context context, Camera camera) {
 			super(context);
 
-
+			Log.d(TAG, "CameraPreview(): " + camera);
 			// Capture the context
 			setCamera(camera);
 
@@ -249,8 +256,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param camera an instance of Camera
 		 */
 		private void setCamera(Camera camera) {
-			mCamera = camera;
-			Camera.Parameters parameters = mCamera.getParameters();
+			Log.d(TAG, "setCamera(), mCamera: " + mCamera);
+			if (mCamera == null) mCamera = camera;
+//			Camera.Parameters parameters = mCamera.getParameters();
+			Camera.Parameters parameters = camera.getParameters();
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
 			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
@@ -260,7 +269,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// Set the camera to Auto Flash mode.
 			if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
 				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-				mCamera.setParameters(parameters);
+//				mCamera.setParameters(parameters);
+				camera.setParameters(parameters);
 			}
 
 			requestLayout();
@@ -272,6 +282,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
+			Log.d(TAG, "surfaceCreated - holder: " + holder + ", mCamera: " + mCamera);
 			try {
 				mCamera.setPreviewDisplay(holder);
 			} catch (IOException e) {
@@ -285,6 +296,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
+			Log.d(TAG, "surfaceDestroyed");
 			if (mCamera != null) {
 				releaseCameraAndPreview();
 				// hack: set a null callback as the already set callback
@@ -304,9 +316,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param h the surface height
 		 */
 		public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-			// If your preview can change or rotate, take care of those events here.
-			// Make sure to stop the preview before resizing or reformatting it.
-
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist
 				return;
