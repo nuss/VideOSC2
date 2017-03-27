@@ -144,7 +144,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
-			android:background="@android:color/holo_green_light"
+			android:background="@android:color/holo_green_dark"
 			android:padding="10dp"
 			android:text="@string/save_settings"
 			android:textAllCaps="true"

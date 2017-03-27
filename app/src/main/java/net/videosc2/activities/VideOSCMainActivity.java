@@ -409,6 +409,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (ViewGroup) bg);
 			VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (ViewGroup) bg);
 			VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (ViewGroup) bg);
+			VideOSCUIHelpers.removeView(findViewById(R.id.about), (ViewGroup) bg);
 			isSettingsSecondLevel = false;
 			isSettingsFirstLevel = true;
 		}

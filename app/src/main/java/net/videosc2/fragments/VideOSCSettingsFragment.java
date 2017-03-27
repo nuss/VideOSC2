@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -50,6 +51,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View resolutionSettingsView = inflater.inflate(R.layout.resolution_settings, bg, false);
 		// the sensor settings form
 		final View sensorSettingsView = inflater.inflate(R.layout.sensor_settings, bg, false);
+		// about
+		final View aboutView = inflater.inflate(R.layout.about, bg, false);
+		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
 		itemsAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.settings_selection_item, items);
@@ -77,6 +81,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						// sensor settings
 						VideOSCUIHelpers.addView(sensorSettingsView, bg);
 						break;
+					case 3:
+						// about
+						webView.loadUrl("http://pustota.basislager.org/coding/videosc/");
+						VideOSCUIHelpers.addView(aboutView, bg);
 					default:
 				}
 				settingsListView.setVisibility(View.INVISIBLE);
