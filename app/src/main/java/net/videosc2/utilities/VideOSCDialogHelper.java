@@ -17,7 +17,7 @@ public class VideOSCDialogHelper {
 	 * @param activity The activity
 	 */
 	public static void showQuitDialog(final Activity activity) {
-		new AlertDialog.Builder(activity)
+		new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT)
 				.setMessage(R.string.quit_dialog_string)
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					@Override

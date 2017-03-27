@@ -39,18 +39,24 @@
 	<string name="selection_resolution_settings">Resolution Settings</string>
 	<string name="selection_sensor_settings">Sensor Settings</string>
 	<string name="selection_about_videosc">About VideOSC</string>
-	<string name="send_osc_to_ip">send OSC to IP address:</string>
+	<string name="send_osc_to_ip">Send OSC to IP address:</string>
 	<string name="default_remote_ip">192.168.1.105</string>
-	<string name="send_osc_to_port">send OSC to port:</string>
+	<string name="send_osc_to_port">Send OSC to port:</string>
 	<string name="default_remote_port">57120</string>
-	<string name="device_ip_address_head">device IP address:</string>
-	<string name="device_port">device port:</string>
+	<string name="device_ip_address_head">Device IP address:</string>
+	<string name="device_port">Device port:</string>
 	<string name="device_port_value">32000</string>
-	<string name="root_command_name_head">root command name</string>
+	<string name="root_command_name_head">Root command name:</string>
 	<string name="slash">/</string>
 	<string name="root_cmd_name">vosc</string>
-	<string name="sub_cmd_name"><![CDATA[<sub_cmd_name>]]></string>
-	<string name="cancel">cancel</string>
+	<string name="sub_cmd_name"><![CDATA[/<sub_cmd_name>]]></string>
+	<string name="cancel">@android:string/cancel</string>
 	<string name="save_settings">save settings</string>
+	<string name="horizontal_resolution">Horizontal resolution:</string>
+	<string name="vertical_resolution">Verticalresolution:</string>
+	<string name="fixed_frame_rate">Fixed framerate. Unchecking this option may improve color recoginition in dark environments yet result in a decreased frame rate.</string>
+	<string name="set_calculation_period">Set calculation period:</string>
+	<string name="normalize_output_text">Normalize output (0.0&#8211;1.0, does not apply to sensor values).</string>
+	<string name="remember_activated_text">Remember activated/deactivated/fixed pixels on quit.</string>
 
 </resources>

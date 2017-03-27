@@ -12,14 +12,14 @@
 		android:orientation="vertical">
 
 		<LinearLayout
-			android:id="@+id/remote_address"
+			android:id="@+id/resolution"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:baselineAligned="false"
 			android:orientation="horizontal">
 
 			<LinearLayout
-				android:id="@+id/remote_ip"
+				android:id="@+id/resolution_horizontal"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="0.5"
@@ -28,21 +28,21 @@
 				<TextView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/send_osc_to_ip"/>
+					android:text="@string/horizontal_resolution"/>
 
 				<EditText
-					android:id="@+id/remote_ip_field"
+					android:id="@+id/resolution_horizontal_field"
 					style="@style/EditTextPadding"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:digits="0123456789."
-					android:inputType="text"
-					android:nextFocusDown="@+id/remote_port_field"
-					android:text="@string/default_remote_ip"/>
+					android:digits="123456789"
+					android:inputType="number"
+					android:nextFocusDown="@+id/resolution_vertical_field"
+					android:text="6"/>
 			</LinearLayout>
 
 			<LinearLayout
-				android:id="@+id/remote_port"
+				android:id="@+id/resolution_vertical"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="0.5"
@@ -51,101 +51,81 @@
 				<TextView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/send_osc_to_port"/>
+					android:text="@string/vertical_resolution"/>
 
 				<EditText
-					android:id="@+id/remote_port_field"
+					android:id="@+id/resolution_vertical_field"
 					style="@style/EditTextPadding"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:digits="123456789"
 					android:inputType="number"
-					android:nextFocusDown="@+id/device_port_field"
-					android:text="@string/default_remote_port"/>
+					android:nextFocusDown="@+id/calulation_period_field"
+					android:text="4"/>
 			</LinearLayout>
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/device_address"
+			android:id="@+id/camera_output_params"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:baselineAligned="false"
 			android:orientation="horizontal">
 
 			<LinearLayout
-				android:id="@+id/device_ip"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="0.5"
+				android:baselineAligned="false"
 				android:orientation="vertical">
 
 				<TextView
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/device_ip_address_head"/>
-
-				<TextView
-					android:id="@+id/device_ip_address"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"/>
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:id="@+id/device_port"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.5"
-				android:orientation="vertical">
-
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/device_port"/>
+					android:text="@string/set_calculation_period"/>
 
 				<EditText
-					android:id="@+id/device_port_field"
+					android:id="@+id/calulation_period_field"
 					style="@style/EditTextPadding"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:digits="123456789"
 					android:inputType="number"
-					android:nextFocusDown="@+id/root_cmd_name_field"
-					android:text="@string/device_port_value"/>
+					android:text="1"/>
 			</LinearLayout>
-		</LinearLayout>
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/root_command_name_head"/>
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:baselineAligned="false"
-			android:orientation="horizontal">
-
-			<TextView
+			<LinearLayout
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="25dp"
-				android:layout_weight="0.01"
-				android:text="@string/slash"/>
-
-			<EditText
-				android:id="@+id/root_cmd_name_field"
-				style="@style/EditTextPadding"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.49"
-				android:inputType="text"
-				android:text="@string/root_cmd_name"/>
-
-			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="25dp"
 				android:layout_weight="0.5"
-				android:text="@string/sub_cmd_name"/>
+				android:baselineAligned="false"
+				android:orientation="vertical">
+
+				<CheckBox
+					android:id="@+id/fix_framerate_checkbox"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:checked="true"
+					android:text="@string/fixed_frame_rate"/>
+
+				<CheckBox
+					android:id="@+id/normalize_output_checkbox"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:checked="false"
+					android:text="@string/normalize_output_text"/>
+
+				<CheckBox
+					android:id="@+id/remember_activated_checkbox"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:checked="false"
+					android:text="@string/remember_activated_text"/>
+			</LinearLayout>
+
 		</LinearLayout>
 
 		<LinearLayout
@@ -176,5 +156,6 @@
 				android:textAllCaps="true"
 				android:textColor="@android:color/primary_text_dark"/>
 		</LinearLayout>
+
 	</LinearLayout>
 </ScrollView>

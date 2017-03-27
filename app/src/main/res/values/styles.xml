@@ -8,8 +8,9 @@
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
-	<style name="NavigationDrawerStyle">
-		<item name="android:switchTextOff">true</item>
+	<style name="EditTextPadding">
+		<item name="android:paddingTop">20dp</item>
+		<item name="android:paddingBottom">25dp</item>
 	</style>
 
 </resources>

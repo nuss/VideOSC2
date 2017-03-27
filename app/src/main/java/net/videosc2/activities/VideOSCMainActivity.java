@@ -106,8 +106,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public Enum gestureMode = GestureModes.SWAP;
 
 	// settings
-	private boolean isSettingsFirstLevel = false;
-	private boolean isSettingsSecondLevel = false;
+	public static boolean isSettingsFirstLevel = false;
+	public static boolean isSettingsSecondLevel = false;
 
 	// pop-out menu for setting color mode
 	private ViewGroup modePanel;
@@ -401,6 +401,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 			VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) camView);
 			VideOSCUIHelpers.resetSystemUIState(camView);
 			isSettingsFirstLevel = false;
+		} else {
+			findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
+			VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (FrameLayout) camView);
+			isSettingsSecondLevel = false;
+			isSettingsFirstLevel = true;
 		}
 	}
 
