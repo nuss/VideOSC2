@@ -39,5 +39,18 @@
 	<string name="selection_resolution_settings">Resolution Settings</string>
 	<string name="selection_sensor_settings">Sensor Settings</string>
 	<string name="selection_about_videosc">About VideOSC</string>
+	<string name="send_osc_to_ip">send OSC to IP address:</string>
+	<string name="default_remote_ip">192.168.1.105</string>
+	<string name="send_osc_to_port">send OSC to port:</string>
+	<string name="default_remote_port">57120</string>
+	<string name="device_ip_address_head">device IP address:</string>
+	<string name="device_port">device port:</string>
+	<string name="device_port_value">32000</string>
+	<string name="root_command_name_head">root command name</string>
+	<string name="slash">/</string>
+	<string name="root_cmd_name">vosc</string>
+	<string name="sub_cmd_name"><![CDATA[<sub_cmd_name>]]></string>
+	<string name="cancel">cancel</string>
+	<string name="save_settings">save settings</string>
 
 </resources>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/network_settings"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorDarkTransparentBackground"
+              android:orientation="vertical">
+
+	<LinearLayout
+		android:id="@+id/remote_address"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:id="@+id/remote_ip"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/send_osc_to_ip"/>
+
+			<EditText
+				android:id="@+id/remote_ip_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:digits="0123456789."
+				android:inputType="number|numberDecimal"
+				android:text="@string/default_remote_ip"
+				android:nextFocusDown="@+id/remote_port_field"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/remote_port"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/send_osc_to_port"/>
+
+			<EditText
+				android:id="@+id/remote_port_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="number"
+				android:text="@string/default_remote_port"/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/device_address"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:id="@+id/device_ip"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/device_ip_address_head"/>
+
+			<TextView
+				android:id="@+id/device_ip_address"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/device_port"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/device_port"/>
+
+			<EditText
+				android:id="@+id/device_port_field"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="number"
+				android:text="@string/device_port_value"/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/root_command_name_head"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<TextView
+			android:layout_width="5dp"
+			android:layout_weight="0"
+			android:layout_height="wrap_content"
+			android:text="@string/slash"/>
+
+		<EditText
+			android:id="@+id/root_cmd_name_field"
+			android:layout_width="fill_parent"
+			android:layout_weight="0"
+			android:layout_height="wrap_content"
+			android:inputType="text"
+			android:text="@string/root_cmd_name"/>
+
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/sub_cmd_name"/>
+	</LinearLayout>
+
+	<LinearLayout
+		style="?android:attr/buttonBarStyle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<Button
+			android:id="@+id/network_settings_cancel"
+			style="?android:buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/cancel"
+			android:textAllCaps="true"/>
+
+		<Button
+			android:id="@+id/network_settings_submit"
+			style="?android:buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/save_settings"
+			android:textAllCaps="true"/>
+	</LinearLayout>
+</LinearLayout>

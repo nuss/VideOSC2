@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -31,7 +32,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.settings_selection, container, false);
 		Log.d(TAG, "the activity: " + getActivity());
@@ -40,6 +41,21 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		VideOSCUIHelpers.setTransitionAnimation(container);
 		ListView settingsListView = (ListView) view.findViewById(R.id.settings_selection_list);
 		settingsListView.setAdapter(itemsAdapter);
+
+		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				switch (i) {
+					case 0:
+						// network settings
+						View networkSettingsView = inflater.inflate(R.layout.network_settings, container, false);
+						container.removeView(view);
+						container.addView(networkSettingsView);
+						break;
+					default:
+				}
+			}
+		});
 
 		return view;
 	}
