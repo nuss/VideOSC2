@@ -117,7 +117,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	private boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
-//		releaseCameraAndPreview();
+		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
 		FrameLayout preview;
 
@@ -128,7 +128,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (view.findViewById(R.id.camera_preview) != null) {
 				preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 				preview.addView(mPreview, -1);
-				mPreview.startCameraPreview();
+				Log.d(TAG, "camera in preview callback: " + mPreview.pCamera);
+				mPreview.previewStarted = mPreview.startCameraPreview();
 			} else Log.d(TAG, "FrameLayout is null");
 		}
 		return qOpened;
@@ -151,24 +152,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
-		Log.d(TAG, "onPause()");
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Log.d(TAG, "onDestroy called");
 		releaseCameraAndPreview();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		if (mCamera == null)
-			safeCameraOpenInView(previewContainer.findViewById(R.id.camera_preview));
-		Log.d(TAG, "onResume: " + previewContainer.findViewById(R.id.camera_preview) + ", mCamera: " + this.mCamera);
 	}
 
 	/**
@@ -186,7 +173,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 		if (mPreview != null) {
 			mPreview.destroyDrawingCache();
-			mPreview.mCamera = null;
+			mPreview.pCamera = null;
 		}
 	}
 
@@ -202,7 +189,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private SurfaceHolder mHolder;
 
 		// Our Camera.
-		private Camera mCamera;
+		private Camera pCamera;
 
 		// Camera Sizing (For rotation, orientation changes)
 		private Camera.Size mPreviewSize;
@@ -212,6 +199,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
+
+		private boolean previewStarted;
 
 		/**
 		 *
@@ -241,13 +230,17 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		/**
 		 * start the camera preview
 		 */
-		public void startCameraPreview() {
+		public boolean startCameraPreview() {
+			boolean started = false;
 			try {
-				mCamera.setPreviewDisplay(mHolder);
-				mCamera.startPreview();
+				pCamera.setPreviewDisplay(mHolder);
+				pCamera.startPreview();
+				started = true;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			return started;
 		}
 
 		/**
@@ -256,8 +249,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param camera an instance of Camera
 		 */
 		private void setCamera(Camera camera) {
-			Log.d(TAG, "setCamera(), mCamera: " + mCamera);
-			if (mCamera == null) mCamera = camera;
+			pCamera = camera;
+			Log.d(TAG, "setCamera(), pCamera: " + pCamera + ", camera: " + camera);
 //			Camera.Parameters parameters = mCamera.getParameters();
 			Camera.Parameters parameters = camera.getParameters();
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
@@ -282,9 +275,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
-			Log.d(TAG, "surfaceCreated - holder: " + holder + ", mCamera: " + mCamera);
+			// reactivate the preview after app has been pused and resumed
+			if (!previewStarted) pCamera.startPreview();
 			try {
-				mCamera.setPreviewDisplay(holder);
+				pCamera.setPreviewDisplay(holder);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -297,13 +291,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
-			if (mCamera != null) {
-				releaseCameraAndPreview();
-				// hack: set a null callback as the already set callback
-				// otherwise prevails even after camera.release() and
-				// causes a crash on quit
-//				if (mCamera != null)
-//					mCamera.setPreviewCallback(null);
+			if (pCamera != null) {
+				pCamera.stopPreview();
+				previewStarted = false;
 			}
 		}
 
@@ -323,7 +313,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			// stop preview before making changes
 			try {
-				final Camera.Parameters parameters = mCamera.getParameters();
+				final Camera.Parameters parameters = pCamera.getParameters();
 				// FIXME: auto exposure correction seems to make the camera much slower
 //				Log.d(TAG, "camera parameters: " + parameters.flatten());
 //				if (parameters.isAutoExposureLockSupported()) {
@@ -333,8 +323,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //				parameters.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
 				// Set the auto-focus mode to "continuous"
 //				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-				mCamera.setParameters(parameters);
-				mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+				pCamera.setParameters(parameters);
+				pCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
 						VideOSCCameraFragment.now = System.currentTimeMillis();
