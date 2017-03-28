@@ -53,6 +53,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:inputType="number"
+				android:digiys="0123456789"
 				android:nextFocusDown="@+id/device_port_field"
 				android:text="@string/default_remote_port"/>
 		</LinearLayout>
@@ -102,6 +103,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:inputType="number"
+				android:digiys="0123456789"
 				android:nextFocusDown="@+id/root_cmd_name_field"
 				android:text="@string/device_port_value"/>
 		</LinearLayout>
@@ -132,6 +134,7 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="0.49"
 			android:inputType="text"
+			android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
 			android:text="@string/root_cmd_name"/>
 
 		<TextView

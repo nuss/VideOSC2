@@ -1,7 +1,9 @@
 package net.videosc2.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
@@ -18,6 +21,8 @@ import net.videosc2.utilities.VideOSCUI;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by stefan on 12.03.17.
@@ -80,6 +85,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 					case 2:
 						// sensor settings
 						VideOSCUIHelpers.addView(sensorSettingsView, bg);
+						setPlaceholder(bg);
 						break;
 					case 3:
 						// about
@@ -92,5 +98,30 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		});
 
 		return view;
+	}
+
+	// preliminary - replacement for placeholders should come from stored settings
+	public void setPlaceholder(View container) {
+		Resources res = getResources();
+		SparseIntArray idsAndStrings = new SparseIntArray(11);
+
+		idsAndStrings.append(R.id.orientation_sensor, R.string.orientation_sensor);
+		idsAndStrings.append(R.id.accelerometer, R.string.accelerometer);
+		idsAndStrings.append(R.id.linear_acceleration, R.string.linear_acceleration);
+		idsAndStrings.append(R.id.magnetic_field, R.string.magnetic_field_sensor);
+		idsAndStrings.append(R.id.gravity_sensor, R.string.gravity_sensor);
+		idsAndStrings.append(R.id.proximity_sensor, R.string.proximity_sensor);
+		idsAndStrings.append(R.id.light_sensor, R.string.light_sensor);
+		idsAndStrings.append(R.id.air_pressure_sensor, R.string.air_pressure);
+		idsAndStrings.append(R.id.temperature_sensor, R.string.temperature_sensor);
+		idsAndStrings.append(R.id.humidity_sensor, R.string.humidity_sensor);
+		idsAndStrings.append(R.id.geo_loc_sensor, R.string.geo_location_sensor);
+
+
+		for (int i = 0; i < idsAndStrings.size(); i++) {
+			TextView tv = (TextView) container.findViewById(idsAndStrings.keyAt(i));
+			String text = String.format(res.getString(idsAndStrings.valueAt(i)), "vosc");
+			tv.setText(text);
+		}
 	}
 }
