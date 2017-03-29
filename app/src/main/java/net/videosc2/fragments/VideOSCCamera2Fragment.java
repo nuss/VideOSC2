@@ -3,22 +3,21 @@ package net.videosc2.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.util.Range;
 import android.util.Size;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +27,7 @@ import android.widget.Toast;
 import net.videosc2.R;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -43,6 +40,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private ViewGroup previewContainer;
 	private ImageView mImage;
 	private Size previewSize;
+
+	public CameraPreview mPreview;
 
 	/**
 	 * A {@link Semaphore} to prevent the app from exiting before closing the camera.
@@ -77,6 +76,15 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	}
 
 	@Override
+	public void onViewCreated(final View view, Bundle savedInstanceState) {
+		Log.d(TAG, "onViewCreated: " + view);
+//		view.findViewById(R.id.picture).setOnClickListener(this);
+//		view.findViewById(R.id.info).setOnClickListener(this);
+//		mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+		mPreview = new CameraPreview(getActivity(), mCameraDevice);
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
@@ -85,11 +93,13 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		Log.d(TAG, "onPause");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		Log.d(TAG, "onDestroy");
 		// TODO
 	}
 
@@ -126,6 +136,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 	};
 
+/*
 	public final TextureView.SurfaceTextureListener mSurfaceTextureListener
 			= new TextureView.SurfaceTextureListener() {
 
@@ -152,6 +163,29 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 
 	};
+*/
+
+	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+
+		public CameraPreview(Context context, CameraDevice cameraDevice) {
+			super(context);
+		}
+
+		@Override
+		public void surfaceCreated(SurfaceHolder surfaceHolder) {
+			Log.d(TAG, "surfaceCreated");
+		}
+
+		@Override
+		public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+			Log.d(TAG, "surfaceChanged - surfaceHolder: " + surfaceHolder + ", i: " + i + ", i1: " + i1 + ", i2: " + i2);
+		}
+
+		@Override
+		public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+			Log.d(TAG, "surfaceDestroyed - surfaceHolder: " + surfaceHolder);
+		}
+	}
 
 	private void createCameraPreviewSession() {
 		// TODO
