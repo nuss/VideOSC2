@@ -72,7 +72,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private ViewGroup previewContainer;
 
 	// Reference to the ImageView containing the downscaled video frame
-	ImageView mImage;
+	private ImageView mImage;
 
 	/**
 	 * Default empty constructor.

@@ -56,6 +56,7 @@ import android.widget.ScrollView;
 import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
+import net.videosc2.fragments.VideOSCCamera2Fragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
 import net.videosc2.fragments.VideOSCSettingsFragment;
 import net.videosc2.utilities.VideOSCDialogHelper;
@@ -125,7 +126,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 
-		final boolean hasTorch = VideOSCUIHelpers.hasTorch();
+		// FIXME: preliminary
+		final boolean hasTorch;
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+			hasTorch = VideOSCUIHelpers.hasTorch();
+		else
+			hasTorch = false;
+
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
 
@@ -138,7 +145,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
-			cameraPreview = new VideOSCCameraFragment();
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+				cameraPreview = new VideOSCCameraFragment();
+			else
+				cameraPreview = new VideOSCCamera2Fragment();
 
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
@@ -178,8 +188,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
 				// we can not use 'cameraPreview' to retrieve the 'mCamera' object
-				VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-				camera = camPreview.mCamera;
+				// FIXME: just for now deactivate for LOLLIPOP and up
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+					VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+					camera = camPreview.mCamera;
+				}
 
 				if (i == 0) {
 					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);;
