@@ -128,10 +128,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// FIXME: preliminary
 		final boolean hasTorch;
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			hasTorch = VideOSCUIHelpers.hasTorch();
-		else
-			hasTorch = false;
+//		else
+//			hasTorch = false;
 
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
@@ -145,10 +145,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 				cameraPreview = new VideOSCCameraFragment();
-			else
-				cameraPreview = new VideOSCCamera2Fragment();
+//			else
+//				cameraPreview = new VideOSCCamera2Fragment();
 
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
