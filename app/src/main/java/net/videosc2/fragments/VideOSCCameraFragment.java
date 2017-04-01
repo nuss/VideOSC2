@@ -23,6 +23,7 @@
 package net.videosc2.fragments;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
@@ -341,7 +342,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
 						bmp = Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true);
-						BitmapDrawable bmpDraw = new BitmapDrawable(bmp);
+						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), bmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
 						bmpDraw.setFilterBitmap(false);
