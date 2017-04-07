@@ -3,8 +3,10 @@ package net.videosc2.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
@@ -15,20 +17,25 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.util.Size;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import net.videosc2.R;
+import net.videosc2.activities.VideOSCMainActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by stefan on 27.03.17, package net.videosc2.fragments, project VideOSC22.
@@ -37,9 +44,12 @@ import java.util.concurrent.Semaphore;
 public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCCamera2Fragment";
 
+	private String mCameraId;
 	private ViewGroup previewContainer;
 	private ImageView mImage;
-	private Size previewSize;
+	private Size mPreviewSize;
+	private SurfaceHolder mHolder;
+	private Surface mSurface;
 
 	public CameraPreview mPreview;
 
@@ -59,35 +69,20 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		Log.d(TAG, "onCreateView: " + view);
-		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
-
-		Size size = getSmallestPreviewSize();
-
-		if (size.getWidth() > 0 && size.getHeight() > 0)
-			previewSize = size;
-		else {
-			Toast toast = Toast.makeText(getActivity(), "No appropriate preview size could be determined. Sorry!", Toast.LENGTH_SHORT);
-			toast.show();
-		}
-
-		// TODO
 
 		return view;
 	}
 
 	@Override
 	public void onViewCreated(final View view, Bundle savedInstanceState) {
-		Log.d(TAG, "onViewCreated: " + view);
-//		view.findViewById(R.id.picture).setOnClickListener(this);
-//		view.findViewById(R.id.info).setOnClickListener(this);
-//		mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-		mPreview = new CameraPreview(getActivity(), mCameraDevice);
+		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
+		Log.d(TAG, "onViewCreated: " + mImage);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume");
+		openCamera();
 	}
 
 	@Override
@@ -110,14 +105,26 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onOpened(@NonNull CameraDevice cameraDevice) {
+			Log.d(TAG, "CameraDevice.StateCallback onOpened: " + cameraDevice);
 			// This method is called when the camera is opened.  We start camera preview here.
 			mCameraOpenCloseLock.release();
 			mCameraDevice = cameraDevice;
-			createCameraPreviewSession();
+			mPreview = new CameraPreview(getActivity().getApplicationContext(), mCameraDevice);
+			Log.d(TAG, "mPreview in onOpened: " + mPreview);
+			mSurface = mPreview.getSurface();
+
+			try {
+				List<Surface> surfaceList = Collections.singletonList(mSurface);
+				Log.d(TAG, "surfaceList in onOpened: " + surfaceList + ", surface is valid: " + mSurface.isValid());
+				cameraDevice.createCaptureSession(surfaceList, sessionCallback, null);
+			} catch (CameraAccessException e) {
+				Log.e(TAG, "couldn't create capture session for camera: " + cameraDevice.getId(), e);
+			}
 		}
 
 		@Override
 		public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+			Log.d(TAG, "CameraDevice.StateCallback onDisconnected: " + cameraDevice);
 			mCameraOpenCloseLock.release();
 			cameraDevice.close();
 			mCameraDevice = null;
@@ -125,6 +132,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onError(@NonNull CameraDevice cameraDevice, int error) {
+			Log.d(TAG, "CameraDevice.StateCallback onError: " + cameraDevice + ", error: " + error);
 			mCameraOpenCloseLock.release();
 			cameraDevice.close();
 			mCameraDevice = null;
@@ -136,39 +144,37 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 	};
 
-/*
-	public final TextureView.SurfaceTextureListener mSurfaceTextureListener
-			= new TextureView.SurfaceTextureListener() {
+	CameraCaptureSession.StateCallback sessionCallback = new CameraCaptureSession.StateCallback() {
 
 		@Override
-		public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-			Log.d(TAG, "onSurfaceTextureAvailable");
-			openCamera(width, height);
+		public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+			Log.d(TAG, "CameraCaptureSession.StateCallback onConfigured: " + cameraCaptureSession);
 		}
 
 		@Override
-		public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
-			Log.d(TAG, "onSurfaceTextureChanged");
+		public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+			Log.d(TAG, "CameraCaptureSession.StateCallback onConfiguredFailed: " + cameraCaptureSession);
 		}
-
-		@Override
-		public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
-			Log.d(TAG, "onSurfaceTextureDestroyed");
-			return true;
-		}
-
-		@Override
-		public void onSurfaceTextureUpdated(SurfaceTexture texture) {
-			Log.d(TAG, "onSurfaceTextureUpdated");
-		}
-
 	};
-*/
 
 	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
 		public CameraPreview(Context context, CameraDevice cameraDevice) {
 			super(context);
+
+			mHolder = getHolder();
+			mHolder.addCallback(this);
+//			mSurface = mHolder.getSurface();
+
+//			Log.d(TAG, "CameraPreview constructor - surface: " + mSurface);
+
+			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+			Display display = wm.getDefaultDisplay();
+			display.getSize(VideOSCMainActivity.dimensions);
+		}
+
+		private Surface getSurface() {
+			return mHolder.getSurface();
 		}
 
 		@Override
@@ -187,46 +193,62 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 	}
 
-	private void createCameraPreviewSession() {
-		// TODO
+	private void openCamera() {
+		CameraManager manager = setUpCameraOutputs();
+
+		try {
+			if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+				throw new RuntimeException("Time out waiting to lock camera opening.");
+			}
+			manager.openCamera(mCameraId, mStateCallback, null);
+		} catch (CameraAccessException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+		}
 	}
 
-	private Size getSmallestPreviewSize() {
-		Size optimalSize = new Size(0, 0);
-		CameraManager manager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+	/**
+	 * Sets up member variables related to camera.
+	 */
+	private CameraManager setUpCameraOutputs() {
+		Activity activity = getActivity();
+		CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
 		ArrayList<Integer> productList = new ArrayList<>();
-
 
 		try {
 			for (String cameraId : manager.getCameraIdList()) {
-				CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+				CameraCharacteristics characteristics
+						= manager.getCameraCharacteristics(cameraId);
+
+				// We don't use a front facing camera in this sample.
 				Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-
 				if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
-					continue;
+
+					StreamConfigurationMap map = characteristics.get(
+							CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+					if (map == null) {
+						continue;
+					}
+
+					Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
+
+					for (Size tmpSize : previewSizes) {
+						productList.add(tmpSize.getWidth() * tmpSize.getHeight());
+					}
+
+					int minIndex = productList.indexOf(Collections.min(productList));
+					mPreviewSize = previewSizes[minIndex];
+					mCameraId = cameraId;
+					Log.d(TAG, "cameraId: " + cameraId + ", preview size: " + mPreviewSize.getWidth() + ", " + mPreviewSize.getHeight());
 				}
-
-				StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-				assert map != null;
-				Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
-
-				for (Size tmpSize : previewSizes) {
-					productList.add(tmpSize.getWidth() * tmpSize.getHeight());
-				}
-
-				int minIndex = productList.indexOf(Collections.min(productList));
-				optimalSize = previewSizes[minIndex];
-				// image format will be YUV_420_888
 			}
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
 		}
 
-		return optimalSize;
+		return manager;
 	}
 
-	private void openCamera(int width, int height) {
-
-	}
 }
 

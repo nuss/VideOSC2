@@ -128,10 +128,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// FIXME: preliminary
 		final boolean hasTorch;
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			hasTorch = VideOSCUIHelpers.hasTorch();
-//		else
-//			hasTorch = false;
+		else
+			hasTorch = false;
 
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
@@ -145,10 +145,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
-//			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 				cameraPreview = new VideOSCCameraFragment();
-//			else
-//				cameraPreview = new VideOSCCamera2Fragment();
+			else
+				cameraPreview = new VideOSCCamera2Fragment();
 
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
@@ -209,10 +209,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == 1 && hasTorch) {
+					Log.d(TAG, "camera: " + camera);
 					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);;
 					if (camera != null) {
 						Camera.Parameters cParameters = camera.getParameters();
 						String flashMode = cParameters.getFlashMode();
+						Log.d(TAG, "flash mode: " + flashMode);
 						indicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 						isTorchOn = !isTorchOn;
 						if (!flashMode.equals("torch")) {
@@ -416,6 +418,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) camView);
 			VideOSCUIHelpers.removeView(bg, (FrameLayout) camView);
 			VideOSCUIHelpers.resetSystemUIState(camView);
+			toolsDrawerLayout.closeDrawer(Gravity.END);
 			isSettingsFirstLevel = false;
 		} else {
 			findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
