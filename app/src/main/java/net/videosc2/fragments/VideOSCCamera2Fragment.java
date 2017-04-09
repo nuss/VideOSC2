@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -13,6 +14,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -83,6 +85,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	public void onResume() {
 		super.onResume();
 		openCamera();
+		Log.d(TAG, "onResume");
 	}
 
 	@Override
@@ -109,9 +112,9 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			// This method is called when the camera is opened.  We start camera preview here.
 			mCameraOpenCloseLock.release();
 			mCameraDevice = cameraDevice;
-			mPreview = new CameraPreview(getActivity().getApplicationContext(), mCameraDevice);
-			Log.d(TAG, "mPreview in onOpened: " + mPreview);
+			mPreview = new CameraPreview(getActivity().getApplicationContext(), cameraDevice);
 			mSurface = mPreview.getSurface();
+			Log.d(TAG, "surface in onOpened: " + mSurface);
 
 			try {
 				List<Surface> surfaceList = Collections.singletonList(mSurface);
@@ -163,6 +166,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			super(context);
 
 			mHolder = getHolder();
+
 			mHolder.addCallback(this);
 //			mSurface = mHolder.getSurface();
 

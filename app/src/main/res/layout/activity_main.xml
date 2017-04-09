@@ -15,14 +15,6 @@
 		android:animateLayoutChanges="true"
 		android:layout_height="fill_parent">
 
-		<ImageView
-			android:id="@+id/camera_downscaled"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:antialias="false"
-			android:contentDescription="@string/preview_image_content_description"
-			android:scaleType="fitXY"/>
-
 		<ImageButton
 			android:id="@+id/show_menu"
 			style="?android:attr/borderlessButtonStyle"
