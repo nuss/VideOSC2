@@ -14,6 +14,8 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -52,7 +54,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private Size mPreviewSize;
 	private SurfaceHolder mHolder;
 	private Surface mSurface;
-
+	private HandlerThread mBackgroundThread;
+	private Handler mBackgroundHandler;
 	public CameraPreview mPreview;
 
 	/**
@@ -84,8 +87,9 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		startBackgroundThread();
 		openCamera();
-		Log.d(TAG, "onResume");
+		Log.d(TAG, "onResume - camera should be opened");
 	}
 
 	@Override
@@ -118,8 +122,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 			try {
 				List<Surface> surfaceList = Collections.singletonList(mSurface);
+				cameraDevice.createCaptureSession(surfaceList, sessionCallback, mBackgroundHandler);
 				Log.d(TAG, "surfaceList in onOpened: " + surfaceList + ", surface is valid: " + mSurface.isValid());
-				cameraDevice.createCaptureSession(surfaceList, sessionCallback, null);
 			} catch (CameraAccessException e) {
 				Log.e(TAG, "couldn't create capture session for camera: " + cameraDevice.getId(), e);
 			}
@@ -166,15 +170,17 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			super(context);
 
 			mHolder = getHolder();
-
 			mHolder.addCallback(this);
 //			mSurface = mHolder.getSurface();
 
 //			Log.d(TAG, "CameraPreview constructor - surface: " + mSurface);
 
-			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			display.getSize(VideOSCMainActivity.dimensions);
+//			Point displaySize = new Point();
+//			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+//			Display display = wm.getDefaultDisplay();
+//			display.getSize(VideOSCMainActivity.dimensions);
+//			display.getSize(displaySize);
+//			Log.d(TAG, "displaySize: " + displaySize);
 		}
 
 		private Surface getSurface() {
@@ -199,12 +205,11 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 	private void openCamera() {
 		CameraManager manager = setUpCameraOutputs();
-
 		try {
 			if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
 				throw new RuntimeException("Time out waiting to lock camera opening.");
 			}
-			manager.openCamera(mCameraId, mStateCallback, null);
+			manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -244,6 +249,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 					int minIndex = productList.indexOf(Collections.min(productList));
 					mPreviewSize = previewSizes[minIndex];
 					mCameraId = cameraId;
+					Point displaySize = new Point();
+					activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
 					Log.d(TAG, "cameraId: " + cameraId + ", preview size: " + mPreviewSize.getWidth() + ", " + mPreviewSize.getHeight());
 				}
 			}
@@ -252,6 +259,29 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 
 		return manager;
+	}
+
+	/**
+	 * Starts a background thread and its {@link Handler}.
+	 */
+	private void startBackgroundThread() {
+		mBackgroundThread = new HandlerThread("CameraBackground");
+		mBackgroundThread.start();
+		mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+	}
+
+	/**
+	 * Stops the background thread and its {@link Handler}.
+	 */
+	private void stopBackgroundThread() {
+		mBackgroundThread.quitSafely();
+		try {
+			mBackgroundThread.join();
+			mBackgroundThread = null;
+			mBackgroundHandler = null;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
