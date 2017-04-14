@@ -70,7 +70,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// View to display the camera output.
 	private CameraPreview mPreview;
 	// preview container
-	private ViewGroup previewContainer;
+	private ViewGroup mPreviewContainer;
 
 	// Reference to the ImageView containing the downscaled video frame
 	private ImageView mImage;
@@ -96,7 +96,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		Log.d(TAG, "onCreateView: " + view);
 		// store the container for later re-use
-		previewContainer = container;
+		mPreviewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
@@ -331,7 +331,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						VideOSCCameraFragment.now = System.currentTimeMillis();
 						frameRate = Math.round(1000.0f/(now - prev) * 10.0f) / 10.0f;
 						VideOSCCameraFragment.prev = VideOSCCameraFragment.now;
-						TextView frameRateText = (TextView) previewContainer.findViewById(R.id.fps);
+						TextView frameRateText = (TextView) mPreviewContainer.findViewById(R.id.fps);
 						if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
 
 						int outWidth = 6;

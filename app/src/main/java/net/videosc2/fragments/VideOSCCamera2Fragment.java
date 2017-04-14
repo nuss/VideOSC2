@@ -3,6 +3,7 @@ package net.videosc2.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -11,7 +12,10 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
+import android.media.ImageReader;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,13 +33,19 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -57,6 +67,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private HandlerThread mBackgroundThread;
 	private Handler mBackgroundHandler;
 	public CameraPreview mPreview;
+	private CaptureRequest mPreviewRequest;
+	private CameraCaptureSession.CaptureCallback mCaptureCallback;
 
 	/**
 	 * A {@link Semaphore} to prevent the app from exiting before closing the camera.
@@ -64,46 +76,9 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
 	private CameraDevice mCameraDevice;
-
-	public VideOSCCamera2Fragment() {
-		super();
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
-		Log.d(TAG, "onCreateView: " + view);
-
-		return view;
-	}
-
-	@Override
-	public void onViewCreated(final View view, Bundle savedInstanceState) {
-		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
-		Log.d(TAG, "onViewCreated: " + mImage);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		startBackgroundThread();
-		openCamera();
-		Log.d(TAG, "onResume - camera should be opened");
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		Log.d(TAG, "onPause");
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy");
-		// TODO
-	}
+	private CaptureRequest.Builder mPreviewRequestBuilder;
+	private ImageReader mImageReader;
+	private CameraCaptureSession mCaptureSession;
 
 	/**
 	 * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
@@ -116,17 +91,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			// This method is called when the camera is opened.  We start camera preview here.
 			mCameraOpenCloseLock.release();
 			mCameraDevice = cameraDevice;
-			mPreview = new CameraPreview(getActivity().getApplicationContext(), cameraDevice);
-			mSurface = mPreview.getSurface();
-			Log.d(TAG, "surface in onOpened: " + mSurface);
-
-			try {
-				List<Surface> surfaceList = Collections.singletonList(mSurface);
-				cameraDevice.createCaptureSession(surfaceList, sessionCallback, mBackgroundHandler);
-				Log.d(TAG, "surfaceList in onOpened: " + surfaceList + ", surface is valid: " + mSurface.isValid());
-			} catch (CameraAccessException e) {
-				Log.e(TAG, "couldn't create capture session for camera: " + cameraDevice.getId(), e);
-			}
 		}
 
 		@Override
@@ -151,7 +115,55 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 	};
 
-	CameraCaptureSession.StateCallback sessionCallback = new CameraCaptureSession.StateCallback() {
+	public VideOSCCamera2Fragment() {
+		super();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
+		Log.d(TAG, "onCreateView: " + view);
+
+		return view;
+	}
+
+	@Override
+	public void onViewCreated(final View view, Bundle savedInstanceState) {
+		FrameLayout preview;
+
+		startBackgroundThread();
+		CameraManager manager = setUpCameraOutputs();
+		mPreview = new CameraPreview(getActivity().getApplicationContext());
+		preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+		preview.addView(mPreview);
+		openCamera(manager);
+		Log.d(TAG, "CameraPreview (mPreview): " + mPreview.getWidth() + ", " + mPreview.getHeight() + " (id: " + mPreview.getId() + ")");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(TAG, "onResume - camera should be opened");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.d(TAG, "onPause");
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy");
+		// TODO
+	}
+
+	/**
+	 * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
+	 */
+	CameraCaptureSession.StateCallback mSessionCallback = new CameraCaptureSession.StateCallback() {
 
 		@Override
 		public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
@@ -160,36 +172,32 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-			Log.d(TAG, "CameraCaptureSession.StateCallback onConfiguredFailed: " + cameraCaptureSession);
+			Log.d(TAG, "CameraCaptureSession.StateCallback onConfiguredFailed: " + cameraCaptureSession.getDevice());
 		}
 	};
 
 	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+		private CameraDevice pCamera;
 
-		public CameraPreview(Context context, CameraDevice cameraDevice) {
+		public CameraPreview(Context context) {
 			super(context);
 
+			Point holderSize = new Point();
+			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+			Display display = wm.getDefaultDisplay();
+			display.getSize(holderSize);
 			mHolder = getHolder();
+//			mHolder.setFixedSize(holderSize.x, holderSize.y);
+			mHolder.setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+			mHolder.setFormat(PixelFormat.RGBA_8888);
+			mSurface = mHolder.getSurface();
 			mHolder.addCallback(this);
-//			mSurface = mHolder.getSurface();
-
-//			Log.d(TAG, "CameraPreview constructor - surface: " + mSurface);
-
-//			Point displaySize = new Point();
-//			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//			Display display = wm.getDefaultDisplay();
-//			display.getSize(VideOSCMainActivity.dimensions);
-//			display.getSize(displaySize);
-//			Log.d(TAG, "displaySize: " + displaySize);
-		}
-
-		private Surface getSurface() {
-			return mHolder.getSurface();
 		}
 
 		@Override
 		public void surfaceCreated(SurfaceHolder surfaceHolder) {
 			Log.d(TAG, "surfaceCreated");
+			createCameraPreviewSession();
 		}
 
 		@Override
@@ -203,19 +211,85 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 	}
 
-	private void openCamera() {
-		CameraManager manager = setUpCameraOutputs();
-		try {
-			if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-				throw new RuntimeException("Time out waiting to lock camera opening.");
+	/**
+	 * Opens the camera specified by {@link VideOSCCamera2Fragment#mCameraId}.
+	 */
+	private void openCamera(final CameraManager manager) {
+		manager.registerAvailabilityCallback(new CameraManager.AvailabilityCallback() {
+			@Override
+			public void onCameraAvailable(@NonNull String cameraId) {
+				super.onCameraAvailable(cameraId);
+				try {
+					if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+						throw new RuntimeException("Time out waiting to lock camera opening.");
+					}
+					manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+					Log.d(TAG, "camera opened");
+				} catch (CameraAccessException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+				}
 			}
-			manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+		}, null);
+	}
+
+	/**
+	 * Creates a new {@link CameraCaptureSession} for camera preview.
+	 */
+	private void createCameraPreviewSession() {
+		try {
+			// We set up a CaptureRequest.Builder with the output Surface.
+			mPreviewRequestBuilder
+					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+			Log.d(TAG, "createCameraPreviewSession: " + mSurface + " (valid: " + mSurface.isValid() + ")" + ", mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
+			mPreviewRequestBuilder.addTarget(mSurface);
+
+			// Here, we create a CameraCaptureSession for camera preview.
+			mCameraDevice.createCaptureSession(Arrays.asList(mSurface, mImageReader.getSurface()),
+					new CameraCaptureSession.StateCallback() {
+
+						@Override
+						public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+							// The camera is already closed
+							if (null == mCameraDevice) {
+								return;
+							}
+
+							// When the session is ready, we start displaying the preview.
+							mCaptureSession = cameraCaptureSession;
+							try {
+								// Auto focus should be continuous for camera preview.
+								mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+										CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+
+								// Finally, we start displaying the camera preview.
+								mPreviewRequest = mPreviewRequestBuilder.build();
+								mCaptureSession.setRepeatingRequest(mPreviewRequest,
+										mCaptureCallback, mBackgroundHandler);
+								Log.d(TAG, "capture session configured");
+							} catch (CameraAccessException e) {
+								e.printStackTrace();
+							}
+						}
+
+						@Override
+						public void onConfigureFailed(
+								@NonNull CameraCaptureSession cameraCaptureSession) {
+							showToast("Failed");
+							Log.d(TAG, "configuring capture session failed");
+						}
+					}, null
+			);
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
 		}
 	}
+
+	private void showToast(String msg) {
+
+	}
+
 
 	/**
 	 * Sets up member variables related to camera.
@@ -248,10 +322,10 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 					int minIndex = productList.indexOf(Collections.min(productList));
 					mPreviewSize = previewSizes[minIndex];
+					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 					mCameraId = cameraId;
-					Point displaySize = new Point();
-					activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-					Log.d(TAG, "cameraId: " + cameraId + ", preview size: " + mPreviewSize.getWidth() + ", " + mPreviewSize.getHeight());
+					Log.d(TAG, "mImageReader: " + mImageReader + ", mCameraId: " + mCameraId + ", mPreviewSize: " + mPreviewSize);
 				}
 			}
 		} catch (CameraAccessException e) {
@@ -259,6 +333,46 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 
 		return manager;
+	}
+
+	/**
+	 * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
+	 * still image is ready to be saved.
+	 */
+	private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
+			= new ImageReader.OnImageAvailableListener() {
+
+		@Override
+		public void onImageAvailable(ImageReader reader) {
+			Log.d(TAG, "onImageAvailable");
+			mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+		}
+
+	};
+
+	/**
+	 * Saves a JPEG {@link Image} into the specified {@link File}.
+	 */
+	private static class ImageSaver implements Runnable {
+
+		/**
+		 * The JPEG image
+		 */
+		private final Image mImage;
+
+
+		ImageSaver(Image image) {
+			mImage = image;
+		}
+
+		@Override
+		public void run() {
+			ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+			byte[] bytes = new byte[buffer.remaining()];
+			buffer.get(bytes);
+			Log.d(TAG, "bytes[0]: " + bytes[0]);
+		}
+
 	}
 
 	/**

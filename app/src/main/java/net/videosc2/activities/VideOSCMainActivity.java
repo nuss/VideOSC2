@@ -360,11 +360,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 			camView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		toolsDrawerLayout.openDrawer(Gravity.END);
 
-//		drawerToggle = setupDrawerToggle();
-//		mDrawer.addDrawerListener(drawerToggle);
-
 		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
+//		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 	}
