@@ -3,9 +3,11 @@ package net.videosc2.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -30,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -39,6 +42,7 @@ import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.views.AutoFitTextureView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,15 +63,14 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCCamera2Fragment";
 
 	private String mCameraId;
-	private ViewGroup previewContainer;
 	private ImageView mImage;
 	private Size mPreviewSize;
-	private SurfaceHolder mHolder;
 	private Surface mSurface;
 	private HandlerThread mBackgroundThread;
 	private Handler mBackgroundHandler;
-	public CameraPreview mPreview;
-	private CaptureRequest mPreviewRequest;
+	public AutoFitTextureView mTextureView;
+	private CaptureRequest mTextureViewRequest;
+	private CameraManager mCameraManager;
 	private CameraCaptureSession.CaptureCallback mCaptureCallback;
 
 	/**
@@ -81,6 +84,38 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private CameraCaptureSession mCaptureSession;
 
 	/**
+	 * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
+	 * {@link TextureView}.
+	 */
+	private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+			= new TextureView.SurfaceTextureListener() {
+
+		@Override
+		public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+			Log.d(TAG, "onSurfaceTextureAvailable");
+			mCameraManager = setUpCameraOutputs();
+			openCamera(mCameraManager);
+		}
+
+		@Override
+		public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+			Log.d(TAG, "onSurfaceTextureSizeChanged");
+			configureTransform(width, height);
+		}
+
+		@Override
+		public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+			Log.d(TAG, "onSurfaceTextureDestroyed");
+			return true;
+		}
+
+		@Override
+		public void onSurfaceTextureUpdated(SurfaceTexture texture) {
+			Log.d(TAG, "onSurfaceTextureUpdated");
+		}
+
+	};
+	/**
 	 * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
 	 */
 	private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -91,6 +126,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			// This method is called when the camera is opened.  We start camera preview here.
 			mCameraOpenCloseLock.release();
 			mCameraDevice = cameraDevice;
+			createCameraPreviewSession();
 		}
 
 		@Override
@@ -133,17 +169,31 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		FrameLayout preview;
 
 		startBackgroundThread();
-		CameraManager manager = setUpCameraOutputs();
-		mPreview = new CameraPreview(getActivity().getApplicationContext());
+//		CameraManager manager = setUpCameraOutputs();
+		mTextureView = new AutoFitTextureView(getActivity());
 		preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-		preview.addView(mPreview);
-		openCamera(manager);
-		Log.d(TAG, "CameraPreview (mPreview): " + mPreview.getWidth() + ", " + mPreview.getHeight() + " (id: " + mPreview.getId() + ")");
+		preview.addView(mTextureView);
+//		openCamera(manager);
+		Log.d(TAG, "CameraPreview (mTextureView): " + mTextureView.getWidth() + ", " + mTextureView.getHeight() + " (id: " + mTextureView.getId() + ")");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		// When the screen is turned off and turned back on, the SurfaceTexture is already
+		// available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
+		// a camera and start preview from here (otherwise, we wait until the surface is ready in
+		// the SurfaceTextureListener).
+		if (mTextureView.isAvailable()) {
+//			openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+			if (mCameraManager == null)
+				mCameraManager = setUpCameraOutputs();
+			openCamera(mCameraManager);
+		} else {
+			mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+		}
+
 		Log.d(TAG, "onResume - camera should be opened");
 	}
 
@@ -176,41 +226,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		}
 	};
 
-	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-		private CameraDevice pCamera;
-
-		public CameraPreview(Context context) {
-			super(context);
-
-			Point holderSize = new Point();
-			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			display.getSize(holderSize);
-			mHolder = getHolder();
-//			mHolder.setFixedSize(holderSize.x, holderSize.y);
-			mHolder.setFixedSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-			mHolder.setFormat(PixelFormat.RGBA_8888);
-			mSurface = mHolder.getSurface();
-			mHolder.addCallback(this);
-		}
-
-		@Override
-		public void surfaceCreated(SurfaceHolder surfaceHolder) {
-			Log.d(TAG, "surfaceCreated");
-			createCameraPreviewSession();
-		}
-
-		@Override
-		public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-			Log.d(TAG, "surfaceChanged - surfaceHolder: " + surfaceHolder + ", i: " + i + ", i1: " + i1 + ", i2: " + i2);
-		}
-
-		@Override
-		public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-			Log.d(TAG, "surfaceDestroyed - surfaceHolder: " + surfaceHolder);
-		}
-	}
-
 	/**
 	 * Opens the camera specified by {@link VideOSCCamera2Fragment#mCameraId}.
 	 */
@@ -239,14 +254,22 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	 */
 	private void createCameraPreviewSession() {
 		try {
+			SurfaceTexture texture = mTextureView.getSurfaceTexture();
+			assert texture != null;
+
+			// We configure the size of default buffer to be the size of camera preview we want.
+			texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+
+			// This is the output Surface we need to start preview.
+			Surface surface = new Surface(texture);
 			// We set up a CaptureRequest.Builder with the output Surface.
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-			Log.d(TAG, "createCameraPreviewSession: " + mSurface + " (valid: " + mSurface.isValid() + ")" + ", mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
-			mPreviewRequestBuilder.addTarget(mSurface);
+			Log.d(TAG, "createCameraPreviewSession, mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
+			mPreviewRequestBuilder.addTarget(surface);
 
 			// Here, we create a CameraCaptureSession for camera preview.
-			mCameraDevice.createCaptureSession(Arrays.asList(mSurface, mImageReader.getSurface()),
+			mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()),
 					new CameraCaptureSession.StateCallback() {
 
 						@Override
@@ -264,8 +287,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 										CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
 								// Finally, we start displaying the camera preview.
-								mPreviewRequest = mPreviewRequestBuilder.build();
-								mCaptureSession.setRepeatingRequest(mPreviewRequest,
+								mTextureViewRequest = mPreviewRequestBuilder.build();
+								mCaptureSession.setRepeatingRequest(mTextureViewRequest,
 										mCaptureCallback, mBackgroundHandler);
 								Log.d(TAG, "capture session configured");
 							} catch (CameraAccessException e) {
@@ -285,6 +308,40 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Configures the necessary {@link android.graphics.Matrix} transformation to `mTextureView`.
+	 * This method should be called after the camera preview size is determined in
+	 * setUpCameraOutputs and also the size of `mTextureView` is fixed.
+	 *
+	 * @param viewWidth  The width of `mTextureView`
+	 * @param viewHeight The height of `mTextureView`
+	 */
+	private void configureTransform(int viewWidth, int viewHeight) {
+		Activity activity = getActivity();
+		if (null == mTextureView || null == mPreviewSize || null == activity) {
+			return;
+		}
+		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+		Matrix matrix = new Matrix();
+		RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+		RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
+		float centerX = viewRect.centerX();
+		float centerY = viewRect.centerY();
+		if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+			bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+			matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+			float scale = Math.max(
+					(float) viewHeight / mPreviewSize.getHeight(),
+					(float) viewWidth / mPreviewSize.getWidth());
+			matrix.postScale(scale, scale, centerX, centerY);
+			matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+		} else if (Surface.ROTATION_180 == rotation) {
+			matrix.postRotate(180, centerX, centerY);
+		}
+		mTextureView.setTransform(matrix);
+	}
+
 
 	private void showToast(String msg) {
 
