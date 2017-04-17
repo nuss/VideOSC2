@@ -108,7 +108,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
-			Log.d(TAG, "onSurfaceTextureSizeChanged");
+			Log.d(TAG, "onSurfaceTextureSizeChanged, width: " + width + ", height: " + height);
 			configureTransform(width, height);
 		}
 
@@ -182,7 +182,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		mTextureView = new AutoFitTextureView(getActivity());
 		preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 		preview.addView(mTextureView);
-		Log.d(TAG, "onViewCreated, CameraPreview (mTextureView), width: " + mTextureView.getWidth() + ", height:" + mTextureView.getHeight());
+		Log.d(TAG, "onViewCreated, CameraPreview (mTextureView), width: " + mTextureView.getWidth() + ", height:" + mTextureView.getHeight() + ", transform: " + mTextureView.getTransform(null));
 	}
 
 	@Override
@@ -284,8 +284,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			assert texture != null;
 
 			// We configure the size of default buffer to be the size of camera preview we want.
+			// FIXME: for some reason this doesn't always trigger onSurfaceTextureSizeChanged in the TextureView.SurfaceTextureListener which causes the preview to be displayed rotated by 90 degrees
 			texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-			Log.d(TAG, "display rotation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation() + ", sensor rotation: " + mCameraManager.getCameraCharacteristics(mCameraId).get(CameraCharacteristics.SENSOR_ORIENTATION));
 
 			// This is the output Surface we need to start preview.
 			Surface surface = new Surface(texture);
@@ -369,7 +369,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		mTextureView.setTransform(matrix);
 	}
 
-
 	private void showToast(String msg) {
 
 	}
@@ -430,7 +429,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
 					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 					mCameraId = cameraId;
-					Log.d(TAG, "mImageReader: " + mImageReader + ", mCameraId: " + mCameraId + ", mPreviewSize: " + mPreviewSize);
+					Log.d(TAG, "display rotation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation() + ", sensor rotation: " + manager.getCameraCharacteristics(mCameraId).get(CameraCharacteristics.SENSOR_ORIENTATION));
+//					Log.d(TAG, "mImageReader: " + mImageReader + ", mCameraId: " + mCameraId + ", mPreviewSize: " + mPreviewSize);
 				}
 			}
 		} catch (CameraAccessException e) {

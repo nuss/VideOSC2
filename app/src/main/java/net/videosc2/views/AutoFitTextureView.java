@@ -18,12 +18,14 @@ package net.videosc2.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.TextureView;
 
 /**
  * A {@link TextureView} that can be adjusted to a specified aspect ratio.
  */
 public class AutoFitTextureView extends TextureView {
+	private final static String TAG = "AutoFitTextureView";
 
     private int mRatioWidth = 0;
     private int mRatioHeight = 0;
@@ -62,12 +64,16 @@ public class AutoFitTextureView extends TextureView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+	    Log.d(TAG, "widthMeasureSpec: " + widthMeasureSpec + ", heightMeasureSpec: " + heightMeasureSpec);
         if (0 == mRatioWidth || 0 == mRatioHeight) {
+	        Log.d(TAG, "width: " + width + ", height: " + height);
             setMeasuredDimension(width, height);
         } else {
             if (width < height * mRatioWidth / mRatioHeight) {
+                Log.d(TAG, "width (" + width + ") < height (" + height + ") * mRatioWidth (" + mRatioWidth + ") / mRatioHeight (" + mRatioHeight + ")");
                 setMeasuredDimension(width, width * mRatioHeight / mRatioWidth);
             } else {
+	            Log.d(TAG, "width: " + width + ", height: " + height + ", mRatioWidth: " + mRatioWidth + ", mRatioHeight: " + mRatioHeight);
                 setMeasuredDimension(height * mRatioWidth / mRatioHeight, height);
             }
         }
