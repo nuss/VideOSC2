@@ -1,12 +1,16 @@
 package net.videosc2.fragments;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
-import android.graphics.PixelFormat;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -22,36 +26,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v13.app.FragmentCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
-import android.view.Display;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import net.videosc2.R;
-import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.views.AutoFitTextureView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +58,16 @@ import java.util.concurrent.TimeUnit;
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCCamera2Fragment";
+
+	private static final int REQUEST_CAMERA_PERMISSION = 1;
+	private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
+	static {
+		ORIENTATIONS.append(Surface.ROTATION_0, 90);
+		ORIENTATIONS.append(Surface.ROTATION_90, 0);
+		ORIENTATIONS.append(Surface.ROTATION_180, 270);
+		ORIENTATIONS.append(Surface.ROTATION_270, 180);
+	}
 
 	private String mCameraId;
 	private ImageView mImage;
@@ -92,8 +99,10 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-			Log.d(TAG, "onSurfaceTextureAvailable");
-			mCameraManager = setUpCameraOutputs();
+			Log.d(TAG, "onSurfaceTextureAvailable, camera manager: " + mCameraManager);
+
+			if (mCameraManager == null)
+				mCameraManager = setUpCameraOutputs();
 			openCamera(mCameraManager);
 		}
 
@@ -111,7 +120,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureUpdated(SurfaceTexture texture) {
-			Log.d(TAG, "onSurfaceTextureUpdated");
+//			Log.d(TAG, "onSurfaceTextureUpdated");
 		}
 
 	};
@@ -173,32 +182,35 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		mTextureView = new AutoFitTextureView(getActivity());
 		preview = (FrameLayout) view.findViewById(R.id.camera_preview);
 		preview.addView(mTextureView);
-//		openCamera(manager);
-		Log.d(TAG, "CameraPreview (mTextureView): " + mTextureView.getWidth() + ", " + mTextureView.getHeight() + " (id: " + mTextureView.getId() + ")");
+		Log.d(TAG, "onViewCreated, CameraPreview (mTextureView), width: " + mTextureView.getWidth() + ", height:" + mTextureView.getHeight());
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 
+		Log.d(TAG, "onResume invoked");
+		startBackgroundThread();
+		if (mCameraManager == null)
+			mCameraManager = setUpCameraOutputs();
 		// When the screen is turned off and turned back on, the SurfaceTexture is already
 		// available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
 		// a camera and start preview from here (otherwise, we wait until the surface is ready in
 		// the SurfaceTextureListener).
 		if (mTextureView.isAvailable()) {
+			Log.d(TAG, "onResume, texture view is available");
 //			openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-			if (mCameraManager == null)
-				mCameraManager = setUpCameraOutputs();
 			openCamera(mCameraManager);
 		} else {
+			Log.d(TAG, "onResume, texture view not available, setting surface texture listener: " + mSurfaceTextureListener);
 			mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
 		}
-
-		Log.d(TAG, "onResume - camera should be opened");
 	}
 
 	@Override
 	public void onPause() {
+		closeCamera();
+		stopBackgroundThread();
 		super.onPause();
 		Log.d(TAG, "onPause");
 	}
@@ -211,43 +223,56 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	}
 
 	/**
-	 * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
-	 */
-	CameraCaptureSession.StateCallback mSessionCallback = new CameraCaptureSession.StateCallback() {
-
-		@Override
-		public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-			Log.d(TAG, "CameraCaptureSession.StateCallback onConfigured: " + cameraCaptureSession);
-		}
-
-		@Override
-		public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-			Log.d(TAG, "CameraCaptureSession.StateCallback onConfiguredFailed: " + cameraCaptureSession.getDevice());
-		}
-	};
-
-	/**
 	 * Opens the camera specified by {@link VideOSCCamera2Fragment#mCameraId}.
 	 */
 	private void openCamera(final CameraManager manager) {
-		manager.registerAvailabilityCallback(new CameraManager.AvailabilityCallback() {
-			@Override
-			public void onCameraAvailable(@NonNull String cameraId) {
-				super.onCameraAvailable(cameraId);
-				try {
-					if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
-						throw new RuntimeException("Time out waiting to lock camera opening.");
-					}
-					manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
-					Log.d(TAG, "camera opened");
-				} catch (CameraAccessException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
-				}
+		Log.d(TAG, "openCamera called");
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
+				!= PackageManager.PERMISSION_GRANTED) {
+			requestCameraPermission();
+			Log.d(TAG, "no camera permission");
+			return;
+		}
+
+		try {
+			if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
+				throw new RuntimeException("Time out waiting to lock camera opening.");
 			}
-		}, null);
+			Log.d(TAG, "opening camera, camera id: " + mCameraId + ", callback: " + mStateCallback + ", handler: " + mBackgroundHandler);
+			manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+			Log.d(TAG, "camera opened");
+		} catch (CameraAccessException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
+		}
 	}
+
+	/**
+	 * Closes the current {@link CameraDevice}.
+	 */
+	private void closeCamera() {
+		try {
+			mCameraOpenCloseLock.acquire();
+			if (null != mCaptureSession) {
+				mCaptureSession.close();
+				mCaptureSession = null;
+			}
+			if (null != mCameraDevice) {
+				mCameraDevice.close();
+				mCameraDevice = null;
+			}
+			if (null != mImageReader) {
+				mImageReader.close();
+				mImageReader = null;
+			}
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
+		} finally {
+			mCameraOpenCloseLock.release();
+		}
+	}
+
 
 	/**
 	 * Creates a new {@link CameraCaptureSession} for camera preview.
@@ -255,17 +280,19 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private void createCameraPreviewSession() {
 		try {
 			SurfaceTexture texture = mTextureView.getSurfaceTexture();
+			Log.d(TAG, "texture: " + texture + ", mPreviewSize: " + mPreviewSize);
 			assert texture != null;
 
 			// We configure the size of default buffer to be the size of camera preview we want.
 			texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+			Log.d(TAG, "display rotation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation() + ", sensor rotation: " + mCameraManager.getCameraCharacteristics(mCameraId).get(CameraCharacteristics.SENSOR_ORIENTATION));
 
 			// This is the output Surface we need to start preview.
 			Surface surface = new Surface(texture);
 			// We set up a CaptureRequest.Builder with the output Surface.
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-			Log.d(TAG, "createCameraPreviewSession, mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
+//			Log.d(TAG, "createCameraPreviewSession, texture surface: " + surface + " (" + surface.isValid() + "), mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
 			mPreviewRequestBuilder.addTarget(surface);
 
 			// Here, we create a CameraCaptureSession for camera preview.
@@ -347,6 +374,27 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 	}
 
+	private void requestCameraPermission() {
+		if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+			new ConfirmationDialog().show(getChildFragmentManager(), "dialog");
+		} else {
+			FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+					REQUEST_CAMERA_PERMISSION);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
+		if (requestCode == REQUEST_CAMERA_PERMISSION) {
+			if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+				ErrorDialog.newInstance(getString(R.string.camera_request_permission))
+						.show(getChildFragmentManager(), "dialog");
+			}
+		} else {
+			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		}
+	}
 
 	/**
 	 * Sets up member variables related to camera.
@@ -433,6 +481,69 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	}
 
 	/**
+	 * Shows OK/Cancel confirmation dialog about camera permission.
+	 */
+	public static class ConfirmationDialog extends DialogFragment {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			final Fragment parent = getParentFragment();
+			return new AlertDialog.Builder(getActivity())
+					.setMessage(R.string.camera_request_permission)
+					.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							FragmentCompat.requestPermissions(parent,
+									new String[]{Manifest.permission.CAMERA},
+									REQUEST_CAMERA_PERMISSION);
+						}
+					})
+					.setNegativeButton(android.R.string.cancel,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									Activity activity = parent.getActivity();
+									if (activity != null) {
+										activity.finish();
+									}
+								}
+							})
+					.create();
+		}
+	}
+
+	/**
+	 * Shows an error message dialog.
+	 */
+	public static class ErrorDialog extends DialogFragment {
+
+		private static final String ARG_MESSAGE = "message";
+
+		public static ErrorDialog newInstance(String message) {
+			ErrorDialog dialog = new ErrorDialog();
+			Bundle args = new Bundle();
+			args.putString(ARG_MESSAGE, message);
+			dialog.setArguments(args);
+			return dialog;
+		}
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			final Activity activity = getActivity();
+			return new AlertDialog.Builder(activity)
+					.setMessage(getArguments().getString(ARG_MESSAGE))
+					.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							activity.finish();
+						}
+					})
+					.create();
+		}
+
+	}
+
+	/**
 	 * Starts a background thread and its {@link Handler}.
 	 */
 	private void startBackgroundThread() {
@@ -456,4 +567,3 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	}
 
 }
-
