@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.views.AutoFitTextureView;
@@ -69,6 +70,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		ORIENTATIONS.append(Surface.ROTATION_270, 180);
 	}
 
+	private View mContainer;
 	private String mCameraId;
 	private ImageView mImage;
 	private Size mPreviewSize;
@@ -79,6 +81,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private CaptureRequest mTextureViewRequest;
 	private CameraManager mCameraManager;
 	private CameraCaptureSession.CaptureCallback mCaptureCallback;
+	private long mPrev = 0;
+
 
 	/**
 	 * A {@link Semaphore} to prevent the app from exiting before closing the camera.
@@ -120,7 +124,11 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureUpdated(SurfaceTexture texture) {
-//			Log.d(TAG, "onSurfaceTextureUpdated");
+			long now = System.currentTimeMillis();
+			float frameRate = Math.round(1000.0f / (now - mPrev) * 10.0f) / 10.0f;
+			mPrev = now;
+			TextView frameRateText = (TextView) mContainer.findViewById(R.id.fps);
+			if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
 		}
 
 	};
@@ -167,6 +175,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		mContainer = container;
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		Log.d(TAG, "onCreateView: " + view);
 
@@ -280,15 +289,18 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private void createCameraPreviewSession() {
 		try {
 			SurfaceTexture texture = mTextureView.getSurfaceTexture();
-			Log.d(TAG, "texture: " + texture + ", mPreviewSize: " + mPreviewSize);
 			assert texture != null;
 
 			// We configure the size of default buffer to be the size of camera preview we want.
-			// FIXME: for some reason this doesn't always trigger onSurfaceTextureSizeChanged in the TextureView.SurfaceTextureListener which causes the preview to be displayed rotated by 90 degrees
+			// FIXME: for some reason this doesn't always trigger onSurfaceTextureSizeChanged in the
+			// TextureView.SurfaceTextureListener which causes the preview to be displayed rotated by 90 degrees
 			texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+			Log.d(TAG, "texture buffer size changed");
 
 			// This is the output Surface we need to start preview.
 			Surface surface = new Surface(texture);
+
+			Log.d(TAG, "surface created");
 			// We set up a CaptureRequest.Builder with the output Surface.
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -301,6 +313,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 						@Override
 						public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+							Log.d(TAG, "cameraCaptureSession: " + cameraCaptureSession);
 							// The camera is already closed
 							if (null == mCameraDevice) {
 								return;
