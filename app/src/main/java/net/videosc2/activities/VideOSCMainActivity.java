@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -35,6 +36,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -398,6 +400,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		View indicatorPanelInner = indicatorPanel.findViewById(R.id.indicator_panel);
 		indicatorPanelInner.bringToFront();
+
+		Settings.System.putInt(this.getContentResolver(),
+				Settings.System.SCREEN_BRIGHTNESS, 20);
+
+		WindowManager.LayoutParams lp = getWindow().getAttributes();
+		lp.screenBrightness = 1;// 100 / 100.0f;
+		getWindow().setAttributes(lp);
+
+		// maybe needed on devices other than Google Nexus?
+		// startActivity(new Intent(this, RefreshScreen.class));
 	}
 
 	@Override

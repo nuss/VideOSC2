@@ -71,7 +71,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private Handler mBackgroundHandler;
 	public AutoFitTextureView mTextureView;
 	private CaptureRequest mTextureViewRequest;
-	private CameraManager mCameraManager;
 	private CameraCaptureSession.CaptureCallback mCaptureCallback;
 	private long mPrev = 0;
 
@@ -95,7 +94,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-			Log.d(TAG, "onSurfaceTextureAvailable, camera manager: " + mCameraManager + ", width: " + width + ", height: " + height);
+			Log.d(TAG, "onSurfaceTextureAvailable, width: " + width + ", height: " + height);
 			openCamera(width, height);
 		}
 
@@ -280,8 +279,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			assert texture != null;
 
 			// We configure the size of default buffer to be the size of camera preview we want.
-			// FIXME: for some reason this doesn't always trigger onSurfaceTextureSizeChanged in the
-			// TextureView.SurfaceTextureListener which causes the preview to be displayed rotated by 90 degrees
 			texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
 			Log.d(TAG, "texture buffer size changed");
 
@@ -293,6 +290,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 			mPreviewRequestBuilder.addTarget(surface);
+			mPreviewRequestBuilder.addTarget(mImageReader.getSurface());
 
 			// Here, we create a CameraCaptureSession for camera preview.
 			mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()),
@@ -426,7 +424,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 					int minIndex = productList.indexOf(Collections.min(productList));
 					mPreviewSize = previewSizes[minIndex];
 					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
-//					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 					mCameraId = cameraId;
 				}
 			}
