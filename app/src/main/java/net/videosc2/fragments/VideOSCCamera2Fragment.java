@@ -61,14 +61,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCCamera2Fragment";
 
 	private static final int REQUEST_CAMERA_PERMISSION = 1;
-	private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
-	static {
-		ORIENTATIONS.append(Surface.ROTATION_0, 90);
-		ORIENTATIONS.append(Surface.ROTATION_90, 0);
-		ORIENTATIONS.append(Surface.ROTATION_180, 270);
-		ORIENTATIONS.append(Surface.ROTATION_270, 180);
-	}
 
 	private View mContainer;
 	private String mCameraId;
@@ -103,11 +95,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
-			Log.d(TAG, "onSurfaceTextureAvailable, camera manager: " + mCameraManager);
-
-			if (mCameraManager == null)
-				mCameraManager = setUpCameraOutputs();
-			openCamera(mCameraManager);
+			Log.d(TAG, "onSurfaceTextureAvailable, camera manager: " + mCameraManager + ", width: " + width + ", height: " + height);
+			openCamera(width, height);
 		}
 
 		@Override
@@ -200,16 +189,13 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		Log.d(TAG, "onResume invoked");
 		startBackgroundThread();
-		if (mCameraManager == null)
-			mCameraManager = setUpCameraOutputs();
 		// When the screen is turned off and turned back on, the SurfaceTexture is already
 		// available, and "onSurfaceTextureAvailable" will not be called. In that case, we can open
 		// a camera and start preview from here (otherwise, we wait until the surface is ready in
 		// the SurfaceTextureListener).
 		if (mTextureView.isAvailable()) {
 			Log.d(TAG, "onResume, texture view is available");
-//			openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-			openCamera(mCameraManager);
+			openCamera(mTextureView.getWidth(), mTextureView.getHeight());
 		} else {
 			Log.d(TAG, "onResume, texture view not available, setting surface texture listener: " + mSurfaceTextureListener);
 			mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
@@ -234,15 +220,17 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	/**
 	 * Opens the camera specified by {@link VideOSCCamera2Fragment#mCameraId}.
 	 */
-	private void openCamera(final CameraManager manager) {
-		Log.d(TAG, "openCamera called");
+	private void openCamera(int width, int height) {
+		Log.d(TAG, "openCamera called - width: " + width + ", height: " + height);
 		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
 				!= PackageManager.PERMISSION_GRANTED) {
 			requestCameraPermission();
 			Log.d(TAG, "no camera permission");
 			return;
 		}
-
+		setUpCameraOutputs();
+		configureTransform(width, height);
+		CameraManager manager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
 		try {
 			if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
 				throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -304,7 +292,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			// We set up a CaptureRequest.Builder with the output Surface.
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-//			Log.d(TAG, "createCameraPreviewSession, texture surface: " + surface + " (" + surface.isValid() + "), mImageReader surface: " + mImageReader.getSurface() + "(surface is valid: " + mImageReader.getSurface().isValid() + "), camera: " + mCameraDevice);
 			mPreviewRequestBuilder.addTarget(surface);
 
 			// Here, we create a CameraCaptureSession for camera preview.
@@ -411,9 +398,8 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 	/**
 	 * Sets up member variables related to camera.
 	 */
-	private CameraManager setUpCameraOutputs() {
-		Activity activity = getActivity();
-		CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+	private void setUpCameraOutputs(/*int width, int height*/) {
+		CameraManager manager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
 		ArrayList<Integer> productList = new ArrayList<>();
 
 		try {
@@ -440,17 +426,13 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 					int minIndex = productList.indexOf(Collections.min(productList));
 					mPreviewSize = previewSizes[minIndex];
 					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
-					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+//					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 					mCameraId = cameraId;
-					Log.d(TAG, "display rotation: " + getActivity().getWindowManager().getDefaultDisplay().getRotation() + ", sensor rotation: " + manager.getCameraCharacteristics(mCameraId).get(CameraCharacteristics.SENSOR_ORIENTATION));
-//					Log.d(TAG, "mImageReader: " + mImageReader + ", mCameraId: " + mCameraId + ", mPreviewSize: " + mPreviewSize);
 				}
 			}
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
 		}
-
-		return manager;
 	}
 
 	/**
