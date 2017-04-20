@@ -9,10 +9,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -52,6 +54,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import jp.co.cyberagent.android.gpuimage.PixelBuffer;
 
 /**
  * Created by stefan on 27.03.17, package net.videosc2.fragments, project VideOSC22.
@@ -290,10 +294,11 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			mPreviewRequestBuilder
 					= mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
 			mPreviewRequestBuilder.addTarget(surface);
-			mPreviewRequestBuilder.addTarget(mImageReader.getSurface());
+			Surface imgReaderSurface = mImageReader.getSurface();
+			mPreviewRequestBuilder.addTarget(imgReaderSurface);
 
 			// Here, we create a CameraCaptureSession for camera preview.
-			mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()),
+			mCameraDevice.createCaptureSession(Arrays.asList(surface, imgReaderSurface),
 					new CameraCaptureSession.StateCallback() {
 
 						@Override
@@ -415,6 +420,10 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 						continue;
 					}
 
+					int[] outputFormats = map.getOutputFormats();
+					for(int format : outputFormats) {
+						Log.d(TAG, "format: " + format);
+					}
 					Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
 
 					for (Size tmpSize : previewSizes) {
@@ -442,8 +451,14 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 
 		@Override
 		public void onImageAvailable(ImageReader reader) {
-			Log.d(TAG, "onImageAvailable");
-			mBackgroundHandler.post(new ImageSaver(reader.acquireLatestImage()));
+//			Log.d(TAG, "onImageAvailable");
+			Image latest = reader.acquireLatestImage();
+			//	Log.d(TAG, "latest, width: " + latest.getWidth() + ", height: " + latest.getHeight());
+			Image.Plane[] planes = latest.getPlanes();
+//			for (int i = 0; i < latest.getPlanes().length; i++) {
+//				Log.d(TAG, "plane " + i + ": " + planes[i] + " (" + planes[i].getBuffer() + ")");
+//			}
+			latest.close();
 		}
 
 	};
