@@ -69,5 +69,6 @@
 	<string name="temperature_sensor">Temperature sensor: Temperature in °C – \'/%1$s/temp\', temperature</string>
 	<string name="geo_location_sensor">Geo location: \'/%1$s/loc\', latitude, longitude, altitude</string>
 	<string name="humidity_sensor">Humidity sensor: Humidity in %% – \'/%1$s/hum\', humidity</string>
+	<string name="camera_request_permission">VideOSC needs the camera permission</string>
 
 </resources>
