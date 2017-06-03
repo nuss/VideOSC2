@@ -32,6 +32,17 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		// Check if an existing view is being reused, otherwise inflate the view
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_item, parent, false);
+			convertView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+				@Override
+				public void onViewAttachedToWindow(View view) {
+					Log.d(TAG, "view attached to window: " + view);
+				}
+
+				@Override
+				public void onViewDetachedFromWindow(View view) {
+					Log.d(TAG, "view detached from window: " + view);
+				}
+			});
 		}
 		// Lookup view for data population
 		ImageView toolView = (ImageView) convertView.findViewById(R.id.tool);

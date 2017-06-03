@@ -433,7 +433,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 					int minIndex = productList.indexOf(Collections.min(productList));
 					mPreviewSize = previewSizes[minIndex];
 					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
-//					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 					mCameraId = cameraId;
 				}
 			}

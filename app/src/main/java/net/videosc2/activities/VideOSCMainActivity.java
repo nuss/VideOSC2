@@ -130,10 +130,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// FIXME: preliminary
 		final boolean hasTorch;
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			hasTorch = VideOSCUIHelpers.hasTorch();
-		else
-			hasTorch = false;
+//		else
+//			hasTorch = false;
 
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
@@ -147,10 +147,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 			camView = findViewById(R.id.camera_preview);
 
 			if (savedInstanceState != null) return;
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+//			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 				cameraPreview = new VideOSCCameraFragment();
-			else
-				cameraPreview = new VideOSCCamera2Fragment();
+//			else
+//				cameraPreview = new VideOSCCamera2Fragment();
 
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, cameraPreview, "CamPreview")
@@ -164,7 +164,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		int drawerIconsId = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
 
 		TypedArray tools = getResources().obtainTypedArray(drawerIconsId);
-//		Log.d(TAG, "tools: " + tools.toString());
+//		Log.d(TAG, "tools: " + tools.getClass());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		toolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
 
@@ -191,10 +191,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 				Context context = getApplicationContext();
 				// we can not use 'cameraPreview' to retrieve the 'mCamera' object
 				// FIXME: just for now deactivate for LOLLIPOP and up
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 					VideOSCCameraFragment camPreview = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 					camera = camPreview.mCamera;
-				}
+//				}
 
 				if (i == 0) {
 					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);;
@@ -306,7 +306,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 											default:
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
 										}
-										isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);;
+										VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);
+										Log.d(TAG, "modePanel visibility: " + modePanel.getDescendantFocusability());
 										isColorModePanelOpen = false;
 									}
 									return false;
