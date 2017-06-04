@@ -306,8 +306,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 											default:
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
 										}
+										view.clearFocus();
 										VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);
-										Log.d(TAG, "modePanel visibility: " + modePanel.getDescendantFocusability());
 										isColorModePanelOpen = false;
 									}
 									return false;
@@ -440,6 +440,24 @@ public class VideOSCMainActivity extends AppCompatActivity
 			isSettingsFirstLevel = true;
 		}
 	}
+
+/*
+	@Override
+	public void onPause() {
+		super.onPause();
+		// TODO
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		View focused = getCurrentFocus();
+		if (focused != null) {
+			focused.clearFocus();
+		}
+		Log.d(TAG, "focused: " + focused);
+	}
+*/
 
 /*
 	@Override
