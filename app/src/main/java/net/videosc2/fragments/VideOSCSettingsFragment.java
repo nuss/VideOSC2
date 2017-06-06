@@ -1,5 +1,7 @@
 package net.videosc2.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +22,8 @@ import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.utilities.VideOSCUI;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +35,18 @@ import java.util.Map;
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
 	private ArrayAdapter<String> itemsAdapter;
+	private Method setSettingsLevel;
 
 	public VideOSCSettingsFragment() {}
 
+/*
 	public static VideOSCSettingsFragment newInstance() {
 		VideOSCSettingsFragment s = new VideOSCSettingsFragment();
 		Bundle args = new Bundle();
 		s.setArguments(args);
 		return s;
 	}
+*/
 
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -59,6 +66,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
+
+		try {
+			Class[] lArg = new Class[1];
+			lArg[0] = Integer.class;
+			setSettingsLevel = getActivity().getClass().getMethod("setSettingsLevel", lArg);
+			Log.d(TAG, "setSettingsLevel: " + setSettingsLevel);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+
+
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
 		itemsAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.settings_selection_item, items);
@@ -71,8 +89,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				VideOSCMainActivity.isSettingsSecondLevel = true;
-				VideOSCMainActivity.isSettingsFirstLevel = false;
+//				VideOSCMainActivity.isSettingsSecondLevel = true;
+//				VideOSCMainActivity.isSettingsFirstLevel = false;
+
+				try {
+					setSettingsLevel.invoke(getActivity(), 2);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+
 				switch (i) {
 					case 0:
 						// network settings

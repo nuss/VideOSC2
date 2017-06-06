@@ -59,9 +59,9 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		// Get the data item for this position
 		if (menuSize == 6)
 			modePosition = 1;
-		if (position != modePosition)
+		if (position != modePosition) {
 			tool = getItem(position);
-		else {
+		} else {
 			tool = getItem(position);
 			if (mode != null) {
 				if (mode.equals(RGBToolbarStatus.RGB_INV)) {
