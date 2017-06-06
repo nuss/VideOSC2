@@ -66,6 +66,7 @@ import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.GestureModes;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
+import net.videosc2.utilities.enums.RGBToolbarStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public Enum interactionMode = InteractionModes.BASIC;
 	// the current gesture mode
 	public Enum gestureMode = GestureModes.SWAP;
+
+	// toolbar status
+	public Enum colorModeToolsDrawer = RGBToolbarStatus.RGB;
 
 	// settings
 	public static boolean isSettingsFirstLevel = false;
@@ -161,9 +165,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		indicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) camView, true);
 
 		// does the device have an inbuilt flash light?
-		int drawerIconsId = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
+		int drawerIconsIds = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
 
-		TypedArray tools = getResources().obtainTypedArray(drawerIconsId);
+		TypedArray tools = getResources().obtainTypedArray(drawerIconsIds);
 //		Log.d(TAG, "tools: " + tools.getClass());
 		toolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		toolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -176,7 +180,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 
 		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, toolsList));
-		Log.d(TAG, "toolsDrawerList adapter set");
 		tools.recycle();
 
 		modePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) camView, false);
@@ -243,7 +246,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 							ImageView red = (ImageView) findViewById(R.id.mode_r);
 							ImageView green = (ImageView) findViewById(R.id.mode_g);
 							ImageView blue = (ImageView) findViewById(R.id.mode_b);
-							Log.d(TAG, "red: " + red + ", green: " + green + ", blue: " + blue);
 							int redRes = isRGBPositive ? R.drawable.r : R.drawable.r_inv;
 							int greenRes = isRGBPositive ? R.drawable.g : R.drawable.g_inv;
 							int blueRes = isRGBPositive ? R.drawable.b : R.drawable.b_inv;
@@ -274,6 +276,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												}
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
 												indicatorView.setImageResource(R.drawable.rgb_indicator);
+												colorModeToolsDrawer = RGBToolbarStatus.RGB;
 												break;
 											case R.id.mode_rgb_inv:
 												if (isRGBPositive) {
@@ -282,29 +285,40 @@ public class VideOSCMainActivity extends AppCompatActivity
 												}
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
 												indicatorView.setImageResource(R.drawable.rgb_inv_indicator);
+												colorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
 												break;
 											case R.id.mode_r:
-												if (isRGBPositive)
+												if (isRGBPositive) {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
-												else
+													colorModeToolsDrawer = RGBToolbarStatus.R;
+												} else {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r_inv));
+													colorModeToolsDrawer = RGBToolbarStatus.R_INV;
+												}
 												break;
 											case R.id.mode_g:
 												Log.d(TAG, "green");
-												if (isRGBPositive)
+												if (isRGBPositive) {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
-												else
+													colorModeToolsDrawer = RGBToolbarStatus.G;
+												} else {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g_inv));
+													colorModeToolsDrawer = RGBToolbarStatus.G_INV;
+												}
 												break;
 											case R.id.mode_b:
 												Log.d(TAG, "blue");
-												if (isRGBPositive)
+												if (isRGBPositive) {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
-												else
+													colorModeToolsDrawer = RGBToolbarStatus.B;
+												} else {
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b_inv));
+													colorModeToolsDrawer = RGBToolbarStatus.B_INV;
+												}
 												break;
 											default:
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+												colorModeToolsDrawer = RGBToolbarStatus.RGB;
 										}
 										view.clearFocus();
 										VideOSCUIHelpers.removeView(modePanel, (FrameLayout) camView);
@@ -439,6 +453,21 @@ public class VideOSCMainActivity extends AppCompatActivity
 			isSettingsSecondLevel = false;
 			isSettingsFirstLevel = true;
 		}
+	}
+
+/*
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "activity on destroy");
+		// reset static colorModeToolsDrawer enum,
+		// otherwise app will restart with status as set when app was quit
+		colorModeToolsDrawer = RGBToolbarStatus.RGB;
+	}
+*/
+
+	public Enum getColorModeToolsDrawer() {
+		return this.colorModeToolsDrawer;
 	}
 
 /*
