@@ -5,6 +5,7 @@
 		<item>@drawable/light</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interaction</item>
+		<item>@drawable/back_camera</item>
 		<item>@drawable/i</item>
 		<item>@drawable/settings</item>
 		<item>@drawable/exit</item>
@@ -13,6 +14,7 @@
 		<item>@drawable/start</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interaction</item>
+		<item>@drawable/back_camera</item>
 		<item>@drawable/i</item>
 		<item>@drawable/settings</item>
 		<item>@drawable/exit</item>

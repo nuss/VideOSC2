@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -42,8 +43,11 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +98,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
-		Log.d(TAG, "onCreateView: " + view);
+		Log.d(TAG, "onCreateView: " + view.getClass());
 		// store the container for later re-use
 		mPreviewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
@@ -116,22 +120,27 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * @param view the view on which the camera is going to be displayed to the user
 	 * @return a boolean, indicating whether opening the camera was successful
 	 */
-	private boolean safeCameraOpenInView(View view) {
+	public boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
+		Log.d(TAG, "which camera: " + VideOSCMainActivity.currentCameraID + ", camera: " + mCamera);
 		FrameLayout preview;
 
 		qOpened = (mCamera != null);
+		Log.d(TAG, "qOpened: " + qOpened);
 
 		if (qOpened) {
-			mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
-			if (view.findViewById(R.id.camera_preview) != null) {
-				preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-				preview.addView(mPreview, -1);
-				Log.d(TAG, "camera in preview callback: " + mPreview.pCamera);
-				mPreview.previewStarted = mPreview.startCameraPreview();
-			} else Log.d(TAG, "FrameLayout is null");
+			if (mPreview == null) {
+				mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
+				if (view.findViewById(R.id.camera_preview) != null) {
+					preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+					preview.addView(mPreview);
+				} else Log.d(TAG, "FrameLayout is null");
+			} else {
+				mPreview.switchCamera(mCamera);
+			}
+			mPreview.pPreviewStarted = mPreview.startCameraPreview();
 		}
 		return qOpened;
 	}
@@ -145,7 +154,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		Camera c = null;
 
 		try {
-			c = Camera.open(); // attempt to get a Camera instance
+			// TODO: allow switching back-/frontside camera
+			c = Camera.open(VideOSCMainActivity.currentCameraID); // attempt to get a Camera instance
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -201,7 +211,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
-		private boolean previewStarted;
+		private boolean pPreviewStarted;
 
 		/**
 		 *
@@ -229,6 +239,25 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		/**
+		 * switch backside to frontside camera and vice versa
+		 * called within safeCameraOpenInView(View view)
+		 *
+		 * @param camera an instance of Camera
+		 */
+		public void switchCamera(Camera camera) {
+			Log.d(TAG, "switch camera, pCamera: " + camera);
+			pCamera = camera;
+			surfaceDestroyed(mHolder);
+			mHolder.removeCallback(this);
+			ViewGroup parent = (ViewGroup) mPreview.getParent();
+			parent.removeView(mPreview);
+			mPreview = new CameraPreview(getContext(), camera);
+			mHolder = mPreview.getHolder();
+			mHolder.addCallback(this);
+			parent.addView(mPreview);
+		}
+
+		/**
 		 * start the camera preview
 		 */
 		public boolean startCameraPreview() {
@@ -236,6 +265,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				pCamera.setPreviewDisplay(mHolder);
 				pCamera.startPreview();
+				Log.d(TAG, "pCamera: " + pCamera);
 				started = true;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -252,20 +282,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private void setCamera(Camera camera) {
 			pCamera = camera;
 			Log.d(TAG, "setCamera(), pCamera: " + pCamera + ", camera: " + camera);
-//			Camera.Parameters parameters = mCamera.getParameters();
 			Camera.Parameters parameters = camera.getParameters();
+			Log.d(TAG, "set camera, parameters: " + parameters.flatten());
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
 			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
+
+			Log.d(TAG, "preview size: " + mPreviewSize.width + " x " + mPreviewSize.height);
+
 			parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
 			mSupportedFlashModes = parameters.getSupportedFlashModes();
 
 			// Set the camera to Auto Flash mode.
 			if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
 				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-//				mCamera.setParameters(parameters);
-				camera.setParameters(parameters);
 			}
+			camera.setParameters(parameters);
 
 			requestLayout();
 		}
@@ -277,7 +309,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
 			// reactivate the preview after app has been pused and resumed
-			if (!previewStarted) pCamera.startPreview();
+			if (!pPreviewStarted) pCamera.startPreview();
 			try {
 				pCamera.setPreviewDisplay(holder);
 			} catch (IOException e) {
@@ -294,7 +326,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Log.d(TAG, "surfaceDestroyed");
 			if (pCamera != null) {
 				pCamera.stopPreview();
-				previewStarted = false;
+				pPreviewStarted = false;
 			}
 		}
 

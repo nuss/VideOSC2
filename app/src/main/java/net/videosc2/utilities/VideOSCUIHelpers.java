@@ -3,6 +3,7 @@ package net.videosc2.utilities;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Build;
@@ -162,6 +163,19 @@ public class VideOSCUIHelpers {
 	}
 
 	/**
+	 * Check if a frontside camera exists
+	 * @return boolean indicating whether a frontside camera exists
+	 */
+	public static boolean hasFrontsideCamera() {
+		Camera.CameraInfo ci = new Camera.CameraInfo();
+		for (int i = 0 ; i < Camera.getNumberOfCameras(); i++) {
+			Camera.getCameraInfo(i, ci);
+			if (ci.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return true;
+		}
+		return false; // No front-facing camera found
+	}
+
+	/**
 	 * Set to fullscreen but show action bar
 	 *
 	 * @param view the view on which 'setSystemVisibility()' is called
@@ -169,5 +183,4 @@ public class VideOSCUIHelpers {
 	public static void setFormSystemUIState(View view) {
 		view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 	}
-
 }

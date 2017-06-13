@@ -1,7 +1,5 @@
 package net.videosc2.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,21 +10,15 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import net.videosc2.R;
-import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.utilities.VideOSCUI;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by stefan on 12.03.17.
@@ -34,7 +26,7 @@ import java.util.Map;
 
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
-	private ArrayAdapter<String> itemsAdapter;
+//	private ArrayAdapter<String> itemsAdapter;
 	private Method setSettingsLevel;
 
 	public VideOSCSettingsFragment() {}
@@ -71,7 +63,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			Class[] lArg = new Class[1];
 			lArg[0] = Integer.class;
 			setSettingsLevel = getActivity().getClass().getMethod("setSettingsLevel", lArg);
-			Log.d(TAG, "setSettingsLevel: " + setSettingsLevel);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -79,7 +70,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
-		itemsAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.settings_selection_item, items);
+		ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.settings_selection_item, items);
 		settingsListView.setAdapter(itemsAdapter);
 		// does the fade-in animation really work?...
 		VideOSCUIHelpers.setTransitionAnimation(bg);
@@ -89,9 +80,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//				VideOSCMainActivity.isSettingsSecondLevel = true;
-//				VideOSCMainActivity.isSettingsFirstLevel = false;
-
 				try {
 					setSettingsLevel.invoke(getActivity(), 2);
 				} catch (IllegalAccessException e) {
