@@ -179,6 +179,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// otherwise prevails even after camera.release() and
 			// causes a crash on quit
 			mCamera.setPreviewCallback(null);
+			Log.d(TAG, "camera.release now");
 			mCamera.release();
 			mCamera = null;
 		}
@@ -247,14 +248,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void switchCamera(Camera camera) {
 			Log.d(TAG, "switch camera, pCamera: " + camera);
 			pCamera = camera;
-			surfaceDestroyed(mHolder);
 			mHolder.removeCallback(this);
 			ViewGroup parent = (ViewGroup) mPreview.getParent();
+			// cache new preview locally and remove old preview later
+			// removing old preview immediately caused surfaceDestroyed to be called
+			// and switching wasn't finished but ONLY when switching back from front- to backside
+			// camera...
+			CameraPreview preview = new CameraPreview(getContext(), camera);
+			SurfaceHolder holder = preview.getHolder();
+			holder.addCallback(this);
+			parent.addView(preview);
 			parent.removeView(mPreview);
-			mPreview = new CameraPreview(getContext(), camera);
-			mHolder = mPreview.getHolder();
-			mHolder.addCallback(this);
-			parent.addView(mPreview);
+			mPreview = preview;
+			mHolder = holder;
 		}
 
 		/**
@@ -308,7 +314,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
-			// reactivate the preview after app has been pused and resumed
+			Log.d(TAG, "surfaceCreated");
+			// reactivate the preview after app has been paused and resumed
 			if (!pPreviewStarted) pCamera.startPreview();
 			try {
 				pCamera.setPreviewDisplay(holder);
@@ -324,9 +331,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
-			if (pCamera != null) {
+			// prevent errors resulting from camera being used after Camera.release() has been
+			// called. Seems to work...
+			if (pCamera != null) try {
 				pCamera.stopPreview();
 				pPreviewStarted = false;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
