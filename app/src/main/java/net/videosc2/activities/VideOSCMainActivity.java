@@ -237,6 +237,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		SETTINGS = toolsDrawerKeys.get("prefs");
 		QUIT = toolsDrawerKeys.get("quit");
 
+//		toolsDrawerList.getChildAt()
+//		toolsDrawerKeys.get(0)
+
 		toolsDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
@@ -579,23 +582,17 @@ public class VideOSCMainActivity extends AppCompatActivity
 		return this.colorModeToolsDrawer;
 	}
 
-/*
 	@Override
 	public void onPause() {
 		super.onPause();
-		// TODO
+		Log.d(TAG, "main activity on pause");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		View focused = getCurrentFocus();
-		if (focused != null) {
-			focused.clearFocus();
-		}
-		Log.d(TAG, "focused: " + focused);
+		Log.d(TAG, "main activity on resume!");
 	}
-*/
 
 /*
 	@Override
