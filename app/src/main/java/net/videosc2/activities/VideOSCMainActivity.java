@@ -245,6 +245,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 			public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
 				BitmapDrawable img;
 				final ImageView oscIndicatorView = (ImageView) findViewById(R.id.indicator_osc);
+				final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
+				final ImageView interactionModeIndicator = (ImageView) findViewById(R.id.indicator_interaction);
 				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
@@ -330,7 +332,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 													rgbHasChanged = true;
 												}
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
-												oscIndicatorView.setImageResource(R.drawable.rgb_indicator);
+												rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
 												colorModeToolsDrawer = RGBToolbarStatus.RGB;
 												break;
 											case R.id.mode_rgb_inv:
@@ -339,7 +341,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 													rgbHasChanged = true;
 												}
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
-												oscIndicatorView.setImageResource(R.drawable.rgb_inv_indicator);
+												rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
 												colorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
 												break;
 											case R.id.mode_r:
@@ -391,11 +393,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (interactionMode.equals(InteractionModes.BASIC)) {
 						interactionMode = InteractionModes.SINGLE_PIXEL;
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
-						oscIndicatorView.setImageResource(R.drawable.interaction_plus_indicator);
+						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 						interactionMode = InteractionModes.BASIC;
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
-						oscIndicatorView.setImageResource(R.drawable.interaction_none_indicator);
+						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 					} else {
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
 					}
