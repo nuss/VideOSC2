@@ -32,6 +32,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -154,7 +155,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		Camera c = null;
 
 		try {
-			// TODO: allow switching back-/frontside camera
 			c = Camera.open(VideOSCMainActivity.currentCameraID); // attempt to get a Camera instance
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -423,6 +423,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			optimalSize = sizes.get(minIndex);
 
 			return optimalSize;
+		}
+
+		@Override
+		public boolean onTouchEvent(MotionEvent motionEvent) {
+			Log.d(TAG, "how many fingers? " + motionEvent.getPointerCount() + ", intensity: " + motionEvent.getPressure(0));
+
+			return true;
 		}
 	}
 }
