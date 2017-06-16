@@ -119,6 +119,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public Enum gestureMode = GestureModes.SWAP;
 
 	// ListView for the tools drawer
+	private List<BitmapDrawable> toolsList = new ArrayList<>();
 	private ListView toolsDrawerList;
 	private HashMap<Integer, Integer> toolsDrawerListState = new HashMap<>();
 	// toolbar status
@@ -222,7 +223,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		toolsDrawerList = (ListView) findViewById(R.id.drawer);
 
-		List<BitmapDrawable> toolsList = new ArrayList<>();
+		Log.d(TAG, "add bitmaps to tooldrawer");
 		for (int i = 0; i < tools.length(); i++) {
 			toolsList.add((BitmapDrawable) tools.getDrawable(i));
 		}
@@ -637,12 +638,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "main activity on resume!");
-		for (Integer key : toolsDrawerListState.keySet()) {
-			Log.d(TAG, "drawable ID at key " + key + ": " + toolsDrawerListState.get(key) + ", in drawer: " + toolsDrawerList.getAdapter().getView(key, null, null));
-		}
 
-//		toolsDrawerList.getAdapter().getView()
+		// update tools drawer if some item's state has changed
+		for (Integer key : toolsDrawerListState.keySet()) {
+			toolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), toolsDrawerListState.get(key)));
+		}
+		toolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, toolsList));
 	}
 
 /*

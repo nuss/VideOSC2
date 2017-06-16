@@ -27,61 +27,20 @@ import static net.videosc2.utilities.enums.RGBToolbarStatus.RGB_INV;
 
 public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 	final static String TAG = "ToolsMenuAdapter";
-	private int menuSize;
-	private Method getMode;
 
 	public ToolsMenuAdapter(Context context, int resource, int bitmapResourceId, List<BitmapDrawable> tools) {
 		super(context, resource, bitmapResourceId, tools);
-		menuSize = tools.size();
-		try {
-			getMode = context.getClass().getMethod("getColorModeToolsDrawer");
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@NonNull
 	@Override
 	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		int modePosition = 2;
+
 		BitmapDrawable tool;
-		Context context = getContext();
-		Enum mode = null;
 
-		try {
-			mode = (Enum) getMode.invoke(getContext());
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-
-		// Get the data item for this position
-		if (menuSize == 6)
-			modePosition = 1;
-		if (position != modePosition) {
-			tool = getItem(position);
-		} else {
-			tool = getItem(position);
-			if (mode != null) {
-				if (mode.equals(RGBToolbarStatus.RGB_INV)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_inv);
-				} else if (mode.equals(RGBToolbarStatus.R)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.r);
-				} else if (mode.equals(RGBToolbarStatus.R_INV)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.r_inv);
-				} else if (mode.equals(RGBToolbarStatus.G)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.g);
-				} else if (mode.equals(RGBToolbarStatus.G_INV)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.g_inv);
-				} else if (mode.equals(RGBToolbarStatus.B)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.b);
-				} else if (mode.equals(RGBToolbarStatus.B_INV)) {
-					tool = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.b_inv);
-				}
-			}
-		}
+		tool = getItem(position);
 		// Check if an existing view is being reused, otherwise inflate the view
+
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_item, parent, false);
 		}
