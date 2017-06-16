@@ -190,6 +190,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	}
 
 	/**
+	 * Get the camera associated with the fragment
+	 * @return a Camera instance
+	 */
+	public Camera getCamera() {
+		return mCamera;
+	}
+
+	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
 	 * <p>
