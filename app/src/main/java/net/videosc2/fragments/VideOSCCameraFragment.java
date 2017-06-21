@@ -29,6 +29,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
@@ -66,8 +68,8 @@ import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final static String TAG = "VideOSCCameraFragment";
 
-	private static long now, prev = 0;
-	private static float frameRate;
+	private long mNow, mPrev = 0;
+	private float mFrameRate;
 
 	// Native camera.
 	public Camera mCamera;
@@ -86,6 +88,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public VideOSCCameraFragment() {
 		super();
 	}
+
+	public float mCamZoom;
 
 	/**
 	 * OnCreateView fragment override
@@ -123,6 +127,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	public boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
+		// cache current zoom
+		int zoom = mPreview != null ? mPreview.getCurrentZoom() : 0;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
 		Log.d(TAG, "which camera: " + VideOSCMainActivity.currentCameraID + ", camera: " + mCamera);
@@ -140,6 +146,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				} else Log.d(TAG, "FrameLayout is null");
 			} else {
 				mPreview.switchCamera(mCamera);
+				// set camera zoom to the zoom value of the old camera
+				mPreview.setZoom(zoom);
 			}
 			mPreview.pPreviewStarted = mPreview.startCameraPreview();
 		}
@@ -221,6 +229,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private List<String> mSupportedFlashModes;
 
 		private boolean pPreviewStarted;
+		private double mOldFingerDistance = 0.0;
 
 		/**
 		 *
@@ -297,7 +306,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			pCamera = camera;
 			Log.d(TAG, "setCamera(), pCamera: " + pCamera + ", camera: " + camera);
 			Camera.Parameters parameters = camera.getParameters();
-			Log.d(TAG, "set camera, parameters: " + parameters.flatten());
+//			Log.d(TAG, "set camera, parameters: " + parameters.flatten());
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
 			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
@@ -379,12 +388,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				pCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
-						VideOSCCameraFragment.now = System.currentTimeMillis();
-						frameRate = Math.round(1000.0f/(now - prev) * 10.0f) / 10.0f;
-						VideOSCCameraFragment.prev = VideOSCCameraFragment.now;
+						mNow = System.currentTimeMillis();
+						mFrameRate = Math.round(1000.0f/(mNow - mPrev) * 10.0f) / 10.0f;
+						mPrev = mNow;
 						TextView frameRateText = (TextView) mPreviewContainer.findViewById(R.id.fps);
-						if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
-
+						if (frameRateText != null) frameRateText.setText(String.format("%.1f", mFrameRate));
+						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
+						if (zoomText != null) zoomText.setText(String.format("%.1f", mCamZoom));
 						int outWidth = 6;
 						int outHeight = 4;
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -427,9 +437,50 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		@Override
 		public boolean onTouchEvent(MotionEvent motionEvent) {
-			Log.d(TAG, "how many fingers? " + motionEvent.getPointerCount() + ", intensity: " + motionEvent.getPressure(0));
+			Camera.Parameters params = pCamera.getParameters();
+
+			if (motionEvent.getPointerCount() > 1 && params.isZoomSupported()) {
+				int zoom = params.getZoom();
+
+				if (mOldFingerDistance == 0.0)
+					mOldFingerDistance = getFingerSpacing(motionEvent);
+				double currFingerDistance = getFingerSpacing(motionEvent);
+
+				if (mOldFingerDistance != currFingerDistance) {
+					if (mOldFingerDistance < currFingerDistance) {
+						if (zoom + 1 <= params.getMaxZoom()) zoom++;
+					} else {
+						if (zoom - 1 >= 0) zoom--;
+					}
+					params.setZoom(zoom);
+					mOldFingerDistance = currFingerDistance;
+					pCamera.setParameters(params);
+					mCamZoom = (float) (params.getZoomRatios().get(params.getZoom())/100.0);
+				}
+			}
 
 			return true;
+		}
+
+		/** Determine the space between the first two fingers */
+		private double getFingerSpacing(MotionEvent event) {
+			float x = event.getX(0) - event.getX(1);
+			float y = event.getY(0) - event.getY(1);
+
+			return Math.sqrt(x * x + y * y);
+		}
+
+		/** get current zoom */
+		private int getCurrentZoom() {
+			Camera.Parameters params = pCamera.getParameters();
+			return params.getZoom();
+		}
+
+		/** set zoom */
+		private void setZoom(int zoom) {
+			Camera.Parameters params = pCamera.getParameters();
+			params.setZoom(zoom);
+			pCamera.setParameters(params);
 		}
 	}
 }

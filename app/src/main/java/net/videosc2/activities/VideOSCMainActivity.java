@@ -194,7 +194,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					.commit();
 		}
 
-		// get safeCameraOpenInView(View view) from VideOSCCameraFragment for switching cameras
+		// get safeCameraOpenInView(View view) from VideOSCCameraFragment for switching camera
 		try {
 			Class[] lArg = new Class[1];
 			lArg[0] = View.class;
