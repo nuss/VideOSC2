@@ -89,7 +89,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		super();
 	}
 
-	public float mCamZoom;
+	public float mCamZoom = 1f;
 
 	/**
 	 * OnCreateView fragment override
@@ -455,6 +455,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					params.setZoom(zoom);
 					mOldFingerDistance = currFingerDistance;
 					pCamera.setParameters(params);
+//					Log.d(TAG, "zoom: " + params.getZoom() + ", ratio: " + params.getZoomRatios().get(params.getZoom()));
 					mCamZoom = (float) (params.getZoomRatios().get(params.getZoom())/100.0);
 				}
 			}
