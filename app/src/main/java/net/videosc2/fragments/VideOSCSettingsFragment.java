@@ -2,6 +2,7 @@ package net.videosc2.fragments;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -61,7 +62,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		try {
 			Class[] lArg = new Class[1];
-			lArg[0] = Integer.class;
+			lArg[0] = int.class;
 			setSettingsLevel = getActivity().getClass().getMethod("setSettingsLevel", lArg);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();

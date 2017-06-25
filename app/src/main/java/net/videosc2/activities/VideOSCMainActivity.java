@@ -26,7 +26,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -38,12 +37,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -55,12 +52,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
 import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.fragments.VideOSCBaseFragment;
-import net.videosc2.fragments.VideOSCCamera2Fragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
 import net.videosc2.fragments.VideOSCSettingsFragment;
 import net.videosc2.utilities.VideOSCDialogHelper;
@@ -75,8 +70,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import ketai.net.KetaiNet;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
@@ -194,22 +187,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 					.commit();
 		}
 
-		// get safeCameraOpenInView(View view) from VideOSCCameraFragment for switching camera
-		try {
-			Class[] lArg = new Class[1];
-			lArg[0] = View.class;
-			safeCameraOpenInView = mCameraPreview.getClass().getMethod("safeCameraOpenInView", lArg);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-
-		// getCamera(), defined in the camera fragment
-		try {
-			getCamera = mCameraPreview.getClass().getMethod("getCamera");
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 
@@ -265,11 +242,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
-				Camera camera;
+				// cameraView provides all instance methods of the camera preview
+				// no reflections needed
+				VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				Camera camera = cameraView.mCamera;
 				Camera.Parameters cameraParameters;
 
 				if (i == START_STOP) {
-					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);;
+					if (isColorModePanelOpen)
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					;
 					isPlaying = !isPlaying;
 					if (isPlaying) {
 						// TODO: stop sending OSC
@@ -284,34 +266,28 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == TORCH) {
-					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);;
-
-					try {
-						camera = (Camera) getCamera.invoke(mCameraPreview);
-						cameraParameters = camera.getParameters();
-						if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
-							String flashMode = cameraParameters.getFlashMode();
-							Log.d(TAG, "flash mode: " + flashMode);
-							isTorchOn = !isTorchOn;
-							if (!flashMode.equals("torch")) {
-								cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-								mToolsDrawerListState.put(TORCH, R.drawable.light_on);
-								img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on);
-								torchIndicatorView.setImageResource(R.drawable.light_on_indicator);
-							} else {
-								cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-								mToolsDrawerListState.put(TORCH, R.drawable.light);
-								img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light);
-								torchIndicatorView.setImageResource(R.drawable.light_off_indicator);
-							}
-							camera.setParameters(cameraParameters);
-							imgView.setImageDrawable(img);
+					if (isColorModePanelOpen)
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					cameraParameters = camera.getParameters();
+					if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
+						String flashMode = cameraParameters.getFlashMode();
+						Log.d(TAG, "flash mode: " + flashMode);
+						isTorchOn = !isTorchOn;
+						if (!flashMode.equals("torch")) {
+							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+							mToolsDrawerListState.put(TORCH, R.drawable.light_on);
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on);
+							torchIndicatorView.setImageResource(R.drawable.light_on_indicator);
+						} else {
+							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+							mToolsDrawerListState.put(TORCH, R.drawable.light);
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light);
+							torchIndicatorView.setImageResource(R.drawable.light_off_indicator);
 						}
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
+						camera.setParameters(cameraParameters);
+						imgView.setImageDrawable(img);
 					}
+
 				} else if (i == COLOR_MODE) {
 					if (!isColorModePanelOpen) {
 						int y = (int) view.getY();
@@ -436,47 +412,34 @@ public class VideOSCMainActivity extends AppCompatActivity
 					imgView.setImageDrawable(img);
 				} else if (i == SELECT_CAM) {
 					Log.d(TAG, "switch camera");
-					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					if (isColorModePanelOpen)
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 
-					// FIXME
-					try {
-						camera = (Camera) getCamera.invoke(mCameraPreview);
-						cameraParameters = camera.getParameters();
-						if (currentCameraID == backsideCameraId) {
-							currentCameraID = frontsideCameraId;
-							mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
-							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.front_camera);
-							if (hasTorch && cameraParameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
-								cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-								BitmapDrawable torchImg = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light);
-								torchIndicatorView.setImageResource(R.drawable.light_off_indicator);
-								ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
-								torchSwitch.setImageDrawable(torchImg);
-							}
-						} else {
-							currentCameraID = backsideCameraId;
-							mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
-							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.back_camera);
+					cameraParameters = camera.getParameters();
+					if (currentCameraID == backsideCameraId) {
+						currentCameraID = frontsideCameraId;
+						mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.front_camera);
+						if (hasTorch && cameraParameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+							BitmapDrawable torchImg = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light);
+							torchIndicatorView.setImageResource(R.drawable.light_off_indicator);
+							ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
+							torchSwitch.setImageDrawable(torchImg);
 						}
-						imgView.setImageDrawable(img);
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
+					} else {
+						currentCameraID = backsideCameraId;
+						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.back_camera);
 					}
-
+					imgView.setImageDrawable(img);
 					// invoke setting of new camera
 					// camera ID should already have been set in currentCameraID
-					try {
-						safeCameraOpenInView.invoke(mCameraPreview, mCamView);
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-					}
+					cameraView.safeCameraOpenInView(mCamView);
 				} else if (i == INFO) {
 					Log.d(TAG, "framerate, calculation period info");
-					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					if (isColorModePanelOpen)
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (isFPSCalcPanelOpen) {
 						VideOSCUIHelpers.removeView(frameRateCalculationPanel, (FrameLayout) mCamView);
 						isFPSCalcPanelOpen = false;
@@ -487,7 +450,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 				} else if (i == SETTINGS) {
 					Log.d(TAG, "settings");
-					if (isColorModePanelOpen) isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					if (isColorModePanelOpen)
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					setSettingsLevel(1);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 						mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
@@ -592,7 +556,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		return mSettingslevel;
 	}
 
-	public void setSettingsLevel(Integer level) {
+	public void setSettingsLevel(int level) {
 		this.mSettingslevel = level;
 	}
 
