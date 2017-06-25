@@ -1,19 +1,23 @@
 package net.videosc2.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by stefan on 22.06.17, package net.videosc2.db, project VideOSC22.
  */
 public class SettingsDBHelper extends SQLiteOpenHelper {
+	private static final String TAG = "SettingsDBHelper";
+
 	private static final String SQL_ADDRESSES_CREATE_ENTRIES =
 			"CREATE TABLE " + SettingsContract.AddressSettingsEntry.TABLE_NAME + " (" +
 					SettingsContract.AddressSettingsEntry._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL DEFAULT '192.168.1.5'," +
 					SettingsContract.AddressSettingsEntry.PORT + " INTEGER NOT NULL DEFAULT '57120'," +
-					SettingsContract.AddressSettingsEntry.PROTOCOL + " STRING NOT NULL DEFAULT 'UDP')";
+					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL DEFAULT 'UDP')";
 
 	private static final String SQL_ADDRESSES_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntry.TABLE_NAME;
@@ -40,9 +44,18 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_SENSOR_SETTINGS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.SensorSettingsEntries.TABLE_NAME;
 
+	private static final String SQL_PIXEL_SNAPSHOTS_CREATE =
+			"CREATE TABLE " + SettingsContract.PixelSnapshotEntries.TABLE_NAME + " (" +
+					SettingsContract.PixelSnapshotEntries._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME + " TEXT," +
+					SettingsContract.PixelSnapshotEntries.SNAPSHOT_VALUES + " TEXT)";
+
+	private static final  String SQL_PIXEL_SNAPSHOTS_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
+
 	// If you change the database schema, you must increment the database version.
-	public static final int DATABASE_VERSION = 1;
-	public static final String DATABASE_NAME = "VOSCSettings.db";
+	private static final int DATABASE_VERSION = 4;
+	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -55,7 +68,17 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-
+		Log.d(TAG, "onCreate");
+		db.execSQL(SQL_ADDRESSES_CREATE_ENTRIES);
+		ContentValues values = new ContentValues();
+		values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.5");
+		values.put(SettingsContract.AddressSettingsEntry.PORT, 57120);
+		values.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
+		long newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
+		Log.d(TAG, "new row ID: " + newRowId);
+		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
+		db.execSQL(SQL_SENSOR_SETTINGS_CREATE);
+		db.execSQL(SQL_PIXEL_SNAPSHOTS_CREATE);
 	}
 
 	/**
@@ -80,6 +103,22 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.d(TAG, "on upgrade");
+		db.execSQL(SQL_ADDRESSES_DELETE_ENTRIES);
+		db.execSQL(SQL_SETTINGS_DELETE_ENTRIES);
+		db.execSQL(SQL_SENSOR_SETTINGS_DELETE);
+		db.execSQL(SQL_PIXEL_SNAPSHOTS_DELETE);
+		onCreate(db);
+	}
 
+	/**
+	 * Called when the database needs to get downgraded
+	 * @param db            The database
+	 * @param oldVersion    The old database version
+	 * @param newVersion    The new database version
+	 */
+	@Override
+	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		onUpgrade(db, oldVersion, newVersion);
 	}
 }

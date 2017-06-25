@@ -36,7 +36,7 @@ public class SettingsContract {
 	}
 
 	public static class PixelSnapshotEntries implements BaseColumns {
-		public static final String SNAPSHOTS = "vosc_snapshots";
+		public static final String TABLE_NAME = "vosc_snapshots";
 		public static final String SNAPSHOT_NAME = "snapshot_name";
 		public static final String SNAPSHOT_VALUES = "snapshot_values";
 	}

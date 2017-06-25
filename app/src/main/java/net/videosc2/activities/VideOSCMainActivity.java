@@ -55,6 +55,7 @@ import android.widget.ListView;
 
 import net.videosc2.R;
 import net.videosc2.adapters.ToolsMenuAdapter;
+import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
 import net.videosc2.fragments.VideOSCSettingsFragment;
@@ -137,8 +138,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// drawer menu
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
 
-	// reflection method from VideOSCCameraFragment
-	private Method safeCameraOpenInView, getCamera;
+	// settings, retrieved from sqlite db
+	public static SettingsDBHelper mDbHelper;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -149,7 +150,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		Log.d(TAG, "onCreate");
 
-		VideOSCCameraFragment camPreview;
 		// FIXME: preliminary
 		final boolean hasTorch;
 //		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
@@ -161,6 +161,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		currentCameraID = backsideCameraId;
 //		else
 //			hasTorch = false;
+
+		// keep db access open through the app's lifetime
+		mDbHelper = new SettingsDBHelper(this);
 
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
@@ -578,16 +581,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 		return toolsDrawerKeys;
 	}
 
-/*
 	@Override
 	public void onDestroy() {
+		// close db
+		mDbHelper.close();
 		super.onDestroy();
 		Log.d(TAG, "activity on destroy");
-		// reset static mColorModeToolsDrawer enum,
-		// otherwise app will restart with status as set when app was quit
-		mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 	}
-*/
 
 	public Enum getColorModeToolsDrawer() {
 		return this.mColorModeToolsDrawer;

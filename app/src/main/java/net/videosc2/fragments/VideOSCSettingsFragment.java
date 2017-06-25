@@ -1,8 +1,9 @@
 package net.videosc2.fragments;
 
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -11,15 +12,20 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import net.videosc2.R;
+import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by stefan on 12.03.17.
@@ -27,10 +33,11 @@ import java.lang.reflect.Method;
 
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
-//	private ArrayAdapter<String> itemsAdapter;
+	//	private ArrayAdapter<String> itemsAdapter;
 	private Method setSettingsLevel;
 
-	public VideOSCSettingsFragment() {}
+	public VideOSCSettingsFragment() {
+	}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -59,6 +66,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
+		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
 
 		try {
 			Class[] lArg = new Class[1];
@@ -92,7 +100,51 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				switch (i) {
 					case 0:
 						// network settings
+						String[] addrFields = {
+								SettingsContract.AddressSettingsEntry._ID,
+								SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+								SettingsContract.AddressSettingsEntry.PORT
+						};
+						String sortOrder =
+								SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
+
+						Cursor count = db.rawQuery("select count(*) from " + SettingsContract.AddressSettingsEntry.TABLE_NAME, null);
+						count.moveToFirst();
+						Log.d(TAG, "numrows: " + count.getInt(0));
+						count.close();
+
+						Cursor cursor = db.query(
+								SettingsContract.AddressSettingsEntry.TABLE_NAME,
+								addrFields,
+								null,
+								null,
+								null,
+								null,
+								sortOrder
+						);
+
+						List<Address> addresses = new ArrayList<>();
+
+						while (cursor.moveToNext()) {
+							Address address = new Address();
+							String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
+							int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
+							String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
+							Log.d(TAG, "ip: " + ip + ", port: " + port + ", protocol: " + protocol);
+							address.setIP(ip);
+							address.setPort(port);
+							address.setProtocol(protocol);
+							addresses.add(address);
+						}
+
+						cursor.close();
+
+						Log.d(TAG, "addresses: " + addresses);
 						VideOSCUIHelpers.addView(networkSettingsView, bg);
+						EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
+						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
+						EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
+						remotePortField.setText(addresses.get(0).getPort(), TextView.BufferType.EDITABLE);
 						break;
 					case 1:
 						// resolution settings
@@ -138,6 +190,38 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			TextView tv = (TextView) container.findViewById(idsAndStrings.keyAt(i));
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), "vosc");
 			tv.setText(text);
+		}
+	}
+
+	private class Address {
+		String ip;
+		int port;
+		String protocol;
+
+		Address() {};
+
+		void setIP(String ip) {
+			this.ip = ip;
+		}
+
+		void setPort(int port) {
+			this.port = port;
+		}
+
+		void setProtocol(String protocol) {
+			this.protocol = protocol;
+		}
+
+		String getIP() {
+			return this.ip;
+		}
+
+		int getPort() {
+			return this.port;
+		}
+
+		String getProtocol() {
+			return this.protocol;
 		}
 	}
 }
