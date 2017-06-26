@@ -118,7 +118,7 @@ public class VideOSCUIHelpers {
 	 * Use the return value to set a status variable
 	 *
 	 * @param view a View
-	 * @param parent
+	 * @param parent a ViewGroup
 	 * @return false
 	 */
 	public static boolean removeView(View view, ViewGroup parent) {
