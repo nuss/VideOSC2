@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by stefan on 12.03.17.
@@ -103,15 +104,22 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						String[] addrFields = {
 								SettingsContract.AddressSettingsEntry._ID,
 								SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-								SettingsContract.AddressSettingsEntry.PORT
+								SettingsContract.AddressSettingsEntry.PORT/*,
+								SettingsContract.AddressSettingsEntry.PROTOCOL*/
 						};
 						String sortOrder =
 								SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
-						Cursor count = db.rawQuery("select count(*) from " + SettingsContract.AddressSettingsEntry.TABLE_NAME, null);
-						count.moveToFirst();
-						Log.d(TAG, "numrows: " + count.getInt(0));
-						count.close();
+						String[] settingsFields = {
+								SettingsContract.SettingsEntries._ID,
+								SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+								SettingsContract.SettingsEntries.ROOT_CMD
+						};
+
+//						Cursor count = db.rawQuery("select count(*) from " + SettingsContract.AddressSettingsEntry.TABLE_NAME, null);
+//						count.moveToFirst();
+//						Log.d(TAG, "numrows: " + count.getInt(0));
+//						count.close();
 
 						Cursor cursor = db.query(
 								SettingsContract.AddressSettingsEntry.TABLE_NAME,
@@ -123,17 +131,22 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								sortOrder
 						);
 
+						String[] columns = cursor.getColumnNames();
+						for (String colName : columns) {
+							Log.d(TAG, "column: " + colName);
+						}
+
 						List<Address> addresses = new ArrayList<>();
 
 						while (cursor.moveToNext()) {
 							Address address = new Address();
 							String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 							int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-							String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
-							Log.d(TAG, "ip: " + ip + ", port: " + port + ", protocol: " + protocol);
+//							String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
+							Log.d(TAG, "ip: " + ip + ", port: " + port/* + ", protocol: " + protocol*/);
 							address.setIP(ip);
 							address.setPort(port);
-							address.setProtocol(protocol);
+//							address.setProtocol(protocol);
 							addresses.add(address);
 						}
 
@@ -144,7 +157,35 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
 						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
 						EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
-						remotePortField.setText(addresses.get(0).getPort(), TextView.BufferType.EDITABLE);
+						remotePortField.setText(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()), TextView.BufferType.EDITABLE);
+
+						cursor = db.query(
+								SettingsContract.SettingsEntries.TABLE_NAME,
+								settingsFields,
+								null,
+								null,
+								null,
+								null,
+								null
+						);
+
+						List<Settings> settingsesses = new ArrayList<>();
+
+						while (cursor.moveToNext()) {
+							Settings settings = new Settings();
+							int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+							String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+							settings.setUdpReceivePort(udpReceivePort);
+							settings.setRootCmd(cmd);
+							settingsesses.add(settings);
+						}
+
+						cursor.close();
+
+						EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
+						udpReceivePortField.setText(String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()), TextView.BufferType.EDITABLE);
+						EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
+						rootCmdField.setText(settingsesses.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
 						break;
 					case 1:
 						// resolution settings
@@ -222,6 +263,83 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		String getProtocol() {
 			return this.protocol;
+		}
+	}
+
+	private class Settings {
+		int resolutionHorizontal;
+		int resolutionVertical;
+		boolean framerateFixed;
+		boolean normalized;
+		int calculationPeriod;
+		String rootCmd;
+		int udpReceivePort;
+		int tcpReceivePort;
+
+		Settings() {}
+
+		void setResolutionHorizontal(int resolutionH) {
+			this.resolutionHorizontal = resolutionH;
+		}
+
+		void setResolutionVertical(int resolutionV) {
+			this.resolutionVertical = resolutionV;
+		}
+
+		void setFramerateFixed(int boolVal) {
+			this.framerateFixed = boolVal > 0;
+		}
+
+		void setNormalized(int boolVal) {
+			this.normalized = boolVal > 0;
+		}
+
+		void setCalculationPeriod(int calcPeriod) {
+			this.calculationPeriod = calcPeriod;
+		}
+
+		void setRootCmd(String cmdName) {
+			this.rootCmd = cmdName;
+		}
+
+		void setUdpReceivePort(int port) {
+			this.udpReceivePort = port;
+		}
+
+		void setTcpReceivePort(int port) {
+			this.tcpReceivePort = port;
+		}
+
+		int getResolutionHorizontal() {
+			return this.resolutionHorizontal;
+		}
+
+		int getResolutionVertical() {
+			return this.resolutionVertical;
+		}
+
+		boolean getFramerateFixed() {
+			return this.framerateFixed;
+		}
+
+		boolean getNormalized() {
+			return this.normalized;
+		}
+
+		int getCalculationPeriod() {
+			return this.calculationPeriod;
+		}
+
+		String getRootCmd() {
+			return this.rootCmd;
+		}
+
+		int getUdpReceivePort() {
+			return this.udpReceivePort;
+		}
+
+		int getTcpReceivePort() {
+			return this.tcpReceivePort;
 		}
 	}
 }

@@ -30,7 +30,9 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.SettingsEntries.FRAMERATE_FIXED + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.NORMALIZE + " INTEGER NOT NULL DEFAULT '0'," +
 					SettingsContract.SettingsEntries.CALC_PERIOD + " INTEGER NOT NULL DEFAULT '1'," +
-					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc')";
+					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc'," +
+					SettingsContract.SettingsEntries.UDP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32000'," +
+					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32001')";
 
 	private static final String SQL_SETTINGS_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.SettingsEntries.TABLE_NAME;
@@ -54,7 +56,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 7;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -68,16 +70,40 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		long newRowId;
+
 		Log.d(TAG, "onCreate");
+		// create table for addresses of remote clients
 		db.execSQL(SQL_ADDRESSES_CREATE_ENTRIES);
+
 		ContentValues values = new ContentValues();
+
+		// net address(es)
 		values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.5");
 		values.put(SettingsContract.AddressSettingsEntry.PORT, 57120);
 		values.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
-		long newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
+		newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
 		Log.d(TAG, "new row ID: " + newRowId);
+
+		// create table for single value settings
 		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
+		// reset
+		values.clear();
+
+		// single value settings
+		values.put(SettingsContract.SettingsEntries.RES_H, 7);
+		values.put(SettingsContract.SettingsEntries.RES_V, 5);
+		values.put(SettingsContract.SettingsEntries.FRAMERATE_FIXED, 1);
+		values.put(SettingsContract.SettingsEntries.NORMALIZE, 0);
+		values.put(SettingsContract.SettingsEntries.CALC_PERIOD, 1);
+		values.put(SettingsContract.SettingsEntries.ROOT_CMD, "vosc");
+		values.put(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT, 32000);
+		values.put(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT, 32001);
+		newRowId = db.insert(SettingsContract.SettingsEntries.TABLE_NAME, null, values);
+
+		// create table for sensor settings
 		db.execSQL(SQL_SENSOR_SETTINGS_CREATE);
+		// create snapshots table
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_CREATE);
 	}
 

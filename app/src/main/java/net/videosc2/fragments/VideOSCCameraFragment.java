@@ -55,6 +55,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 
@@ -392,9 +393,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mFrameRate = Math.round(1000.0f/(mNow - mPrev) * 10.0f) / 10.0f;
 						mPrev = mNow;
 						TextView frameRateText = (TextView) mPreviewContainer.findViewById(R.id.fps);
-						if (frameRateText != null) frameRateText.setText(String.format("%.1f", mFrameRate));
+						if (frameRateText != null) frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
 						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
-						if (zoomText != null) zoomText.setText(String.format("%.1f", mCamZoom));
+						if (zoomText != null) zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
 						int outWidth = 6;
 						int outHeight = 4;
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
