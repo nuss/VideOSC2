@@ -1,5 +1,6 @@
 package net.videosc2.fragments;
 
+import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,6 +28,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import ketai.net.KetaiNet;
 
 /**
  * Created by stefan on 12.03.17.
@@ -136,14 +139,16 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							Log.d(TAG, "column: " + colName);
 						}
 
-						List<Address> addresses = new ArrayList<>();
+						final List<Address> addresses = new ArrayList<>();
 
 						while (cursor.moveToNext()) {
 							Address address = new Address();
+							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 							String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 							int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 //							String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
 							Log.d(TAG, "ip: " + ip + ", port: " + port/* + ", protocol: " + protocol*/);
+							address.setRowId(rowId);
 							address.setIP(ip);
 							address.setPort(port);
 //							address.setProtocol(protocol);
@@ -154,9 +159,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						Log.d(TAG, "addresses: " + addresses);
 						VideOSCUIHelpers.addView(networkSettingsView, bg);
-						EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
+						final EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
 						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-						EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
+						final EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
 						remotePortField.setText(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()), TextView.BufferType.EDITABLE);
 
 						cursor = db.query(
@@ -169,7 +174,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								null
 						);
 
-						List<Settings> settingsesses = new ArrayList<>();
+						final List<Settings> settingsesses = new ArrayList<>();
 
 						while (cursor.moveToNext()) {
 							Settings settings = new Settings();
@@ -182,10 +187,89 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						cursor.close();
 
-						EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
+						final EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
 						udpReceivePortField.setText(String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()), TextView.BufferType.EDITABLE);
-						EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
+						final EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
 						rootCmdField.setText(settingsesses.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
+						final TextView deviceIP = (TextView) networkSettingsView.findViewById(R.id.device_ip_address);
+						deviceIP.setText(KetaiNet.getIP());
+
+						final ContentValues values = new ContentValues();
+
+						remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !remoteIPField.getText().toString().equals(addresses.get(0).getIP())) {
+									values.put(
+											SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+											remoteIPField.getText().toString()
+									);
+									db.update(
+											SettingsContract.AddressSettingsEntry.TABLE_NAME,
+											values,
+											SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						remotePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !remotePortField.getText().toString().equals(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()))) {
+									values.put(
+											SettingsContract.AddressSettingsEntry.PORT,
+											remotePortField.getText().toString()
+									);
+									db.update(
+											SettingsContract.AddressSettingsEntry.TABLE_NAME,
+											values,
+											SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !udpReceivePortField.getText().toString().equals(
+										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()))) {
+									values.put(
+											SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+											udpReceivePortField.getText().toString()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						rootCmdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !rootCmdField.getText().toString().equals(settingsesses.get(0).getRootCmd())) {
+									values.put(
+											SettingsContract.SettingsEntries.ROOT_CMD,
+											rootCmdField.getText().toString()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+
+							}
+						});
 						break;
 					case 1:
 						// resolution settings
@@ -235,11 +319,16 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private class Address {
+		long rowId;
 		String ip;
 		int port;
 		String protocol;
 
 		Address() {};
+
+		void setRowId(long id) {
+			this.rowId = id;
+		}
 
 		void setIP(String ip) {
 			this.ip = ip;
@@ -251,6 +340,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		void setProtocol(String protocol) {
 			this.protocol = protocol;
+		}
+
+		long getRowId() {
+			return this.rowId;
 		}
 
 		String getIP() {
@@ -267,6 +360,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private class Settings {
+		long rowId;
 		int resolutionHorizontal;
 		int resolutionVertical;
 		boolean framerateFixed;
@@ -277,6 +371,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		int tcpReceivePort;
 
 		Settings() {}
+
+		void setRowId(long id) {
+			this.rowId = id;
+		}
 
 		void setResolutionHorizontal(int resolutionH) {
 			this.resolutionHorizontal = resolutionH;
@@ -308,6 +406,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		void setTcpReceivePort(int port) {
 			this.tcpReceivePort = port;
+		}
+
+		long getRowId() {
+			return this.rowId;
 		}
 
 		int getResolutionHorizontal() {
