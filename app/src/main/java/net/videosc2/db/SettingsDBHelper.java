@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by stefan on 22.06.17, package net.videosc2.db, project VideOSC22.
  */
@@ -29,6 +32,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.SettingsEntries.RES_V + " INTEGER NOT NULL DEFAULT '4'," +
 					SettingsContract.SettingsEntries.FRAMERATE_FIXED + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.NORMALIZE + " INTEGER NOT NULL DEFAULT '0'," +
+					SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES + " INTEGER NOT NULL DEFAULT '0'," +
 					SettingsContract.SettingsEntries.CALC_PERIOD + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc'," +
 					SettingsContract.SettingsEntries.UDP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32000'," +
@@ -56,7 +60,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 11;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -85,24 +89,51 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
 		Log.d(TAG, "new row ID: " + newRowId);
 
-		// create table for single value settings
-		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
 		// reset
 		values.clear();
+
+		// create table for single value settings
+		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
 
 		// single value settings
 		values.put(SettingsContract.SettingsEntries.RES_H, 7);
 		values.put(SettingsContract.SettingsEntries.RES_V, 5);
 		values.put(SettingsContract.SettingsEntries.FRAMERATE_FIXED, 1);
 		values.put(SettingsContract.SettingsEntries.NORMALIZE, 0);
+		values.put(SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES, 0);
 		values.put(SettingsContract.SettingsEntries.CALC_PERIOD, 1);
 		values.put(SettingsContract.SettingsEntries.ROOT_CMD, "vosc");
 		values.put(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT, 32000);
 		values.put(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT, 32001);
 		newRowId = db.insert(SettingsContract.SettingsEntries.TABLE_NAME, null, values);
+		Log.d(TAG, "new row ID: " + newRowId);
+
+		values.clear();
 
 		// create table for sensor settings
 		db.execSQL(SQL_SENSOR_SETTINGS_CREATE);
+
+		Map<String, Integer> initSensors = new HashMap<>();
+		initSensors.put("ori", 0);
+		initSensors.put("acc", 0);
+		initSensors.put("lin_acc", 0);
+		initSensors.put("mag", 0);
+		initSensors.put("grav", 0);
+		initSensors.put("prox", 0);
+		initSensors.put("light", 0);
+		initSensors.put("press", 0);
+		initSensors.put("temp", 0);
+		initSensors.put("hum", 0);
+		initSensors.put("loc", 0);
+
+		for (String key : initSensors.keySet()) {
+			values.put(SettingsContract.SensorSettingsEntries.SENSOR, key);
+			values.put(SettingsContract.SensorSettingsEntries.VALUE, initSensors.get(key));
+			newRowId = db.insert(SettingsContract.SensorSettingsEntries.TABLE_NAME, null, values);
+			Log.d(TAG, "new row ID: " + newRowId);
+			values.clear();
+		}
+
 		// create snapshots table
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_CREATE);
 	}

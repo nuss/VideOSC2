@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -93,6 +95,13 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				String[] settingsFields;
+				String[] addrFields;
+				final List<Address> addresses = new ArrayList<>();
+				final List<Settings> settingsesses = new ArrayList<>();
+				final List<Sensors> sensorses = new ArrayList<>();
+				final ContentValues values = new ContentValues();
+
 				try {
 					setSettingsLevel.invoke(getActivity(), 2);
 				} catch (IllegalAccessException e) {
@@ -104,25 +113,24 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				switch (i) {
 					case 0:
 						// network settings
-						String[] addrFields = {
+						VideOSCUIHelpers.addView(networkSettingsView, bg);
+
+						// table vosc_client_addresses
+						addrFields = new String[]{
 								SettingsContract.AddressSettingsEntry._ID,
 								SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-								SettingsContract.AddressSettingsEntry.PORT/*,
-								SettingsContract.AddressSettingsEntry.PROTOCOL*/
+								SettingsContract.AddressSettingsEntry.PORT
 						};
 						String sortOrder =
 								SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
-						String[] settingsFields = {
+						// receive port and root cmd are store stored within regular settings
+						// table vosc_settings
+						settingsFields = new String[]{
 								SettingsContract.SettingsEntries._ID,
 								SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
 								SettingsContract.SettingsEntries.ROOT_CMD
 						};
-
-//						Cursor count = db.rawQuery("select count(*) from " + SettingsContract.AddressSettingsEntry.TABLE_NAME, null);
-//						count.moveToFirst();
-//						Log.d(TAG, "numrows: " + count.getInt(0));
-//						count.close();
 
 						Cursor cursor = db.query(
 								SettingsContract.AddressSettingsEntry.TABLE_NAME,
@@ -134,35 +142,38 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								sortOrder
 						);
 
+/*
 						String[] columns = cursor.getColumnNames();
 						for (String colName : columns) {
 							Log.d(TAG, "column: " + colName);
 						}
-
-						final List<Address> addresses = new ArrayList<>();
+*/
+						// clear list of addresses before adding new content
+						addresses.clear();
 
 						while (cursor.moveToNext()) {
 							Address address = new Address();
-							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
-							String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
-							int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-//							String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
-							Log.d(TAG, "ip: " + ip + ", port: " + port/* + ", protocol: " + protocol*/);
+							long rowId =
+									cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
+							String ip =
+									cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
+							int port =
+									cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 							address.setRowId(rowId);
 							address.setIP(ip);
 							address.setPort(port);
-//							address.setProtocol(protocol);
 							addresses.add(address);
 						}
 
 						cursor.close();
 
-						Log.d(TAG, "addresses: " + addresses);
-						VideOSCUIHelpers.addView(networkSettingsView, bg);
 						final EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
 						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
 						final EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
-						remotePortField.setText(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()), TextView.BufferType.EDITABLE);
+						remotePortField.setText(
+								String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
+								TextView.BufferType.EDITABLE
+						);
 
 						cursor = db.query(
 								SettingsContract.SettingsEntries.TABLE_NAME,
@@ -174,12 +185,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								null
 						);
 
-						final List<Settings> settingsesses = new ArrayList<>();
+						// clear list of settings before adding new content
+						settingsesses.clear();
 
 						while (cursor.moveToNext()) {
 							Settings settings = new Settings();
-							int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
-							String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
+							int udpReceivePort =
+									cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+							String cmd =
+									cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+							settings.setRowId(rowId);
 							settings.setUdpReceivePort(udpReceivePort);
 							settings.setRootCmd(cmd);
 							settingsesses.add(settings);
@@ -188,13 +204,14 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						cursor.close();
 
 						final EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
-						udpReceivePortField.setText(String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()), TextView.BufferType.EDITABLE);
+						udpReceivePortField.setText(
+								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()),
+								TextView.BufferType.EDITABLE
+						);
 						final EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
 						rootCmdField.setText(settingsesses.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
 						final TextView deviceIP = (TextView) networkSettingsView.findViewById(R.id.device_ip_address);
 						deviceIP.setText(KetaiNet.getIP());
-
-						final ContentValues values = new ContentValues();
 
 						remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
@@ -274,10 +291,201 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 					case 1:
 						// resolution settings
 						VideOSCUIHelpers.addView(resolutionSettingsView, bg);
+
+						// table vosc_settings
+						settingsFields = new String[]{
+								SettingsContract.SettingsEntries._ID,
+								SettingsContract.SettingsEntries.RES_H,
+								SettingsContract.SettingsEntries.RES_V,
+								SettingsContract.SettingsEntries.CALC_PERIOD,
+								SettingsContract.SettingsEntries.FRAMERATE_FIXED,
+								SettingsContract.SettingsEntries.NORMALIZE,
+								SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
+						};
+
+						cursor = db.query(
+								SettingsContract.SettingsEntries.TABLE_NAME,
+								settingsFields,
+								null,
+								null,
+								null,
+								null,
+								null
+						);
+
+						// clear list of settings before adding new content
+						settingsesses.clear();
+
+						while (cursor.moveToNext()) {
+							Settings settings = new Settings();
+							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
+							short resH = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H));
+							short resV = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V));
+							short calcPeriod =
+									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.CALC_PERIOD));
+							short framerateFixed =
+									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_FIXED));
+							short normalized =
+									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.NORMALIZE));
+							short rememberPixelStates =
+									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES));
+
+							settings.setRowId(rowId);
+							settings.setResolutionHorizontal(resH);
+							settings.setResolutionVertical(resV);
+							settings.setCalculationPeriod(calcPeriod);
+							settings.setFramerateFixed(framerateFixed);
+							settings.setNormalized(normalized);
+							settings.setRememberPixelStates(rememberPixelStates);
+							settingsesses.add(settings);
+						}
+
+						cursor.close();
+
+						final EditText resHField =
+								(EditText) resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
+						resHField.setText(
+								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionHorizontal()),
+								TextView.BufferType.EDITABLE
+						);
+						final EditText resVField =
+								(EditText) resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
+						resVField.setText(
+								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionVertical()),
+								TextView.BufferType.EDITABLE
+						);
+						final EditText calcPeriodField =
+								(EditText) resolutionSettingsView.findViewById(R.id.calulation_period_field);
+						calcPeriodField.setText(
+								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getCalculationPeriod()),
+								TextView.BufferType.EDITABLE
+						);
+						final CheckBox fixFramerateCB =
+								(CheckBox) resolutionSettingsView.findViewById(R.id.fix_framerate_checkbox);
+						fixFramerateCB.setChecked(settingsesses.get(0).getFramerateFixed());
+						final CheckBox normalizedCB =
+								(CheckBox) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
+						normalizedCB.setChecked(settingsesses.get(0).getNormalized());
+						final CheckBox rememberPixelStatesCB =
+								(CheckBox) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
+						rememberPixelStatesCB.setChecked(settingsesses.get(0).getRememberPixelStates());
+
+						resHField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !resHField.getText().toString().equals(
+										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionHorizontal()))) {
+									values.put(
+											SettingsContract.SettingsEntries.RES_H,
+											resHField.getText().toString()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						resVField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !resVField.getText().toString().equals(
+										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionVertical()))) {
+									values.put(
+											SettingsContract.SettingsEntries.RES_V,
+											resVField.getText().toString()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						calcPeriodField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+							@Override
+							public void onFocusChange(View v, boolean hasFocus) {
+								if (!hasFocus && !calcPeriodField.getText().toString().equals(
+										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getCalculationPeriod()))) {
+									values.put(
+											SettingsContract.SettingsEntries.CALC_PERIOD,
+											calcPeriodField.getText().toString()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						fixFramerateCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (fixFramerateCB.isChecked() != settingsesses.get(0).getFramerateFixed()) {
+									values.put(
+											SettingsContract.SettingsEntries.FRAMERATE_FIXED,
+											fixFramerateCB.isChecked()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (normalizedCB.isChecked() != settingsesses.get(0).getNormalized()) {
+									values.put(
+											SettingsContract.SettingsEntries.NORMALIZE,
+											normalizedCB.isChecked()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						rememberPixelStatesCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (rememberPixelStatesCB.isChecked() != settingsesses.get(0).getRememberPixelStates()) {
+									values.put(
+											SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
+											rememberPixelStatesCB.isChecked()
+									);
+									db.update(
+											SettingsContract.SettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											null
+									);
+									values.clear();
+								}
+							}
+						});
 						break;
 					case 2:
 						// sensor settings
 						VideOSCUIHelpers.addView(sensorSettingsView, bg);
+
 						setPlaceholder(bg);
 						break;
 					case 3:
@@ -297,6 +505,25 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	public void setPlaceholder(View container) {
 		Resources res = getResources();
 		SparseIntArray idsAndStrings = new SparseIntArray(11);
+		String rootCmd = "vosc";
+		String[] settingsFields = new String[]{
+				SettingsContract.SettingsEntries.ROOT_CMD
+		};
+		SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+		Cursor cursor = db.query(
+				SettingsContract.SettingsEntries.TABLE_NAME,
+				settingsFields,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+
+		if (cursor.moveToFirst())
+			rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+		
+		cursor.close();
 
 		idsAndStrings.append(R.id.orientation_sensor, R.string.orientation_sensor);
 		idsAndStrings.append(R.id.accelerometer, R.string.accelerometer);
@@ -313,7 +540,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		for (int i = 0; i < idsAndStrings.size(); i++) {
 			TextView tv = (TextView) container.findViewById(idsAndStrings.keyAt(i));
-			String text = String.format(res.getString(idsAndStrings.valueAt(i)), "vosc");
+			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
 	}
@@ -361,11 +588,12 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 	private class Settings {
 		long rowId;
-		int resolutionHorizontal;
-		int resolutionVertical;
+		short resolutionHorizontal;
+		short resolutionVertical;
 		boolean framerateFixed;
 		boolean normalized;
-		int calculationPeriod;
+		boolean rememberPixelStates;
+		short calculationPeriod;
 		String rootCmd;
 		int udpReceivePort;
 		int tcpReceivePort;
@@ -376,23 +604,27 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			this.rowId = id;
 		}
 
-		void setResolutionHorizontal(int resolutionH) {
+		void setResolutionHorizontal(short resolutionH) {
 			this.resolutionHorizontal = resolutionH;
 		}
 
-		void setResolutionVertical(int resolutionV) {
+		void setResolutionVertical(short resolutionV) {
 			this.resolutionVertical = resolutionV;
 		}
 
-		void setFramerateFixed(int boolVal) {
+		void setFramerateFixed(short boolVal) {
 			this.framerateFixed = boolVal > 0;
 		}
 
-		void setNormalized(int boolVal) {
+		void setNormalized(short boolVal) {
 			this.normalized = boolVal > 0;
 		}
 
-		void setCalculationPeriod(int calcPeriod) {
+		void setRememberPixelStates(short boolVal) {
+			this.rememberPixelStates = boolVal > 0;
+		}
+
+		void setCalculationPeriod(short calcPeriod) {
 			this.calculationPeriod = calcPeriod;
 		}
 
@@ -412,11 +644,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			return this.rowId;
 		}
 
-		int getResolutionHorizontal() {
+		short getResolutionHorizontal() {
 			return this.resolutionHorizontal;
 		}
 
-		int getResolutionVertical() {
+		short getResolutionVertical() {
 			return this.resolutionVertical;
 		}
 
@@ -428,7 +660,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			return this.normalized;
 		}
 
-		int getCalculationPeriod() {
+		boolean getRememberPixelStates() {
+			return this.rememberPixelStates;
+		}
+
+		short getCalculationPeriod() {
 			return this.calculationPeriod;
 		}
 
@@ -442,6 +678,24 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		int getTcpReceivePort() {
 			return this.tcpReceivePort;
+		}
+	}
+
+	private class Sensors {
+		long rowId;
+		boolean orientation;
+		boolean acceleration;
+		boolean linAcceleration;
+		boolean magnetic;
+		boolean gravity;
+		boolean proximity;
+		boolean light;
+		boolean pressure;
+		boolean humidity;
+		boolean location;
+
+		Sensors() {
+
 		}
 	}
 }

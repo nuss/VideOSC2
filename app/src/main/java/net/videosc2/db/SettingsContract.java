@@ -25,6 +25,7 @@ public class SettingsContract {
 		public static final String RES_V = "resolution_vertical";
 		public static final String FRAMERATE_FIXED = "framerate_fixed";
 		public static final String NORMALIZE = "normalized";
+		public static final String REMEMBER_PIXEL_STATES = "remember_pixel_states";
 		public static final String CALC_PERIOD = "calculation_period";
 		public static final String ROOT_CMD = "root_cmd_name";
 		public static final String UDP_RECEIVE_PORT = "udp_receive_port";

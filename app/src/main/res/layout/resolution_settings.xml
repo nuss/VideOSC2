@@ -31,8 +31,7 @@
 				android:layout_height="wrap_content"
 				android:digits="123456789"
 				android:inputType="number"
-				android:nextFocusDown="@+id/resolution_vertical_field"
-				android:text="6"/>
+				android:nextFocusDown="@+id/resolution_vertical_field"/>
 		</LinearLayout>
 
 		<LinearLayout
@@ -54,8 +53,7 @@
 				android:layout_height="wrap_content"
 				android:digits="123456789"
 				android:inputType="number"
-				android:nextFocusDown="@+id/calulation_period_field"
-				android:text="4"/>
+				android:nextFocusDown="@+id/calulation_period_field"/>
 		</LinearLayout>
 	</LinearLayout>
 
@@ -84,8 +82,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:digits="123456789"
-				android:inputType="number"
-				android:text="1"/>
+				android:inputType="number"/>
 		</LinearLayout>
 
 		<LinearLayout
@@ -100,7 +97,6 @@
 				style="@style/CheckBoxMargin"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:checked="true"
 				android:text="@string/fixed_frame_rate"/>
 
 			<CheckBox
@@ -108,7 +104,6 @@
 				style="@style/CheckBoxMargin"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:checked="false"
 				android:text="@string/normalize_output_text"/>
 
 			<CheckBox
@@ -116,13 +111,12 @@
 				style="@style/CheckBoxMargin"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:checked="false"
 				android:text="@string/remember_activated_text"/>
 		</LinearLayout>
 
 	</LinearLayout>
 
-	<LinearLayout
+	<!-- <LinearLayout
 		style="?android:attr/buttonBarStyle"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -149,6 +143,6 @@
 			android:text="@string/save_settings"
 			android:textAllCaps="true"
 			android:textColor="@android:color/primary_text_dark"/>
-	</LinearLayout>
+	</LinearLayout> -->
 
 </LinearLayout>
