@@ -98,7 +98,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				String[] settingsFields;
 				String[] addrFields;
 				final List<Address> addresses = new ArrayList<>();
-				final List<Settings> settingsesses = new ArrayList<>();
+				final List<Settings> settings = new ArrayList<>();
 				final List<Sensors> sensorses = new ArrayList<>();
 				final ContentValues values = new ContentValues();
 
@@ -186,30 +186,30 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						);
 
 						// clear list of settings before adding new content
-						settingsesses.clear();
+						settings.clear();
 
 						while (cursor.moveToNext()) {
-							Settings settings = new Settings();
+							Settings setting = new Settings();
 							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
 							int udpReceivePort =
 									cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
 							String cmd =
 									cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-							settings.setRowId(rowId);
-							settings.setUdpReceivePort(udpReceivePort);
-							settings.setRootCmd(cmd);
-							settingsesses.add(settings);
+							setting.setRowId(rowId);
+							setting.setUdpReceivePort(udpReceivePort);
+							setting.setRootCmd(cmd);
+							settings.add(setting);
 						}
 
 						cursor.close();
 
 						final EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
 						udpReceivePortField.setText(
-								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()),
+								String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
-						rootCmdField.setText(settingsesses.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
+						rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
 						final TextView deviceIP = (TextView) networkSettingsView.findViewById(R.id.device_ip_address);
 						deviceIP.setText(KetaiNet.getIP());
 
@@ -253,7 +253,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !udpReceivePortField.getText().toString().equals(
-										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getUdpReceivePort()))) {
+										String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
 									values.put(
 											SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
 											udpReceivePortField.getText().toString()
@@ -261,7 +261,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -271,7 +271,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						rootCmdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
-								if (!hasFocus && !rootCmdField.getText().toString().equals(settingsesses.get(0).getRootCmd())) {
+								if (!hasFocus && !rootCmdField.getText().toString().equals(settings.get(0).getRootCmd())) {
 									values.put(
 											SettingsContract.SettingsEntries.ROOT_CMD,
 											rootCmdField.getText().toString()
@@ -279,7 +279,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -314,10 +314,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						);
 
 						// clear list of settings before adding new content
-						settingsesses.clear();
+						settings.clear();
 
 						while (cursor.moveToNext()) {
-							Settings settings = new Settings();
+							Settings setting = new Settings();
 							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
 							short resH = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H));
 							short resV = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V));
@@ -330,14 +330,14 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							short rememberPixelStates =
 									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES));
 
-							settings.setRowId(rowId);
-							settings.setResolutionHorizontal(resH);
-							settings.setResolutionVertical(resV);
-							settings.setCalculationPeriod(calcPeriod);
-							settings.setFramerateFixed(framerateFixed);
-							settings.setNormalized(normalized);
-							settings.setRememberPixelStates(rememberPixelStates);
-							settingsesses.add(settings);
+							setting.setRowId(rowId);
+							setting.setResolutionHorizontal(resH);
+							setting.setResolutionVertical(resV);
+							setting.setCalculationPeriod(calcPeriod);
+							setting.setFramerateFixed(framerateFixed);
+							setting.setNormalized(normalized);
+							setting.setRememberPixelStates(rememberPixelStates);
+							settings.add(setting);
 						}
 
 						cursor.close();
@@ -345,36 +345,36 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						final EditText resHField =
 								(EditText) resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
 						resHField.setText(
-								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionHorizontal()),
+								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText resVField =
 								(EditText) resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
 						resVField.setText(
-								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionVertical()),
+								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText calcPeriodField =
 								(EditText) resolutionSettingsView.findViewById(R.id.calulation_period_field);
 						calcPeriodField.setText(
-								String.format(Locale.getDefault(), "%d", settingsesses.get(0).getCalculationPeriod()),
+								String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()),
 								TextView.BufferType.EDITABLE
 						);
 						final CheckBox fixFramerateCB =
 								(CheckBox) resolutionSettingsView.findViewById(R.id.fix_framerate_checkbox);
-						fixFramerateCB.setChecked(settingsesses.get(0).getFramerateFixed());
+						fixFramerateCB.setChecked(settings.get(0).getFramerateFixed());
 						final CheckBox normalizedCB =
 								(CheckBox) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
-						normalizedCB.setChecked(settingsesses.get(0).getNormalized());
+						normalizedCB.setChecked(settings.get(0).getNormalized());
 						final CheckBox rememberPixelStatesCB =
 								(CheckBox) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
-						rememberPixelStatesCB.setChecked(settingsesses.get(0).getRememberPixelStates());
+						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 
 						resHField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !resHField.getText().toString().equals(
-										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionHorizontal()))) {
+										String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()))) {
 									values.put(
 											SettingsContract.SettingsEntries.RES_H,
 											resHField.getText().toString()
@@ -382,7 +382,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -393,7 +393,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !resVField.getText().toString().equals(
-										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getResolutionVertical()))) {
+										String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()))) {
 									values.put(
 											SettingsContract.SettingsEntries.RES_V,
 											resVField.getText().toString()
@@ -401,7 +401,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -412,7 +412,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !calcPeriodField.getText().toString().equals(
-										String.format(Locale.getDefault(), "%d", settingsesses.get(0).getCalculationPeriod()))) {
+										String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()))) {
 									values.put(
 											SettingsContract.SettingsEntries.CALC_PERIOD,
 											calcPeriodField.getText().toString()
@@ -420,7 +420,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -430,7 +430,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						fixFramerateCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (fixFramerateCB.isChecked() != settingsesses.get(0).getFramerateFixed()) {
+								if (fixFramerateCB.isChecked() != settings.get(0).getFramerateFixed()) {
 									values.put(
 											SettingsContract.SettingsEntries.FRAMERATE_FIXED,
 											fixFramerateCB.isChecked()
@@ -438,7 +438,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -448,7 +448,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (normalizedCB.isChecked() != settingsesses.get(0).getNormalized()) {
+								if (normalizedCB.isChecked() != settings.get(0).getNormalized()) {
 									values.put(
 											SettingsContract.SettingsEntries.NORMALIZE,
 											normalizedCB.isChecked()
@@ -456,7 +456,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -466,7 +466,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						rememberPixelStatesCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (rememberPixelStatesCB.isChecked() != settingsesses.get(0).getRememberPixelStates()) {
+								if (rememberPixelStatesCB.isChecked() != settings.get(0).getRememberPixelStates()) {
 									values.put(
 											SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
 											rememberPixelStatesCB.isChecked()
@@ -474,7 +474,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
 											values,
-											SettingsContract.SettingsEntries._ID + " = " + settingsesses.get(0).getRowId(),
+											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 											null
 									);
 									values.clear();
@@ -485,8 +485,285 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 					case 2:
 						// sensor settings
 						VideOSCUIHelpers.addView(sensorSettingsView, bg);
-
 						setPlaceholder(bg);
+
+						final Sensors sensors = new Sensors();
+
+						cursor = db.rawQuery("SELECT * FROM " + SettingsContract.SensorSettingsEntries.TABLE_NAME, null);
+
+						while (cursor.moveToNext()) {
+							switch (cursor.getString(cursor.getColumnIndex(SettingsContract.SensorSettingsEntries.SENSOR))) {
+								case "ori":
+									sensors.setOrientationSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "acc":
+									sensors.setAccelerationSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "lin_acc":
+									sensors.setLinAccelerationSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "mag":
+									sensors.setMagneticSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "grav":
+									sensors.setGravitySensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "prox":
+									sensors.setProximitySensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "light":
+									sensors.setLightSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "press":
+									sensors.setPressureSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "temp":
+									sensors.setTemperatureSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "hum":
+									sensors.setHumiditySensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								case "loc":
+									sensors.setLocationSensorActivated(Short.parseShort(
+											cursor.getString(
+													cursor.getColumnIndexOrThrow(SettingsContract.SensorSettingsEntries.VALUE)
+											)
+									));
+									break;
+								default:
+							}
+						}
+
+						final CheckBox oriCB = (CheckBox) sensorSettingsView.findViewById(R.id.orientation_sensor);
+						final CheckBox accCB = (CheckBox) sensorSettingsView.findViewById(R.id.accelerometer);
+						final CheckBox linAccCB = (CheckBox) sensorSettingsView.findViewById(R.id.linear_acceleration);
+						final CheckBox magCB = (CheckBox) sensorSettingsView.findViewById(R.id.magnetic_field);
+						final CheckBox gravCB = (CheckBox) sensorSettingsView.findViewById(R.id.gravity_sensor);
+						final CheckBox proxCB = (CheckBox) sensorSettingsView.findViewById(R.id.proximity_sensor);
+						final CheckBox lightCB = (CheckBox) sensorSettingsView.findViewById(R.id.light_sensor);
+						final CheckBox pressCB = (CheckBox) sensorSettingsView.findViewById(R.id.air_pressure_sensor);
+						final CheckBox tempCB = (CheckBox) sensorSettingsView.findViewById(R.id.temperature_sensor);
+						final CheckBox humCB = (CheckBox) sensorSettingsView.findViewById(R.id.humidity_sensor);
+						final CheckBox locCB = (CheckBox) sensorSettingsView.findViewById(R.id.geo_loc_sensor);
+
+						oriCB.setChecked(sensors.getOrientationSensorActivated());
+						accCB.setChecked(sensors.getAccelerationSensorActivated());
+						linAccCB.setChecked(sensors.getLinAccelerationSensorActivated());
+						magCB.setChecked(sensors.getMagneticSensorActivated());
+						gravCB.setChecked(sensors.getGravitySensorActivated());
+						proxCB.setChecked(sensors.getProximitySensorActivated());
+						lightCB.setChecked(sensors.getLightSensorActivated());
+						pressCB.setChecked(sensors.getPressureSensorActivated());
+						tempCB.setChecked(sensors.getTemperatureSensorActivated());
+						humCB.setChecked(sensors.getHumiditySensorActivated());
+						locCB.setChecked(sensors.getLocationSensorActivated());
+
+						oriCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (oriCB.isChecked() != sensors.getOrientationSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, oriCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'ori'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						accCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (accCB.isChecked() != sensors.getAccelerationSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, accCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'acc'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						linAccCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (linAccCB.isChecked() != sensors.getLinAccelerationSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, linAccCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'lin_acc'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						magCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (magCB.isChecked() != sensors.getMagneticSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, magCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'mag'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						gravCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (gravCB.isChecked() != sensors.getGravitySensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, gravCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'grav'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						proxCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (proxCB.isChecked() != sensors.getProximitySensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, proxCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'prox'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						lightCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (lightCB.isChecked() != sensors.getLightSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, lightCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'light'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						pressCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (pressCB.isChecked() != sensors.getPressureSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, pressCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'press'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						tempCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (tempCB.isChecked() != sensors.getTemperatureSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, tempCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'temp'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						humCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (humCB.isChecked() != sensors.getHumiditySensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, humCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'hum'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+						locCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (locCB.isChecked() != sensors.getLocationSensorActivated()) {
+									values.put(SettingsContract.SensorSettingsEntries.VALUE, locCB.isChecked());
+									db.update(
+											SettingsContract.SensorSettingsEntries.TABLE_NAME,
+											values,
+											SettingsContract.SensorSettingsEntries.SENSOR + " = 'loc'",
+											null
+									);
+									values.clear();
+								}
+							}
+						});
+
 						break;
 					case 3:
 						// about
@@ -522,7 +799,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		if (cursor.moveToFirst())
 			rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-		
+
 		cursor.close();
 
 		idsAndStrings.append(R.id.orientation_sensor, R.string.orientation_sensor);
@@ -546,10 +823,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private class Address {
-		long rowId;
-		String ip;
-		int port;
-		String protocol;
+		private long rowId;
+		private String ip;
+		private int port;
+		private String protocol;
 
 		Address() {};
 
@@ -587,16 +864,16 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private class Settings {
-		long rowId;
-		short resolutionHorizontal;
-		short resolutionVertical;
-		boolean framerateFixed;
-		boolean normalized;
-		boolean rememberPixelStates;
-		short calculationPeriod;
-		String rootCmd;
-		int udpReceivePort;
-		int tcpReceivePort;
+		private long rowId;
+		private short resolutionHorizontal;
+		private short resolutionVertical;
+		private boolean framerateFixed;
+		private boolean normalized;
+		private boolean rememberPixelStates;
+		private short calculationPeriod;
+		private String rootCmd;
+		private int udpReceivePort;
+		private int tcpReceivePort;
 
 		Settings() {}
 
@@ -682,20 +959,115 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private class Sensors {
-		long rowId;
-		boolean orientation;
-		boolean acceleration;
-		boolean linAcceleration;
-		boolean magnetic;
-		boolean gravity;
-		boolean proximity;
-		boolean light;
-		boolean pressure;
-		boolean humidity;
-		boolean location;
+		private long rowId;
+		private boolean orientationSensorActivated;
+		private boolean accelerationSensorActivated;
+		private boolean linAccelerationSensorActivated;
+		private boolean magneticSensorActivated;
+		private boolean gravitySensorActivated;
+		private boolean proximitySensorActivated;
+		private boolean lightSensorActivated;
+		private boolean pressureSensorActivated;
+		private boolean temperatureSensorActivated;
+		private boolean humiditySensorActivated;
+		private boolean locationSensorActivated;
 
-		Sensors() {
+		Sensors() {}
 
+		void setRowId(long rowId) {
+			this.rowId = rowId;
+		}
+
+		void setOrientationSensorActivated(short boolVal) {
+			this.orientationSensorActivated = boolVal > 0;
+		}
+
+		void setAccelerationSensorActivated(short boolVal) {
+			this.accelerationSensorActivated = boolVal > 0;
+		}
+
+		void setLinAccelerationSensorActivated(short boolVal) {
+			this.linAccelerationSensorActivated = boolVal > 0;
+		}
+
+		void setMagneticSensorActivated(short boolVal) {
+			this.magneticSensorActivated = boolVal > 0;
+		}
+
+		void setGravitySensorActivated(short boolVal) {
+			this.gravitySensorActivated = boolVal > 0;
+		}
+
+		void setProximitySensorActivated(short boolVal) {
+			this.proximitySensorActivated = boolVal > 0;
+		}
+
+		void setLightSensorActivated(short boolVal) {
+			this.lightSensorActivated = boolVal > 0;
+		}
+
+		void setPressureSensorActivated(short boolVal) {
+			this.pressureSensorActivated = boolVal > 0;
+		}
+
+		void setTemperatureSensorActivated(short boolVal) {
+			this.temperatureSensorActivated = boolVal > 0;
+		}
+
+		void setHumiditySensorActivated(short boolVal) {
+			this.humiditySensorActivated = boolVal > 0;
+		}
+
+		void setLocationSensorActivated(short boolVal) {
+			this.locationSensorActivated = boolVal > 0;
+		}
+
+		long getRowId() {
+			return this.rowId;
+		}
+
+		boolean getOrientationSensorActivated() {
+			return this.orientationSensorActivated;
+		}
+
+		boolean getAccelerationSensorActivated() {
+			return this.accelerationSensorActivated;
+		}
+
+		boolean getLinAccelerationSensorActivated() {
+			return this.linAccelerationSensorActivated;
+		}
+
+		boolean getMagneticSensorActivated() {
+			return this.magneticSensorActivated;
+		}
+
+		boolean getGravitySensorActivated() {
+			return this.gravitySensorActivated;
+		}
+
+		boolean getProximitySensorActivated() {
+			return this.proximitySensorActivated;
+		}
+
+		boolean getLightSensorActivated() {
+			return this.lightSensorActivated;
+		}
+
+		boolean getPressureSensorActivated() {
+			return this.pressureSensorActivated;
+		}
+
+		boolean getTemperatureSensorActivated() {
+			return this.temperatureSensorActivated;
+		}
+
+		boolean getHumiditySensorActivated() {
+			return this.humiditySensorActivated;
+		}
+
+		boolean getLocationSensorActivated() {
+			return this.locationSensorActivated;
 		}
 	}
 }

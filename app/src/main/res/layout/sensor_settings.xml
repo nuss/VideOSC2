@@ -93,7 +93,7 @@
 		android:checked="false"
 		android:text="@string/geo_location_sensor"/>
 
-	<LinearLayout
+	<!--<LinearLayout
 		style="?android:attr/buttonBarStyle"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -120,5 +120,5 @@
 			android:text="@string/save_settings"
 			android:textAllCaps="true"
 			android:textColor="@android:color/primary_text_dark"/>
-	</LinearLayout>
+	</LinearLayout>-->
 </LinearLayout>
