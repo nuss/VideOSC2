@@ -71,5 +71,6 @@
 	<string name="humidity_sensor">Humidity sensor: Humidity in %% – \'/%1$s/hum\', humidity</string>
 	<string name="camera_request_permission">VideOSC needs the camera permission</string>
 	<string name="zoom_info">, zoom:</string>
+	<string name="curr_active_camera">The currently active camera</string>
 
 </resources>

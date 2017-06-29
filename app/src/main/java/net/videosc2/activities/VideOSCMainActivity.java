@@ -241,7 +241,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				BitmapDrawable img;
 				final ImageView oscIndicatorView = (ImageView) findViewById(R.id.indicator_osc);
 				final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
-				final ImageView mInteractionModeIndicator = (ImageView) findViewById(R.id.indicator_interaction);
+				final ImageView interactionModeIndicator = (ImageView) findViewById(R.id.indicator_interaction);
+				final ImageView cameraIndicator = (ImageView) findViewById(R.id.indicator_camera);
 				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
@@ -402,12 +403,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 						mInteractionMode = InteractionModes.SINGLE_PIXEL;
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
-						mInteractionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
+						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 						mInteractionMode = InteractionModes.BASIC;
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
-						mInteractionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
+						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 					} else {
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
@@ -430,10 +431,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 							ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
 							torchSwitch.setImageDrawable(torchImg);
 						}
+						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
 					} else {
 						currentCameraID = backsideCameraId;
 						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.back_camera);
+						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
 					}
 					imgView.setImageDrawable(img);
 					// invoke setting of new camera
