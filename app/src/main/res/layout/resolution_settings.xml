@@ -29,7 +29,7 @@
 				style="@style/EditTextPadding"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:digits="123456789"
+				android:digits="1234567890"
 				android:inputType="number"
 				android:nextFocusDown="@+id/resolution_vertical_field"/>
 		</LinearLayout>
@@ -51,7 +51,7 @@
 				style="@style/EditTextPadding"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:digits="123456789"
+				android:digits="1234567890"
 				android:inputType="number"
 				android:nextFocusDown="@+id/calulation_period_field"/>
 		</LinearLayout>
@@ -115,34 +115,5 @@
 		</LinearLayout>
 
 	</LinearLayout>
-
-	<!-- <LinearLayout
-		style="?android:attr/buttonBarStyle"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingTop="20dp">
-
-		<Button
-			android:id="@+id/network_settings_cancel"
-			style="?android:buttonBarButtonStyle"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:padding="10dp"
-			android:text="@string/cancel"
-			android:textAllCaps="true"/>
-
-		<Button
-			android:id="@+id/network_settings_submit"
-			style="?android:buttonBarButtonStyle"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:background="@android:color/holo_green_dark"
-			android:padding="10dp"
-			android:text="@string/save_settings"
-			android:textAllCaps="true"
-			android:textColor="@android:color/primary_text_dark"/>
-	</LinearLayout> -->
 
 </LinearLayout>

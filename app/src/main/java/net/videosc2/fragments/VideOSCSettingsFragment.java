@@ -1,9 +1,11 @@
 package net.videosc2.fragments;
 
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -73,6 +75,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
 		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+		final FragmentManager fragmentManager = getFragmentManager();
 
 		try {
 			Class[] lArg = new Class[1];
@@ -99,8 +102,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				String[] addrFields;
 				final List<Address> addresses = new ArrayList<>();
 				final List<Settings> settings = new ArrayList<>();
-				final List<Sensors> sensorses = new ArrayList<>();
 				final ContentValues values = new ContentValues();
+				final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 
 				try {
 					setSettingsLevel.invoke(getActivity(), 2);
@@ -386,6 +389,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									cameraView.setResolution(
+											Integer.parseInt(resHField.getText().toString()),
+											cameraView.getResolution().y
+									);
 								}
 							}
 						});
@@ -405,6 +412,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									cameraView.setResolution(
+											cameraView.getResolution().x,
+											Integer.parseInt(resVField.getText().toString())
+									);
 								}
 							}
 						});

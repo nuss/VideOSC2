@@ -24,7 +24,10 @@ package net.videosc2.fragments;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -46,6 +49,7 @@ import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.io.IOException;
@@ -91,6 +95,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	}
 
 	public float mCamZoom = 1f;
+
+	private Point mResolution = new Point();
 
 	/**
 	 * OnCreateView fragment override
@@ -206,6 +212,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mCamera;
 	}
 
+	public void setResolution(int width, int height) {
+		mResolution.set(width, height);
+	}
+
+	public Point getResolution() {
+		return mResolution;
+	}
+
+
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
@@ -255,6 +270,32 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 			Display display = wm.getDefaultDisplay();
 			display.getSize(VideOSCMainActivity.dimensions);
+
+			String[] settingsFields = new String[]{
+					SettingsContract.SettingsEntries.RES_H,
+					SettingsContract.SettingsEntries.RES_V
+			};
+			SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+
+			Cursor cursor = db.query(
+					SettingsContract.SettingsEntries.TABLE_NAME,
+					settingsFields,
+					null,
+					null,
+					null,
+					null,
+					null
+			);
+
+			if (cursor.moveToFirst()) {
+				setResolution(
+						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H)),
+						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V))
+				);
+			}
+
+			cursor.close();
+
 		}
 
 		/**
@@ -396,8 +437,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (frameRateText != null) frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
 						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
 						if (zoomText != null) zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
-						int outWidth = 6;
-						int outHeight = 4;
+						int outWidth = getResolution().x;
+						int outHeight = getResolution().y;
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
