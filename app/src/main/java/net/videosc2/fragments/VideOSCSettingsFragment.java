@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -389,6 +388,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									// update camera preview immediately
 									cameraView.setResolution(
 											Integer.parseInt(resHField.getText().toString()),
 											cameraView.getResolution().y
@@ -412,6 +412,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									// update camera preview immediately
 									cameraView.setResolution(
 											cameraView.getResolution().x,
 											Integer.parseInt(resVField.getText().toString())
@@ -453,6 +454,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									// update camera preview immediately
+									cameraView.setFramerateFixed(fixFramerateCB.isChecked() ? 1 : 0);
 								}
 							}
 						});

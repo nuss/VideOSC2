@@ -63,6 +63,9 @@ import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 
+import static android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX;
+import static android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX;
+
 /**
  * Display the down-scaled preview, calculated
  * from the smallest possible preview size
@@ -97,6 +100,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public float mCamZoom = 1f;
 
 	private Point mResolution = new Point();
+
+	private boolean isFramerateFixed;
 
 	/**
 	 * OnCreateView fragment override
@@ -220,6 +225,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mResolution;
 	}
 
+	public void setFramerateFixed(int isFixed) {
+		isFramerateFixed = isFixed > 0;
+	}
+
+	public boolean getFramerateFixed() {
+		return isFramerateFixed;
+	}
+
 
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
@@ -271,9 +284,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Display display = wm.getDefaultDisplay();
 			display.getSize(VideOSCMainActivity.dimensions);
 
+			// get initial settings from database
 			String[] settingsFields = new String[]{
 					SettingsContract.SettingsEntries.RES_H,
-					SettingsContract.SettingsEntries.RES_V
+					SettingsContract.SettingsEntries.RES_V,
+					SettingsContract.SettingsEntries.FRAMERATE_FIXED
 			};
 			SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
 
@@ -291,6 +306,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				setResolution(
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H)),
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V))
+				);
+				setFramerateFixed(
+						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_FIXED))
 				);
 			}
 
@@ -422,7 +440,33 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //				if (parameters.isAutoExposureLockSupported()) {
 //					parameters.setAutoExposureLock(true);
 //				}
-				parameters.setPreviewFpsRange(30000, 30000);
+/*
+				for (int[] range : parameters.getSupportedPreviewFpsRange()) {
+					Log.d(TAG, "supported preview fps ranges: " + range[0] + " : " + range[1]);
+				}
+*/
+				List<int[]> previewFpsRange = parameters.getSupportedPreviewFpsRange();
+				for (int[] range : previewFpsRange) {
+					Log.d(TAG, "range: " + range[0] + " : " + range[1]);
+				}
+/*
+				Log.d(TAG, "min: " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[0] +
+						" : " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[1] +
+						", max: " + previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[0] +
+						" : " + previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
+				);
+*/
+				if (getFramerateFixed())
+//					parameters.setPreviewFpsRange(
+//							previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[0],
+//							previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
+//					);
+					parameters.setPreviewFpsRange(30000, 30000);
+				else // parameters.setPreviewFpsRange(
+//						previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[0],
+//						previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
+//				);
+					parameters.setPreviewFpsRange(7000, 30000);
 //				parameters.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
 				// Set the auto-focus mode to "continuous"
 //				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -525,5 +569,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			params.setZoom(zoom);
 			pCamera.setParameters(params);
 		}
+
+/*
+		private List<int[]> getOptimalPreviewFramerates(Camera.Parameters params) {
+			List<int[]> previewFpsRanges = params.getSupportedPreviewFpsRange();
+			int[] spans = {};
+
+			for (int i = 0; i < previewFpsRanges.size(); i++) {
+
+			}
+		}
+*/
 	}
 }
