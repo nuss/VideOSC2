@@ -446,9 +446,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 */
 				List<int[]> previewFpsRange = parameters.getSupportedPreviewFpsRange();
-				for (int[] range : previewFpsRange) {
-					Log.d(TAG, "range: " + range[0] + " : " + range[1]);
-				}
+//				for (int[] range : previewFpsRange) {
+//					Log.d(TAG, "range: " + range[0] + " : " + range[1]);
+//				}
 /*
 				Log.d(TAG, "min: " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[0] +
 						" : " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[1] +
@@ -456,17 +456,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						" : " + previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
 				);
 */
+				int[] frameRates = getOptimalPreviewFramerates(parameters);
 				if (getFramerateFixed())
-//					parameters.setPreviewFpsRange(
-//							previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[0],
-//							previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
-//					);
-					parameters.setPreviewFpsRange(30000, 30000);
-				else // parameters.setPreviewFpsRange(
-//						previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[0],
-//						previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
-//				);
-					parameters.setPreviewFpsRange(7000, 30000);
+					parameters.setPreviewFpsRange(frameRates[1], frameRates[1]);
+				else
+					parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
+
 //				parameters.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
 				// Set the auto-focus mode to "continuous"
 //				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -525,6 +520,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			Camera.Parameters params = pCamera.getParameters();
 
+			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+				Log.d(TAG, "x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
+
 			if (motionEvent.getPointerCount() > 1 && params.isZoomSupported()) {
 				int zoom = params.getZoom();
 
@@ -570,15 +568,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			pCamera.setParameters(params);
 		}
 
-/*
-		private List<int[]> getOptimalPreviewFramerates(Camera.Parameters params) {
+		private int[] getOptimalPreviewFramerates(Camera.Parameters params) {
 			List<int[]> previewFpsRanges = params.getSupportedPreviewFpsRange();
-			int[] spans = {};
+			List<Integer> maxs = new ArrayList<>();
+			List<Integer> mins = new ArrayList<>();
 
-			for (int i = 0; i < previewFpsRanges.size(); i++) {
-
+			for (int[] range : previewFpsRanges) {
+				if (range[1] <= 30000) {
+					mins.add(range[0]);
+					maxs.add(range[1]);
+				}
 			}
+
+			return new int[]{
+				mins.get(mins.indexOf(Collections.min(mins))),
+				maxs.get(maxs.indexOf(Collections.max(maxs)))
+			};
 		}
-*/
 	}
 }
