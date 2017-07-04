@@ -22,12 +22,15 @@
 
 package net.videosc2.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -48,6 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.videosc2.R;
+import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCUIHelpers;
@@ -102,6 +106,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private Point mResolution = new Point();
 
 	private boolean isFramerateFixed;
+
+	private final VideOSCApplication mApp = (VideOSCApplication) getActivity().getApplication();
 
 	/**
 	 * OnCreateView fragment override
@@ -259,6 +265,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private boolean pPreviewStarted;
 		private double mOldFingerDistance = 0.0;
+		private Point mPixelSize = new Point();
 
 		/**
 		 *
@@ -432,6 +439,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
+			setPixelSize();
+			Log.d(TAG, "size: " + getPixelSize());
+
 			// stop preview before making changes
 			try {
 				final Camera.Parameters parameters = pCamera.getParameters();
@@ -544,6 +554,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 			}
 
+			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
+
 			return true;
 		}
 
@@ -568,6 +580,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			pCamera.setParameters(params);
 		}
 
+		/* get min and max framerate (where max <= 30 fps) */
 		private int[] getOptimalPreviewFramerates(Camera.Parameters params) {
 			List<int[]> previewFpsRanges = params.getSupportedPreviewFpsRange();
 			List<Integer> maxs = new ArrayList<>();
@@ -585,5 +598,170 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				maxs.get(maxs.indexOf(Collections.max(maxs)))
 			};
 		}
+
+		private void setPixelSize() {
+			Rect surfaceFrame = mHolder.getSurfaceFrame();
+			Point resolution = getResolution();
+			mPixelSize.x = surfaceFrame.width() / resolution.x;
+			mPixelSize.y = surfaceFrame.height() / resolution.y;
+		}
+
+		private Point getPixelSize() {
+			return mPixelSize;
+		}
+
+		private int getHoverPixel(float x, float y) {
+			int hIndex = (int) x / mPixelSize.x;
+			int vIndex = (int) y / mPixelSize.y;
+
+			return vIndex * getResolution().x + hIndex;
+		}
+
+		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
+			float rval, gval, bval, alpha;
+			int dimensions = getResolution().x * getResolution().y;
+			int[] pixels = new int[width * height];
+			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
+
+			for (int i = 0; i < dimensions; i++) {
+				// only the downsampled image gets inverted as inverting the original would slow
+				// down the application considerably
+				int rVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
+						: (pixels[i] >> 16) & 0xFF;
+				int gVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 8) & 0xFF)
+						: (pixels[i] >> 8) & 0xFF;
+				int bVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
+						: pixels[i] & 0xFF;
+
+				if (!mApp.getIsRGBPositive())
+					pixels[i] = Color.argb(255, rVal, gVal, bVal);
+
+				// compose basic OSC message for slot
+/*
+				oscR = VideOSCOscHandling.makeMessage(oscR, r + str(i + 1));
+				oscG = VideOSCOscHandling.makeMessage(oscG, g + str(i + 1));
+				oscB = VideOSCOscHandling.makeMessage(oscB, b + str(i + 1));
+*/
+
+				if (rgbMode.equals(RGBModes.RGB)) {
+					if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+						// r
+						alpha = cam.isStarted() ? 255 / 3 : 0;
+						pixels[i] = applet.color(0, gVal, bVal, alpha);
+					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+						// g;
+						alpha = cam.isStarted() ? 255 / 3 : 0;
+						pixels[i] = applet.color(rVal, 0, bVal, alpha);
+					} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
+						// b;
+						alpha = cam.isStarted() ? 255 / 3 : 0;
+						pixels[i] = applet.color(rVal, gVal, 0, alpha);
+					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+						// rg;
+						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
+						pixels[i] = applet.color(0, 0, bVal, alpha);
+					} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
+						// rb;
+						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
+						pixels[i] = applet.color(0, gVal, 0, alpha);
+					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
+						// bg;
+						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
+						pixels[i] = applet.color(rVal, 0, 0, alpha);
+					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
+						// rgb
+						pixels[i] = applet.color(0, 0);
+					}
+				} else if (rgbMode.equals(RGBModes.R)) {
+					if (offPxls.get(i)[0])
+						pixels[i] = applet.color(rVal, 255, 255);
+					else
+						pixels[i] = applet.color(rVal, 0, 0);
+				} else if (rgbMode.equals(RGBModes.G)) {
+					if (offPxls.get(i)[1])
+						pixels[i] = applet.color(255, gVal, 255);
+					else
+						pixels[i] = applet.color(0, gVal, 0);
+				} else if (rgbMode.equals(RGBModes.B)) {
+					if (offPxls.get(i)[2])
+						pixels[i] = applet.color(255, 255, bVal);
+					else
+						pixels[i] = applet.color(0, 0, bVal);
+				}
+
+				if (play) {
+					if (calcsPerPeriod == 1) {
+						if (normalize) {
+							rval = (float) rVal / 255;
+							gval = (float) gVal / 255;
+							bval = (float) bVal / 255;
+						} else {
+							rval = rVal;
+							gval = gVal;
+							bval = bVal;
+						}
+
+						if (!offPxls.get(i)[0]) {
+							oscR.add(rval);
+							oscP5.send(oscR, broadcastLoc);
+						}
+						if (!offPxls.get(i)[1]) {
+							oscG.add(gval);
+							oscP5.send(oscG, broadcastLoc);
+						}
+						if (!offPxls.get(i)[2]) {
+							oscB.add(bval);
+							oscP5.send(oscB, broadcastLoc);
+						}
+					} else {
+						curInput[0] = (float) rVal;
+						curInput[1] = (float) gVal;
+						curInput[2] = (float) bVal;
+
+						curInputList.add(curInput.clone());
+
+						if (lastInputList.size() >= dimensions) {
+							rval = lastInputList.get(i)[0];
+							gval = lastInputList.get(i)[1];
+							bval = lastInputList.get(i)[2];
+
+							if (normalize) {
+								rval = rval / 255;
+								gval = gval / 255;
+								bval = bval / 255;
+							}
+
+							if (!offPxls.get(i)[0]) {
+								oscR.add(rval);
+								oscP5.send(oscR, broadcastLoc);
+							}
+							if (!offPxls.get(i)[1]) {
+								oscG.add(gval);
+								oscP5.send(oscG, broadcastLoc);
+							}
+							if (!offPxls.get(i)[2]) {
+								oscB.add(bval);
+								oscP5.send(oscB, broadcastLoc);
+							}
+
+							float lastInputR = lastInputList.get(i)[0];
+							float lastInputG = lastInputList.get(i)[1];
+							float lastInputB = lastInputList.get(i)[2];
+
+							slope[0] = (curInput[0] - lastInputR) / calcsPerPeriod;
+							slope[1] = (curInput[1] - lastInputG) / calcsPerPeriod;
+							slope[2] = (curInput[2] - lastInputB) / calcsPerPeriod;
+
+							slopes.add(slope.clone());
+						}
+					}
+				}
+			}
+
+			return bmp;
+		}
+
 	}
+
 }
+
