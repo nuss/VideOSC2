@@ -55,6 +55,7 @@ import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCUIHelpers;
+import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -107,7 +108,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private boolean isFramerateFixed;
 
-	private final VideOSCApplication mApp = (VideOSCApplication) getActivity().getApplication();
+	private VideOSCApplication mApp;
 
 	/**
 	 * OnCreateView fragment override
@@ -120,6 +121,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		mApp = (VideOSCApplication) getActivity().getApplication();
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		Log.d(TAG, "onCreateView: " + view.getClass());
 		// store the container for later re-use
@@ -267,6 +269,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
 
+		// lock the state of a pixel after changing its state, otherwise pixels would constantly
+		// change their state as long as they're hoevered
+		private ArrayList<Boolean[]> lockList = new ArrayList<Boolean[]>();
+		// store the states of all pixels
+		private ArrayList<Boolean[]> offPxls = new ArrayList<Boolean[]>();
+
 		/**
 		 *
 		 * @param context the context of the application
@@ -321,6 +329,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			cursor.close();
 
+			// triplets of booleans, to be added to lockList, offPxls;
+			Point res = getResolution();
+			Boolean[] falses = {false, false, false};
+			for (int i = 0; i < res.x * res.y; i++) {
+				lockList.add(falses.clone());
+				offPxls.add(falses.clone());
+			}
 		}
 
 		/**
@@ -493,7 +508,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-						bmp = Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true);
+//						bmp = Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true);
+						bmp = drawFrame(Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true), outWidth, outHeight);
 						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), bmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
@@ -643,52 +659,53 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				oscB = VideOSCOscHandling.makeMessage(oscB, b + str(i + 1));
 */
 
-				if (rgbMode.equals(RGBModes.RGB)) {
+				if (mApp.getColorMode().equals(RGBModes.RGB)) {
 					if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 						// r
-						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = applet.color(0, gVal, bVal, alpha);
+//						alpha = pCamera.isStarted() ? 255 / 3 : 0;
+						pixels[i] = Color.argb(255/3, 0, gVal, bVal);
 					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 						// g;
-						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = applet.color(rVal, 0, bVal, alpha);
+//						alpha = cam.isStarted() ? 255 / 3 : 0;
+						pixels[i] = Color.argb(255/3, rVal, 0, bVal);
 					} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// b;
-						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = applet.color(rVal, gVal, 0, alpha);
+//						alpha = cam.isStarted() ? 255 / 3 : 0;
+						pixels[i] = Color.argb(255/3, rVal, gVal, 0);
 					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 						// rg;
-						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
-						pixels[i] = applet.color(0, 0, bVal, alpha);
+//						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
+						pixels[i] = Color.argb(255/3*2, 0, 0, bVal);
 					} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// rb;
-						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = applet.color(0, gVal, 0, alpha);
+//						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
+						pixels[i] = Color.argb(255/3*2, 0, gVal, 0);
 					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// bg;
-						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = applet.color(rVal, 0, 0, alpha);
+//						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
+						pixels[i] = Color.argb(255/3*2, rVal, 0, 0);
 					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// rgb
-						pixels[i] = applet.color(0, 0);
+						pixels[i] = Color.argb(0, 0, 0, 0);
 					}
-				} else if (rgbMode.equals(RGBModes.R)) {
+				} else if (mApp.getColorMode().equals(RGBModes.R)) {
 					if (offPxls.get(i)[0])
-						pixels[i] = applet.color(rVal, 255, 255);
+						pixels[i] = Color.argb(255, rVal, 255, 255);
 					else
-						pixels[i] = applet.color(rVal, 0, 0);
-				} else if (rgbMode.equals(RGBModes.G)) {
+						pixels[i] = Color.argb(255, rVal, 0, 0);
+				} else if (mApp.getColorMode().equals(RGBModes.G)) {
 					if (offPxls.get(i)[1])
-						pixels[i] = applet.color(255, gVal, 255);
+						pixels[i] = Color.argb(255, 255, gVal, 255);
 					else
-						pixels[i] = applet.color(0, gVal, 0);
-				} else if (rgbMode.equals(RGBModes.B)) {
+						pixels[i] = Color.argb(255, 0, gVal, 0);
+				} else if (mApp.getColorMode().equals(RGBModes.B)) {
 					if (offPxls.get(i)[2])
-						pixels[i] = applet.color(255, 255, bVal);
+						pixels[i] = Color.argb(255, 255, 255, bVal);
 					else
-						pixels[i] = applet.color(0, 0, bVal);
+						pixels[i] = Color.argb(255, 0, 0, bVal);
 				}
 
+/*
 				if (play) {
 					if (calcsPerPeriod == 1) {
 						if (normalize) {
@@ -756,7 +773,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						}
 					}
 				}
+*/
 			}
+
+			bmp.setPixels(pixels, 0, width, 0, 0, width, height);
 
 			return bmp;
 		}

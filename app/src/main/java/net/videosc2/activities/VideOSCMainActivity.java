@@ -103,10 +103,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private View mIndicatorPanel;
 
 	// the global application, used to exchange various temporary data
-	final private VideOSCApplication mApp = (VideOSCApplication) getApplicationContext();
+	private VideOSCApplication mApp;
 
 	// the current color mode
-	public Enum colorChannel = RGBModes.ALL;
+//	public Enum colorChannel = RGBModes.RGB;
 	// RGB or RGB inverted?
 //	public boolean isRGBPositive = true;
 	// set to true when isRGBPositive changes
@@ -156,6 +156,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// FIXME: preliminary
 		final boolean hasTorch;
+		mApp = (VideOSCApplication) getApplicationContext();
+		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
 //		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		hasTorch = VideOSCUIHelpers.hasTorch();
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -331,6 +333,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 									if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 										switch (view.getId()) {
 											case R.id.mode_rgb:
+												mApp.setColorMode(RGBModes.RGB);
 												if (!mApp.getIsRGBPositive()) {
 													mApp.setIsRGBPositive(true);
 													rgbHasChanged = true;
@@ -341,6 +344,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 												break;
 											case R.id.mode_rgb_inv:
+												mApp.setColorMode(RGBModes.RGB);
 												if (mApp.getIsRGBPositive()) {
 													mApp.setIsRGBPositive(false);
 													rgbHasChanged = true;
@@ -351,6 +355,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
 												break;
 											case R.id.mode_r:
+												mApp.setColorMode(RGBModes.R);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
@@ -363,6 +368,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												break;
 											case R.id.mode_g:
 												Log.d(TAG, "green");
+												mApp.setColorMode(RGBModes.G);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
@@ -375,6 +381,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												break;
 											case R.id.mode_b:
 												Log.d(TAG, "blue");
+												mApp.setColorMode(RGBModes.B);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
 													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
@@ -386,6 +393,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												}
 												break;
 											default:
+												mApp.setColorMode(RGBModes.RGB);
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
 												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
