@@ -143,6 +143,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
 
 	// settings, retrieved from sqlite db
+	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public static SettingsDBHelper mDbHelper;
 
 	/**
