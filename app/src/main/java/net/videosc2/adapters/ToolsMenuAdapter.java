@@ -14,8 +14,6 @@ import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import static net.videosc2.utilities.enums.RGBToolbarStatus.RGB;

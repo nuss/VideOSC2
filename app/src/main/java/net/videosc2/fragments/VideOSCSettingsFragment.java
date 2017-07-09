@@ -23,13 +23,10 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
-import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+//import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,11 +39,7 @@ import ketai.net.KetaiNet;
 
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
-	//	private ArrayAdapter<String> itemsAdapter;
-	private Method setSettingsLevel;
-
-	public VideOSCSettingsFragment() {
-	}
+	public VideOSCSettingsFragment() {}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -78,17 +71,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 //		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
 		final FragmentManager fragmentManager = getFragmentManager();
 
-		final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
-
-
-		try {
-			Class[] lArg = new Class[1];
-			lArg[0] = int.class;
-			setSettingsLevel = getActivity().getClass().getMethod("setSettingsLevel", lArg);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-
+		// get application methods and avoid reflection
+		final VideOSCApplication mApp = (VideOSCApplication) getActivity().getApplicationContext();
+		// the database
+		final SQLiteDatabase db = mApp.getSettingsHelper().getReadableDatabase();
 
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
@@ -109,13 +95,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				final ContentValues values = new ContentValues();
 				final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 
-				try {
-					setSettingsLevel.invoke(getActivity(), 2);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+				mApp.setSettingsLevel(2);
 
 				switch (i) {
 					case 0:

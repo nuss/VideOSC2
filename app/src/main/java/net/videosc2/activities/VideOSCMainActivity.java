@@ -67,8 +67,6 @@ import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,15 +120,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
 	// toolbar status
 	public Enum mColorModeToolsDrawer = RGBToolbarStatus.RGB;
-
-	// settings
-//	public static boolean isSettingsFirstLevel = false;
-//	public static boolean isSettingsSecondLevel = false;
-	// levels within settings dialog
-	// 0: no dialog, normal mode
-	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'about'
-	// 2: editor setting details
-	private int mSettingslevel = 0;
 
 	// pop-out menu for setting color mode
 	private ViewGroup modePanel;
@@ -471,7 +460,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					Log.d(TAG, "settings");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
-					setSettingsLevel(1);
+						mApp.setSettingsLevel(1);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 						mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 					}
@@ -485,7 +474,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				view.setBackgroundColor(0x00000000);
 			}
 		});
-		if (getSettingsLevel() < 1)
+		if (mApp.getSettingsLevel() < 1)
 			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
@@ -550,13 +539,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onBackPressed() {
 		View bg = findViewById(R.id.settings_background);
-		switch (mSettingslevel) {
+		short settingsLevel = mApp.getSettingsLevel();
+
+		switch (settingsLevel) {
 			case 1:
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mCamView);
 				mToolsDrawerLayout.closeDrawer(Gravity.END);
-				setSettingsLevel(0);
+				mApp.setSettingsLevel(0);
 				break;
 			case 2:
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
@@ -564,19 +555,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 				VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (ViewGroup) bg);
 				VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (ViewGroup) bg);
 				VideOSCUIHelpers.removeView(findViewById(R.id.about), (ViewGroup) bg);
-				setSettingsLevel(1);
+				mApp.setSettingsLevel(1);
 				break;
 			default:
 				VideOSCDialogHelper.showQuitDialog(this);
 		}
-	}
-
-	public int getSettingsLevel() {
-		return mSettingslevel;
-	}
-
-	public void setSettingsLevel(int level) {
-		this.mSettingslevel = level;
 	}
 
 	private HashMap<String, Integer> toolsDrawerKeys() {

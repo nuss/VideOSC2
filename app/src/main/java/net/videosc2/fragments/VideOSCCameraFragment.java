@@ -58,8 +58,6 @@ import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;

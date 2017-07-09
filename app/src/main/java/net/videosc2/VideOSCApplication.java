@@ -14,6 +14,12 @@ public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
 	private Enum colorMode = RGBModes.RGB;
 	private SettingsDBHelper settingshelper;
+	// setting dialogs
+	// levels within settings dialog
+	// 0: no dialog, normal mode
+	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'about'
+	// 2: editor setting details
+	private short settingsLevel = 0;
 
 	@Override
 	public void onCreate() {
@@ -43,6 +49,14 @@ public class VideOSCApplication extends Application {
 
 	public Enum getColorMode() {
 		return this.colorMode;
+	}
+
+	public short getSettingsLevel() {
+		return this.settingsLevel;
+	}
+
+	public void setSettingsLevel(int level) {
+		this.settingsLevel = (short) level;
 	}
 
 	public SettingsDBHelper getSettingsHelper() {
