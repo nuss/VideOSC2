@@ -23,7 +23,7 @@ pipelines:
           - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
           - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
           # Update android sdk
-          - ( sleep 5 &amp;&amp; while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --filter "extra-android-m2repository" -a
+          - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --filter "extra-android-m2repository" -a
           # Build apk
           - chmod a+x gradlew
           - ./gradlew assembleDebug
