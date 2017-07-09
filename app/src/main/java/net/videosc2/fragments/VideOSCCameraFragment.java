@@ -272,6 +272,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ArrayList<Boolean[]> lockList = new ArrayList<Boolean[]>();
 		// store the states of all pixels
 		private ArrayList<Boolean[]> offPxls = new ArrayList<Boolean[]>();
+		final private Boolean[] falses = {false, false, false};
 
 		/**
 		 *
@@ -330,7 +331,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			// triplets of booleans, to be added to lockList, offPxls;
 			Point res = getResolution();
-			Boolean[] falses = {false, false, false};
 			for (int i = 0; i < res.x * res.y; i++) {
 				lockList.add(falses.clone());
 				offPxls.add(falses.clone());
@@ -502,6 +502,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (zoomText != null) zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
 						int outWidth = getResolution().x;
 						int outHeight = getResolution().y;
+						int previewSize = outWidth * outHeight;
+						int diff = previewSize - offPxls.size();
+						if (diff != 0) pad(diff);
+						Log.d(TAG, "width: " + outWidth + ", height: " + outHeight + ", offPxls size: " + offPxls.size());
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
@@ -630,6 +634,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			int vIndex = (int) y / mPixelSize.y;
 
 			return vIndex * getResolution().x + hIndex;
+		}
+
+		private void pad(int diff) {
+			if (diff > 0) {
+				for (int i = 0; i < diff; i++) {
+					offPxls.add(falses.clone());
+					lockList.add(falses.clone());
+				}
+			} /*else if (diff < 0) {
+				Log.d(TAG, "diff: " + diff + ", offPxls size: " + offPxls.size());
+				offPxls = (ArrayList<Boolean[]>) offPxls.subList(0, offPxls.size() - 1 + diff);
+				Log.d(TAG, "offPxls size: " + offPxls.size());
+				lockList = (ArrayList<Boolean[]>) lockList.subList(0, lockList.size() - 1 + diff);
+			}*/
 		}
 
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
