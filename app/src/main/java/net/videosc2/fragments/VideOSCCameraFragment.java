@@ -305,7 +305,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					SettingsContract.SettingsEntries.RES_V,
 					SettingsContract.SettingsEntries.FRAMERATE_FIXED
 			};
-			SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+
+			final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
 
 			Cursor cursor = db.query(
 					SettingsContract.SettingsEntries.TABLE_NAME,

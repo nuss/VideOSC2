@@ -144,7 +144,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	// settings, retrieved from sqlite db
 	// FIXME: mDbHelper leaks VideOSCMainActivity
-	public static SettingsDBHelper mDbHelper;
+	public SettingsDBHelper mDbHelper;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.

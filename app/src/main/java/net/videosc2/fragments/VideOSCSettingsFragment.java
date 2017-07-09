@@ -22,8 +22,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import net.videosc2.R;
+import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
+import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -73,8 +75,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
-		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+//		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
 		final FragmentManager fragmentManager = getFragmentManager();
+
+		final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
+
 
 		try {
 			Class[] lArg = new Class[1];
@@ -800,7 +805,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		String[] settingsFields = new String[]{
 				SettingsContract.SettingsEntries.ROOT_CMD
 		};
-		SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+//		SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+		final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
+
 		Cursor cursor = db.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
 				settingsFields,

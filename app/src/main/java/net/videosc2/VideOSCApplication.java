@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.squareup.leakcanary.LeakCanary;
 
+import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.utilities.enums.RGBModes;
 
 /**
@@ -12,6 +13,7 @@ import net.videosc2.utilities.enums.RGBModes;
 public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
 	private Enum colorMode = RGBModes.RGB;
+	private SettingsDBHelper settingshelper;
 
 	@Override
 	public void onCreate() {
@@ -22,6 +24,9 @@ public class VideOSCApplication extends Application {
 			return;
 		}
 		LeakCanary.install(this);
+		// rather than initializing SettingsDBHelper statically retrieve
+		// settingsHelper instance with getSettingshelper (no memory leaks)
+		settingshelper = new SettingsDBHelper(getApplicationContext());
 	}
 
 	public void setIsRGBPositive(boolean boolVal) {
@@ -38,5 +43,9 @@ public class VideOSCApplication extends Application {
 
 	public Enum getColorMode() {
 		return this.colorMode;
+	}
+
+	public SettingsDBHelper getSettingsHelper() {
+		return this.settingshelper;
 	}
 }

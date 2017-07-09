@@ -1,19 +1,12 @@
 package net.videosc2.utilities;
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
-import android.app.Activity;
-import android.content.Context;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
-import net.videosc2.R;
 
 import java.util.List;
 
@@ -24,7 +17,7 @@ import java.util.List;
 public class VideOSCUIHelpers {
 	final static String TAG = "VideOSCUIHelpers";
 
-	private static LayoutTransition transition = new LayoutTransition();
+//	private LayoutTransition transition = new LayoutTransition();
 
 	/**
 	 * Does the device have a torch?
@@ -134,7 +127,9 @@ public class VideOSCUIHelpers {
 	public static void setTransitionAnimation(ViewGroup view) {
 //		AnimatorSet InAnimator = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.fade_in);
 //		InAnimator.playTogether(InAnimator);
-//		LayoutTransition transition = new LayoutTransition();
+		// rather than defining transition statically in a class-wide context
+		// define it here and avoid a memory leak
+		LayoutTransition transition = new LayoutTransition();
 //		transition.setAnimator(LayoutTransition.APPEARING, InAnimator);
 		transition.setAnimator(LayoutTransition.APPEARING, null);
 		transition.setAnimator(LayoutTransition.DISAPPEARING, null);
