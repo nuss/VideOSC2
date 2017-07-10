@@ -28,4 +28,4 @@ pipelines:
           # Build apk
           #- chmod a+x gradlew
           #- ./gradlew assembleDebug
-          - build.sh
+          - ./build.sh
