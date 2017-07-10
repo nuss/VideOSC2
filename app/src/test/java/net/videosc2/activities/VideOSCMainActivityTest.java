@@ -1,4 +1,4 @@
-package net.videosc2;
+package net.videosc2.activities;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +7,7 @@ import android.view.View;
 import junit.framework.TestCase;
 
 import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.VideOSCApplication;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
@@ -16,6 +17,7 @@ import net.videosc2.utilities.enums.RGBToolbarStatus;
 public class VideOSCMainActivityTest extends TestCase {
 	private static final String TAG = "VideOSCMainActivityTest";
 	private VideOSCMainActivity activity = new VideOSCMainActivity();
+	private VideOSCApplication app = (VideOSCApplication) activity.getApplicationContext();
 
 	public void testOnCreate() throws Exception {
 		assertEquals(VideOSCMainActivity.currentCameraID, VideOSCMainActivity.frontsideCameraId);
@@ -40,12 +42,12 @@ public class VideOSCMainActivityTest extends TestCase {
 	}
 
 	public void testGetSettingsLevel() throws Exception {
-		assertEquals(activity.getSettingsLevel(), 0);
+		assertEquals(app.getSettingsLevel(), 0);
 	}
 
 	public void testSetSettingsLevel() throws Exception {
-		activity.setSettingsLevel(2);
-		assertEquals(activity.getSettingsLevel(), 2);
+		app.setSettingsLevel(2);
+		assertEquals(app.getSettingsLevel(), 2);
 	}
 
 	public void testGetColorModeToolsDrawer() throws Exception {
