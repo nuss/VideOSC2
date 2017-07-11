@@ -519,9 +519,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
 		indicatorPanelInner.bringToFront();
 
+		// don't dim screen
 		Settings.System.putInt(this.getContentResolver(),
 				Settings.System.SCREEN_BRIGHTNESS, 20);
-
 		WindowManager.LayoutParams lp = getWindow().getAttributes();
 		lp.screenBrightness = 1;// 100 / 100.0f;
 		getWindow().setAttributes(lp);

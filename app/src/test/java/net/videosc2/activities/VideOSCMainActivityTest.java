@@ -1,26 +1,33 @@
 package net.videosc2.activities;
 
 import android.content.Context;
+import android.test.mock.MockContext;
 import android.util.Log;
 import android.view.View;
 
 import junit.framework.TestCase;
 
+import net.videosc2.R;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.fragments.VideOSCCameraFragment;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by stefan on 23.06.17, package net.videosc2, project VideOSC22.
  */
 public class VideOSCMainActivityTest extends TestCase {
+
 	private static final String TAG = "VideOSCMainActivityTest";
 	private VideOSCMainActivity activity = new VideOSCMainActivity();
-	private VideOSCApplication app = (VideOSCApplication) activity.getApplicationContext();
 
 	public void testOnCreate() throws Exception {
 		assertEquals(VideOSCMainActivity.currentCameraID, VideOSCMainActivity.frontsideCameraId);
+//		assertNotNull(activity.findViewById(R.id.camera_preview));
 		assertEquals(activity.mColorModeToolsDrawer, RGBToolbarStatus.RGB);
 	}
 
@@ -39,15 +46,6 @@ public class VideOSCMainActivityTest extends TestCase {
 
 	public void testOnBackPressed() throws Exception {
 
-	}
-
-	public void testGetSettingsLevel() throws Exception {
-		assertEquals(app.getSettingsLevel(), 0);
-	}
-
-	public void testSetSettingsLevel() throws Exception {
-		app.setSettingsLevel(2);
-		assertEquals(app.getSettingsLevel(), 2);
 	}
 
 	public void testGetColorModeToolsDrawer() throws Exception {
