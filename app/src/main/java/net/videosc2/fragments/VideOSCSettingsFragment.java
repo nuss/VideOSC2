@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -14,9 +15,11 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -72,9 +75,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final FragmentManager fragmentManager = getFragmentManager();
 
 		// get application methods and avoid reflection
-		final VideOSCApplication mApp = (VideOSCApplication) getActivity().getApplicationContext();
+		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplicationContext();
 		// the database
-		final SQLiteDatabase db = mApp.getSettingsHelper().getReadableDatabase();
+		final SQLiteDatabase db = app.getSettingsHelper().getReadableDatabase();
 
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
@@ -95,7 +98,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				final ContentValues values = new ContentValues();
 				final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 
-				mApp.setSettingsLevel(2);
+				app.setSettingsLevel(2);
 
 				switch (i) {
 					case 0:
@@ -347,9 +350,25 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()),
 								TextView.BufferType.EDITABLE
 						);
-						final CheckBox fixFramerateCB =
-								(CheckBox) resolutionSettingsView.findViewById(R.id.fix_framerate_checkbox);
-						fixFramerateCB.setChecked(settings.get(0).getFramerateFixed());
+
+						final Button selectFramerate =
+								(Button) resolutionSettingsView.findViewById(R.id.framerate_selection);
+						selectFramerate.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Camera.Parameters params = cameraView.mCamera.getParameters();
+								// FIXME
+//								ListView framerateSelection = (ListView) resolutionSettingsView.findViewById()
+								List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
+								String[] items = new String[supportedPreviewFpsRange.size()];
+								for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
+									int[] item = supportedPreviewFpsRange.get(j);
+									items[j] = item[0] + " / " + item[1];
+								}
+								ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(getActivity(), R.layout.framerate_selection_item, items);
+							}
+						});
+
 						final CheckBox normalizedCB =
 								(CheckBox) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
 						normalizedCB.setChecked(settings.get(0).getNormalized());
@@ -424,6 +443,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
+/*
 						fixFramerateCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -444,6 +464,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
+*/
 						normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

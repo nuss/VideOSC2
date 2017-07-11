@@ -72,5 +72,6 @@
 	<string name="camera_request_permission">VideOSC needs the camera permission</string>
 	<string name="zoom_info">, zoom:</string>
 	<string name="curr_active_camera">The currently active camera</string>
+	<string name="select_framerate_min_max">Select framerate (min/max)</string>
 
 </resources>
