@@ -84,6 +84,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// Native camera.
 	public Camera mCamera;
+	private Camera.Parameters mCameraParams;
+	private List<int[]> mSupportedPreviewFpsRanges;
+
 
 	// View to display the camera output.
 	private CameraPreview mPreview;
@@ -104,7 +107,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private Point mResolution = new Point();
 
-	private boolean isFramerateFixed;
+	private int[] mFrameRateRange;
 
 	private VideOSCApplication mApp;
 
@@ -149,6 +152,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		int zoom = mPreview != null ? mPreview.getCurrentZoom() : 0;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
+		mCameraParams = mCamera.getParameters();
+		mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
+
 		Log.d(TAG, "which camera: " + VideOSCMainActivity.currentCameraID + ", camera: " + mCamera);
 		FrameLayout preview;
 
@@ -231,12 +237,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mResolution;
 	}
 
-	public void setFramerateFixed(int isFixed) {
-		isFramerateFixed = isFixed > 0;
+	public void setFramerateRange(int index) {
+		mFrameRateRange = mSupportedPreviewFpsRanges.get(index);
 	}
 
-	public boolean getFramerateFixed() {
-		return isFramerateFixed;
+	public int[] getFramerateRange() {
+		return mFrameRateRange;
 	}
 
 
@@ -302,7 +308,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			String[] settingsFields = new String[]{
 					SettingsContract.SettingsEntries.RES_H,
 					SettingsContract.SettingsEntries.RES_V,
-					SettingsContract.SettingsEntries.FRAMERATE_FIXED
+					SettingsContract.SettingsEntries.FRAMERATE_RANGE
 			};
 
 			final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
@@ -322,8 +328,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H)),
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V))
 				);
-				setFramerateFixed(
-						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_FIXED))
+				setFramerateRange(
+						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE))
 				);
 			}
 
@@ -385,23 +391,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		private void setCamera(Camera camera) {
 			pCamera = camera;
+			mCameraParams = camera.getParameters();
 			Log.d(TAG, "setCamera(), pCamera: " + pCamera + ", camera: " + camera);
-			Camera.Parameters parameters = camera.getParameters();
 //			Log.d(TAG, "set camera, parameters: " + parameters.flatten());
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
-			mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
+			// FIXME
+			mSupportedPreviewSizes = mCameraParams.getSupportedPreviewSizes();
 			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
 
 			Log.d(TAG, "preview size: " + mPreviewSize.width + " x " + mPreviewSize.height);
 
-			parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-			mSupportedFlashModes = parameters.getSupportedFlashModes();
+			mCameraParams.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+			mSupportedFlashModes = mCameraParams.getSupportedFlashModes();
 
 			// Set the camera to Auto Flash mode.
 			if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
-				parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+				mCameraParams.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
 			}
-			camera.setParameters(parameters);
+			camera.setParameters(mCameraParams);
 
 			requestLayout();
 		}
@@ -459,36 +466,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// stop preview before making changes
 			try {
 				final Camera.Parameters parameters = pCamera.getParameters();
-				// FIXME: auto exposure correction seems to make the camera much slower
-//				Log.d(TAG, "camera parameters: " + parameters.flatten());
-//				if (parameters.isAutoExposureLockSupported()) {
-//					parameters.setAutoExposureLock(true);
-//				}
-/*
-				for (int[] range : parameters.getSupportedPreviewFpsRange()) {
-					Log.d(TAG, "supported preview fps ranges: " + range[0] + " : " + range[1]);
-				}
-*/
-				List<int[]> previewFpsRange = parameters.getSupportedPreviewFpsRange();
-//				for (int[] range : previewFpsRange) {
-//					Log.d(TAG, "range: " + range[0] + " : " + range[1]);
-//				}
-/*
-				Log.d(TAG, "min: " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[0] +
-						" : " + previewFpsRange.get(PREVIEW_FPS_MIN_INDEX)[1] +
-						", max: " + previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[0] +
-						" : " + previewFpsRange.get(PREVIEW_FPS_MAX_INDEX)[1]
-				);
-*/
-				int[] frameRates = getOptimalPreviewFramerates(parameters);
-				if (getFramerateFixed())
-					parameters.setPreviewFpsRange(frameRates[1], frameRates[1]);
-				else
-					parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
+				int[] frameRates = getFramerateRange();
+				parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
 
-//				parameters.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
-				// Set the auto-focus mode to "continuous"
-//				parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 				pCamera.setParameters(parameters);
 				pCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
@@ -599,25 +579,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			pCamera.setParameters(params);
 		}
 
-		/* get min and max framerate (where max <= 30 fps) */
-		private int[] getOptimalPreviewFramerates(Camera.Parameters params) {
-			List<int[]> previewFpsRanges = params.getSupportedPreviewFpsRange();
-			List<Integer> maxs = new ArrayList<>();
-			List<Integer> mins = new ArrayList<>();
-
-			for (int[] range : previewFpsRanges) {
-				if (range[1] <= 30000) {
-					mins.add(range[0]);
-					maxs.add(range[1]);
-				}
-			}
-
-			return new int[]{
-				mins.get(mins.indexOf(Collections.min(mins))),
-				maxs.get(maxs.indexOf(Collections.max(maxs)))
-			};
-		}
-
 		private void setPixelSize() {
 			Rect surfaceFrame = mHolder.getSurfaceFrame();
 			Point resolution = getResolution();
@@ -634,6 +595,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			int vIndex = (int) y / mPixelSize.y;
 
 			return vIndex * getResolution().x + hIndex;
+		}
+
+		// set the preview fps range and update framerate immediately
+		// format, w, h must be passed in explicitely as they're demanded by surfaceChanged()
+		private void setPreviewFpsRange(Camera.Parameters params, int[] range, int format, int w, int h) {
+			params.setPreviewFpsRange(range[0], range[1]);
+			surfaceChanged(mHolder, format, w, h);
 		}
 
 		private void pad(int diff) {

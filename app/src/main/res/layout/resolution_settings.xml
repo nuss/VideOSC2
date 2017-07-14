@@ -87,39 +87,54 @@
 		</LinearLayout>
 
 		<LinearLayout
+			android:id="@+id/framerate_settings"
 			android:layout_width="0dp"
-			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
+			android:layout_height="wrap_content"
 			android:baselineAligned="false"
 			android:orientation="vertical">
 
-			<Button
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/select_framerate_min_max"
+				android:labelFor="@+id/framerate_selection"/>
+
+			<Spinner
 				android:id="@+id/framerate_selection"
-				style="@style/Widget.AppCompat.Button.Borderless"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
-				android:background="@android:color/white"
-				android:paddingBottom="30dp"
-				android:paddingTop="30dp"
-				android:text="@string/select_framerate_min_max"
-				android:textColor="@color/colorPrimaryDark"
-				/>
-
-			<CheckBox
-				android:id="@+id/normalize_output_checkbox"
-				style="@style/CheckBoxMargin"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/normalize_output_text"/>
-
-			<CheckBox
-				android:id="@+id/remember_activated_checkbox"
-				style="@style/CheckBoxMargin"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/remember_activated_text"/>
+				android:popupBackground="#ee000000"
+				android:dropDownWidth="match_parent"/>
+			<!---->
 		</LinearLayout>
+
+
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="vertical">
+
+		<Switch
+			android:id="@+id/normalize_output_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/normalize_output_text"
+			android:paddingTop="20dp"
+			android:paddingBottom="20dp"/>
+
+		<View style="@style/Divider"/>
+
+		<Switch
+			android:id="@+id/remember_activated_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/remember_activated_text"
+			android:paddingTop="20dp"
+			android:paddingBottom="20dp"/>
 
 	</LinearLayout>
 

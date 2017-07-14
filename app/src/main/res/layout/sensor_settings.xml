@@ -5,120 +5,123 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
-	<CheckBox
+	<Switch
 		android:id="@+id/orientation_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/orientation_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/accelerometer"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/accelerometer"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/linear_acceleration"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/linear_acceleration"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/magnetic_field"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/magnetic_field_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/gravity_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/gravity_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/proximity_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/proximity_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/light_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/light_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/air_pressure_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/air_pressure"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/temperature_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/temperature_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/humidity_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/humidity_sensor"/>
 
-	<CheckBox
+	<View style="@style/Divider"/>
+
+	<Switch
 		android:id="@+id/geo_loc_sensor"
-		style="@style/CheckBoxMargin"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:checked="false"
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
 		android:text="@string/geo_location_sensor"/>
 
-	<!--<LinearLayout
-		style="?android:attr/buttonBarStyle"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingTop="20dp">
-
-		<Button
-			android:id="@+id/network_settings_cancel"
-			style="?android:buttonBarButtonStyle"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:padding="10dp"
-			android:text="@string/cancel"
-			android:textAllCaps="true"/>
-
-		<Button
-			android:id="@+id/network_settings_submit"
-			style="?android:buttonBarButtonStyle"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:background="@android:color/holo_green_dark"
-			android:padding="10dp"
-			android:text="@string/save_settings"
-			android:textAllCaps="true"
-			android:textColor="@android:color/primary_text_dark"/>
-	</LinearLayout>-->
 </LinearLayout>

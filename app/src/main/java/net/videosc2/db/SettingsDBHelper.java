@@ -1,10 +1,13 @@
 package net.videosc2.db;
 
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import net.videosc2.fragments.VideOSCCameraFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +33,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.SettingsEntries._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.SettingsEntries.RES_H + " INTEGER NOT NULL DEFAULT '6'," +
 					SettingsContract.SettingsEntries.RES_V + " INTEGER NOT NULL DEFAULT '4'," +
-					SettingsContract.SettingsEntries.FRAMERATE_FIXED + " INTEGER NOT NULL DEFAULT '1'," +
+					SettingsContract.SettingsEntries.FRAMERATE_RANGE + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.NORMALIZE + " INTEGER NOT NULL DEFAULT '0'," +
 					SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES + " INTEGER NOT NULL DEFAULT '0'," +
 					SettingsContract.SettingsEntries.CALC_PERIOD + " INTEGER NOT NULL DEFAULT '1'," +
@@ -60,7 +63,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 14;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -98,7 +101,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		// single value settings
 		values.put(SettingsContract.SettingsEntries.RES_H, 7);
 		values.put(SettingsContract.SettingsEntries.RES_V, 5);
-		values.put(SettingsContract.SettingsEntries.FRAMERATE_FIXED, 1);
+		values.put(SettingsContract.SettingsEntries.FRAMERATE_RANGE, 0);
 		values.put(SettingsContract.SettingsEntries.NORMALIZE, 0);
 		values.put(SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES, 0);
 		values.put(SettingsContract.SettingsEntries.CALC_PERIOD, 1);

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -15,13 +16,12 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import net.videosc2.R;
@@ -56,6 +56,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
+		Log.d(TAG, "container: " + container);
 		// the background scrollview - dark transparent, no content
 		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		// the view holding the main selection of settings
@@ -87,6 +88,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		VideOSCUIHelpers.setTransitionAnimation(bg);
 		// add the scroll view background to the container (camView)
 		container.addView(bg);
+		final View mCamView = container.findViewById(R.id.camera_preview);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -97,6 +99,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				final List<Settings> settings = new ArrayList<>();
 				final ContentValues values = new ContentValues();
 				final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				final Camera.Parameters params = cameraView.mCamera.getParameters();
 
 				app.setSettingsLevel(2);
 
@@ -288,7 +291,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								SettingsContract.SettingsEntries.RES_H,
 								SettingsContract.SettingsEntries.RES_V,
 								SettingsContract.SettingsEntries.CALC_PERIOD,
-								SettingsContract.SettingsEntries.FRAMERATE_FIXED,
+								SettingsContract.SettingsEntries.FRAMERATE_RANGE,
 								SettingsContract.SettingsEntries.NORMALIZE,
 								SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
 						};
@@ -313,8 +316,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							short resV = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V));
 							short calcPeriod =
 									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.CALC_PERIOD));
-							short framerateFixed =
-									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_FIXED));
+							short framerateRange =
+									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE));
 							short normalized =
 									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.NORMALIZE));
 							short rememberPixelStates =
@@ -324,7 +327,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							setting.setResolutionHorizontal(resH);
 							setting.setResolutionVertical(resV);
 							setting.setCalculationPeriod(calcPeriod);
-							setting.setFramerateFixed(framerateFixed);
+							setting.setFramerateRange(framerateRange);
 							setting.setNormalized(normalized);
 							setting.setRememberPixelStates(rememberPixelStates);
 							settings.add(setting);
@@ -351,30 +354,26 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								TextView.BufferType.EDITABLE
 						);
 
-						final Button selectFramerate =
-								(Button) resolutionSettingsView.findViewById(R.id.framerate_selection);
-						selectFramerate.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Camera.Parameters params = cameraView.mCamera.getParameters();
-								// FIXME
-//								ListView framerateSelection = (ListView) resolutionSettingsView.findViewById()
-								List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
-								String[] items = new String[supportedPreviewFpsRange.size()];
-								for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
-									int[] item = supportedPreviewFpsRange.get(j);
-									items[j] = item[0] + " / " + item[1];
-								}
-								ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(getActivity(), R.layout.framerate_selection_item, items);
-							}
-						});
+						final Spinner selectFramerate =
+								(Spinner) resolutionSettingsView.findViewById(R.id.framerate_selection);
+						List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
+						String[] items = new String[supportedPreviewFpsRange.size()];
+						for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
+							int[] item = supportedPreviewFpsRange.get(j);
+							items[j] = (item[0]/1000) + " / " + (item[1]/1000);
+						}
+						ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(getActivity(), R.layout.framerate_selection_item, items);
+						selectFramerate.setAdapter(fpsAdapter);
+						selectFramerate.setSelection(settings.get(0).getFramerateRange());
 
-						final CheckBox normalizedCB =
-								(CheckBox) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
+						final Switch normalizedCB =
+								(Switch) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
 						normalizedCB.setChecked(settings.get(0).getNormalized());
-						final CheckBox rememberPixelStatesCB =
-								(CheckBox) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
+						final Switch rememberPixelStatesCB =
+								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
+
+//						selectFramerate.bringToFront();
 
 						resHField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
@@ -400,6 +399,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
+
 						resVField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
@@ -424,6 +424,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
+
 						calcPeriodField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
@@ -443,28 +444,34 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
-/*
-						fixFramerateCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+						selectFramerate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 							@Override
-							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (fixFramerateCB.isChecked() != settings.get(0).getFramerateFixed()) {
-									values.put(
-											SettingsContract.SettingsEntries.FRAMERATE_FIXED,
-											fixFramerateCB.isChecked()
-									);
-									db.update(
-											SettingsContract.SettingsEntries.TABLE_NAME,
-											values,
-											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-											null
-									);
-									values.clear();
-									// update camera preview immediately
-									cameraView.setFramerateFixed(fixFramerateCB.isChecked() ? 1 : 0);
+							public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+								values.put(
+										SettingsContract.SettingsEntries.FRAMERATE_RANGE,
+										position
+								);
+								db.update(
+										SettingsContract.SettingsEntries.TABLE_NAME,
+										values,
+										SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+										null
+								);
+								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+									mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+								}
+							}
+
+							@Override
+							public void onNothingSelected(AdapterView<?> parent) {
+								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+									mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 								}
 							}
 						});
-*/
+
+
 						normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -483,6 +490,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							}
 						});
+
 						rememberPixelStatesCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -594,17 +602,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							}
 						}
 
-						final CheckBox oriCB = (CheckBox) sensorSettingsView.findViewById(R.id.orientation_sensor);
-						final CheckBox accCB = (CheckBox) sensorSettingsView.findViewById(R.id.accelerometer);
-						final CheckBox linAccCB = (CheckBox) sensorSettingsView.findViewById(R.id.linear_acceleration);
-						final CheckBox magCB = (CheckBox) sensorSettingsView.findViewById(R.id.magnetic_field);
-						final CheckBox gravCB = (CheckBox) sensorSettingsView.findViewById(R.id.gravity_sensor);
-						final CheckBox proxCB = (CheckBox) sensorSettingsView.findViewById(R.id.proximity_sensor);
-						final CheckBox lightCB = (CheckBox) sensorSettingsView.findViewById(R.id.light_sensor);
-						final CheckBox pressCB = (CheckBox) sensorSettingsView.findViewById(R.id.air_pressure_sensor);
-						final CheckBox tempCB = (CheckBox) sensorSettingsView.findViewById(R.id.temperature_sensor);
-						final CheckBox humCB = (CheckBox) sensorSettingsView.findViewById(R.id.humidity_sensor);
-						final CheckBox locCB = (CheckBox) sensorSettingsView.findViewById(R.id.geo_loc_sensor);
+						final Switch oriCB = (Switch) sensorSettingsView.findViewById(R.id.orientation_sensor);
+						final Switch accCB = (Switch) sensorSettingsView.findViewById(R.id.accelerometer);
+						final Switch linAccCB = (Switch) sensorSettingsView.findViewById(R.id.linear_acceleration);
+						final Switch magCB = (Switch) sensorSettingsView.findViewById(R.id.magnetic_field);
+						final Switch gravCB = (Switch) sensorSettingsView.findViewById(R.id.gravity_sensor);
+						final Switch proxCB = (Switch) sensorSettingsView.findViewById(R.id.proximity_sensor);
+						final Switch lightCB = (Switch) sensorSettingsView.findViewById(R.id.light_sensor);
+						final Switch pressCB = (Switch) sensorSettingsView.findViewById(R.id.air_pressure_sensor);
+						final Switch tempCB = (Switch) sensorSettingsView.findViewById(R.id.temperature_sensor);
+						final Switch humCB = (Switch) sensorSettingsView.findViewById(R.id.humidity_sensor);
+						final Switch locCB = (Switch) sensorSettingsView.findViewById(R.id.geo_loc_sensor);
 
 						oriCB.setChecked(sensors.getOrientationSensorActivated());
 						accCB.setChecked(sensors.getAccelerationSensorActivated());
@@ -889,7 +897,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private long rowId;
 		private short resolutionHorizontal;
 		private short resolutionVertical;
-		private boolean framerateFixed;
+		private short framerateRange;
 		private boolean normalized;
 		private boolean rememberPixelStates;
 		private short calculationPeriod;
@@ -911,8 +919,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			this.resolutionVertical = resolutionV;
 		}
 
-		void setFramerateFixed(short boolVal) {
-			this.framerateFixed = boolVal > 0;
+		void setFramerateRange(short index) {
+			this.framerateRange = index;
 		}
 
 		void setNormalized(short boolVal) {
@@ -951,8 +959,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			return this.resolutionVertical;
 		}
 
-		boolean getFramerateFixed() {
-			return this.framerateFixed;
+		short getFramerateRange() {
+			return this.framerateRange;
 		}
 
 		boolean getNormalized() {

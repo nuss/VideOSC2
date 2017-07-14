@@ -23,7 +23,8 @@ public class SettingsContract {
 		public static final String TABLE_NAME = "vosc_settings";
 		public static final String RES_H = "resolution_horizontal";
 		public static final String RES_V = "resolution_vertical";
-		public static final String FRAMERATE_FIXED = "framerate_fixed";
+//		public static final String FRAMERATE_FIXED = "framerate_fixed";
+		public static final String FRAMERATE_RANGE = "framerate_range";
 		public static final String NORMALIZE = "normalized";
 		public static final String REMEMBER_PIXEL_STATES = "remember_pixel_states";
 		public static final String CALC_PERIOD = "calculation_period";
