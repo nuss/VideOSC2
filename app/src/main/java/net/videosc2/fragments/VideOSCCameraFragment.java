@@ -89,7 +89,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 
 	// View to display the camera output.
-	private CameraPreview mPreview;
+	public CameraPreview mPreview;
 	// preview container
 	private ViewGroup mPreviewContainer;
 

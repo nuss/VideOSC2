@@ -458,9 +458,12 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
 										null
 								);
+								values.clear();
 								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 									mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 								}
+								// initialize camera with updated framerate
+								cameraView.mPreview.switchCamera(cameraView.mCamera);
 							}
 
 							@Override
