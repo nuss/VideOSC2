@@ -1,16 +1,21 @@
 package net.videosc2.fragments;
 
+import android.graphics.Point;
+import android.view.View;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.fragments, project VideOSC22.
+ * Created by stefan on 14.07.17, package net.videosc2.fragments, project VideOSC22.
  */
 public class VideOSCCameraFragmentTest {
+	final private VideOSCCameraFragment fragment = new VideOSCCameraFragment();
+
 	@Test
 	public void onCreateView() throws Exception {
-
+		assertNotNull(fragment);
 	}
 
 	@Test
@@ -24,7 +29,22 @@ public class VideOSCCameraFragmentTest {
 	}
 
 	@Test
-	public void getCamera() throws Exception {
+	public void setResolution() throws Exception {
+
+	}
+
+	@Test
+	public void getResolution() throws Exception {
+
+	}
+
+	@Test
+	public void setFramerateRange() throws Exception {
+
+	}
+
+	@Test
+	public void getFramerateRange() throws Exception {
 
 	}
 

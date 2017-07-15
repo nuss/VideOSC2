@@ -221,14 +221,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 	}
 
-	/**
-	 * Get the camera associated with the fragment
-	 * @return a Camera instance
-	 */
-	public Camera getCamera() {
-		return mCamera;
-	}
-
 	public void setResolution(int width, int height) {
 		mResolution.set(width, height);
 	}
@@ -485,7 +477,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						int previewSize = outWidth * outHeight;
 						int diff = previewSize - offPxls.size();
 						if (diff != 0) pad(diff);
-						Log.d(TAG, "width: " + outWidth + ", height: " + outHeight + ", offPxls size: " + offPxls.size());
+//						Log.d(TAG, "width: " + outWidth + ", height: " + outHeight + ", offPxls size: " + offPxls.size());
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);

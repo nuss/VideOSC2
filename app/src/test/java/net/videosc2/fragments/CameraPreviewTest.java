@@ -5,9 +5,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.fragments, project VideOSC22.
+ * Created by stefan on 14.07.17, package net.videosc2.fragments, project VideOSC22.
  */
 public class CameraPreviewTest {
+
 	@Test
 	public void switchCamera() throws Exception {
 
