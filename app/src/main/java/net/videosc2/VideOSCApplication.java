@@ -5,7 +5,10 @@ import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 
 import net.videosc2.db.SettingsDBHelper;
+import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.RGBModes;
+
+import oscP5.OscMessage;
 
 /**
  * Created by stefan on 05.07.17, package net.videosc2, project VideOSC22.
@@ -13,7 +16,9 @@ import net.videosc2.utilities.enums.RGBModes;
 public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
 	private Enum colorMode = RGBModes.RGB;
-	private SettingsDBHelper settingshelper;
+	private SettingsDBHelper mSettingsHelper;
+	public VideOSCOscHandler mOscHelper;
+
 	// setting dialogs
 	// levels within settings dialog
 	// 0: no dialog, normal mode
@@ -32,7 +37,8 @@ public class VideOSCApplication extends Application {
 		LeakCanary.install(this);
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
-		settingshelper = new SettingsDBHelper(getApplicationContext());
+		mSettingsHelper = new SettingsDBHelper(getApplicationContext());
+		mOscHelper = new VideOSCOscHandler(getApplicationContext());
 	}
 
 	public void setIsRGBPositive(boolean boolVal) {
@@ -60,6 +66,6 @@ public class VideOSCApplication extends Application {
 	}
 
 	public SettingsDBHelper getSettingsHelper() {
-		return this.settingshelper;
+		return this.mSettingsHelper;
 	}
 }

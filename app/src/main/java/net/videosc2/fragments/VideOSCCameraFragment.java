@@ -22,9 +22,7 @@
 
 package net.videosc2.fragments;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -34,8 +32,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -48,13 +44,11 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
-import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
@@ -65,9 +59,8 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
-
-import static android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX;
-import static android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX;
+import oscP5.OscMessage;
+import oscP5.OscP5;
 
 /**
  * Display the down-scaled preview, calculated
@@ -111,11 +104,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private VideOSCApplication mApp;
 
+	private volatile OscMessage oscR, oscG, oscB;
+	private String mRed, mGreen, mBlue;
+
 	/**
 	 * OnCreateView fragment override
 	 *
-	 * @param inflater the layout inflater inflating the layout for the view
-	 * @param container the layout's container
+	 * @param inflater           the layout inflater inflating the layout for the view
+	 * @param container          the layout's container
 	 * @param savedInstanceState a Bundle instance
 	 * @return a View
 	 */
@@ -237,6 +233,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
+	public void setColorOscCmds(String cmd) {
+		mRed = String.format("/%1$s/red", cmd);
+		mGreen = String.format("/%1$s/green", cmd);
+		mBlue = String.format("/%1$s/blue", cmd);
+	}
+
+	public String[] getColorOscCmds() {
+		return new String[]{mRed, mGreen, mBlue};
+	}
 
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
@@ -264,6 +269,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private boolean pPreviewStarted;
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
+		private OscP5 mOscP5;
 
 		// lock the state of a pixel after changing its state, otherwise pixels would constantly
 		// change their state as long as they're hoevered
@@ -272,10 +278,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ArrayList<Boolean[]> offPxls = new ArrayList<Boolean[]>();
 		final private Boolean[] falses = {false, false, false};
 
+		private ColorOscRunnable mOscRunnable;
+		private Thread mOscSender;
+
 		/**
-		 *
 		 * @param context the context of the application
-		 * @param camera an instance of Camera, to be used throughout CameraPreview
+		 * @param camera  an instance of Camera, to be used throughout CameraPreview
 		 */
 		public CameraPreview(Context context, Camera camera) {
 			super(context);
@@ -283,6 +291,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Log.d(TAG, "CameraPreview(): " + camera);
 			// Capture the context
 			setCamera(camera);
+
+			mOscP5 = mApp.mOscHelper.getOscP5();
+			Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 
 			// Install a SurfaceHolder.Callback so we get notified when the
 			// underlying surface is created and destroyed.
@@ -292,6 +303,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// deprecated setting, but required on Android versions prior to 3.0
 			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
+			if (mOscSender == null) {
+				mOscRunnable = new ColorOscRunnable();
+				mOscSender = new Thread(mOscRunnable);
+				mOscSender.start();
+			}
+
 			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 			Display display = wm.getDefaultDisplay();
 			display.getSize(VideOSCMainActivity.dimensions);
@@ -300,7 +317,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			String[] settingsFields = new String[]{
 					SettingsContract.SettingsEntries.RES_H,
 					SettingsContract.SettingsEntries.RES_V,
-					SettingsContract.SettingsEntries.FRAMERATE_RANGE
+					SettingsContract.SettingsEntries.FRAMERATE_RANGE,
+					SettingsContract.SettingsEntries.ROOT_CMD
 			};
 
 			final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
@@ -322,6 +340,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				);
 				setFramerateRange(
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE))
+				);
+				setColorOscCmds(
+						cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD))
 				);
 			}
 
@@ -428,6 +449,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
+			// stop sending OSC
+//			mOscRunnable.stop();
 			// prevent errors resulting from camera being used after Camera.release() has been
 			// called. Seems to work...
 			if (pCamera != null) try {
@@ -443,8 +466,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 *
 		 * @param holder the surface holder
 		 * @param format the pixel format of the surface
-		 * @param w the surface width
-		 * @param h the surface height
+		 * @param w      the surface width
+		 * @param h      the surface height
 		 */
 		public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 			if (mHolder.getSurface() == null) {
@@ -466,12 +489,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
 						mNow = System.currentTimeMillis();
-						mFrameRate = Math.round(1000.0f/(mNow - mPrev) * 10.0f) / 10.0f;
+						mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
 						mPrev = mNow;
 						TextView frameRateText = (TextView) mPreviewContainer.findViewById(R.id.fps);
-						if (frameRateText != null) frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
+						if (frameRateText != null)
+							frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
 						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
-						if (zoomText != null) zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
+						if (zoomText != null)
+							zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
 						int outWidth = getResolution().x;
 						int outHeight = getResolution().y;
 						int previewSize = outWidth * outHeight;
@@ -541,7 +566,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					mOldFingerDistance = currFingerDistance;
 					pCamera.setParameters(params);
 //					Log.d(TAG, "zoom: " + params.getZoom() + ", ratio: " + params.getZoomRatios().get(params.getZoom()));
-					mCamZoom = (float) (params.getZoomRatios().get(params.getZoom())/100.0);
+					mCamZoom = (float) (params.getZoomRatios().get(params.getZoom()) / 100.0);
 				}
 			}
 
@@ -550,7 +575,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return true;
 		}
 
-		/** Determine the space between the first two fingers */
+		/**
+		 * Determine the space between the first two fingers
+		 */
 		private double getFingerSpacing(MotionEvent event) {
 			float x = event.getX(0) - event.getX(1);
 			float y = event.getY(0) - event.getY(1);
@@ -558,13 +585,17 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return Math.sqrt(x * x + y * y);
 		}
 
-		/** get current zoom */
+		/**
+		 * get current zoom
+		 */
 		private int getCurrentZoom() {
 			Camera.Parameters params = pCamera.getParameters();
 			return params.getZoom();
 		}
 
-		/** set zoom */
+		/**
+		 * set zoom
+		 */
 		private void setZoom(int zoom) {
 			Camera.Parameters params = pCamera.getParameters();
 			params.setZoom(zoom);
@@ -614,6 +645,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			float rval, gval, bval, alpha;
 			int dimensions = getResolution().x * getResolution().y;
 			int[] pixels = new int[width * height];
+
+
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
 			for (int i = 0; i < dimensions; i++) {
@@ -630,37 +663,36 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					pixels[i] = Color.argb(255, rVal, gVal, bVal);
 
 				// compose basic OSC message for slot
-/*
-				oscR = VideOSCOscHandling.makeMessage(oscR, r + str(i + 1));
-				oscG = VideOSCOscHandling.makeMessage(oscG, g + str(i + 1));
-				oscB = VideOSCOscHandling.makeMessage(oscB, b + str(i + 1));
-*/
+
+				oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+				oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+				oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
 
 				if (mApp.getColorMode().equals(RGBModes.RGB)) {
 					if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-						// r
+						// mRed
 //						alpha = pCamera.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255/3, 0, gVal, bVal);
+						pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
 					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-						// g;
+						// mGreen;
 //						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255/3, rVal, 0, bVal);
+						pixels[i] = Color.argb(255 / 3, rVal, 0, bVal);
 					} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
-						// b;
+						// mBlue;
 //						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255/3, rVal, gVal, 0);
+						pixels[i] = Color.argb(255 / 3, rVal, gVal, 0);
 					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 						// rg;
 //						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255/3*2, 0, 0, bVal);
+						pixels[i] = Color.argb(255 / 3 * 2, 0, 0, bVal);
 					} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// rb;
 //						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255/3*2, 0, gVal, 0);
+						pixels[i] = Color.argb(255 / 3 * 2, 0, gVal, 0);
 					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// bg;
 //						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255/3*2, rVal, 0, 0);
+						pixels[i] = Color.argb(255 / 3 * 2, rVal, 0, 0);
 					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 						// rgb
 						pixels[i] = Color.argb(0, 0, 0, 0);
@@ -685,28 +717,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 /*
 				if (play) {
 					if (calcsPerPeriod == 1) {
-						if (normalize) {
-							rval = (float) rVal / 255;
-							gval = (float) gVal / 255;
-							bval = (float) bVal / 255;
-						} else {
-							rval = rVal;
-							gval = gVal;
-							bval = bVal;
-						}
+*/
+//						if (normalize) {
+//							rval = (float) rVal / 255;
+//							gval = (float) gVal / 255;
+//							bval = (float) bVal / 255;
+//						} else {
+				rval = rVal;
+				gval = gVal;
+				bval = bVal;
+//						}
 
-						if (!offPxls.get(i)[0]) {
-							oscR.add(rval);
-							oscP5.send(oscR, broadcastLoc);
-						}
-						if (!offPxls.get(i)[1]) {
-							oscG.add(gval);
-							oscP5.send(oscG, broadcastLoc);
-						}
-						if (!offPxls.get(i)[2]) {
-							oscB.add(bval);
-							oscP5.send(oscB, broadcastLoc);
-						}
+				if (!offPxls.get(i)[0])
+					prepareAndSendOsc(oscR, rval);
+				if (!offPxls.get(i)[1])
+					prepareAndSendOsc(oscG, gval);
+				if (!offPxls.get(i)[2])
+					prepareAndSendOsc(oscB, bval);
+/*
 					} else {
 						curInput[0] = (float) rVal;
 						curInput[1] = (float) gVal;
@@ -758,6 +786,57 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return bmp;
 		}
 
+		private void prepareAndSendOsc(OscMessage msg, float val) {
+			msg.add(val);
+			mOscRunnable.mMsg = msg;
+			if (msg.addrPattern().length() == 0 || msg.arguments().length == 0) {
+				Log.d(TAG, "no addr pattern or arguments: " + msg.addrPattern().length() + ", " + msg.arguments().length);
+			}
+			synchronized (mOscRunnable.mOscLock) {
+				mOscRunnable.mOscLock.notify();
+			}
+		}
+
+		private class ColorOscRunnable implements Runnable {
+			private volatile OscMessage mMsg;
+			private final Object mOscLock = new Object();
+//			private volatile Thread blinker = new Object();
+
+			/**
+			 * When an object implementing interface <code>Runnable</code> is used
+			 * to create a thread, starting the thread causes the object's
+			 * <code>run</code> method to be called in that separately executing
+			 * thread.
+			 * <p>
+			 * The general contract of the method <code>run</code> is that it may
+			 * take any action whatsoever.
+			 *
+			 * @see Thread#run()
+			 */
+			@Override
+			@SuppressWarnings("InfiniteLoopStatement")
+			public void run() {
+				while (true) {
+					synchronized (mOscLock) {
+						try {
+							if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+/*
+								if (mMsg.addrPattern().length() == 0)
+									Log.d(TAG, "addr pattern size is 0");
+								if (mMsg.arguments().length == 0)
+									Log.d(TAG, "no arguments");
+*/
+//								Log.d(TAG, "message addr pattern: " + (mMsg.addrPattern().length() == 0));
+								mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+							}
+							mOscLock.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

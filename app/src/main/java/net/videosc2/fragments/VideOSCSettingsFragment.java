@@ -27,6 +27,7 @@ import android.widget.TextView;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.db.SettingsContract;
+import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 //import java.lang.reflect.Method;
@@ -210,9 +211,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !remoteIPField.getText().toString().equals(addresses.get(0).getIP())) {
+									String remoteIP = remoteIPField.getText().toString();
 									values.put(
 											SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-											remoteIPField.getText().toString()
+											remoteIP
 									);
 									db.update(
 											SettingsContract.AddressSettingsEntry.TABLE_NAME,
@@ -221,6 +223,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									app.mOscHelper.setBroadcastAddr(remoteIP, app.mOscHelper.getBroadcastPort());
 								}
 							}
 						});
@@ -228,9 +231,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !remotePortField.getText().toString().equals(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()))) {
+									String remotePort = remotePortField.getText().toString();
 									values.put(
 											SettingsContract.AddressSettingsEntry.PORT,
-											remotePortField.getText().toString()
+											remotePort
 									);
 									db.update(
 											SettingsContract.AddressSettingsEntry.TABLE_NAME,
@@ -239,6 +243,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									app.mOscHelper.setBroadcastAddr(app.mOscHelper.getBroadcastIP(), Integer.parseInt(remotePort, 10));
 								}
 							}
 						});
