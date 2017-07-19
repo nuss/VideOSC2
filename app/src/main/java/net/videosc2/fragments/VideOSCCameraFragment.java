@@ -22,7 +22,6 @@
 
 package net.videosc2.fragments;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -704,34 +703,32 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						pixels[i] = Color.argb(255, 0, 0, bVal);
 				}
 
-/*
-				if (play) {
-					if (calcsPerPeriod == 1) {
-*/
+				if (mApp.getPlay()) {
+//					if (calcsPerPeriod == 1) {
 //						if (normalize) {
 //							rval = (float) rVal / 255;
 //							gval = (float) gVal / 255;
 //							bval = (float) bVal / 255;
 //						} else {
-				rval = rVal;
-				gval = gVal;
-				bval = bVal;
+					rval = rVal;
+					gval = gVal;
+					bval = bVal;
 //						}
 
-				// all OSC messaging (message construction sending) must happen synchronized
-				// otherwise messages easily get overwritten during processing
-				synchronized (mOscRunnable.mOscLock) {
-					oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-					oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-					oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-					if (!offPxls.get(i)[0])
-						prepareAndSendOsc(oscR, rval);
-					if (!offPxls.get(i)[1])
-						prepareAndSendOsc(oscG, gval);
-					if (!offPxls.get(i)[2])
-						prepareAndSendOsc(oscB, bval);
-					mOscRunnable.mOscLock.notify();
-				}
+					// all OSC messaging (message construction sending) must happen synchronized
+					// otherwise messages easily get overwritten during processing
+					synchronized (mOscRunnable.mOscLock) {
+						oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+						oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+						oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+						if (!offPxls.get(i)[0])
+							prepareAndSendOsc(oscR, rval);
+						if (!offPxls.get(i)[1])
+							prepareAndSendOsc(oscG, gval);
+						if (!offPxls.get(i)[2])
+							prepareAndSendOsc(oscB, bval);
+						mOscRunnable.mOscLock.notify();
+					}
 /*
 					} else {
 						curInput[0] = (float) rVal;
@@ -775,8 +772,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							slopes.add(slope.clone());
 						}
 					}
-				}
 */
+				}
 			}
 
 			bmp.setPixels(pixels, 0, width, 0, 0, width, height);

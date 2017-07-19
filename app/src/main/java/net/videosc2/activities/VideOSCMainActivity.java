@@ -83,8 +83,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public static Point dimensions;
 	private DrawerLayout mToolsDrawerLayout;
 
-	// is device currently sending OSC?
-	public boolean isPlaying = false;
 	// is flashlight on?
 	public boolean isTorchOn = false;
 	// don't create more than one color mode panel
@@ -251,15 +249,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 				if (i == START_STOP) {
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
-					;
-					isPlaying = !isPlaying;
-					if (isPlaying) {
-						// TODO: stop sending OSC
+					if (!mApp.getPlay()) {
+						Log.d(TAG, "play is false");
+						mApp.setPlay(true);
 						mToolsDrawerListState.put(START_STOP, R.drawable.stop);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.stop);
 						oscIndicatorView.setImageResource(R.drawable.osc_playing);
 					} else {
-						// TODO: start sending OSC
+						Log.d(TAG, "play is true");
+						mApp.setPlay(false);
 						mToolsDrawerListState.put(START_STOP, R.drawable.start);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
 						oscIndicatorView.setImageResource(R.drawable.osc_paused);
@@ -583,6 +581,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onDestroy() {
 		// close db
+		mApp.setPlay(false);
 		mDbHelper.close();
 		super.onDestroy();
 		Log.d(TAG, "activity on destroy");

@@ -17,6 +17,7 @@ public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
 	private Enum colorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
+	private boolean play = false; // send pixel values via OSC
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -67,5 +68,13 @@ public class VideOSCApplication extends Application {
 
 	public SettingsDBHelper getSettingsHelper() {
 		return this.mSettingsHelper;
+	}
+
+	public boolean getPlay() {
+		return this.play;
+	}
+
+	public void setPlay(boolean play) {
+		this.play = play;
 	}
 }
