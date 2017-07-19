@@ -664,10 +664,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// compose basic OSC message for slot
 
-				oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-				oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-				oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-
 				if (mApp.getColorMode().equals(RGBModes.RGB)) {
 					if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 						// mRed
@@ -728,12 +724,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				bval = bVal;
 //						}
 
-				if (!offPxls.get(i)[0])
-					prepareAndSendOsc(oscR, rval);
-				if (!offPxls.get(i)[1])
-					prepareAndSendOsc(oscG, gval);
-				if (!offPxls.get(i)[2])
-					prepareAndSendOsc(oscB, bval);
+				// all OSC messaging (message construction sending) must happen synchronized
+				// otherwise messages easily get overwritten during processing
+				synchronized (mOscRunnable.mOscLock) {
+					oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+					oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+					oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+					if (!offPxls.get(i)[0])
+						prepareAndSendOsc(oscR, rval);
+					if (!offPxls.get(i)[1])
+						prepareAndSendOsc(oscG, gval);
+					if (!offPxls.get(i)[2])
+						prepareAndSendOsc(oscB, bval);
+					mOscRunnable.mOscLock.notify();
+				}
 /*
 					} else {
 						curInput[0] = (float) rVal;
@@ -789,15 +793,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private void prepareAndSendOsc(OscMessage msg, float val) {
 			msg.add(val);
 			mOscRunnable.mMsg = msg;
-			if (msg.addrPattern().length() == 0 || msg.arguments().length == 0) {
-				Log.d(TAG, "no addr pattern or arguments: " + msg.addrPattern().length() + ", " + msg.arguments().length);
-			}
-			synchronized (mOscRunnable.mOscLock) {
-				mOscRunnable.mOscLock.notify();
-			}
 		}
 
 		private class ColorOscRunnable implements Runnable {
+			private int count = 0;
 			private volatile OscMessage mMsg;
 			private final Object mOscLock = new Object();
 //			private volatile Thread blinker = new Object();
@@ -820,13 +819,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					synchronized (mOscLock) {
 						try {
 							if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-/*
-								if (mMsg.addrPattern().length() == 0)
-									Log.d(TAG, "addr pattern size is 0");
-								if (mMsg.arguments().length == 0)
-									Log.d(TAG, "no arguments");
-*/
-//								Log.d(TAG, "message addr pattern: " + (mMsg.addrPattern().length() == 0));
 								mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 							}
 							mOscLock.wait();
