@@ -396,15 +396,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private void setCamera(Camera camera) {
 			pCamera = camera;
 			mCameraParams = camera.getParameters();
-			Log.d(TAG, "setCamera(), pCamera: " + pCamera + ", camera: " + camera);
-//			Log.d(TAG, "set camera, parameters: " + parameters.flatten());
 			// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
-			// FIXME
 			mSupportedPreviewSizes = mCameraParams.getSupportedPreviewSizes();
 			mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
-
-			Log.d(TAG, "preview size: " + mPreviewSize.width + " x " + mPreviewSize.height);
-
 			mCameraParams.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
 			mSupportedFlashModes = mCameraParams.getSupportedFlashModes();
 
@@ -440,8 +434,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
-			// stop sending OSC
-			mOscRunnable.close();
 			// prevent errors resulting from camera being used after Camera.release() has been
 			// called. Seems to work...
 			if (pCamera != null) try {
@@ -804,7 +796,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class ColorOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
-		private boolean mRunning = true;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -820,7 +811,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		@Override
 		@SuppressWarnings("InfiniteLoopStatement")
 		public void run() {
-			while (mRunning) {
+			while (true) {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
@@ -832,10 +823,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}
 				}
 			}
-		}
-
-		private void close() {
-			mRunning = false;
 		}
 	}
 
