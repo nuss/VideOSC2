@@ -22,6 +22,7 @@
 
 package net.videosc2.fragments;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -102,10 +103,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private int[] mFrameRateRange;
 
-	private VideOSCApplication mApp;
+	private static VideOSCApplication mApp;
+	private static OscP5 mOscP5;
 
-	private volatile OscMessage oscR, oscG, oscB;
-	private String mRed, mGreen, mBlue;
 
 	/**
 	 * OnCreateView fragment override
@@ -119,6 +119,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		mApp = (VideOSCApplication) getActivity().getApplication();
+		mOscP5 = mApp.mOscHelper.getOscP5();
+		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		Log.d(TAG, "onCreateView: " + view.getClass());
 		// store the container for later re-use
@@ -233,16 +235,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
-	public void setColorOscCmds(String cmd) {
-		mRed = String.format("/%1$s/red", cmd);
-		mGreen = String.format("/%1$s/green", cmd);
-		mBlue = String.format("/%1$s/blue", cmd);
-	}
-
-	public String[] getColorOscCmds() {
-		return new String[]{mRed, mGreen, mBlue};
-	}
-
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
@@ -269,7 +261,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private boolean pPreviewStarted;
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
-		private OscP5 mOscP5;
 
 		// lock the state of a pixel after changing its state, otherwise pixels would constantly
 		// change their state as long as they're hoevered
@@ -281,6 +272,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ColorOscRunnable mOscRunnable;
 		private Thread mOscSender;
 
+		private volatile OscMessage oscR, oscG, oscB;
+		private String mRed, mGreen, mBlue;
+
 		/**
 		 * @param context the context of the application
 		 * @param camera  an instance of Camera, to be used throughout CameraPreview
@@ -291,9 +285,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Log.d(TAG, "CameraPreview(): " + camera);
 			// Capture the context
 			setCamera(camera);
-
-			mOscP5 = mApp.mOscHelper.getOscP5();
-			Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 
 			// Install a SurfaceHolder.Callback so we get notified when the
 			// underlying surface is created and destroyed.
@@ -450,7 +441,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
 			// stop sending OSC
-//			mOscRunnable.stop();
+			mOscRunnable.close();
 			// prevent errors resulting from camera being used after Camera.release() has been
 			// called. Seems to work...
 			if (pCamera != null) try {
@@ -641,6 +632,17 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}*/
 		}
 
+		public void setColorOscCmds(String cmd) {
+			mRed = String.format("/%1$s/red", cmd);
+			mGreen = String.format("/%1$s/green", cmd);
+			mBlue = String.format("/%1$s/blue", cmd);
+		}
+
+		public String[] getColorOscCmds() {
+			return new String[]{mRed, mGreen, mBlue};
+		}
+
+
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
 			float rval, gval, bval, alpha;
 			int dimensions = getResolution().x * getResolution().y;
@@ -794,40 +796,46 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			msg.add(val);
 			mOscRunnable.mMsg = msg;
 		}
+	}
 
-		private class ColorOscRunnable implements Runnable {
-			private int count = 0;
-			private volatile OscMessage mMsg;
-			private final Object mOscLock = new Object();
-//			private volatile Thread blinker = new Object();
+	// prevent memory leaks by declaring Runnable static
+	// see also https://stackoverflow.com/questions/29694222/is-this-runnable-safe-from-memory-leak
+	// or http://www.androiddesignpatterns.com/2013/04/activitys-threads-memory-leaks.html
+	private static class ColorOscRunnable implements Runnable {
+		private volatile OscMessage mMsg;
+		private final Object mOscLock = new Object();
+		private boolean mRunning = true;
 
-			/**
-			 * When an object implementing interface <code>Runnable</code> is used
-			 * to create a thread, starting the thread causes the object's
-			 * <code>run</code> method to be called in that separately executing
-			 * thread.
-			 * <p>
-			 * The general contract of the method <code>run</code> is that it may
-			 * take any action whatsoever.
-			 *
-			 * @see Thread#run()
-			 */
-			@Override
-			@SuppressWarnings("InfiniteLoopStatement")
-			public void run() {
-				while (true) {
-					synchronized (mOscLock) {
-						try {
-							if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-								mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
-							}
-							mOscLock.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+		/**
+		 * When an object implementing interface <code>Runnable</code> is used
+		 * to create a thread, starting the thread causes the object's
+		 * <code>run</code> method to be called in that separately executing
+		 * thread.
+		 * <p>
+		 * The general contract of the method <code>run</code> is that it may
+		 * take any action whatsoever.
+		 *
+		 * @see Thread#run()
+		 */
+		@Override
+		@SuppressWarnings("InfiniteLoopStatement")
+		public void run() {
+			while (mRunning) {
+				synchronized (mOscLock) {
+					try {
+						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
+						mOscLock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
 			}
+		}
+
+		private void close() {
+			mRunning = false;
 		}
 	}
 
