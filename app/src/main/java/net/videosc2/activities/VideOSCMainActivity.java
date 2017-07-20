@@ -28,6 +28,8 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -56,6 +58,7 @@ import android.widget.ListView;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.adapters.ToolsMenuAdapter;
+import net.videosc2.db.SettingsContract;
 import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
@@ -158,6 +161,32 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// keep db access open through the app's lifetime
 		mDbHelper = new SettingsDBHelper(this);
+		final SQLiteDatabase db = mDbHelper.getReadableDatabase();
+		final String[] settingsFields = new String[]{
+				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+				SettingsContract.AddressSettingsEntry.PORT
+		};
+
+		Cursor cursor = db.query(
+				SettingsContract.AddressSettingsEntry.TABLE_NAME,
+				settingsFields,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+
+		// for now we only have one address stored in the addresses table
+		// protocol will be UDP
+		if (cursor.moveToFirst()) {
+			mApp.mOscHelper.setBroadcastAddr(
+					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS)),
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT))
+			);
+		}
+
+		cursor.close();
 
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;

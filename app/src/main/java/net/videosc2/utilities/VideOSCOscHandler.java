@@ -14,7 +14,7 @@ public class VideOSCOscHandler {
 	private OscP5 mOscP5;
 	private NetAddress mBroadcastAddr;
 	private NetAddress mFeedbackAddr;
-	private String mBroadcastIP = "192.168.1.5"; // default IP, updated via settings
+	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
 	private int mListeningPort = 32000; // default port to listen on, updated via settings
 	private int mBroadcastPort = 57120; // default port to send to, updated via settings
 

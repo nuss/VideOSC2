@@ -15,7 +15,7 @@ import oscP5.OscMessage;
  */
 public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
-	private Enum colorMode = RGBModes.RGB;
+	private Enum mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
 	private boolean play = false; // send pixel values via OSC
 	public VideOSCOscHandler mOscHelper;
@@ -50,12 +50,12 @@ public class VideOSCApplication extends Application {
 		return this.isRGBPositive;
 	}
 
-	public void setColorMode(Enum colorMode) {
-		this.colorMode = colorMode;
+	public void setColorMode(Enum mColorMode) {
+		this.mColorMode = mColorMode;
 	}
 
 	public Enum getColorMode() {
-		return this.colorMode;
+		return this.mColorMode;
 	}
 
 	public short getSettingsLevel() {
