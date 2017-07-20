@@ -223,6 +223,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									// update addresses immediately, so above if clause works correctly
+									// next time we try to set the IP address
+									addresses.get(0).setIP(remoteIP);
 									app.mOscHelper.setBroadcastAddr(remoteIP, app.mOscHelper.getBroadcastPort());
 								}
 							}
@@ -243,6 +246,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									addresses.get(0).setPort(Integer.parseInt(remotePort, 10));
 									app.mOscHelper.setBroadcastAddr(app.mOscHelper.getBroadcastIP(), Integer.parseInt(remotePort, 10));
 								}
 							}
@@ -252,9 +256,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !udpReceivePortField.getText().toString().equals(
 										String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
+									String receivePort = udpReceivePortField.getText().toString();
 									values.put(
 											SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-											udpReceivePortField.getText().toString()
+											receivePort
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -263,6 +268,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									addresses.get(0).setReceivePort(Integer.parseInt(receivePort, 10));
+									// TODO: handle feedback OSC
 								}
 							}
 						});
@@ -270,9 +277,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !rootCmdField.getText().toString().equals(settings.get(0).getRootCmd())) {
+									String rootCmd = rootCmdField.getText().toString();
 									values.put(
 											SettingsContract.SettingsEntries.ROOT_CMD,
-											rootCmdField.getText().toString()
+											rootCmd
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -281,8 +289,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setRootCmd(rootCmd);
+									cameraView.setColorOscCmds(rootCmd);
 								}
-
 							}
 						});
 						break;
@@ -385,9 +394,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !resHField.getText().toString().equals(
 										String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()))) {
+									String resH = resHField.getText().toString();
 									values.put(
 											SettingsContract.SettingsEntries.RES_H,
-											resHField.getText().toString()
+											resH
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -396,9 +406,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setResolutionHorizontal(Short.parseShort(resH));
 									// update camera preview immediately
 									cameraView.setResolution(
-											Integer.parseInt(resHField.getText().toString()),
+											Integer.parseInt(resH),
 											cameraView.getResolution().y
 									);
 								}
@@ -410,9 +421,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !resVField.getText().toString().equals(
 										String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()))) {
+									String resV = resVField.getText().toString();
 									values.put(
 											SettingsContract.SettingsEntries.RES_V,
-											resVField.getText().toString()
+											resV
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -421,10 +433,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setResolutionVertical(Short.parseShort(resV));
 									// update camera preview immediately
 									cameraView.setResolution(
 											cameraView.getResolution().x,
-											Integer.parseInt(resVField.getText().toString())
+											Integer.parseInt(resV)
 									);
 								}
 							}
@@ -435,9 +448,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							public void onFocusChange(View v, boolean hasFocus) {
 								if (!hasFocus && !calcPeriodField.getText().toString().equals(
 										String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()))) {
+									String calcPeriod = calcPeriodField.getText().toString();
 									values.put(
 											SettingsContract.SettingsEntries.CALC_PERIOD,
-											calcPeriodField.getText().toString()
+											calcPeriod
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -446,6 +460,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setCalculationPeriod(Short.parseShort(calcPeriod, 10));
+									// TODO: update calculation period in camera fragment immediately
 								}
 							}
 						});
@@ -484,9 +500,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if (normalizedCB.isChecked() != settings.get(0).getNormalized()) {
+									boolean isNormalized = normalizedCB.isChecked();
 									values.put(
 											SettingsContract.SettingsEntries.NORMALIZE,
-											normalizedCB.isChecked()
+											isNormalized
 									);
 									db.update(
 											SettingsContract.SettingsEntries.TABLE_NAME,
@@ -495,6 +512,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
+									// TODO: update normalization in camera fragment immediately
 								}
 							}
 						});
@@ -503,6 +522,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if (rememberPixelStatesCB.isChecked() != settings.get(0).getRememberPixelStates()) {
+									boolean rememberPixelStates = rememberPixelStatesCB.isChecked();
 									values.put(
 											SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
 											rememberPixelStatesCB.isChecked()
@@ -514,6 +534,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 											null
 									);
 									values.clear();
+									settings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
+									// TODO: this setting must be picked up on app init
 								}
 							}
 						});
@@ -814,7 +836,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		return view;
 	}
 
-	// preliminary - replacement for placeholders should come from stored settings
 	public void setPlaceholder(View container) {
 		Resources res = getResources();
 		SparseIntArray idsAndStrings = new SparseIntArray(11);
@@ -822,7 +843,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		String[] settingsFields = new String[]{
 				SettingsContract.SettingsEntries.ROOT_CMD
 		};
-//		SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
+
 		final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
 
 		Cursor cursor = db.query(
@@ -864,6 +885,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private long rowId;
 		private String ip;
 		private int port;
+		private int receivePort;
 		private String protocol;
 
 		Address() {};
@@ -880,6 +902,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 			this.port = port;
 		}
 
+		void setReceivePort(int port) {
+			this.receivePort = port;
+		}
+
 		void setProtocol(String protocol) {
 			this.protocol = protocol;
 		}
@@ -894,6 +920,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 		int getPort() {
 			return this.port;
+		}
+
+		int getReceivePort() {
+			return this.receivePort;
 		}
 
 		String getProtocol() {

@@ -102,6 +102,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private int[] mFrameRateRange;
 
+	private String mRed, mGreen, mBlue;
+
 	private static VideOSCApplication mApp;
 	private static OscP5 mOscP5;
 
@@ -226,6 +228,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mResolution;
 	}
 
+	public void setColorOscCmds(String cmd) {
+		mRed = String.format("/%1$s/red", cmd);
+		mGreen = String.format("/%1$s/green", cmd);
+		mBlue = String.format("/%1$s/blue", cmd);
+	}
+
+	public String[] getColorOscCmds() {
+		return new String[]{mRed, mGreen, mBlue};
+	}
+
 	public void setFramerateRange(int index) {
 		mFrameRateRange = mSupportedPreviewFpsRanges.get(index);
 	}
@@ -272,7 +284,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Thread mOscSender;
 
 		private volatile OscMessage oscR, oscG, oscB;
-		private String mRed, mGreen, mBlue;
 
 		/**
 		 * @param context the context of the application
@@ -623,17 +634,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}*/
 		}
 
-		public void setColorOscCmds(String cmd) {
-			mRed = String.format("/%1$s/red", cmd);
-			mGreen = String.format("/%1$s/green", cmd);
-			mBlue = String.format("/%1$s/blue", cmd);
-		}
-
-		public String[] getColorOscCmds() {
-			return new String[]{mRed, mGreen, mBlue};
-		}
-
-
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
 			float rval, gval, bval, alpha;
 			int dimensions = getResolution().x * getResolution().y;
@@ -824,4 +824,3 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	}
 
 }
-
