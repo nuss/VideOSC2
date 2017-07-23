@@ -22,7 +22,9 @@
 
 package net.videosc2.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -49,6 +51,7 @@ import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
+import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
@@ -129,12 +132,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
-		boolean opened = safeCameraOpenInView(view);
-
-		if (!opened) {
-			Log.d("CameraGuide", "Error, Camera failed to open");
-			return view;
-		}
+		safeCameraOpenInView(view);
 
 		return view;
 	}
@@ -147,34 +145,48 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	public boolean safeCameraOpenInView(View view) {
 		boolean qOpened;
+		FrameLayout preview;
 		// cache current zoom
 		int zoom = mPreview != null ? mPreview.getCurrentZoom() : 0;
 		releaseCameraAndPreview();
 		mCamera = getCameraInstance();
-		mCameraParams = mCamera.getParameters();
-		mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
+		if (mCamera != null) {
+			mCameraParams = mCamera.getParameters();
+			mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
+			qOpened = (mCamera != null);
 
-		Log.d(TAG, "which camera: " + VideOSCMainActivity.currentCameraID + ", camera: " + mCamera);
-		FrameLayout preview;
-
-		qOpened = (mCamera != null);
-		Log.d(TAG, "qOpened: " + qOpened);
-
-		if (qOpened) {
-			if (mPreview == null) {
-				mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
-				if (view.findViewById(R.id.camera_preview) != null) {
-					preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-					preview.addView(mPreview);
-				} else Log.d(TAG, "FrameLayout is null");
-			} else {
-				mPreview.switchCamera(mCamera);
-				// set camera zoom to the zoom value of the old camera
-				mPreview.setZoom(zoom);
+			if (qOpened) {
+				if (mPreview == null) {
+					mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
+					if (view.findViewById(R.id.camera_preview) != null) {
+						preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+						preview.addView(mPreview);
+					} else Log.d(TAG, "FrameLayout is null");
+				} else {
+					mPreview.switchCamera(mCamera);
+					// set camera zoom to the zoom value of the old camera
+					mPreview.setZoom(zoom);
+				}
+				mPreview.pPreviewStarted = mPreview.startCameraPreview();
 			}
-			mPreview.pPreviewStarted = mPreview.startCameraPreview();
+			return qOpened;
+		} else {
+			final Activity activity = getActivity();
+			VideOSCDialogHelper.showDialog(
+					activity,
+					android.R.style.Theme_Holo_Light_Dialog,
+					getString(R.string.msg_on_camera_open_fail),
+					getString(R.string.OK),
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							activity.finish();
+						}
+
+					}, null, null
+			);
 		}
-		return qOpened;
+		return false;
 	}
 
 	/**

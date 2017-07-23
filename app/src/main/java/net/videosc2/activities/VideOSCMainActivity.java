@@ -191,9 +191,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final LayoutInflater inflater = getLayoutInflater();
 		final Activity activity = this;
 
-		Log.d(TAG, "backside camera: " + Camera.CameraInfo.CAMERA_FACING_BACK);
-		Log.d(TAG, "frontside camera: " + Camera.CameraInfo.CAMERA_FACING_FRONT);
-
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);

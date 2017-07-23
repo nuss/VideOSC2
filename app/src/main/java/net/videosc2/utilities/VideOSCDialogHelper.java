@@ -3,6 +3,7 @@ package net.videosc2.utilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.ContextThemeWrapper;
 
 import net.videosc2.R;
 
@@ -17,7 +18,9 @@ public class VideOSCDialogHelper {
 	 * @param activity The activity
 	 */
 	public static void showQuitDialog(final Activity activity) {
-		new AlertDialog.Builder(activity, AlertDialog.THEME_HOLO_LIGHT)
+		new AlertDialog.Builder(
+				new ContextThemeWrapper(activity, android.R.style.Theme_Holo_Light_Dialog)
+		)
 				.setMessage(R.string.quit_dialog_string)
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					@Override
@@ -28,5 +31,28 @@ public class VideOSCDialogHelper {
 				})
 				.setNegativeButton(R.string.no, null)
 				.show();
+	}
+
+	public static void showDialog(
+			final Activity activity,
+			int style,
+			String msg,
+			String positive,
+			DialogInterface.OnClickListener positiveAction,
+			String negative,
+			DialogInterface.OnClickListener negativeAction
+	) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				new ContextThemeWrapper(activity, style)
+		)
+				.setMessage(msg);
+
+		if (positive != null)
+			builder.setPositiveButton(positive, positiveAction);
+
+		if (negative != null)
+			builder.setNegativeButton(negative, negativeAction);
+
+		builder.show();
 	}
 }
