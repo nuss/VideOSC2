@@ -606,8 +606,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onDestroy() {
-		// close db
+		// stop sending OSC (probably not necessary)
 		mApp.setPlay(false);
+		// close db
 		mDbHelper.close();
 		super.onDestroy();
 		Log.d(TAG, "activity on destroy");

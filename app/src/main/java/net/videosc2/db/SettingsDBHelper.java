@@ -21,7 +21,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_ADDRESSES_CREATE_ENTRIES =
 			"CREATE TABLE " + SettingsContract.AddressSettingsEntry.TABLE_NAME + " (" +
 					SettingsContract.AddressSettingsEntry._ID + " INTEGER PRIMARY KEY," +
-					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL DEFAULT '192.168.1.5'," +
+					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL DEFAULT '192.168.1.1'," +
 					SettingsContract.AddressSettingsEntry.PORT + " INTEGER NOT NULL DEFAULT '57120'," +
 					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL DEFAULT 'UDP')";
 
@@ -63,7 +63,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 14;
+	private static final int DATABASE_VERSION = 15;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -86,7 +86,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 
 		// net address(es)
-		values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.5");
+		values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.1");
 		values.put(SettingsContract.AddressSettingsEntry.PORT, 57120);
 		values.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
 		newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);

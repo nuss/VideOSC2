@@ -729,17 +729,26 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
-					synchronized (mOscRunnable.mOscLock) {
-						oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-						oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-						oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-						if (!offPxls.get(i)[0])
-							prepareAndSendOsc(oscR, rval);
-						if (!offPxls.get(i)[1])
-							prepareAndSendOsc(oscG, gval);
-						if (!offPxls.get(i)[2])
-							prepareAndSendOsc(oscB, bval);
-						mOscRunnable.mOscLock.notify();
+					for (int j = 0; j < 3; j++) {
+						synchronized (mOscRunnable.mOscLock) {
+							if (!offPxls.get(i)[j]) {
+								switch (j) {
+									case 0:
+										oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+										prepareAndSendOsc(oscR, rval);
+										break;
+									case 1:
+										oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+										prepareAndSendOsc(oscG, gval);
+										break;
+									case 2:
+										oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+										prepareAndSendOsc(oscB, bval);
+										break;
+									default:
+								}
+							}
+						}
 					}
 /*
 					} else {
@@ -796,6 +805,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private void prepareAndSendOsc(OscMessage msg, float val) {
 			msg.add(val);
 			mOscRunnable.mMsg = msg;
+			mOscRunnable.mOscLock.notify();
 		}
 	}
 
