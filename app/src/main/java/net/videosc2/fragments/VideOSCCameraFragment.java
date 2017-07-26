@@ -297,6 +297,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private volatile OscMessage oscR, oscG, oscB;
 
+		private int mCountR = 0, mCountG = 0, mCountB = 0 ;
+
 		/**
 		 * @param context the context of the application
 		 * @param camera  an instance of Camera, to be used throughout CameraPreview
@@ -651,7 +653,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			int dimensions = getResolution().x * getResolution().y;
 			int[] pixels = new int[width * height];
 
-
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
 			for (int i = 0; i < dimensions; i++) {
@@ -735,14 +736,17 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 								switch (j) {
 									case 0:
 										oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+										oscR.add(mCountR++);
 										prepareAndSendOsc(oscR, rval);
 										break;
 									case 1:
 										oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+										oscG.add(mCountG++);
 										prepareAndSendOsc(oscG, gval);
 										break;
 									case 2:
 										oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+										oscB.add(mCountB++);
 										prepareAndSendOsc(oscB, bval);
 										break;
 									default:
@@ -815,6 +819,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class ColorOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
+		private int countR = 0, countG = 0, countB = 0;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -834,6 +839,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							if (mMsg.addrPattern().contains("red"))
+								mMsg.add(countR++);
+							else if (mMsg.addrPattern().contains("green"))
+								mMsg.add(countG++);
+							else if (mMsg.addrPattern().contains("blue"))
+								mMsg.add(countB++);
 							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
