@@ -292,12 +292,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ArrayList<Boolean[]> offPxls = new ArrayList<Boolean[]>();
 		final private Boolean[] falses = {false, false, false};
 
-		private ColorOscRunnable mOscRunnable;
-		private Thread mOscSender;
+		private RedOscRunnable mRedOscRunnable;
+		private GreenOscRunnable mGreenOscRunnable;
+		private BlueOscRunnable mBlueOscRunnable;
+		private Thread mRedOscSender;
+		private Thread mGreenOscSender;
+		private Thread mBlueOscSender;
 
 		private volatile OscMessage oscR, oscG, oscB;
-
-		private int mCountR = 0, mCountG = 0, mCountB = 0 ;
 
 		/**
 		 * @param context the context of the application
@@ -318,10 +320,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// deprecated setting, but required on Android versions prior to 3.0
 			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-			if (mOscSender == null) {
-				mOscRunnable = new ColorOscRunnable();
-				mOscSender = new Thread(mOscRunnable);
-				mOscSender.start();
+			if (mRedOscSender == null) {
+				mRedOscRunnable = new RedOscRunnable();
+				mRedOscSender = new Thread(mRedOscRunnable);
+				mRedOscSender.start();
+			}
+
+			if (mGreenOscSender == null) {
+				mGreenOscRunnable = new GreenOscRunnable();
+				mGreenOscSender = new Thread(mGreenOscRunnable);
+				mGreenOscSender.start();
+			}
+
+			if (mBlueOscSender == null) {
+				mBlueOscRunnable = new BlueOscRunnable();
+				mBlueOscSender = new Thread(mBlueOscRunnable);
+				mBlueOscSender.start();
 			}
 
 			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -730,6 +744,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
+/*
 					for (int j = 0; j < 3; j++) {
 						synchronized (mOscRunnable.mOscLock) {
 							if (!offPxls.get(i)[j]) {
@@ -752,6 +767,34 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 									default:
 								}
 							}
+						}
+					}
+*/
+
+					synchronized (mRedOscRunnable.mOscLock) {
+						if (!offPxls.get(i)[0]) {
+							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+							oscR.add(rval);
+							mRedOscRunnable.mMsg = oscR;
+							mRedOscRunnable.mOscLock.notify();
+						}
+					}
+
+					synchronized (mGreenOscRunnable.mOscLock) {
+						if (!offPxls.get(i)[1]) {
+							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+							oscG.add(gval);
+							mGreenOscRunnable.mMsg = oscG;
+							mGreenOscRunnable.mOscLock.notify();
+						}
+					}
+
+					synchronized (mBlueOscRunnable.mOscLock) {
+						if (!offPxls.get(i)[2]) {
+							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+							oscB.add(bval);
+							mBlueOscRunnable.mMsg = oscB;
+							mBlueOscRunnable.mOscLock.notify();
 						}
 					}
 /*
@@ -806,20 +849,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return bmp;
 		}
 
+/*
 		private void prepareAndSendOsc(OscMessage msg, float val) {
 			msg.add(val);
 			mOscRunnable.mMsg = msg;
 			mOscRunnable.mOscLock.notify();
 		}
+*/
 	}
 
 	// prevent memory leaks by declaring Runnable static
 	// see also https://stackoverflow.com/questions/29694222/is-this-runnable-safe-from-memory-leak
 	// or http://www.androiddesignpatterns.com/2013/04/activitys-threads-memory-leaks.html
-	private static class ColorOscRunnable implements Runnable {
+	private static class RedOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
-		private int countR = 0, countG = 0, countB = 0;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -839,12 +883,72 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-							if (mMsg.addrPattern().contains("red"))
-								mMsg.add(countR++);
-							else if (mMsg.addrPattern().contains("green"))
-								mMsg.add(countG++);
-							else if (mMsg.addrPattern().contains("blue"))
-								mMsg.add(countB++);
+							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+						}
+						mOscLock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private static class GreenOscRunnable implements Runnable {
+		private volatile OscMessage mMsg;
+		private final Object mOscLock = new Object();
+
+		/**
+		 * When an object implementing interface <code>Runnable</code> is used
+		 * to create a thread, starting the thread causes the object's
+		 * <code>run</code> method to be called in that separately executing
+		 * thread.
+		 * <p>
+		 * The general contract of the method <code>run</code> is that it may
+		 * take any action whatsoever.
+		 *
+		 * @see Thread#run()
+		 */
+		@Override
+		@SuppressWarnings("InfiniteLoopStatement")
+		public void run() {
+			while (true) {
+				synchronized (mOscLock) {
+					try {
+						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+						}
+						mOscLock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private static class BlueOscRunnable implements Runnable {
+		private volatile OscMessage mMsg;
+		private final Object mOscLock = new Object();
+
+		/**
+		 * When an object implementing interface <code>Runnable</code> is used
+		 * to create a thread, starting the thread causes the object's
+		 * <code>run</code> method to be called in that separately executing
+		 * thread.
+		 * <p>
+		 * The general contract of the method <code>run</code> is that it may
+		 * take any action whatsoever.
+		 *
+		 * @see Thread#run()
+		 */
+		@Override
+		@SuppressWarnings("InfiniteLoopStatement")
+		public void run() {
+			while (true) {
+				synchronized (mOscLock) {
+					try {
+						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
 							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
