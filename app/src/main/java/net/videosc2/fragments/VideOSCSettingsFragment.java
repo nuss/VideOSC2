@@ -513,7 +513,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									);
 									values.clear();
 									settings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
-									// TODO: update normalization in camera fragment immediately
+									app.setNormalized(isNormalized);
 								}
 							}
 						});

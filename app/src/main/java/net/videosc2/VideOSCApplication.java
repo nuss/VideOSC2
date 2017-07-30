@@ -18,6 +18,7 @@ public class VideOSCApplication extends Application {
 	private Enum mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
 	private boolean play = false; // send pixel values via OSC
+	private boolean normalized = false;
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -76,5 +77,13 @@ public class VideOSCApplication extends Application {
 
 	public void setPlay(boolean play) {
 		this.play = play;
+	}
+
+	public boolean getNormalized() {
+		return this.normalized;
+	}
+
+	public void setNormalized(boolean normalized) {
+		this.normalized = normalized;
 	}
 }

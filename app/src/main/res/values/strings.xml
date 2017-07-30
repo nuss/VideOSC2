@@ -53,7 +53,7 @@
 	<string name="cancel">@android:string/cancel</string>
 	<string name="save_settings">save settings</string>
 	<string name="horizontal_resolution">Horizontal resolution:</string>
-	<string name="vertical_resolution">Verticalresolution:</string>
+	<string name="vertical_resolution">Vertical resolution:</string>
 	<string name="fixed_frame_rate">Fixed framerate. Unchecking this option may improve color recoginition in dark environments yet result in a decreased frame rate.</string>
 	<string name="set_calculation_period">Set calculation period:</string>
 	<string name="normalize_output_text">Normalize output (0.0&#8211;1.0, does not apply to sensor values).</string>
