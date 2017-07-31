@@ -124,9 +124,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	                         Bundle savedInstanceState) {
 		mApp = (VideOSCApplication) getActivity().getApplication();
 		mOscP5 = mApp.mOscHelper.getOscP5();
-		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
+//		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
-		Log.d(TAG, "onCreateView: " + view.getClass());
 		// store the container for later re-use
 		mPreviewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
@@ -141,10 +140,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * Recommended "safe" way to open the camera.
 	 *
 	 * @param view the view on which the camera is going to be displayed to the user
-	 * @return a boolean, indicating whether opening the camera was successful
 	 */
-	public boolean safeCameraOpenInView(View view) {
-		boolean qOpened;
+	public void safeCameraOpenInView(View view) {
 		FrameLayout preview;
 		// cache current zoom
 		int zoom = mPreview != null ? mPreview.getCurrentZoom() : 0;
@@ -153,23 +150,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		if (mCamera != null) {
 			mCameraParams = mCamera.getParameters();
 			mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
-			qOpened = (mCamera != null);
 
-			if (qOpened) {
-				if (mPreview == null) {
-					mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
-					if (view.findViewById(R.id.camera_preview) != null) {
-						preview = (FrameLayout) view.findViewById(R.id.camera_preview);
-						preview.addView(mPreview);
-					} else Log.d(TAG, "FrameLayout is null");
-				} else {
-					mPreview.switchCamera(mCamera);
-					// set camera zoom to the zoom value of the old camera
-					mPreview.setZoom(zoom);
-				}
-				mPreview.pPreviewStarted = mPreview.startCameraPreview();
+			if (mPreview == null) {
+				mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
+				if (view.findViewById(R.id.camera_preview) != null) {
+					preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+					preview.addView(mPreview);
+					Log.d(TAG, "view found and set");
+				} else Log.d(TAG, "FrameLayout is null");
+			} else {
+				mPreview.switchCamera(mCamera);
+				// set camera zoom to the zoom value of the old camera
+				mPreview.setZoom(zoom);
+				Log.d(TAG, "switch camera");
 			}
-			return qOpened;
 		} else {
 			final Activity activity = getActivity();
 			VideOSCDialogHelper.showDialog(
@@ -186,7 +180,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}, null, null
 			);
 		}
-		return false;
 	}
 
 	/**
@@ -281,7 +274,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// Flash modes supported by this camera
 		private List<String> mSupportedFlashModes;
 
-		private boolean pPreviewStarted;
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
 
@@ -410,23 +402,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		/**
-		 * start the camera preview
-		 */
-		public boolean startCameraPreview() {
-			boolean started = false;
-			try {
-				pCamera.setPreviewDisplay(mHolder);
-				pCamera.startPreview();
-				Log.d(TAG, "pCamera: " + pCamera);
-				started = true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return started;
-		}
-
-		/**
 		 * Extract supported preview and flash modes from the camera.
 		 *
 		 * @param camera an instance of Camera
@@ -455,14 +430,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
-			Log.d(TAG, "surfaceCreated");
-			// reactivate the preview after app has been paused and resumed
-			if (!pPreviewStarted) pCamera.startPreview();
-			try {
-				pCamera.setPreviewDisplay(holder);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			Log.d(TAG, "surfaceCreated: " + pCamera);
+				try {
+					pCamera.setPreviewDisplay(mHolder);
+					pCamera.startPreview();
+					Log.d(TAG, "preview should be started");
+				} catch(IOException e){
+					e.printStackTrace();
+				}
 		}
 
 		/**
@@ -476,7 +451,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			// called. Seems to work...
 			if (pCamera != null) try {
 				pCamera.stopPreview();
-				pPreviewStarted = false;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -496,8 +470,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
+			// memorize current pixel size
 			setPixelSize();
-			Log.d(TAG, "size: " + getPixelSize());
 
 			// stop preview before making changes
 			try {
@@ -506,6 +480,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
 
 				pCamera.setParameters(parameters);
+				Log.d(TAG, "camera parameters set");
 				pCamera.setPreviewCallback(new Camera.PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
@@ -732,15 +707,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				if (mApp.getPlay()) {
 //					if (calcsPerPeriod == 1) {
-//						if (normalize) {
-//							rval = (float) rVal / 255;
-//							gval = (float) gVal / 255;
-//							bval = (float) bVal / 255;
-//						} else {
-					rval = rVal;
-					gval = gVal;
-					bval = bVal;
-//						}
+						if (mApp.getNormalized()) {
+							rval = (float) rVal / 255;
+							gval = (float) gVal / 255;
+							bval = (float) bVal / 255;
+						} else {
+							rval = rVal;
+							gval = gVal;
+							bval = bVal;
+						}
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
