@@ -223,7 +223,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		mToolsDrawerList = (ListView) findViewById(R.id.drawer);
 
-		Log.d(TAG, "add bitmaps to tooldrawer");
 		for (int i = 0; i < tools.length(); i++) {
 			mToolsList.add((BitmapDrawable) tools.getDrawable(i));
 		}

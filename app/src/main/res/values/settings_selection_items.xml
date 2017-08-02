@@ -4,6 +4,7 @@
 		<item>@string/selection_network_settings</item>
 		<item>@string/selection_resolution_settings</item>
 		<item>@string/selection_sensor_settings</item>
+		<item>@string/selection_debug_settings</item>
 		<item>@string/selection_about_videosc</item>
 	</array>
 </resources>

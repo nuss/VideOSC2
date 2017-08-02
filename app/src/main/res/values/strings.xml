@@ -38,6 +38,7 @@
 	<string name="selection_network_settings">Network Settings</string>
 	<string name="selection_resolution_settings">Resolution Settings</string>
 	<string name="selection_sensor_settings">Sensor Settings</string>
+	<string name="selection_debug_settings">Debug Settings (temporary)</string>
 	<string name="selection_about_videosc">About VideOSC</string>
 	<string name="send_osc_to_ip">Send OSC to IP address:</string>
 	<string name="default_remote_ip">192.168.1.105</string>
@@ -75,5 +76,8 @@
 	<string name="select_framerate_min_max">Select framerate (min/max fps):</string>
 	<string name="msg_on_camera_open_fail">The camera failed to open. Possibly you will have to restart the device.</string>
 	<string name="OK">OK</string>
+	<string name="hide_pixel_image_overlay">Hide pixel image overlay</string>
+	<string name="count_messages">Add number of calls to OSC sending and number of actually sent OSC messages as additional slots to OSC messages: When sending pixel values over OSC some packets may get dropped. Activating this option adds two additional numbers to each OSC message, the absolute number of calls and the number of actually sent messages. As red, green and blue values are sent in separate threads these numbers are counted within each thread</string>
+	<string name="debug_eplanation">The following settings will not get stored permanently. They will get reset when you restart the app.</string>
 
 </resources>

@@ -824,9 +824,15 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						break;
 					case 3:
+						// TODO: temporary debug settings
+						// - show original image, not overlayed by pixel image
+						// - add OSC sending counts resp. count of actually sent messages to OSC output
+						break;
+					case 4:
 						// about
 						webView.loadUrl("http://pustota.basislager.org/coding/videosc/");
 						VideOSCUIHelpers.addView(aboutView, bg);
+						break;
 					default:
 				}
 				settingsListView.setVisibility(View.INVISIBLE);
