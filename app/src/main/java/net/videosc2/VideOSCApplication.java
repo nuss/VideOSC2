@@ -17,8 +17,10 @@ public class VideOSCApplication extends Application {
 	private boolean isRGBPositive = true; // always init to true
 	private Enum mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
-	private boolean play = false; // send pixel values via OSC
-	private boolean normalized = false;
+	private boolean mPlay = false; // send pixel values via OSC
+	private boolean mNormalized = false;
+	private boolean mHidePixelImage = false;
+	private boolean mDebugPixelOsc = false;
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -72,18 +74,34 @@ public class VideOSCApplication extends Application {
 	}
 
 	public boolean getPlay() {
-		return this.play;
+		return this.mPlay;
 	}
 
 	public void setPlay(boolean play) {
-		this.play = play;
+		this.mPlay = play;
 	}
 
 	public boolean getNormalized() {
-		return this.normalized;
+		return this.mNormalized;
 	}
 
 	public void setNormalized(boolean normalized) {
-		this.normalized = normalized;
+		this.mNormalized = normalized;
+	}
+
+	public boolean getPixelImageHidden() {
+		return this.mHidePixelImage;
+	}
+
+	public void setPixelImageHidden(boolean hide) {
+		this.mHidePixelImage = hide;
+	}
+
+	public boolean getDebugPixelOsc() {
+		return this.mDebugPixelOsc;
+	}
+
+	public void setDebugPixelOsc(boolean debug) {
+		this.mDebugPixelOsc = debug;
 	}
 }

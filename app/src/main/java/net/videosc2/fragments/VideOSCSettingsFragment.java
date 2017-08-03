@@ -70,6 +70,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View resolutionSettingsView = inflater.inflate(R.layout.resolution_settings, bg, false);
 		// the sensor settings form
 		final View sensorSettingsView = inflater.inflate(R.layout.sensor_settings, bg, false);
+		// debug settings
+		final View debugSettingsView = inflater.inflate(R.layout.debug_settings, bg, false);
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
@@ -824,9 +826,25 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						break;
 					case 3:
-						// TODO: temporary debug settings
-						// - show original image, not overlayed by pixel image
-						// - add OSC sending counts resp. count of actually sent messages to OSC output
+						VideOSCUIHelpers.addView(debugSettingsView, bg);
+						final Switch hidePixelImageCB = (Switch) debugSettingsView.findViewById(R.id.hide_pixel_image);
+						final Switch debugPixelOscSendingCB = (Switch) debugSettingsView.findViewById(R.id.add_packet_drops);
+						hidePixelImageCB.setChecked(app.getPixelImageHidden());
+						debugPixelOscSendingCB.setChecked(app.getDebugPixelOsc());
+
+						hidePixelImageCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								app.setPixelImageHidden(isChecked);
+							}
+						});
+
+						debugPixelOscSendingCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								app.setDebugPixelOsc(isChecked);
+							}
+						});
 						break;
 					case 4:
 						// about

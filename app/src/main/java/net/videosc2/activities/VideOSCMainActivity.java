@@ -577,6 +577,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (ViewGroup) bg);
 				VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (ViewGroup) bg);
 				VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (ViewGroup) bg);
+				VideOSCUIHelpers.removeView(findViewById(R.id.debug_settings), (ViewGroup) bg);
 				VideOSCUIHelpers.removeView(findViewById(R.id.about), (ViewGroup) bg);
 				mApp.setSettingsLevel(1);
 				break;
@@ -607,10 +608,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public void onDestroy() {
 		// stop sending OSC (probably not necessary)
 		mApp.setPlay(false);
+		// reset debug settings
+		mApp.setPixelImageHidden(false);
+		mApp.setDebugPixelOsc(false);
 		// close db
 		mDbHelper.close();
 		super.onDestroy();
-		Log.d(TAG, "activity on destroy");
 	}
 
 	public Enum getColorModeToolsDrawer() {

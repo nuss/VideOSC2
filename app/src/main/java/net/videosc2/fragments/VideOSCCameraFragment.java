@@ -293,6 +293,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private volatile OscMessage oscR, oscG, oscB;
 
+		// debugging
+		private long mCountR = 0, mCountG = 0, mCountB = 0;
+
 		/**
 		 * @param context the context of the application
 		 * @param camera  an instance of Camera, to be used throughout CameraPreview
@@ -431,13 +434,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + pCamera);
-				try {
-					pCamera.setPreviewDisplay(mHolder);
-					pCamera.startPreview();
-					Log.d(TAG, "preview should be started");
-				} catch(IOException e){
-					e.printStackTrace();
-				}
+			try {
+				pCamera.setPreviewDisplay(mHolder);
+				pCamera.startPreview();
+				Log.d(TAG, "preview should be started");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		/**
@@ -659,63 +662,68 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// compose basic OSC message for slot
 
-				if (mApp.getColorMode().equals(RGBModes.RGB)) {
-					if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-						// mRed
+				if (!mApp.getPixelImageHidden()) {
+					if (mApp.getColorMode().equals(RGBModes.RGB)) {
+						if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+							// mRed
 //						alpha = pCamera.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
-					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-						// mGreen;
+							pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
+						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+							// mGreen;
 //						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255 / 3, rVal, 0, bVal);
-					} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
-						// mBlue;
+							pixels[i] = Color.argb(255 / 3, rVal, 0, bVal);
+						} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
+							// mBlue;
 //						alpha = cam.isStarted() ? 255 / 3 : 0;
-						pixels[i] = Color.argb(255 / 3, rVal, gVal, 0);
-					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-						// rg;
+							pixels[i] = Color.argb(255 / 3, rVal, gVal, 0);
+						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+							// rg;
 //						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255 / 3 * 2, 0, 0, bVal);
-					} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
-						// rb;
+							pixels[i] = Color.argb(255 / 3 * 2, 0, 0, bVal);
+						} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
+							// rb;
 //						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255 / 3 * 2, 0, gVal, 0);
-					} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
-						// bg;
+							pixels[i] = Color.argb(255 / 3 * 2, 0, gVal, 0);
+						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
+							// bg;
 //						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-						pixels[i] = Color.argb(255 / 3 * 2, rVal, 0, 0);
-					} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
-						// rgb
-						pixels[i] = Color.argb(0, 0, 0, 0);
+							pixels[i] = Color.argb(255 / 3 * 2, rVal, 0, 0);
+						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
+							// rgb
+							pixels[i] = Color.argb(0, 0, 0, 0);
+						}
+					} else if (mApp.getColorMode().equals(RGBModes.R)) {
+						if (offPxls.get(i)[0])
+							pixels[i] = Color.argb(255, rVal, 255, 255);
+						else
+							pixels[i] = Color.argb(255, rVal, 0, 0);
+					} else if (mApp.getColorMode().equals(RGBModes.G)) {
+						if (offPxls.get(i)[1])
+							pixels[i] = Color.argb(255, 255, gVal, 255);
+						else
+							pixels[i] = Color.argb(255, 0, gVal, 0);
+					} else if (mApp.getColorMode().equals(RGBModes.B)) {
+						if (offPxls.get(i)[2])
+							pixels[i] = Color.argb(255, 255, 255, bVal);
+						else
+							pixels[i] = Color.argb(255, 0, 0, bVal);
 					}
-				} else if (mApp.getColorMode().equals(RGBModes.R)) {
-					if (offPxls.get(i)[0])
-						pixels[i] = Color.argb(255, rVal, 255, 255);
-					else
-						pixels[i] = Color.argb(255, rVal, 0, 0);
-				} else if (mApp.getColorMode().equals(RGBModes.G)) {
-					if (offPxls.get(i)[1])
-						pixels[i] = Color.argb(255, 255, gVal, 255);
-					else
-						pixels[i] = Color.argb(255, 0, gVal, 0);
-				} else if (mApp.getColorMode().equals(RGBModes.B)) {
-					if (offPxls.get(i)[2])
-						pixels[i] = Color.argb(255, 255, 255, bVal);
-					else
-						pixels[i] = Color.argb(255, 0, 0, bVal);
+				} else {
+					// all pixels fully transparent
+					pixels[i] = Color.argb(0, 0, 0, 0);
 				}
 
 				if (mApp.getPlay()) {
 //					if (calcsPerPeriod == 1) {
-						if (mApp.getNormalized()) {
-							rval = (float) rVal / 255;
-							gval = (float) gVal / 255;
-							bval = (float) bVal / 255;
-						} else {
-							rval = rVal;
-							gval = gVal;
-							bval = bVal;
-						}
+					if (mApp.getNormalized()) {
+						rval = (float) rVal / 255;
+						gval = (float) gVal / 255;
+						bval = (float) bVal / 255;
+					} else {
+						rval = rVal;
+						gval = gVal;
+						bval = bVal;
+					}
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
@@ -750,6 +758,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[0]) {
 							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
 							oscR.add(rval);
+							if (mApp.getDebugPixelOsc())
+								oscR.add(++mCountR);
 							mRedOscRunnable.mMsg = oscR;
 							mRedOscRunnable.mOscLock.notify();
 						}
@@ -759,6 +769,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[1]) {
 							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
 							oscG.add(gval);
+							if (mApp.getDebugPixelOsc())
+								oscG.add(++mCountG);
 							mGreenOscRunnable.mMsg = oscG;
 							mGreenOscRunnable.mOscLock.notify();
 						}
@@ -768,6 +780,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[2]) {
 							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
 							oscB.add(bval);
+							if (mApp.getDebugPixelOsc())
+								oscB.add(++mCountB);
 							mBlueOscRunnable.mMsg = oscB;
 							mBlueOscRunnable.mOscLock.notify();
 						}
@@ -839,6 +853,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class RedOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
+		private long mCountSentR = 0;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -858,6 +873,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							if (mApp.getDebugPixelOsc())
+								mMsg.add(++mCountSentR);
 							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
@@ -872,6 +889,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class GreenOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
+		private long mCountSentG = 0;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -891,6 +909,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							if (mApp.getDebugPixelOsc())
+								mMsg.add(++mCountSentG);
 							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
@@ -905,6 +925,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class BlueOscRunnable implements Runnable {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
+		private long mCountSentB = 0;
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -924,6 +945,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
+							if (mApp.getDebugPixelOsc())
+								mMsg.add(++mCountSentB);
 							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
