@@ -608,6 +608,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public void onDestroy() {
 		// stop sending OSC (probably not necessary)
 		mApp.setPlay(false);
+		// reset inverted colors
+		mApp.setIsRGBPositive(true);
 		// reset debug settings
 		mApp.setPixelImageHidden(false);
 		mApp.setDebugPixelOsc(false);
