@@ -136,6 +136,16 @@
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"/>
 
+		<View style="@style/Divider"/>
+
+		<Switch
+			android:id="@+id/fix_exposure_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/fix_exposure_temporary"
+			android:paddingTop="20dp"
+			android:paddingBottom="20dp"/>
+
 	</LinearLayout>
 
 </LinearLayout>

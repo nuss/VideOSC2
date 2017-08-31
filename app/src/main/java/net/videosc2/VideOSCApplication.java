@@ -21,6 +21,7 @@ public class VideOSCApplication extends Application {
 	private boolean mNormalized = false;
 	private boolean mHidePixelImage = false;
 	private boolean mDebugPixelOsc = false;
+	private boolean mExposureIsFixed = false;
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -103,5 +104,13 @@ public class VideOSCApplication extends Application {
 
 	public void setDebugPixelOsc(boolean debug) {
 		this.mDebugPixelOsc = debug;
+	}
+
+	public boolean getExposureIsFixed() {
+		return this.mExposureIsFixed;
+	}
+
+	public void setExposureIsFixed(boolean fixed) {
+		this.mExposureIsFixed = fixed;
 	}
 }

@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.db.SettingsContract;
+import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
@@ -388,6 +390,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						final Switch rememberPixelStatesCB =
 								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
+						final Switch fixExposureCB =
+								(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
+						fixExposureCB.setChecked(app.getExposureIsFixed());
 
 //						selectFramerate.bringToFront();
 
@@ -463,7 +468,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									);
 									values.clear();
 									settings.get(0).setCalculationPeriod(Short.parseShort(calcPeriod, 10));
-									// TODO: update calculation period in camera fragment immediately
+									// FIXME: framerate doesn't always seem get set correctly
 								}
 							}
 						});
@@ -538,6 +543,16 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
 									// TODO: this setting must be picked up on app init
+								}
+							}
+						});
+						fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+							@Override
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if (!app.getExposureIsFixed()) {
+									VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
+									VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
+									app.setSettingsLevel(0);
 								}
 							}
 						});
