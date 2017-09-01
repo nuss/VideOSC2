@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/resolution_settings"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+	<LinearLayout
+		android:id="@+id/resolution"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:id="@+id/resolution_horizontal"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/horizontal_resolution"/>
+
+			<EditText
+				android:id="@+id/resolution_horizontal_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:digits="1234567890"
+				android:inputType="number"
+				android:nextFocusDown="@+id/resolution_vertical_field"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/resolution_vertical"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/vertical_resolution"/>
+
+			<EditText
+				android:id="@+id/resolution_vertical_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:digits="1234567890"
+				android:inputType="number"
+				android:nextFocusDown="@+id/calulation_period_field"/>
+		</LinearLayout>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/camera_output_params"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="horizontal">
+
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:baselineAligned="false"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/set_calculation_period"/>
+
+			<EditText
+				android:id="@+id/calulation_period_field"
+				style="@style/EditTextPadding"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:digits="123456789"
+				android:inputType="number"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/framerate_settings"
+			android:layout_width="0dp"
+			android:layout_weight="0.5"
+			android:layout_height="wrap_content"
+			android:baselineAligned="false"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/select_framerate_min_max"
+				android:labelFor="@+id/framerate_selection"/>
+
+			<Spinner
+				android:id="@+id/framerate_selection"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:popupBackground="#ee000000"
+				android:dropDownWidth="match_parent"/>
+
+		</LinearLayout>
+
+
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:baselineAligned="false"
+		android:orientation="vertical">
+
+		<Switch
+			android:id="@+id/normalize_output_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/normalize_output_text"
+			android:paddingTop="20dp"
+			android:paddingBottom="20dp"/>
+
+		<View style="@style/Divider"/>
+
+		<Switch
+			android:id="@+id/remember_activated_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/remember_activated_text"
+			android:paddingTop="20dp"
+			android:paddingBottom="20dp"/>
+
+	</LinearLayout>
+
+</LinearLayout>

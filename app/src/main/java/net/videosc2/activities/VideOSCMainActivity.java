@@ -574,11 +574,22 @@ public class VideOSCMainActivity extends AppCompatActivity
 				break;
 			case 2:
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
-				VideOSCUIHelpers.removeView(findViewById(R.id.network_settings), (ViewGroup) bg);
-				VideOSCUIHelpers.removeView(findViewById(R.id.resolution_settings), (ViewGroup) bg);
-				VideOSCUIHelpers.removeView(findViewById(R.id.sensor_settings), (ViewGroup) bg);
-				VideOSCUIHelpers.removeView(findViewById(R.id.debug_settings), (ViewGroup) bg);
-				VideOSCUIHelpers.removeView(findViewById(R.id.about), (ViewGroup) bg);
+				View networkSettingsDialog = findViewById(R.id.network_settings);
+				View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
+				View sensorSettingsDialog = findViewById(R.id.sensor_settings);
+				View debugSettingsDialog = findViewById(R.id.debug_settings);
+				View about = findViewById(R.id.about);
+				if (networkSettingsDialog != null)
+					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
+				if (resolutionSettingsDialog != null)
+					VideOSCUIHelpers.removeView(resolutionSettingsDialog, (ViewGroup) bg);
+				if (sensorSettingsDialog != null)
+					VideOSCUIHelpers.removeView(sensorSettingsDialog, (ViewGroup) bg);
+				if (debugSettingsDialog != null)
+					VideOSCUIHelpers.removeView(debugSettingsDialog, (ViewGroup) bg);
+				if (about != null)
+					VideOSCUIHelpers.removeView(about, (ViewGroup) bg);
+				bg.setVisibility(View.VISIBLE);
 				mApp.setSettingsLevel(1);
 				break;
 			default:

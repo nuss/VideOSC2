@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -60,6 +61,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		Log.d(TAG, "container: " + container);
+		final FragmentManager fragmentManager = getFragmentManager();
+		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+		final Camera.Parameters params = cameraView.mCamera.getParameters();
 		// the background scrollview - dark transparent, no content
 		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		// the view holding the main selection of settings
@@ -69,7 +73,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// the network settings form
 		final View networkSettingsView = inflater.inflate(R.layout.network_settings, bg, false);
 		// the resolution settings form
-		final View resolutionSettingsView = inflater.inflate(R.layout.resolution_settings, bg, false);
+		final View resolutionSettingsView;
 		// the sensor settings form
 		final View sensorSettingsView = inflater.inflate(R.layout.sensor_settings, bg, false);
 		// debug settings
@@ -77,13 +81,19 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
 		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
-//		final SQLiteDatabase db = VideOSCMainActivity.mDbHelper.getReadableDatabase();
-		final FragmentManager fragmentManager = getFragmentManager();
 
 		// get application methods and avoid reflection
 		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplicationContext();
 		// the database
 		final SQLiteDatabase db = app.getSettingsHelper().getReadableDatabase();
+
+		// allow setting the exposure lock only if auto exposure lock is supported
+		final boolean isAutoExposureLockSupported = cameraView.mCamera.getParameters().isAutoExposureLockSupported();
+		if (isAutoExposureLockSupported) {
+			resolutionSettingsView = inflater.inflate(R.layout.resolution_settings, bg, false);
+		} else {
+			resolutionSettingsView = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, bg, false);
+		}
 
 		// get the setting items for the main selection list and parse them into the layout
 		String[] items = getResources().getStringArray(R.array.settings_select_items);
@@ -94,6 +104,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// add the scroll view background to the container (camView)
 		container.addView(bg);
 		final View mCamView = container.findViewById(R.id.camera_preview);
+		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.fix_exposure_button, (FrameLayout) mCamView, false);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -103,8 +114,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 				final List<Address> addresses = new ArrayList<>();
 				final List<Settings> settings = new ArrayList<>();
 				final ContentValues values = new ContentValues();
-				final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-				final Camera.Parameters params = cameraView.mCamera.getParameters();
 
 				app.setSettingsLevel(2);
 
@@ -390,9 +399,34 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						final Switch rememberPixelStatesCB =
 								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
-						final Switch fixExposureCB =
-								(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
-						fixExposureCB.setChecked(app.getExposureIsFixed());
+						if (isAutoExposureLockSupported) {
+							final Switch fixExposureCB =
+									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
+							fixExposureCB.setChecked(app.getExposureIsFixed());
+							fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+								@Override
+								public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+									if (!app.getExposureIsFixed()) {
+										VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
+//										VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
+										bg.setVisibility(View.INVISIBLE);
+//										app.setSettingsLevel(0);
+										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
+										Button fixExposureButton = (Button) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
+										fixExposureButton.setOnClickListener(new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												Camera camera = cameraView.mCamera;
+												params.setAutoExposureLock(true);
+												camera.setParameters(params);
+												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
+
+											}
+										});
+									}
+								}
+							});
+						}
 
 //						selectFramerate.bringToFront();
 
@@ -543,16 +577,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
 									// TODO: this setting must be picked up on app init
-								}
-							}
-						});
-						fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-							@Override
-							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (!app.getExposureIsFixed()) {
-									VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
-									VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
-									app.setSettingsLevel(0);
 								}
 							}
 						});

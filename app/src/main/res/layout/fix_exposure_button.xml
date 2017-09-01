@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/fix_exposure_button_layout"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:animateLayoutChanges="true"
+              android:background="@color/colorDarkTransparentBackground"
+              android:descendantFocusability="blocksDescendants">
+
+	<Button
+		android:id="@+id/fix_exposure_button"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:padding="10dp"
+		android:text="@string/set_exposure_to_fixed"
+		style="?android:attr/borderlessButtonStyle"/>
+
+	<Button
+		android:id="@+id/fix_exposure_cancel"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:padding="10dp"
+		android:text="@string/cancel"
+		style="?android:attr/borderlessButtonStyle"/>
+
+</LinearLayout>
