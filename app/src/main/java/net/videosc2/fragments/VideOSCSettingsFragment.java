@@ -2,12 +2,15 @@ package net.videosc2.fragments;
 
 import android.app.FragmentManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -402,27 +406,59 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						if (isAutoExposureLockSupported) {
 							final Switch fixExposureCB =
 									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
+							Log.d(TAG, "Is exposure fixed: " + app.getExposureIsFixed());
 							fixExposureCB.setChecked(app.getExposureIsFixed());
 							fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 								@Override
 								public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+									// we're going beyond details level
+									app.setSettingsLevel(3);
+
+									Context context = getActivity().getApplicationContext();
+									final Camera camera = cameraView.mCamera;
+									final BitmapDrawable okActive = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.ok_button_a);
+									final BitmapDrawable ok = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.ok_button);
+									final BitmapDrawable cancelActive = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.cancel_button_a);
+									final BitmapDrawable cancel = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.cancel_button);
+
 									if (!app.getExposureIsFixed()) {
+										app.setLastViewed(resolutionSettingsView);
 										VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
 //										VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 										bg.setVisibility(View.INVISIBLE);
 //										app.setSettingsLevel(0);
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
-										Button fixExposureButton = (Button) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
+										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
-												Camera camera = cameraView.mCamera;
+												fixExposureButton.setImageDrawable(okActive);
 												params.setAutoExposureLock(true);
 												camera.setParameters(params);
+												app.setExposureIsFixed(true);
 												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
-
+												bg.setVisibility(View.VISIBLE);
+												VideOSCUIHelpers.addView(app.getLastViewed(), (ViewGroup) bg);
+												app.setSettingsLevel(2);
+												fixExposureButton.setImageDrawable(ok);
 											}
 										});
+										final ImageButton cancelExposureFixed = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_cancel);
+										cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
+											@Override
+											public void onClick(View v) {
+												cancelExposureFixed.setImageDrawable(cancelActive);
+												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
+												bg.setVisibility(View.VISIBLE);
+												VideOSCUIHelpers.addView(app.getLastViewed(), (ViewGroup) bg);
+												app.setSettingsLevel(2);
+												cancelExposureFixed.setImageDrawable(cancel);
+											}
+										}));
+									} else {
+										params.setAutoExposureLock(false);
+										camera.setParameters(params);
+										app.setExposureIsFixed(false);
 									}
 								}
 							});

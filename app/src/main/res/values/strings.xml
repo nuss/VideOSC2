@@ -81,5 +81,6 @@
 	<string name="debug_eplanation">The following settings will not get stored permanently. They will get reset with every restart of VideOSC.</string>
 	<string name="fix_exposure_temporary">Fix exposure temporarily (will be reset on restart)</string>
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
+	<string name="dont_fix_exposure">Don\'t fix exposure</string>
 
 </resources>

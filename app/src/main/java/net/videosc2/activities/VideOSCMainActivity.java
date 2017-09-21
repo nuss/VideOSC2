@@ -566,6 +566,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		switch (settingsLevel) {
 			case 1:
+				Log.d(TAG, "case: " + 1);
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mCamView);
@@ -573,6 +574,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(0);
 				break;
 			case 2:
+				Log.d(TAG, "case: " + 2);
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
 				View networkSettingsDialog = findViewById(R.id.network_settings);
 				View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
@@ -591,6 +593,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 					VideOSCUIHelpers.removeView(about, (ViewGroup) bg);
 				bg.setVisibility(View.VISIBLE);
 				mApp.setSettingsLevel(1);
+				break;
+			case 3:
+				Log.d(TAG, "case: " + 3);
+				View exposureSetters = findViewById(R.id.fix_exposure_button_layout);
+				if (exposureSetters != null)
+					VideOSCUIHelpers.removeView(exposureSetters, (FrameLayout) mCamView);
+				bg.setVisibility(View.VISIBLE);
+				VideOSCUIHelpers.addView(mApp.getLastViewed(), (ViewGroup) bg);
+				mApp.setSettingsLevel(2);
 				break;
 			default:
 				VideOSCDialogHelper.showQuitDialog(this);
