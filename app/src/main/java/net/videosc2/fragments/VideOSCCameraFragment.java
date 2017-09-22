@@ -318,21 +318,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mRedOscSender == null) {
 				mRedOscRunnable = new RedOscRunnable();
-				mRedOscRunnable.setOscHelper(mApp.mOscHelper);
+				RedOscRunnable.setOscHelper(mApp.mOscHelper);
 				mRedOscSender = new Thread(mRedOscRunnable);
 				mRedOscSender.start();
 			}
 
 			if (mGreenOscSender == null) {
 				mGreenOscRunnable = new GreenOscRunnable();
-				mGreenOscRunnable.setOscHelper(mApp.mOscHelper);
+				GreenOscRunnable.setOscHelper(mApp.mOscHelper);
 				mGreenOscSender = new Thread(mGreenOscRunnable);
 				mGreenOscSender.start();
 			}
 
 			if (mBlueOscSender == null) {
 				mBlueOscRunnable = new BlueOscRunnable();
-				mBlueOscRunnable.setOscHelper(mApp.mOscHelper);
+				BlueOscRunnable.setOscHelper(mApp.mOscHelper);
 				mBlueOscSender = new Thread(mBlueOscRunnable);
 				mBlueOscSender.start();
 			}
@@ -762,11 +762,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[0]) {
 							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
 							oscR.add(rval);
-							if (mApp.getDebugPixelOsc()) {
-								mRedOscRunnable.setDebugPixelOsc(true);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								RedOscRunnable.setDebugPixelOsc(true);
 								oscR.add(++mCountR);
 							} else {
-								mRedOscRunnable.setDebugPixelOsc(false);
+								RedOscRunnable.setDebugPixelOsc(false);
 							}
 							mRedOscRunnable.mMsg = oscR;
 							mRedOscRunnable.mOscLock.notify();
@@ -777,11 +777,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[1]) {
 							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
 							oscG.add(gval);
-							if (mApp.getDebugPixelOsc()) {
-								mGreenOscRunnable.setDebugPixelOsc(true);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								GreenOscRunnable.setDebugPixelOsc(true);
 								oscG.add(++mCountG);
 							} else {
-								mGreenOscRunnable.setDebugPixelOsc(false);
+								GreenOscRunnable.setDebugPixelOsc(false);
 							}
 							mGreenOscRunnable.mMsg = oscG;
 							mGreenOscRunnable.mOscLock.notify();
@@ -792,11 +792,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[2]) {
 							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
 							oscB.add(bval);
-							if (mApp.getDebugPixelOsc()) {
-								mBlueOscRunnable.setDebugPixelOsc(true);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								BlueOscRunnable.setDebugPixelOsc(true);
 								oscB.add(++mCountB);
 							} else {
-								mBlueOscRunnable.setDebugPixelOsc(false);
+								BlueOscRunnable.setDebugPixelOsc(false);
 							}
 							mBlueOscRunnable.mMsg = oscB;
 							mBlueOscRunnable.mOscLock.notify();
@@ -870,14 +870,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentR = 0;
-		private boolean mDebugPixel = false;
-		private VideOSCOscHandler mOscHelper;
+		private static boolean mDebugPixel = false;
+		private static VideOSCOscHandler mOscHelper;
 
-		private void setDebugPixelOsc(boolean debugPixel) {
+		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
 		}
 
-		private void setOscHelper(VideOSCOscHandler oscHelper) {
+		private static void setOscHelper(VideOSCOscHandler oscHelper) {
 			mOscHelper = oscHelper;
 		}
 
@@ -916,14 +916,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentG = 0;
-		private boolean mDebugPixel = false;
-		private VideOSCOscHandler mOscHelper;
+		private static boolean mDebugPixel = false;
+		private static VideOSCOscHandler mOscHelper;
 
-		private void setDebugPixelOsc(boolean debugPixel) {
+		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
 		}
 
-		private void setOscHelper(VideOSCOscHandler oscHelper) {
+		private static void setOscHelper(VideOSCOscHandler oscHelper) {
 			mOscHelper = oscHelper;
 		}
 
@@ -962,14 +962,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentB = 0;
-		private boolean mDebugPixel = false;
-		private VideOSCOscHandler mOscHelper;
+		private static boolean mDebugPixel = false;
+		private static VideOSCOscHandler mOscHelper;
 
-		private void setDebugPixelOsc(boolean debugPixel) {
+		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
 		}
 
-		private void setOscHelper(VideOSCOscHandler oscHelper) {
+		private static void setOscHelper(VideOSCOscHandler oscHelper) {
 			mOscHelper = oscHelper;
 		}
 

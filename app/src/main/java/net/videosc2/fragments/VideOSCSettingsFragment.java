@@ -912,7 +912,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						final Switch hidePixelImageCB = (Switch) debugSettingsView.findViewById(R.id.hide_pixel_image);
 						final Switch debugPixelOscSendingCB = (Switch) debugSettingsView.findViewById(R.id.add_packet_drops);
 						hidePixelImageCB.setChecked(app.getPixelImageHidden());
-						debugPixelOscSendingCB.setChecked(app.getDebugPixelOsc());
+						debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
 						hidePixelImageCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
@@ -924,7 +924,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						debugPixelOscSendingCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								app.setDebugPixelOsc(isChecked);
+								VideOSCApplication.setDebugPixelOsc(isChecked);
 							}
 						});
 						break;

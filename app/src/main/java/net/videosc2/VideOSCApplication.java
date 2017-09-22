@@ -22,7 +22,7 @@ public class VideOSCApplication extends Application {
 	private boolean mPlay = false; // send pixel values via OSC
 	private boolean mNormalized = false;
 	private boolean mHidePixelImage = false;
-	private boolean mDebugPixelOsc = false;
+	private static boolean mDebugPixelOsc = false;
 	private boolean mExposureIsFixed = false;
 	private View mLastViewed;
 	private boolean mExposureSettingHasBeenCancelled = false;
@@ -103,12 +103,12 @@ public class VideOSCApplication extends Application {
 		this.mHidePixelImage = hide;
 	}
 
-	public boolean getDebugPixelOsc() {
-		return this.mDebugPixelOsc;
+	public static boolean getDebugPixelOsc() {
+		return mDebugPixelOsc;
 	}
 
-	public void setDebugPixelOsc(boolean debug) {
-		this.mDebugPixelOsc = debug;
+	public static void setDebugPixelOsc(boolean debug) {
+		mDebugPixelOsc = debug;
 	}
 
 	public boolean getExposureIsFixed() {
