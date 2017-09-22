@@ -563,6 +563,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public void onBackPressed() {
 		View bg = findViewById(R.id.settings_background);
 		short settingsLevel = mApp.getSettingsLevel();
+		View networkSettingsDialog = findViewById(R.id.network_settings);
+		View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
+		View sensorSettingsDialog = findViewById(R.id.sensor_settings);
+		View debugSettingsDialog = findViewById(R.id.debug_settings);
+		View about = findViewById(R.id.about);
 
 		switch (settingsLevel) {
 			case 1:
@@ -576,11 +581,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 			case 2:
 				Log.d(TAG, "case: " + 2);
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
-				View networkSettingsDialog = findViewById(R.id.network_settings);
-				View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
-				View sensorSettingsDialog = findViewById(R.id.sensor_settings);
-				View debugSettingsDialog = findViewById(R.id.debug_settings);
-				View about = findViewById(R.id.about);
 				if (networkSettingsDialog != null)
 					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
 				if (resolutionSettingsDialog != null)
@@ -600,7 +600,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				if (exposureSetters != null)
 					VideOSCUIHelpers.removeView(exposureSetters, (FrameLayout) mCamView);
 				bg.setVisibility(View.VISIBLE);
-				VideOSCUIHelpers.addView(mApp.getLastViewed(), (ViewGroup) bg);
+				resolutionSettingsDialog.setVisibility(View.VISIBLE);
+				mApp.setExposureIsFixed(false);
 				mApp.setSettingsLevel(2);
 				break;
 			default:
@@ -634,7 +635,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mApp.setIsRGBPositive(true);
 		// reset debug settings
 		mApp.setPixelImageHidden(false);
-		mApp.setDebugPixelOsc(false);
+		VideOSCApplication.setDebugPixelOsc(false);
 		mApp.setHasExposureSettingBeenCancelled(false);
 		mApp.setExposureIsFixed(false);
 		// close db

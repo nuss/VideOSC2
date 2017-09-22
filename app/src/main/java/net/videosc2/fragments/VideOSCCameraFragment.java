@@ -731,32 +731,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
-/*
-					for (int j = 0; j < 3; j++) {
-						synchronized (mOscRunnable.mOscLock) {
-							if (!offPxls.get(i)[j]) {
-								switch (j) {
-									case 0:
-										oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-										oscR.add(mCountR++);
-										prepareAndSendOsc(oscR, rval);
-										break;
-									case 1:
-										oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-										oscG.add(mCountG++);
-										prepareAndSendOsc(oscG, gval);
-										break;
-									case 2:
-										oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-										oscB.add(mCountB++);
-										prepareAndSendOsc(oscB, bval);
-										break;
-									default:
-								}
-							}
-						}
-					}
-*/
 
 					synchronized (mRedOscRunnable.mOscLock) {
 						if (!offPxls.get(i)[0]) {

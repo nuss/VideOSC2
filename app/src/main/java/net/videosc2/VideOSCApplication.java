@@ -24,7 +24,6 @@ public class VideOSCApplication extends Application {
 	private boolean mHidePixelImage = false;
 	private static boolean mDebugPixelOsc = false;
 	private boolean mExposureIsFixed = false;
-	private View mLastViewed;
 	private boolean mExposureSettingHasBeenCancelled = false;
 	public VideOSCOscHandler mOscHelper;
 
@@ -117,14 +116,6 @@ public class VideOSCApplication extends Application {
 
 	public void setExposureIsFixed(boolean fixed) {
 		this.mExposureIsFixed = fixed;
-	}
-
-	public View getLastViewed() {
-		return mLastViewed;
-	}
-
-	public void setLastViewed(View view) {
-		mLastViewed = view;
 	}
 
 	public boolean getHasExposureSettingBeenCancelled() {
