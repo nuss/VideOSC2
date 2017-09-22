@@ -52,6 +52,7 @@ import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCDialogHelper;
+import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private String mRed, mGreen, mBlue;
 
-	private static VideOSCApplication mApp;
+	private VideOSCApplication mApp;
 	private static OscP5 mOscP5;
 
 
@@ -317,18 +318,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mRedOscSender == null) {
 				mRedOscRunnable = new RedOscRunnable();
+				mRedOscRunnable.setOscHelper(mApp.mOscHelper);
 				mRedOscSender = new Thread(mRedOscRunnable);
 				mRedOscSender.start();
 			}
 
 			if (mGreenOscSender == null) {
 				mGreenOscRunnable = new GreenOscRunnable();
+				mGreenOscRunnable.setOscHelper(mApp.mOscHelper);
 				mGreenOscSender = new Thread(mGreenOscRunnable);
 				mGreenOscSender.start();
 			}
 
 			if (mBlueOscSender == null) {
 				mBlueOscRunnable = new BlueOscRunnable();
+				mBlueOscRunnable.setOscHelper(mApp.mOscHelper);
 				mBlueOscSender = new Thread(mBlueOscRunnable);
 				mBlueOscSender.start();
 			}
@@ -758,8 +762,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[0]) {
 							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
 							oscR.add(rval);
-							if (mApp.getDebugPixelOsc())
+							if (mApp.getDebugPixelOsc()) {
+								mRedOscRunnable.setDebugPixelOsc(true);
 								oscR.add(++mCountR);
+							} else {
+								mRedOscRunnable.setDebugPixelOsc(false);
+							}
 							mRedOscRunnable.mMsg = oscR;
 							mRedOscRunnable.mOscLock.notify();
 						}
@@ -769,8 +777,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[1]) {
 							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
 							oscG.add(gval);
-							if (mApp.getDebugPixelOsc())
+							if (mApp.getDebugPixelOsc()) {
+								mGreenOscRunnable.setDebugPixelOsc(true);
 								oscG.add(++mCountG);
+							} else {
+								mGreenOscRunnable.setDebugPixelOsc(false);
+							}
 							mGreenOscRunnable.mMsg = oscG;
 							mGreenOscRunnable.mOscLock.notify();
 						}
@@ -780,8 +792,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						if (!offPxls.get(i)[2]) {
 							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
 							oscB.add(bval);
-							if (mApp.getDebugPixelOsc())
+							if (mApp.getDebugPixelOsc()) {
+								mBlueOscRunnable.setDebugPixelOsc(true);
 								oscB.add(++mCountB);
+							} else {
+								mBlueOscRunnable.setDebugPixelOsc(false);
+							}
 							mBlueOscRunnable.mMsg = oscB;
 							mBlueOscRunnable.mOscLock.notify();
 						}
@@ -854,6 +870,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentR = 0;
+		private boolean mDebugPixel = false;
+		private VideOSCOscHandler mOscHelper;
+
+		private void setDebugPixelOsc(boolean debugPixel) {
+			mDebugPixel = debugPixel;
+		}
+
+		private void setOscHelper(VideOSCOscHandler oscHelper) {
+			mOscHelper = oscHelper;
+		}
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -873,9 +899,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-							if (mApp.getDebugPixelOsc())
+							if (mDebugPixel)
 								mMsg.add(++mCountSentR);
-							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+							mOscP5.send(mMsg, mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
 					} catch (InterruptedException e) {
@@ -890,6 +916,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentG = 0;
+		private boolean mDebugPixel = false;
+		private VideOSCOscHandler mOscHelper;
+
+		private void setDebugPixelOsc(boolean debugPixel) {
+			mDebugPixel = debugPixel;
+		}
+
+		private void setOscHelper(VideOSCOscHandler oscHelper) {
+			mOscHelper = oscHelper;
+		}
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -909,9 +945,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-							if (mApp.getDebugPixelOsc())
+							if (mDebugPixel)
 								mMsg.add(++mCountSentG);
-							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+							mOscP5.send(mMsg, mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
 					} catch (InterruptedException e) {
@@ -926,6 +962,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private volatile OscMessage mMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentB = 0;
+		private boolean mDebugPixel = false;
+		private VideOSCOscHandler mOscHelper;
+
+		private void setDebugPixelOsc(boolean debugPixel) {
+			mDebugPixel = debugPixel;
+		}
+
+		private void setOscHelper(VideOSCOscHandler oscHelper) {
+			mOscHelper = oscHelper;
+		}
 
 		/**
 		 * When an object implementing interface <code>Runnable</code> is used
@@ -945,9 +991,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mMsg != null && mMsg.addrPattern().length() > 0 && mMsg.arguments().length > 0) {
-							if (mApp.getDebugPixelOsc())
+							if (mDebugPixel)
 								mMsg.add(++mCountSentB);
-							mOscP5.send(mMsg, mApp.mOscHelper.getBroadcastAddr());
+							mOscP5.send(mMsg, mOscHelper.getBroadcastAddr());
 						}
 						mOscLock.wait();
 					} catch (InterruptedException e) {

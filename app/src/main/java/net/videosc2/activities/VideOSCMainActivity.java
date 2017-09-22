@@ -635,6 +635,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 		// reset debug settings
 		mApp.setPixelImageHidden(false);
 		mApp.setDebugPixelOsc(false);
+		mApp.setHasExposureSettingBeenCancelled(false);
+		mApp.setExposureIsFixed(false);
 		// close db
 		mDbHelper.close();
 		super.onDestroy();

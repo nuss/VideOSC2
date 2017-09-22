@@ -404,15 +404,15 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 						if (isAutoExposureLockSupported) {
+							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
 							final Switch fixExposureCB =
 									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
-							Log.d(TAG, "Is exposure fixed: " + app.getExposureIsFixed());
 							fixExposureCB.setChecked(app.getExposureIsFixed());
 							fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 								@Override
 								public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 									// we're going beyond details level
-									app.setSettingsLevel(3);
+									Log.d(TAG, "exposure is fixed? " + app.getExposureIsFixed());
 
 									Context context = getActivity().getApplicationContext();
 									final Camera camera = cameraView.mCamera;
@@ -421,12 +421,12 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									final BitmapDrawable cancelActive = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.cancel_button_a);
 									final BitmapDrawable cancel = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.cancel_button);
 
-									if (!app.getExposureIsFixed()) {
+									if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled()) {
+										Log.d(TAG, "exposure is not fixed");
 										app.setLastViewed(resolutionSettingsView);
 										VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
-//										VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 										bg.setVisibility(View.INVISIBLE);
-//										app.setSettingsLevel(0);
+										app.setSettingsLevel(3);
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
 										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
@@ -453,13 +453,20 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												VideOSCUIHelpers.addView(app.getLastViewed(), (ViewGroup) bg);
 												app.setSettingsLevel(2);
 												cancelExposureFixed.setImageDrawable(cancel);
+												// setting exposure is only possible if exposure
+												// isn't already fixed. As a consequence cancelling
+												// setting exposure can only result in *not* fixing
+												// exposure
+												app.setHasExposureSettingBeenCancelled(true);
+												fixExposureCB.setChecked(false);
 											}
 										}));
 									} else {
+										Log.d(TAG, "exposure is fixed");
 										params.setAutoExposureLock(false);
 										camera.setParameters(params);
 										app.setExposureIsFixed(false);
-									}
+										app.setHasExposureSettingBeenCancelled(false);									}
 								}
 							});
 						}

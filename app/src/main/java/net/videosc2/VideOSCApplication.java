@@ -1,6 +1,7 @@
 package net.videosc2;
 
 import android.app.Application;
+import android.content.Context;
 import android.view.View;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -24,6 +25,7 @@ public class VideOSCApplication extends Application {
 	private boolean mDebugPixelOsc = false;
 	private boolean mExposureIsFixed = false;
 	private View mLastViewed;
+	private boolean mExposureSettingHasBeenCancelled = false;
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -31,6 +33,7 @@ public class VideOSCApplication extends Application {
 	// 0: no dialog, normal mode
 	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'debug settings', 'about'
 	// 2: editor setting details
+	// 3: beyond details - e.g. setting exposure lock
 	private short settingsLevel = 0;
 
 	@Override
@@ -122,5 +125,13 @@ public class VideOSCApplication extends Application {
 
 	public void setLastViewed(View view) {
 		mLastViewed = view;
+	}
+
+	public boolean getHasExposureSettingBeenCancelled() {
+		return mExposureSettingHasBeenCancelled;
+	}
+
+	public void setHasExposureSettingBeenCancelled(boolean cancel) {
+		mExposureSettingHasBeenCancelled = cancel;
 	}
 }
