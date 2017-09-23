@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
@@ -414,15 +416,20 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									// we're going beyond details level
 									Log.d(TAG, "exposure is fixed? " + app.getExposureIsFixed());
 
-									Context context = getActivity().getApplicationContext();
 									final Camera camera = cameraView.mCamera;
 
-									if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled()) {
+									if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
 										Log.d(TAG, "exposure is not fixed");
-//										VideOSCUIHelpers.removeView(resolutionSettingsView, (ViewGroup) bg);
+
 										resolutionSettingsView.setVisibility(View.INVISIBLE);
 										bg.setVisibility(View.INVISIBLE);
 										app.setSettingsLevel(3);
+
+										Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
+										toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+//										toast.setView(mCamView);
+										toast.show();
+
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
 										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
@@ -432,7 +439,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												camera.setParameters(params);
 												app.setExposureIsFixed(true);
 												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
-												bg.setVisibility(View.VISIBLE);
+												bg.setVisibility(View.VISIBLE);new Toast(getActivity());
 												resolutionSettingsView.setVisibility(View.VISIBLE);
 												app.setSettingsLevel(2);
 											}
@@ -462,7 +469,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								}
 							});
 						}
-						
+
 						resHField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 							@Override
 							public void onFocusChange(View v, boolean hasFocus) {

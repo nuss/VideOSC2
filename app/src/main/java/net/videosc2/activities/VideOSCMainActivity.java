@@ -54,6 +54,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
@@ -597,6 +598,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 			case 3:
 				Log.d(TAG, "case: " + 3);
 				View exposureSetters = findViewById(R.id.fix_exposure_button_layout);
+				Switch exposureSwitch = (Switch) findViewById(R.id.fix_exposure_checkbox);
+				// temporarily disable checked-change listener
+				mApp.setBackPressed(true);
+				exposureSwitch.setChecked(mApp.getExposureIsFixed());
+				mApp.setBackPressed(false);
 				if (exposureSetters != null)
 					VideOSCUIHelpers.removeView(exposureSetters, (FrameLayout) mCamView);
 				bg.setVisibility(View.VISIBLE);

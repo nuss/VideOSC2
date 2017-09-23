@@ -85,7 +85,7 @@ public class VideOSCUIHelpers {
 	 * Use the return value to set a status variable
 	 *
 	 * @param view a View
-	 * @param parent
+	 * @param parent a FrameLayout
 	 * @return false
 	 */
 	public static boolean removeView(View view, FrameLayout parent) {

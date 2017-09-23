@@ -82,5 +82,6 @@
 	<string name="fix_exposure_temporary">Fix exposure temporarily (will be reset on restart)</string>
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
 	<string name="dont_fix_exposure">Don\'t fix exposure</string>
+	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit ok.</string>
 
 </resources>

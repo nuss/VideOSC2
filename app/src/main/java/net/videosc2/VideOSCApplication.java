@@ -25,6 +25,7 @@ public class VideOSCApplication extends Application {
 	private static boolean mDebugPixelOsc = false;
 	private boolean mExposureIsFixed = false;
 	private boolean mExposureSettingHasBeenCancelled = false;
+	private boolean mBackPressed;
 	public VideOSCOscHandler mOscHelper;
 
 	// setting dialogs
@@ -124,5 +125,13 @@ public class VideOSCApplication extends Application {
 
 	public void setHasExposureSettingBeenCancelled(boolean cancel) {
 		mExposureSettingHasBeenCancelled = cancel;
+	}
+
+	public boolean getBackPressed() {
+		return mBackPressed;
+	}
+
+	public void setBackPressed(boolean backPressed) {
+		mBackPressed = backPressed;
 	}
 }
