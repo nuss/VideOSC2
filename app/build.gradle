@@ -12,7 +12,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
-
     }
     buildTypes {
         release {
@@ -27,6 +26,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+//    androidTestCompile 'com.android.support.test:runner:1.0.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile "com.android.support:support-v13:25.3.1"
     testCompile 'junit:junit:4.12'
@@ -40,4 +40,5 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'org.robolectric:robolectric:3.4.2'
 }
