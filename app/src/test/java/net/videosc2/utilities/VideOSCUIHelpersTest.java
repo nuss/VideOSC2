@@ -1,27 +1,16 @@
 package net.videosc2.utilities;
 
 import android.content.Context;
-import android.hardware.Camera;
-import android.os.HardwarePropertiesManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -34,19 +23,9 @@ public class VideOSCUIHelpersTest {
 
 	private final static String TAG = "VideOSCUIHelpersTest";
 
-//	@Rule
-//	public MockitoRule rule = MockitoJUnit.rule();
-//
-//	@Mock
-//	Context mMockContext;
-//
-//	@Mock
-//	View view = new View(mMockContext);
-//
-//	@Mock
-//	FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-
 	private View view;
+	private FrameLayout frameLayout;
+	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
 
 	@Before
@@ -56,17 +35,21 @@ public class VideOSCUIHelpersTest {
 		int width = ViewGroup.MarginLayoutParams.MATCH_PARENT;
 		params = new ViewGroup.MarginLayoutParams(width, height);
 		view.setLayoutParams(params);
+		frameLayout = new FrameLayout(RuntimeEnvironment.application);
+		viewGroup = new TestViewGroup(RuntimeEnvironment.application);
 	}
 
+/*
 	@Test
 	public void hasTorch() throws Exception {
-		Camera camera = Camera.open();
-		Camera.Parameters camParams = camera.getParameters();
-		camera.release();
-		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
-		assertNotNull("camParams.getFlashMode() should not be null, actual: " + camParams.getFlashMode(), camParams.getFlashMode());
-//		assertTrue(VideOSCUIHelpers.hasTorch());
+//		Camera camera = Camera.open();
+//		Camera.Parameters camParams = camera.getParameters();
+//		camera.release();
+//		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
+//		assertNotNull("camParams.getFlashMode() should not be null, actual: " + camParams.getFlashMode(), camParams.getFlashMode());
+		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
 	}
+*/
 
 	@Test
 	public void testView() throws Exception {
@@ -85,41 +68,60 @@ public class VideOSCUIHelpersTest {
 
 	@Test
 	public void addView() throws Exception {
-
+		VideOSCUIHelpers.addView(view, frameLayout);
+		assertEquals("FrameLayout frameLayout should have 1 child view, actual: " + frameLayout.getChildCount(), 1, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void removeView() throws Exception {
-
+		VideOSCUIHelpers.removeView(view, frameLayout);
+		assertEquals("FrameLayout frameLayout should have no children, actual: " + frameLayout.getChildCount(), 0, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void addView1() throws Exception {
-
+		VideOSCUIHelpers.addView(view, (ViewGroup) viewGroup);
+		assertEquals("ViewGroup viewGroup should have 1 child, actual: " + ((ViewGroup) viewGroup).getChildCount(), 1, ((ViewGroup) viewGroup).getChildCount());
 	}
 
 	@Test
 	public void removeView1() throws Exception {
-
+		VideOSCUIHelpers.removeView(view, (ViewGroup) viewGroup);
+		assertEquals("ViewGroup viewGroup should have no children, actual: " + ((ViewGroup) viewGroup).getChildCount(), 0, ((ViewGroup) viewGroup).getChildCount());
 	}
 
 	@Test
 	public void setTransitionAnimation() throws Exception {
-
+		VideOSCUIHelpers.setTransitionAnimation((ViewGroup) viewGroup);
+		assertNotNull(((ViewGroup) viewGroup).getLayoutTransition());
 	}
 
 	@Test
 	public void resetSystemUIState() throws Exception {
-
+		VideOSCUIHelpers.resetSystemUIState(view);
+		assertEquals("view.getSystemUiVisibility() should be : " + View.SYSTEM_UI_FLAG_HIDE_NAVIGATION, View.SYSTEM_UI_FLAG_HIDE_NAVIGATION, view.getSystemUiVisibility());
 	}
 
 	@Test
 	public void hasFrontsideCamera() throws Exception {
-
+		assertFalse("VideVideOSCUIHelpers.hasFrontsideCamera() should return false", VideOSCUIHelpers.hasFrontsideCamera());
 	}
 
 	@Test
 	public void setFormSystemUIState() throws Exception {
+		VideOSCUIHelpers.setFormSystemUIState(view);
+		assertEquals("VideOSCHelpers.setFormSystemUIState() should set system UI visibility to View.SYSTEM_UI_FLAG_FULLSCREEN, actual: " + view.getSystemUiVisibility(), View.SYSTEM_UI_FLAG_FULLSCREEN, view.getSystemUiVisibility());
+	}
 
+	private class TestViewGroup extends ViewGroup {
+
+		public TestViewGroup(Context context) {
+			super(context);
+		}
+
+		@Override
+		protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
+		}
 	}
 }
