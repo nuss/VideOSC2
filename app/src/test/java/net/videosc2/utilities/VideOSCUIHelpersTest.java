@@ -14,6 +14,7 @@ import org.robolectric.RuntimeEnvironment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by stefan on 25.06.17, package net.videosc2.utilities, project VideOSC22.
@@ -68,25 +69,25 @@ public class VideOSCUIHelpersTest {
 
 	@Test
 	public void addView() throws Exception {
-		VideOSCUIHelpers.addView(view, frameLayout);
+		assertTrue(VideOSCUIHelpers.addView(view, frameLayout));
 		assertEquals("FrameLayout frameLayout should have 1 child view, actual: " + frameLayout.getChildCount(), 1, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void removeView() throws Exception {
-		VideOSCUIHelpers.removeView(view, frameLayout);
+		assertFalse(VideOSCUIHelpers.removeView(view, frameLayout));
 		assertEquals("FrameLayout frameLayout should have no children, actual: " + frameLayout.getChildCount(), 0, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void addView1() throws Exception {
-		VideOSCUIHelpers.addView(view, (ViewGroup) viewGroup);
+		assertTrue(VideOSCUIHelpers.addView(view, (ViewGroup) viewGroup));
 		assertEquals("ViewGroup viewGroup should have 1 child, actual: " + ((ViewGroup) viewGroup).getChildCount(), 1, ((ViewGroup) viewGroup).getChildCount());
 	}
 
 	@Test
 	public void removeView1() throws Exception {
-		VideOSCUIHelpers.removeView(view, (ViewGroup) viewGroup);
+		assertFalse(VideOSCUIHelpers.removeView(view, (ViewGroup) viewGroup));
 		assertEquals("ViewGroup viewGroup should have no children, actual: " + ((ViewGroup) viewGroup).getChildCount(), 0, ((ViewGroup) viewGroup).getChildCount());
 	}
 
