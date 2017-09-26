@@ -69,32 +69,32 @@ public class VideOSCUIHelpersTest {
 
 	@Test
 	public void addView() throws Exception {
-		assertTrue(VideOSCUIHelpers.addView(view, frameLayout));
+		assertTrue("VideOSCUIHelpers.addView should return true", VideOSCUIHelpers.addView(view, frameLayout));
 		assertEquals("FrameLayout frameLayout should have 1 child view, actual: " + frameLayout.getChildCount(), 1, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void removeView() throws Exception {
-		assertFalse(VideOSCUIHelpers.removeView(view, frameLayout));
+		assertFalse("VideOSCUIHelpers.removeView should return false", VideOSCUIHelpers.removeView(view, frameLayout));
 		assertEquals("FrameLayout frameLayout should have no children, actual: " + frameLayout.getChildCount(), 0, frameLayout.getChildCount());
 	}
 
 	@Test
 	public void addView1() throws Exception {
-		assertTrue(VideOSCUIHelpers.addView(view, (ViewGroup) viewGroup));
+		assertTrue("VideOSCUIHelpers.addView should return true", VideOSCUIHelpers.addView(view, (ViewGroup) viewGroup));
 		assertEquals("ViewGroup viewGroup should have 1 child, actual: " + ((ViewGroup) viewGroup).getChildCount(), 1, ((ViewGroup) viewGroup).getChildCount());
 	}
 
 	@Test
 	public void removeView1() throws Exception {
-		assertFalse(VideOSCUIHelpers.removeView(view, (ViewGroup) viewGroup));
+		assertFalse("VideOSCUIHelpers.removeView should return false", VideOSCUIHelpers.removeView(view, (ViewGroup) viewGroup));
 		assertEquals("ViewGroup viewGroup should have no children, actual: " + ((ViewGroup) viewGroup).getChildCount(), 0, ((ViewGroup) viewGroup).getChildCount());
 	}
 
 	@Test
 	public void setTransitionAnimation() throws Exception {
 		VideOSCUIHelpers.setTransitionAnimation((ViewGroup) viewGroup);
-		assertNotNull(((ViewGroup) viewGroup).getLayoutTransition());
+		assertNotNull("VideOSCUIHelpers.setTransitionAnimation should add a LayoutTransition to the given ViewGroup", ((ViewGroup) viewGroup).getLayoutTransition());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class VideOSCUIHelpersTest {
 	@Test
 	public void setFormSystemUIState() throws Exception {
 		VideOSCUIHelpers.setFormSystemUIState(view);
-		assertEquals("VideOSCHelpers.setFormSystemUIState() should set system UI visibility to View.SYSTEM_UI_FLAG_FULLSCREEN, actual: " + view.getSystemUiVisibility(), View.SYSTEM_UI_FLAG_FULLSCREEN, view.getSystemUiVisibility());
+		assertEquals("VideOSCUIHelpers.setFormSystemUIState() should set system UI visibility to View.SYSTEM_UI_FLAG_FULLSCREEN, actual: " + view.getSystemUiVisibility(), View.SYSTEM_UI_FLAG_FULLSCREEN, view.getSystemUiVisibility());
 	}
 
 	private class TestViewGroup extends ViewGroup {
