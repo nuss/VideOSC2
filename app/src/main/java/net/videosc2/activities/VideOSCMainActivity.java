@@ -214,8 +214,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 
-		// does the device have an inbuilt flash light?
-		int drawerIconsIds = hasTorch ? R.array.drawer_icons : R.array.drawer_icons_no_torch;
+		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
+		// frontside camer but no flashlight?...
+		int drawerIconsIds = hasTorch ?
+				VideOSCUIHelpers.hasFrontsideCamera() ? R.array.drawer_icons : R.array.drawer_icons_no_frontside_cam :
+				VideOSCUIHelpers.hasFrontsideCamera() ? R.array.drawer_icons_no_torch : R.array.drawer_icons_no_torch_no_frontside_cam;
 
 		TypedArray tools = getResources().obtainTypedArray(drawerIconsIds);
 //		Log.d(TAG, "tools: " + tools.getClass());
@@ -276,13 +279,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (!mApp.getPlay()) {
-						Log.d(TAG, "play is false");
+//						Log.d(TAG, "play is false");
 						mApp.setPlay(true);
 						mToolsDrawerListState.put(START_STOP, R.drawable.stop);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.stop);
 						oscIndicatorView.setImageResource(R.drawable.osc_playing);
 					} else {
-						Log.d(TAG, "play is true");
+//						Log.d(TAG, "play is true");
 						mApp.setPlay(false);
 						mToolsDrawerListState.put(START_STOP, R.drawable.start);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
@@ -295,7 +298,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					cameraParameters = camera.getParameters();
 					if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
 						String flashMode = cameraParameters.getFlashMode();
-						Log.d(TAG, "flash mode: " + flashMode);
+//						Log.d(TAG, "flash mode: " + flashMode);
 						isTorchOn = !isTorchOn;
 						if (!flashMode.equals("torch")) {
 							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -381,7 +384,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												}
 												break;
 											case R.id.mode_g:
-												Log.d(TAG, "green");
+//												Log.d(TAG, "green");
 												mApp.setColorMode(RGBModes.G);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
@@ -394,7 +397,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												}
 												break;
 											case R.id.mode_b:
-												Log.d(TAG, "blue");
+//												Log.d(TAG, "blue");
 												mApp.setColorMode(RGBModes.B);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
@@ -422,7 +425,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						}
 					}
 				} else if (i == INTERACTION) {
-					Log.d(TAG, "set interaction mode");
+//					Log.d(TAG, "set interaction mode");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (mInteractionMode.equals(InteractionModes.BASIC)) {
@@ -441,7 +444,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == SELECT_CAM) {
-					Log.d(TAG, "switch camera");
+//					Log.d(TAG, "switch camera");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 
@@ -469,7 +472,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					// camera ID should already have been set in currentCameraID
 					cameraView.safeCameraOpenInView(mCamView);
 				} else if (i == INFO) {
-					Log.d(TAG, "framerate, calculation period info");
+//					Log.d(TAG, "framerate, calculation period info");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (isFPSCalcPanelOpen) {
@@ -481,7 +484,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						isFPSCalcPanelOpen = true;
 					}
 				} else if (i == SETTINGS) {
-					Log.d(TAG, "settings");
+//					Log.d(TAG, "settings");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 						mApp.setSettingsLevel(1);
@@ -526,7 +529,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-		Log.d(TAG, "onPostCreate");
+//		Log.d(TAG, "onPostCreate");
 
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 		menuButton.bringToFront();
@@ -572,7 +575,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		switch (settingsLevel) {
 			case 1:
-				Log.d(TAG, "case: " + 1);
+//				Log.d(TAG, "case: " + 1);
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mCamView);
@@ -580,7 +583,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(0);
 				break;
 			case 2:
-				Log.d(TAG, "case: " + 2);
+//				Log.d(TAG, "case: " + 2);
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
 				if (networkSettingsDialog != null)
 					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
@@ -596,7 +599,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(1);
 				break;
 			case 3:
-				Log.d(TAG, "case: " + 3);
+//				Log.d(TAG, "case: " + 3);
 				View exposureSetters = findViewById(R.id.fix_exposure_button_layout);
 				Switch exposureSwitch = (Switch) findViewById(R.id.fix_exposure_checkbox);
 				// temporarily disable checked-change listener
@@ -624,6 +627,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			toolsDrawerKeys.put("torch", ++index);
 		toolsDrawerKeys.put("modeSelect", ++index);
 		toolsDrawerKeys.put("mInteractionMode", ++index);
+		Log.d(TAG, "has frontside camera: " + VideOSCUIHelpers.hasFrontsideCamera());
 		if (VideOSCUIHelpers.hasFrontsideCamera())
 			toolsDrawerKeys.put("camSelect", ++index);
 		toolsDrawerKeys.put("info", ++index);

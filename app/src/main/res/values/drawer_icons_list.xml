@@ -19,4 +19,21 @@
 		<item>@drawable/settings</item>
 		<item>@drawable/exit</item>
 	</array>
+	<array name="drawer_icons_no_frontside_cam">
+		<item>@drawable/start</item>
+		<item>@drawable/light</item>
+		<item>@drawable/rgb</item>
+		<item>@drawable/interaction</item>
+		<item>@drawable/i</item>
+		<item>@drawable/settings</item>
+		<item>@drawable/exit</item>
+	</array>
+	<array name="drawer_icons_no_torch_no_frontside_cam">
+		<item>@drawable/start</item>
+		<item>@drawable/rgb</item>
+		<item>@drawable/interaction</item>
+		<item>@drawable/i</item>
+		<item>@drawable/settings</item>
+		<item>@drawable/exit</item>
+	</array>
 </resources>

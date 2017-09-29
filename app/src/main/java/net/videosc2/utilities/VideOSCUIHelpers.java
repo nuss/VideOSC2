@@ -175,7 +175,7 @@ public class VideOSCUIHelpers {
 	 *
 	 * @param view the view on which 'setSystemVisibility()' is called
 	 */
-	public static void setFormSystemUIState(View view) {
+	static void setFormSystemUIState(View view) {
 		view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 	}
 }
