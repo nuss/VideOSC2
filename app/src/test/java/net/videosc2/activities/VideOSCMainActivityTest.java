@@ -1,8 +1,9 @@
 package net.videosc2.activities;
 
-import android.support.v4.BuildConfig;
+
 import android.support.v4.widget.DrawerLayout;
 
+import net.videosc2.BuildConfig;
 import net.videosc2.R;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
@@ -15,6 +16,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by stefan on 23.06.17, package net.videosc2, project VideOSC22.
@@ -49,7 +51,7 @@ public class VideOSCMainActivityTest {
 	@Test
 	public void testOnPostCreate() throws Exception {
 		DrawerLayout toolsDrawerLayout = (DrawerLayout) activity.findViewById(R.id.drawer_layout);
-		assertEquals("toole drawer is expected to be a DrawerLayout", DrawerLayout.class, toolsDrawerLayout.getClass());
+		assertNotNull("tools drawer is expected to be not null", toolsDrawerLayout);
 	}
 
 	@Test

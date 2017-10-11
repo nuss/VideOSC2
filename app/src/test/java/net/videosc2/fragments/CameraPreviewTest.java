@@ -15,11 +15,6 @@ public class CameraPreviewTest {
 	}
 
 	@Test
-	public void startCameraPreview() throws Exception {
-
-	}
-
-	@Test
 	public void surfaceCreated() throws Exception {
 
 	}

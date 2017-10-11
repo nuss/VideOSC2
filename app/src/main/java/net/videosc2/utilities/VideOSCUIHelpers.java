@@ -3,6 +3,7 @@ package net.videosc2.utilities;
 import android.animation.LayoutTransition;
 import android.hardware.Camera;
 import android.os.Build;
+import android.support.compat.BuildConfig;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;

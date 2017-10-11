@@ -13,4 +13,9 @@ public class VideOSCDialogHelperTest {
 
 	}
 
+	@Test
+	public void showDialog() throws Exception {
+
+	}
+
 }
