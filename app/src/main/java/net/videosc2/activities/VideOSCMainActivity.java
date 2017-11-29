@@ -22,10 +22,13 @@
 
 package net.videosc2.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -148,6 +151,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// FIXME: preliminary
 		final boolean hasTorch;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (!Settings.System.canWrite(this)) {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+				intent.setData(Uri.parse("package:net.videosc2"));
+				startActivity(intent);
+			}
+			if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+				// TODO
+			}
+		}
+		
 		mApp = (VideOSCApplication) getApplicationContext();
 		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
 //		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
