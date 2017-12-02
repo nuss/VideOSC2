@@ -83,5 +83,9 @@
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
 	<string name="dont_fix_exposure">Don\'t fix exposure</string>
 	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit ok.</string>
+	<string name="grant">grant</string>
+	<string name="deny">deny</string>
+	<string name="ask_for_settings_permission">Permissions to write settings not granted. Shall they be granted?</string>
+	<string name="settings_request_permissions">VideOSC needs to be able to save settings.</string>
 
 </resources>

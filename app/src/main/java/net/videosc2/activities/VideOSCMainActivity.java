@@ -27,8 +27,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -41,6 +39,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -140,6 +140,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public SettingsDBHelper mDbHelper;
 
+	private static final int PERMISSION_WRITE_SETTINGS = 1;
+	private static final int PERMISSION_REQUEST_CAMERA = 1;
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -198,22 +201,33 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.activity_main);
+		View mainLayout = inflater.inflate(R.layout.activity_main, null);
+		setContentView(mainLayout);
+
+		mCamView = mainLayout.findViewById(R.id.camera_preview);
+		requestSettingsPermission();
+
+		// don't dim screen
+		Settings.System.putInt(this.getContentResolver(),
+				Settings.System.SCREEN_BRIGHTNESS, 20);
+		WindowManager.LayoutParams lp = getWindow().getAttributes();
+		lp.screenBrightness = 1;// 100 / 100.0f;
+		getWindow().setAttributes(lp);
+
+		// maybe needed on devices other than Google Nexus?
+		// startActivity(new Intent(this, RefreshScreen.class));
 
 		final FragmentManager fragmentManager = getFragmentManager();
-		if (findViewById(R.id.camera_preview) != null) {
-			mCamView = findViewById(R.id.camera_preview);
 
-			if (savedInstanceState != null) return;
-//			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-			mCameraPreview = new VideOSCCameraFragment();
-//			else
-//				mCameraPreview = new VideOSCCamera2Fragment();
+		if (savedInstanceState != null) return;
+//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		mCameraPreview = new VideOSCCameraFragment();
+//	    	else
+//		mCameraPreview = new VideOSCCamera2Fragment();
 
-			fragmentManager.beginTransaction()
-					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
-					.commit();
-		}
+		fragmentManager.beginTransaction()
+				.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
+				.commit();
 
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
@@ -533,8 +547,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-//		Log.d(TAG, "onPostCreate");
-
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 		menuButton.bringToFront();
 		menuButton.setOnClickListener(new View.OnClickListener() {
@@ -549,16 +561,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
 		indicatorPanelInner.bringToFront();
-
-		// don't dim screen
-		Settings.System.putInt(this.getContentResolver(),
-				Settings.System.SCREEN_BRIGHTNESS, 20);
-		WindowManager.LayoutParams lp = getWindow().getAttributes();
-		lp.screenBrightness = 1;// 100 / 100.0f;
-		getWindow().setAttributes(lp);
-
-		// maybe needed on devices other than Google Nexus?
-		// startActivity(new Intent(this, RefreshScreen.class));
 	}
 
 	@Override
@@ -676,6 +678,24 @@ public class VideOSCMainActivity extends AppCompatActivity
 			mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), mToolsDrawerListState.get(key)));
 		}
 		mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
+	}
+
+	private void requestSettingsPermission() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
+			Log.d(TAG, "show permissions dialog in view mCamView: " + mCamView);
+			Snackbar.make(
+					mCamView,
+					R.string.settings_request_permissions,
+					Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ActivityCompat.requestPermissions(VideOSCMainActivity.this,
+							new String[]{Manifest.permission.WRITE_SETTINGS},
+							PERMISSION_WRITE_SETTINGS
+					);
+				}
+			}).show();
+		}
 	}
 
 /*
