@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -39,6 +40,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -140,7 +142,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public SettingsDBHelper mDbHelper;
 
-	private static final int PERMISSION_WRITE_SETTINGS = 1;
+	private static final int PERMISSION_WRITE_SETTINGS = 0;
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
 	/**
@@ -207,27 +209,25 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
 		requestSettingsPermission();
 
-		// don't dim screen
-		Settings.System.putInt(this.getContentResolver(),
-				Settings.System.SCREEN_BRIGHTNESS, 20);
-		WindowManager.LayoutParams lp = getWindow().getAttributes();
-		lp.screenBrightness = 1;// 100 / 100.0f;
-		getWindow().setAttributes(lp);
-
 		// maybe needed on devices other than Google Nexus?
 		// startActivity(new Intent(this, RefreshScreen.class));
 
 		final FragmentManager fragmentManager = getFragmentManager();
 
 		if (savedInstanceState != null) return;
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-		mCameraPreview = new VideOSCCameraFragment();
-//	    	else
-//		mCameraPreview = new VideOSCCamera2Fragment();
 
-		fragmentManager.beginTransaction()
-				.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
-				.commit();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+//  		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+			mCameraPreview = new VideOSCCameraFragment();
+//	    	else
+//		    mCameraPreview = new VideOSCCamera2Fragment();
+
+			fragmentManager.beginTransaction()
+					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
+					.commit();
+		} else {
+			requestCameraPermission();
+		}
 
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
@@ -681,8 +681,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	}
 
 	private void requestSettingsPermission() {
+		// TODO: does this really work? The snackbar never appears, but no complaints either...
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
-			Log.d(TAG, "show permissions dialog in view mCamView: " + mCamView);
 			Snackbar.make(
 					mCamView,
 					R.string.settings_request_permissions,
@@ -693,8 +693,77 @@ public class VideOSCMainActivity extends AppCompatActivity
 							new String[]{Manifest.permission.WRITE_SETTINGS},
 							PERMISSION_WRITE_SETTINGS
 					);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+						Log.d(TAG, "settings permission granted? " + Settings.System.canWrite(getApplicationContext()));
 				}
 			}).show();
+		}
+	}
+
+	private void requestCameraPermission() {
+		if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+			Snackbar.make(mCamView, R.string.camera_permission_required,
+					Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					// Request the permission
+					ActivityCompat.requestPermissions(VideOSCMainActivity.this,
+							new String[]{Manifest.permission.CAMERA},
+							PERMISSION_REQUEST_CAMERA);
+				}
+			}).show();
+		} else {
+			Snackbar.make(mCamView,
+					R.string.camera_permission_not_available,
+					Snackbar.LENGTH_SHORT).show();
+			// Request the permission. The result will be received in onRequestPermissionResult().
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+					PERMISSION_REQUEST_CAMERA);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == PERMISSION_WRITE_SETTINGS) {
+			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Snackbar.make(
+						mCamView,
+						R.string.write_settings_permission_granted,
+						Snackbar.LENGTH_SHORT
+				).show();
+				// don't dim screen
+				Settings.System.putInt(this.getContentResolver(),
+						Settings.System.SCREEN_BRIGHTNESS, 20);
+				WindowManager.LayoutParams lp = getWindow().getAttributes();
+				lp.screenBrightness = 1;// 100 / 100.0f;
+				getWindow().setAttributes(lp);
+			} else {
+				Snackbar.make(
+						mCamView,
+						R.string.write_settings_permission_denied,
+						Snackbar.LENGTH_SHORT
+				).show();
+			}
+		} else if(requestCode == PERMISSION_REQUEST_CAMERA) {
+			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Snackbar.make(
+						mCamView,
+						R.string.camera_permissions_granted,
+						Snackbar.LENGTH_SHORT
+				).show();
+				// TODO: the camera fragment overlays all other screen elements
+				mCameraPreview = new VideOSCCameraFragment();
+				FragmentManager fragmentManager = getFragmentManager();
+				fragmentManager.beginTransaction()
+						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
+						.commit();
+			} else {
+				Snackbar.make(
+						mCamView,
+						R.string.camera_permissions_denied ,
+						Snackbar.LENGTH_SHORT
+				).show();
+			}
 		}
 	}
 

@@ -87,5 +87,11 @@
 	<string name="deny">deny</string>
 	<string name="ask_for_settings_permission">Permissions to write settings not granted. Shall they be granted?</string>
 	<string name="settings_request_permissions">VideOSC needs to be able to save settings.</string>
+	<string name="write_settings_permission_granted">Permissions to write settings granted.</string>
+	<string name="write_settings_permission_denied">Permissions to write settings were denied</string>
+	<string name="camera_permission_required">Camera permission is required to display the camera preview.</string>
+	<string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
+	<string name="camera_permissions_granted">Camera permissions granted. Starting preview.</string>
+	<string name="camera_permissions_denied">Camera Permission was denied.</string>
 
 </resources>
