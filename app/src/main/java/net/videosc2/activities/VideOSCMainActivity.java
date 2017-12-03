@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -142,7 +143,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public SettingsDBHelper mDbHelper;
 
+	Intent starterIntent;
 	private static final int PERMISSION_WRITE_SETTINGS = 0;
+	private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
 	/**
@@ -153,6 +156,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		Log.d(TAG, "onCreate");
+
+		starterIntent = getIntent();
+		requestSettingsPermission();
 
 		// FIXME: preliminary
 		final boolean hasTorch;
@@ -207,7 +213,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		setContentView(mainLayout);
 
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
-		requestSettingsPermission();
 
 		// maybe needed on devices other than Google Nexus?
 		// startActivity(new Intent(this, RefreshScreen.class));
@@ -682,21 +687,30 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	private void requestSettingsPermission() {
 		// TODO: does this really work? The snackbar never appears, but no complaints either...
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
-			Snackbar.make(
-					mCamView,
-					R.string.settings_request_permissions,
-					Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ActivityCompat.requestPermissions(VideOSCMainActivity.this,
-							new String[]{Manifest.permission.WRITE_SETTINGS},
-							PERMISSION_WRITE_SETTINGS
-					);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-						Log.d(TAG, "settings permission granted? " + Settings.System.canWrite(getApplicationContext()));
-				}
-			}).show();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (!Settings.System.canWrite(this)) {
+				Log.d(TAG, "snackbar for write settings permission should appear now");
+				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivityForResult(intent, VideOSCMainActivity.CODE_WRITE_SETTINGS_PERMISSION);
+				Log.d(TAG, "write settings permission set? " + Settings.System.canWrite(this));
+//				Snackbar.make(
+//						mCamView,
+//						R.string.settings_request_permissions,
+//						Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
+//					@Override
+//					public void onClick(View v) {
+//						ActivityCompat.requestPermissions(VideOSCMainActivity.this,
+//								new String[]{Manifest.permission.WRITE_SETTINGS},
+//								PERMISSION_WRITE_SETTINGS
+//						);
+//						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//							Log.d(TAG, "settings permission granted? " + Settings.System.canWrite(getApplicationContext()));
+//					}
+//				}).show();
+			} else {
+				Log.d(TAG, "write settings permission already granted");
+			}
 		}
 	}
 
@@ -724,8 +738,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if (requestCode == PERMISSION_WRITE_SETTINGS) {
+		/*if (requestCode == PERMISSION_WRITE_SETTINGS) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.d(TAG, "write settings permission granted");
 				Snackbar.make(
 						mCamView,
 						R.string.write_settings_permission_granted,
@@ -744,7 +759,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						Snackbar.LENGTH_SHORT
 				).show();
 			}
-		} else if(requestCode == PERMISSION_REQUEST_CAMERA) {
+		} else */if(requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Snackbar.make(
 						mCamView,
@@ -764,6 +779,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 						Snackbar.LENGTH_SHORT
 				).show();
 			}
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+				&& requestCode == CODE_WRITE_SETTINGS_PERMISSION
+				&& Settings.System.canWrite(this)) {
+			Log.d(TAG, "CODE_WRITE_SETTINGS_PERMISSION success");
+			finish();
+			startActivity(starterIntent);
 		}
 	}
 
