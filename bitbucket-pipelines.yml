@@ -25,5 +25,5 @@ pipelines:
           - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --filter "extra-android-m2repository" -a
           # Build apk
           - chmod a+x gradlew
-          #- ./gradlew assembleDebug
-          - ./gradlew assembleAndroidTest
+          - ./gradlew assembleDebug
+          #- ./gradlew assembleAndroidTest
