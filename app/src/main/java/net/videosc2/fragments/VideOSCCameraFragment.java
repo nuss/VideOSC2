@@ -34,8 +34,10 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -44,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +56,7 @@ import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
+import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
@@ -441,6 +445,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				pCamera.setPreviewDisplay(mHolder);
 				pCamera.startPreview();
+				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
+				menuButton.bringToFront();
+				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
+				indicatorPanel.bringToFront();
 				Log.d(TAG, "preview should be started");
 			} catch (IOException e) {
 				e.printStackTrace();

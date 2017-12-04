@@ -41,6 +41,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.MainThread;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -140,6 +144,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public SettingsDBHelper mDbHelper;
 
+	Intent starterIntent;
+	private static final int PERMISSION_WRITE_SETTINGS = 0;
+	private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
+	private static final int PERMISSION_REQUEST_CAMERA = 1;
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -148,6 +157,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 
 		Log.d(TAG, "onCreate");
+
+		starterIntent = getIntent();
+		requestSettingsPermission();
 
 		// FIXME: preliminary
 		final boolean hasTorch;
@@ -198,25 +210,35 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.activity_main);
+		View mainLayout = inflater.inflate(R.layout.activity_main, null);
+		setContentView(mainLayout);
+
+		mCamView = mainLayout.findViewById(R.id.camera_preview);
+
+		// maybe needed on devices other than Google Nexus?
+		// startActivity(new Intent(this, RefreshScreen.class));
 
 		final FragmentManager fragmentManager = getFragmentManager();
-		if (findViewById(R.id.camera_preview) != null) {
-			mCamView = findViewById(R.id.camera_preview);
 
-			if (savedInstanceState != null) return;
-//			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		if (savedInstanceState != null) return;
+
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+//  		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			mCameraPreview = new VideOSCCameraFragment();
-//			else
-//				mCameraPreview = new VideOSCCamera2Fragment();
+//	    	else
+//		    mCameraPreview = new VideOSCCamera2Fragment();
 
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
+		} else {
+			requestCameraPermission();
 		}
 
+/*
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+*/
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -510,8 +532,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
 		DisplayMetrics dm = new DisplayMetrics();
-//		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 	}
 
@@ -533,10 +553,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-//		Log.d(TAG, "onPostCreate");
-
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
-		menuButton.bringToFront();
+//		menuButton.bringToFront();
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -547,18 +565,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
-		indicatorPanelInner.bringToFront();
-
-		// don't dim screen
-		Settings.System.putInt(this.getContentResolver(),
-				Settings.System.SCREEN_BRIGHTNESS, 20);
-		WindowManager.LayoutParams lp = getWindow().getAttributes();
-		lp.screenBrightness = 1;// 100 / 100.0f;
-		getWindow().setAttributes(lp);
-
-		// maybe needed on devices other than Google Nexus?
-		// startActivity(new Intent(this, RefreshScreen.class));
+		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+		LayoutInflater inflater = getLayoutInflater();
+		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 	}
 
 	@Override
@@ -670,12 +679,81 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		Log.d(TAG, "onResume called");
 		// update tools drawer if some item's state has changed
 		for (Integer key : mToolsDrawerListState.keySet()) {
 			mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), mToolsDrawerListState.get(key)));
 		}
 		mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
+	}
+
+	private void requestSettingsPermission() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (!Settings.System.canWrite(this)) {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivityForResult(intent, VideOSCMainActivity.CODE_WRITE_SETTINGS_PERMISSION);
+			}
+		}
+	}
+
+	private void requestCameraPermission() {
+		if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+			Snackbar.make(mCamView, R.string.camera_permission_required,
+					Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					// Request the permission
+					ActivityCompat.requestPermissions(VideOSCMainActivity.this,
+							new String[]{Manifest.permission.CAMERA},
+							PERMISSION_REQUEST_CAMERA);
+				}
+			}).show();
+		} else {
+			Snackbar.make(mCamView,
+					R.string.camera_permission_not_available,
+					Snackbar.LENGTH_SHORT).show();
+			// Request the permission. The result will be received in onRequestPermissionResult().
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
+					PERMISSION_REQUEST_CAMERA);
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if(requestCode == PERMISSION_REQUEST_CAMERA) {
+			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Snackbar.make(
+						mCamView,
+						R.string.camera_permissions_granted,
+						Snackbar.LENGTH_SHORT
+				).show();
+				// TODO: the camera fragment overlays all other screen elements
+				mCameraPreview = new VideOSCCameraFragment();
+				FragmentManager fragmentManager = getFragmentManager();
+				fragmentManager.beginTransaction()
+						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
+						.commit();
+			} else {
+				Snackbar.make(
+						mCamView,
+						R.string.camera_permissions_denied,
+						Snackbar.LENGTH_SHORT
+				).show();
+			}
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+				&& requestCode == CODE_WRITE_SETTINGS_PERMISSION
+				&& Settings.System.canWrite(this)) {
+			Log.d(TAG, "CODE_WRITE_SETTINGS_PERMISSION success");
+			finish();
+			startActivity(starterIntent);
+		}
 	}
 
 /*
