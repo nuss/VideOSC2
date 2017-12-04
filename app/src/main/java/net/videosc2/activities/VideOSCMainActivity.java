@@ -532,29 +532,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
 		DisplayMetrics dm = new DisplayMetrics();
-//		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		// width/height of the screen
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
-	}
-
-	private void finishGui() {
-		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
-		menuButton.bringToFront();
-		menuButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
-					mToolsDrawerLayout.openDrawer(Gravity.END);
-				if (isColorModePanelOpen)
-					isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
-			}
-		});
-
-		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-		LayoutInflater inflater = getLayoutInflater();
-		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
-		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
-		indicatorPanelInner.bringToFront();
 	}
 
 /*
@@ -575,9 +553,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-/*
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
-		menuButton.bringToFront();
+//		menuButton.bringToFront();
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -588,9 +565,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
-		indicatorPanelInner.bringToFront();
-*/
+		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+		LayoutInflater inflater = getLayoutInflater();
+		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 	}
 
 	@Override
@@ -713,27 +690,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private void requestSettingsPermission() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (!Settings.System.canWrite(this)) {
-				Log.d(TAG, "snackbar for write settings permission should appear now");
 				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
 				intent.setData(Uri.parse("package:" + getPackageName()));
 				startActivityForResult(intent, VideOSCMainActivity.CODE_WRITE_SETTINGS_PERMISSION);
-				Log.d(TAG, "write settings permission set? " + Settings.System.canWrite(this));
-//				Snackbar.make(
-//						mCamView,
-//						R.string.settings_request_permissions,
-//						Snackbar.LENGTH_INDEFINITE).setAction(R.string.grant, new View.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						ActivityCompat.requestPermissions(VideOSCMainActivity.this,
-//								new String[]{Manifest.permission.WRITE_SETTINGS},
-//								PERMISSION_WRITE_SETTINGS
-//						);
-//						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-//							Log.d(TAG, "settings permission granted? " + Settings.System.canWrite(getApplicationContext()));
-//					}
-//				}).show();
-			} else {
-				Log.d(TAG, "write settings permission already granted");
 			}
 		}
 	}
@@ -762,28 +721,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		/*if (requestCode == PERMISSION_WRITE_SETTINGS) {
-			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.d(TAG, "write settings permission granted");
-				Snackbar.make(
-						mCamView,
-						R.string.write_settings_permission_granted,
-						Snackbar.LENGTH_SHORT
-				).show();
-				// don't dim screen
-				Settings.System.putInt(this.getContentResolver(),
-						Settings.System.SCREEN_BRIGHTNESS, 20);
-				WindowManager.LayoutParams lp = getWindow().getAttributes();
-				lp.screenBrightness = 1;// 100 / 100.0f;
-				getWindow().setAttributes(lp);
-			} else {
-				Snackbar.make(
-						mCamView,
-						R.string.write_settings_permission_denied,
-						Snackbar.LENGTH_SHORT
-				).show();
-			}
-		} else */if(requestCode == PERMISSION_REQUEST_CAMERA) {
+		if(requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Snackbar.make(
 						mCamView,
@@ -796,13 +734,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 				fragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();
-				// FIXME: indicator panel and menu button still don't show up - sleep seems to lag the display the camera fragment too :(
-				getSupportFragmentManager().executePendingTransactions();
-				finishGui();
 			} else {
 				Snackbar.make(
 						mCamView,
-						R.string.camera_permissions_denied ,
+						R.string.camera_permissions_denied,
 						Snackbar.LENGTH_SHORT
 				).show();
 			}

@@ -34,6 +34,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -444,6 +445,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				pCamera.setPreviewDisplay(mHolder);
 				pCamera.startPreview();
+				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
+				menuButton.bringToFront();
+				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
+				indicatorPanel.bringToFront();
 				Log.d(TAG, "preview should be started");
 			} catch (IOException e) {
 				e.printStackTrace();
