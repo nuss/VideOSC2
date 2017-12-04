@@ -41,6 +41,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
@@ -234,8 +235,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 			requestCameraPermission();
 		}
 
+/*
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+*/
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -534,6 +537,26 @@ public class VideOSCMainActivity extends AppCompatActivity
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 	}
 
+	private void finishGui() {
+		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
+		menuButton.bringToFront();
+		menuButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
+					mToolsDrawerLayout.openDrawer(Gravity.END);
+				if (isColorModePanelOpen)
+					isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+			}
+		});
+
+		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+		LayoutInflater inflater = getLayoutInflater();
+		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
+		indicatorPanelInner.bringToFront();
+	}
+
 /*
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event) {
@@ -552,6 +575,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
+/*
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 		menuButton.bringToFront();
 		menuButton.setOnClickListener(new View.OnClickListener() {
@@ -566,6 +590,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		View indicatorPanelInner = mIndicatorPanel.findViewById(R.id.indicator_panel);
 		indicatorPanelInner.bringToFront();
+*/
 	}
 
 	@Override
@@ -677,7 +702,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		Log.d(TAG, "onResume called");
 		// update tools drawer if some item's state has changed
 		for (Integer key : mToolsDrawerListState.keySet()) {
 			mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), mToolsDrawerListState.get(key)));
@@ -686,7 +711,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	}
 
 	private void requestSettingsPermission() {
-		// TODO: does this really work? The snackbar never appears, but no complaints either...
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (!Settings.System.canWrite(this)) {
 				Log.d(TAG, "snackbar for write settings permission should appear now");
@@ -772,6 +796,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 				fragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();
+				// FIXME: indicator panel and menu button still don't show up - sleep seems to lag the display the camera fragment too :(
+				getSupportFragmentManager().executePendingTransactions();
+				finishGui();
 			} else {
 				Snackbar.make(
 						mCamView,
