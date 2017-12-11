@@ -728,7 +728,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 						R.string.camera_permissions_granted,
 						Snackbar.LENGTH_SHORT
 				).show();
-				// TODO: the camera fragment overlays all other screen elements
+				// the camera fragment overlays all other screen elements
+				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
 				mCameraPreview = new VideOSCCameraFragment();
 				FragmentManager fragmentManager = getFragmentManager();
 				fragmentManager.beginTransaction()

@@ -1,6 +1,7 @@
 package net.videosc2.utilities;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -8,6 +9,7 @@ import android.widget.FrameLayout;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -28,6 +30,8 @@ public class VideOSCUIHelpersTest {
 	private FrameLayout frameLayout;
 	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
+	// FIXME: mock camera
+	private Camera _camera;
 
 	@Before
 	public void setUp() throws Exception {
@@ -38,19 +42,21 @@ public class VideOSCUIHelpersTest {
 		view.setLayoutParams(params);
 		frameLayout = new FrameLayout(RuntimeEnvironment.application);
 		viewGroup = new TestViewGroup(RuntimeEnvironment.application);
+		// FIXME
+		_camera = Mockito.mock(Camera.class);
 	}
 
-/*
 	@Test
 	public void hasTorch() throws Exception {
-//		Camera camera = Camera.open();
-//		Camera.Parameters camParams = camera.getParameters();
-//		camera.release();
-//		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
+		// FIXME
+		Camera camera = _camera.open();
+		Camera.Parameters camParams = camera.getParameters();
+		camera.release();
+		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
+		// FIXME
 //		assertNotNull("camParams.getFlashMode() should not be null, actual: " + camParams.getFlashMode(), camParams.getFlashMode());
-		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
+//		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
 	}
-*/
 
 	@Test
 	public void testView() throws Exception {
