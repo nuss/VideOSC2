@@ -34,7 +34,6 @@ public class VideOSCUIHelpers {
 			e.printStackTrace();
 		}
 
-
 		if (camera == null) {
 			return false;
 		}

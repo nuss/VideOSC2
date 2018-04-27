@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,7 +32,7 @@ public class VideOSCUIHelpersTest {
 	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
 	// FIXME: mock camera
-	private Camera _camera;
+	private static Camera _camera;
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,15 +48,16 @@ public class VideOSCUIHelpersTest {
 	}
 
 	@Test
+	@Config(manifest=Config.NONE)
 	public void hasTorch() throws Exception {
 		// FIXME
-		Camera camera = _camera.open();
+		Camera camera = Camera.open();
 		Camera.Parameters camParams = camera.getParameters();
 		camera.release();
 		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
 		// FIXME
 //		assertNotNull("camParams.getFlashMode() should not be null, actual: " + camParams.getFlashMode(), camParams.getFlashMode());
-//		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
+		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
 	}
 
 	@Test
