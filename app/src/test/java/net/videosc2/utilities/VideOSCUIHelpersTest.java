@@ -43,7 +43,7 @@ public class VideOSCUIHelpersTest {
 		view.setLayoutParams(params);
 		frameLayout = new FrameLayout(RuntimeEnvironment.application);
 		viewGroup = new TestViewGroup(RuntimeEnvironment.application);
-		// FIXME
+		// FIXME: camera can't be mocked like this
 		_camera = Mockito.mock(Camera.class);
 	}
 
