@@ -25,29 +25,20 @@ public class VideOSCUIHelpers {
 	 *
 	 * @return a boolean indicating whether the device has an inbuilt flashlight
 	 */
-	public static boolean hasTorch() {
-		Camera camera = null;
-
-		try {
-			camera = Camera.open(); // attempt to get a Camera instance
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+	public static boolean hasTorch(Camera camera) {
 		if (camera == null) {
 			return false;
 		}
 
-		Camera.Parameters parameters = camera.getParameters();
-		camera.release();
-
-		if (parameters.getFlashMode() == null) {
+		try {
+			Camera.Parameters parameters = camera.getParameters();
+			camera.release();
+			List<String> supportedFlashModes = parameters.getSupportedFlashModes();
+			return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
+		} catch(RuntimeException e) {
+			e.printStackTrace();
 			return false;
 		}
-
-		List<String> supportedFlashModes = parameters.getSupportedFlashModes();
-
-		return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
 	}
 
 	/**

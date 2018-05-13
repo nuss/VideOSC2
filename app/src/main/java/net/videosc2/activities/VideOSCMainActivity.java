@@ -149,6 +149,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
+	private boolean hasTorch;
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -167,7 +169,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mApp = (VideOSCApplication) getApplicationContext();
 		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
 //		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-		hasTorch = VideOSCUIHelpers.hasTorch();
+		Camera camera = Camera.open();
+		hasTorch = VideOSCUIHelpers.hasTorch(camera);
+		camera.release();
+
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
 			frontsideCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -565,7 +570,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		LayoutInflater inflater = getLayoutInflater();
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 	}
@@ -636,7 +641,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		int index = 0;
 
 		toolsDrawerKeys.put("startStop", index);
-		if (VideOSCUIHelpers.hasTorch())
+		if (hasTorch)
 			toolsDrawerKeys.put("torch", ++index);
 		toolsDrawerKeys.put("modeSelect", ++index);
 		toolsDrawerKeys.put("mInteractionMode", ++index);
