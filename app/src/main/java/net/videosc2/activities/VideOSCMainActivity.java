@@ -149,6 +149,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
+	private View mDecorView;
+	private boolean hasTorch;
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -156,18 +159,17 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Log.d(TAG, "onCreate");
+//		Log.d(TAG, "onCreate");
+
+		// immersive fullscreen
+		mDecorView = getWindow().getDecorView();
+		VideOSCUIHelpers.resetSystemUIState(mDecorView);
 
 		starterIntent = getIntent();
 		requestSettingsPermission();
 
-		// FIXME: preliminary
-		final boolean hasTorch;
-
 		mApp = (VideOSCApplication) getApplicationContext();
-		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-		hasTorch = VideOSCUIHelpers.hasTorch();
+//		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
 			frontsideCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -231,14 +233,24 @@ public class VideOSCMainActivity extends AppCompatActivity
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
+			buildUI();
 		} else {
 			requestCameraPermission();
 		}
+
+		Log.d(TAG, "camera permissions granted?");
 
 /*
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 */
+		/* buildUI() */
+	}
+
+	private void buildUI() {
+		final LayoutInflater inflater = getLayoutInflater();
+		final FragmentManager fragmentManager = getFragmentManager();
+		final Activity activity = this;
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -373,6 +385,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 							button.setOnTouchListener(new View.OnTouchListener() {
 								@Override
 								public boolean onTouch(View view, MotionEvent motionEvent) {
+									view.performClick();
 									if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 										switch (view.getId()) {
 											case R.id.mode_rgb:
@@ -513,9 +526,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 //					Log.d(TAG, "settings");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
-						mApp.setSettingsLevel(1);
+					mApp.setSettingsLevel(1);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-						mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+						mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 					}
 					VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
 					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
@@ -528,30 +541,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 		if (mApp.getSettingsLevel() < 1)
-			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				Log.d(TAG, "KitKat or higher");
+				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+			} else
+				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
 		DisplayMetrics dm = new DisplayMetrics();
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
-	}
-
-/*
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent event) {
-		return !(isColorModePanelOpen && event.getAction() == MotionEvent.ACTION_UP) && super.dispatchTouchEvent(event);
-	}
-*/
-
-	@Override
-	public void onContentChanged() {
-		super.onContentChanged();
-		Log.d(TAG, "onContentChanged");
-	}
-
-	// There are 2 signatures and only `onPostCreate(Bundle state)` shows the hamburger icon.
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
 
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 //		menuButton.bringToFront();
@@ -565,15 +563,53 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		int indicatorXMLiD = VideOSCUIHelpers.hasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-		LayoutInflater inflater = getLayoutInflater();
+//		Log.d(TAG, "has torch in onPostCreate: " + hasTorch);
+
+		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+//		LayoutInflater inflater = getLayoutInflater();
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+	}
+/*
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		return !(isColorModePanelOpen && event.getAction() == MotionEvent.ACTION_UP) && super.dispatchTouchEvent(event);
+	}
+*/
+
+	@Override
+	public void onContentChanged() {
+		super.onContentChanged();
+//		Log.d(TAG, "onContentChanged");
+	}
+
+	// There are 2 signatures and only `onPostCreate(Bundle state)` shows the hamburger icon.
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+
+		/* ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
+//		menuButton.bringToFront();
+		menuButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
+					mToolsDrawerLayout.openDrawer(Gravity.END);
+				if (isColorModePanelOpen)
+					isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+			}
+		});
+
+//		Log.d(TAG, "has torch in onPostCreate: " + hasTorch);
+
+		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
+		LayoutInflater inflater = getLayoutInflater();
+		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true); */
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
-		VideOSCUIHelpers.resetSystemUIState(mCamView);
+		VideOSCUIHelpers.resetSystemUIState(mDecorView);
 	}
 
 	@Override
@@ -591,7 +627,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 //				Log.d(TAG, "case: " + 1);
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
-				VideOSCUIHelpers.resetSystemUIState(mCamView);
+				VideOSCUIHelpers.resetSystemUIState(mDecorView);
 				mToolsDrawerLayout.closeDrawer(Gravity.END);
 				mApp.setSettingsLevel(0);
 				break;
@@ -636,7 +672,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		int index = 0;
 
 		toolsDrawerKeys.put("startStop", index);
-		if (VideOSCUIHelpers.hasTorch())
+		if (hasTorch)
 			toolsDrawerKeys.put("torch", ++index);
 		toolsDrawerKeys.put("modeSelect", ++index);
 		toolsDrawerKeys.put("mInteractionMode", ++index);
@@ -679,12 +715,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume called");
+		Log.d(TAG, "onResume called: " + mToolsDrawerList);
 		// update tools drawer if some item's state has changed
-		for (Integer key : mToolsDrawerListState.keySet()) {
-			mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), mToolsDrawerListState.get(key)));
+		if (mToolsDrawerList != null) {
+			for (Integer key : mToolsDrawerListState.keySet()) {
+				mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), mToolsDrawerListState.get(key)));
+			}
+			mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 		}
-		mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 	}
 
 	private void requestSettingsPermission() {
@@ -723,18 +761,26 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if(requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.d(TAG, "onRequestPermissionsResult()");
 				Snackbar.make(
 						mCamView,
 						R.string.camera_permissions_granted,
 						Snackbar.LENGTH_SHORT
 				).show();
+				// make sure permissions are granted before we touch the camera
+				Camera camera = Camera.open();
+				hasTorch = VideOSCUIHelpers.hasTorch(camera);
+				camera.release();
+
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
+
 				mCameraPreview = new VideOSCCameraFragment();
 				FragmentManager fragmentManager = getFragmentManager();
 				fragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();
+				buildUI();
 			} else {
 				Snackbar.make(
 						mCamView,

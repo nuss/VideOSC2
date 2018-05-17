@@ -1,6 +1,5 @@
 package net.videosc2.utilities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

@@ -2,6 +2,7 @@ package net.videosc2.utilities;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -12,7 +13,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowCamera;
 
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -25,13 +29,14 @@ import static org.junit.Assert.assertTrue;
 public class VideOSCUIHelpersTest {
 
 	private final static String TAG = "VideOSCUIHelpersTest";
+	private static final String KEY_FLASH_MODE = Camera.Parameters.FLASH_MODE_OFF;
 
 	private View view;
 	private FrameLayout frameLayout;
 	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
 	// FIXME: mock camera
-	private Camera _camera;
+	private Camera camera;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,20 +47,13 @@ public class VideOSCUIHelpersTest {
 		view.setLayoutParams(params);
 		frameLayout = new FrameLayout(RuntimeEnvironment.application);
 		viewGroup = new TestViewGroup(RuntimeEnvironment.application);
-		// FIXME
-		_camera = Mockito.mock(Camera.class);
+		camera = ShadowCamera.open();
 	}
 
 	@Test
+	@Config(manifest=Config.NONE)
 	public void hasTorch() throws Exception {
-		// FIXME
-		Camera camera = _camera.open();
-		Camera.Parameters camParams = camera.getParameters();
-		camera.release();
-		assertNotNull("camParams should not be null, actual: " + camParams, camParams);
-		// FIXME
-//		assertNotNull("camParams.getFlashMode() should not be null, actual: " + camParams.getFlashMode(), camParams.getFlashMode());
-//		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch());
+		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch(camera));
 	}
 
 	@Test
