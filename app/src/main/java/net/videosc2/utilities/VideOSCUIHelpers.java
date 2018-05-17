@@ -36,9 +36,11 @@ public class VideOSCUIHelpers {
 			List<String> supportedFlashModes = parameters.getSupportedFlashModes();
 			return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
 		} catch(RuntimeException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return false;
 		}
+
+//		return false;
 	}
 
 	/**
