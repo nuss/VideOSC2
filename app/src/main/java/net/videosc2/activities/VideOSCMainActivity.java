@@ -41,7 +41,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.ActivityCompat;
@@ -113,9 +112,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private VideOSCApplication mApp;
 
 	// the current color mode
-//	public Enum colorChannel = RGBModes.RGB;
 	// RGB or RGB inverted?
-//	public boolean isRGBPositive = true;
 	// set to true when isRGBPositive changes
 	private boolean rgbHasChanged = false;
 	// the current interaction mode
@@ -141,11 +138,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
 
 	// settings, retrieved from sqlite db
-	// FIXME: mDbHelper leaks VideOSCMainActivity
 	public SettingsDBHelper mDbHelper;
 
 	Intent starterIntent;
-	private static final int PERMISSION_WRITE_SETTINGS = 0;
 	private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -159,8 +154,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-//		Log.d(TAG, "onCreate");
-
 		// immersive fullscreen
 		mDecorView = getWindow().getDecorView();
 		VideOSCUIHelpers.resetSystemUIState(mDecorView);
@@ -169,14 +162,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		requestSettingsPermission();
 
 		mApp = (VideOSCApplication) getApplicationContext();
-//		Log.d(TAG, "is RGB positive? " + mApp.getIsRGBPositive());
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
 			frontsideCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 		}
 		currentCameraID = backsideCameraId;
-//		else
-//			hasTorch = false;
 
 		// keep db access open through the app's lifetime
 		mDbHelper = new SettingsDBHelper(this);
@@ -225,11 +215,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (savedInstanceState != null) return;
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-//  		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 			mCameraPreview = new VideOSCCameraFragment();
-//	    	else
-//		    mCameraPreview = new VideOSCCamera2Fragment();
-
 			fragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
@@ -237,14 +223,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		} else {
 			requestCameraPermission();
 		}
-
-		Log.d(TAG, "camera permissions granted?");
-
-/*
-		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
-*/
-		/* buildUI() */
 	}
 
 	private void buildUI() {
@@ -288,14 +266,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		SETTINGS = toolsDrawerKeys.get("prefs");
 		QUIT = toolsDrawerKeys.get("quit");
 
-//		toolsDrawerKeys.get(0)
-
-		// we can not use 'mCameraPreview' to retrieve the 'mCamera' object
-		// FIXME: just for now deactivate for LOLLIPOP and up
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//		mCamera = camPreview.mCamera;
-//		}
-
 		mToolsDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
@@ -317,13 +287,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (!mApp.getPlay()) {
-//						Log.d(TAG, "play is false");
 						mApp.setPlay(true);
 						mToolsDrawerListState.put(START_STOP, R.drawable.stop);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.stop);
 						oscIndicatorView.setImageResource(R.drawable.osc_playing);
 					} else {
-//						Log.d(TAG, "play is true");
 						mApp.setPlay(false);
 						mToolsDrawerListState.put(START_STOP, R.drawable.start);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
@@ -336,7 +304,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 					cameraParameters = camera.getParameters();
 					if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
 						String flashMode = cameraParameters.getFlashMode();
-//						Log.d(TAG, "flash mode: " + flashMode);
 						isTorchOn = !isTorchOn;
 						if (!flashMode.equals("torch")) {
 							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -464,7 +431,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 						}
 					}
 				} else if (i == INTERACTION) {
-//					Log.d(TAG, "set interaction mode");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (mInteractionMode.equals(InteractionModes.BASIC)) {
@@ -483,7 +449,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == SELECT_CAM) {
-//					Log.d(TAG, "switch camera");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 
@@ -511,7 +476,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 					// camera ID should already have been set in currentCameraID
 					cameraView.safeCameraOpenInView(mCamView);
 				} else if (i == INFO) {
-//					Log.d(TAG, "framerate, calculation period info");
 					if (isColorModePanelOpen)
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
 					if (isFPSCalcPanelOpen) {
@@ -552,7 +516,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		dimensions = new Point(dm.widthPixels, dm.heightPixels);
 
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
-//		menuButton.bringToFront();
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -563,47 +526,19 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-//		Log.d(TAG, "has torch in onPostCreate: " + hasTorch);
-
 		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-//		LayoutInflater inflater = getLayoutInflater();
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 	}
-/*
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent event) {
-		return !(isColorModePanelOpen && event.getAction() == MotionEvent.ACTION_UP) && super.dispatchTouchEvent(event);
-	}
-*/
 
 	@Override
 	public void onContentChanged() {
 		super.onContentChanged();
-//		Log.d(TAG, "onContentChanged");
 	}
 
 	// There are 2 signatures and only `onPostCreate(Bundle state)` shows the hamburger icon.
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-
-		/* ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
-//		menuButton.bringToFront();
-		menuButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
-					mToolsDrawerLayout.openDrawer(Gravity.END);
-				if (isColorModePanelOpen)
-					isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
-			}
-		});
-
-//		Log.d(TAG, "has torch in onPostCreate: " + hasTorch);
-
-		int indicatorXMLiD = hasTorch ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-		LayoutInflater inflater = getLayoutInflater();
-		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true); */
 	}
 
 	@Override
@@ -624,7 +559,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		switch (settingsLevel) {
 			case 1:
-//				Log.d(TAG, "case: " + 1);
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
@@ -632,7 +566,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(0);
 				break;
 			case 2:
-//				Log.d(TAG, "case: " + 2);
 				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
 				if (networkSettingsDialog != null)
 					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
@@ -648,7 +581,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(1);
 				break;
 			case 3:
-//				Log.d(TAG, "case: " + 3);
 				View exposureSetters = findViewById(R.id.fix_exposure_button_layout);
 				Switch exposureSwitch = (Switch) findViewById(R.id.fix_exposure_checkbox);
 				// temporarily disable checked-change listener
@@ -774,7 +706,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
-
 				mCameraPreview = new VideOSCCameraFragment();
 				FragmentManager fragmentManager = getFragmentManager();
 				fragmentManager.beginTransaction()
@@ -803,34 +734,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 	}
 
-/*
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "menu item: " + item.getItemId());
-		switch(item.getItemId()) {
-			case android.R.id.home:
-				mDrawer.openDrawer(GravityCompat.END);
-				return true;
-		}
-
-		return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-	}
-*/
-
-/*
-	private ActionBarDrawerToggle setupDrawerToggle() {
-		// NOTE: Make sure you pass in a valid toolbar reference.
-		// ActionBarDrawToggle() does not require it
-		// and will not render the hamburger icon without it.
-		return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-	}
-*/
-
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggles
-//		drawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override
