@@ -555,10 +555,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		@Override
 		public boolean onTouchEvent(MotionEvent motionEvent) {
+			performClick();
 			Camera.Parameters params = pCamera.getParameters();
 
-			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
-				Log.d(TAG, "x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
+//			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
+				Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
 			if (motionEvent.getPointerCount() > 1 && params.isZoomSupported()) {
 				int zoom = params.getZoom();
@@ -584,6 +585,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
 
 			return true;
+		}
+
+		@Override
+		public boolean performClick() {
+			super.performClick();
+			return false;
 		}
 
 		/**

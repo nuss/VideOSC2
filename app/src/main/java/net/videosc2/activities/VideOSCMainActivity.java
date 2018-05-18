@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -76,6 +77,7 @@ import net.videosc2.utilities.enums.GestureModes;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
+import net.videosc2.views.SliderBar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +101,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private boolean isColorModePanelOpen = false;
 	// is the frame rate / calculation period panel currently open?
 	private boolean isFPSCalcPanelOpen = false;
+	// is the multisliderview currently visible?
+	private boolean isMultiSliderVisible = false;
 
 	private Fragment mCameraPreview;
 	// ID of currently opened camera
@@ -128,11 +132,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public Enum mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 
 	// pop-out menu for setting color mode
-	private ViewGroup modePanel;
+	private ViewGroup mModePanel;
 	// panel for displaying frame rate, calculation period
-	private ViewGroup frameRateCalculationPanel;
+	private ViewGroup mFrameRateCalculationPanel;
 	// the settings list
 	private ViewGroup settingsList;
+	// multislider view
+	private ViewGroup mMultiSliderView;
 
 	// drawer menu
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
@@ -250,8 +256,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 		tools.recycle();
 
-		modePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
-		frameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
+		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
+		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
+		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 
 		// get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
@@ -285,7 +292,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 				if (i == START_STOP) {
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 					if (!mApp.getPlay()) {
 						mApp.setPlay(true);
 						mToolsDrawerListState.put(START_STOP, R.drawable.stop);
@@ -300,7 +307,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					imgView.setImageDrawable(img);
 				} else if (i == TORCH) {
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 					cameraParameters = camera.getParameters();
 					if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
 						String flashMode = cameraParameters.getFlashMode();
@@ -324,9 +331,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (!isColorModePanelOpen) {
 						int y = (int) view.getY();
 
-						VideOSCUIHelpers.setTransitionAnimation(modePanel);
+						VideOSCUIHelpers.setTransitionAnimation(mModePanel);
 
-						isColorModePanelOpen = VideOSCUIHelpers.addView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.addView(mModePanel, (FrameLayout) mCamView);
 
 						if (rgbHasChanged) {
 							ImageView red = (ImageView) findViewById(R.id.mode_r);
@@ -340,7 +347,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 							blue.setImageResource(blueRes);
 						}
 
-						final View modePanelInner = modePanel.findViewById(R.id.color_mode_panel);
+						final View modePanelInner = mModePanel.findViewById(R.id.color_mode_panel);
 
 						VideOSCUIHelpers.setMargins(modePanelInner, 0, y, 60, 0);
 
@@ -422,7 +429,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 										}
 										view.clearFocus();
-										VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+										VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 										isColorModePanelOpen = false;
 									}
 									return false;
@@ -432,25 +439,31 @@ public class VideOSCMainActivity extends AppCompatActivity
 					}
 				} else if (i == INTERACTION) {
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 					if (mInteractionMode.equals(InteractionModes.BASIC)) {
 						mInteractionMode = InteractionModes.SINGLE_PIXEL;
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
+						VideOSCUIHelpers.setTransitionAnimation(mMultiSliderView);
+						isMultiSliderVisible = VideOSCUIHelpers.addView(mMultiSliderView, (FrameLayout) mCamView);
+						SliderBar slider = new SliderBar(activity,20, 20, 200, dimensions.y, 20);
+						mMultiSliderView.addView(slider);
 					} else if (mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 						mInteractionMode = InteractionModes.BASIC;
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
+						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 					} else {
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
+						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == SELECT_CAM) {
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 
 					cameraParameters = camera.getParameters();
 					if (currentCameraID == backsideCameraId) {
@@ -477,19 +490,19 @@ public class VideOSCMainActivity extends AppCompatActivity
 					cameraView.safeCameraOpenInView(mCamView);
 				} else if (i == INFO) {
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 					if (isFPSCalcPanelOpen) {
-						VideOSCUIHelpers.removeView(frameRateCalculationPanel, (FrameLayout) mCamView);
+						VideOSCUIHelpers.removeView(mFrameRateCalculationPanel, (FrameLayout) mCamView);
 						isFPSCalcPanelOpen = false;
 					} else {
-						VideOSCUIHelpers.setTransitionAnimation(frameRateCalculationPanel);
-						VideOSCUIHelpers.addView(frameRateCalculationPanel, (FrameLayout) mCamView);
+						VideOSCUIHelpers.setTransitionAnimation(mFrameRateCalculationPanel);
+						VideOSCUIHelpers.addView(mFrameRateCalculationPanel, (FrameLayout) mCamView);
 						isFPSCalcPanelOpen = true;
 					}
 				} else if (i == SETTINGS) {
 //					Log.d(TAG, "settings");
 					if (isColorModePanelOpen)
-						isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 					mApp.setSettingsLevel(1);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 						mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
@@ -522,7 +535,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
 					mToolsDrawerLayout.openDrawer(Gravity.END);
 				if (isColorModePanelOpen)
-					isColorModePanelOpen = VideOSCUIHelpers.removeView(modePanel, (FrameLayout) mCamView);
+					isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
 			}
 		});
 
@@ -691,6 +704,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		Camera camera = null;
+
 		if(requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Log.d(TAG, "onRequestPermissionsResult()");
@@ -700,9 +715,31 @@ public class VideOSCMainActivity extends AppCompatActivity
 						Snackbar.LENGTH_SHORT
 				).show();
 				// make sure permissions are granted before we touch the camera
-				Camera camera = Camera.open();
-				hasTorch = VideOSCUIHelpers.hasTorch(camera);
-				camera.release();
+
+				try {
+					camera = Camera.open();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+
+				if (camera != null) {
+					hasTorch = VideOSCUIHelpers.hasTorch(camera);
+					camera.release();
+				} else {
+					VideOSCDialogHelper.showDialog(
+							this,
+							android.R.style.Theme_Holo_Light_Dialog,
+							getString(R.string.msg_on_camera_open_fail),
+							getString(R.string.OK),
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									finish();
+								}
+
+							}, null, null
+					);
+				}
 
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
