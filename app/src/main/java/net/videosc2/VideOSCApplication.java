@@ -2,6 +2,7 @@ package net.videosc2;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Point;
 import android.view.View;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -27,6 +28,7 @@ public class VideOSCApplication extends Application {
 	private boolean mExposureSettingHasBeenCancelled = false;
 	private boolean mBackPressed;
 	public VideOSCOscHandler mOscHelper;
+	public Point mDimensions;
 
 	// setting dialogs
 	// levels within settings dialog
@@ -133,5 +135,13 @@ public class VideOSCApplication extends Application {
 
 	public void setBackPressed(boolean backPressed) {
 		mBackPressed = backPressed;
+	}
+
+	public Point getDimensions() {
+		return mDimensions;
+	}
+
+	public void setDimensions(Point dimensions) {
+		mDimensions = dimensions;
 	}
 }

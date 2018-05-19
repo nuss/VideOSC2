@@ -341,9 +341,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mBlueOscSender.start();
 			}
 
-			WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+			// ???
+			/* WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 			Display display = wm.getDefaultDisplay();
-			display.getSize(VideOSCMainActivity.dimensions);
+			display.getSize(mApp.getDimensions()); */
 
 			// get initial settings from database
 			String[] settingsFields = new String[]{

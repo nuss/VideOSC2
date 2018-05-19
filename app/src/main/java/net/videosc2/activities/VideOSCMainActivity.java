@@ -50,6 +50,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -92,7 +93,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	static final String TAG = "VideOSCMainActivity";
 
 	private View mCamView;
-	public static Point dimensions;
+	private Point mDimensions;
 	private DrawerLayout mToolsDrawerLayout;
 
 	// is flashlight on?
@@ -162,6 +163,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// immersive fullscreen
 		mDecorView = getWindow().getDecorView();
+
 		VideOSCUIHelpers.resetSystemUIState(mDecorView);
 
 		starterIntent = getIntent();
@@ -447,7 +449,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 						VideOSCUIHelpers.setTransitionAnimation(mMultiSliderView);
 						isMultiSliderVisible = VideOSCUIHelpers.addView(mMultiSliderView, (FrameLayout) mCamView);
-						SliderBar slider = new SliderBar(activity,20, 20, 200, dimensions.y, 20);
+						SliderBar slider = new SliderBar(activity,20, 20, 200, mDimensions.y - 20, 20);
 						mMultiSliderView.addView(slider);
 					} else if (mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 						mInteractionMode = InteractionModes.BASIC;
@@ -525,8 +527,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
-		DisplayMetrics dm = new DisplayMetrics();
-		dimensions = new Point(dm.widthPixels, dm.heightPixels);
+//		DisplayMetrics dm = new DisplayMetrics();
+//		mDimensions = new Point(dm.widthPixels, dm.heightPixels);
+		mDimensions = getAbsoluteScreenSize();
+		mApp.setDimensions(mDimensions);
+		Log.d(TAG, "absolut screen dimensions: " + mDimensions);
 
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 		menuButton.setOnClickListener(new View.OnClickListener() {
@@ -757,6 +762,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 				).show();
 			}
 		}
+	}
+
+	private Point getAbsoluteScreenSize() {
+		Point dimensions = new Point();
+
+		final Display display = getWindowManager().getDefaultDisplay();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+			display.getRealSize(dimensions);
+		else display.getSize(dimensions);
+
+		return dimensions;
 	}
 
 	@Override

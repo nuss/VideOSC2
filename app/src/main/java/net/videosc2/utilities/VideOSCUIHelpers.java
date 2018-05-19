@@ -1,13 +1,22 @@
 package net.videosc2.utilities;
 
 import android.animation.LayoutTransition;
+import android.app.Application;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
 import android.support.compat.BuildConfig;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import net.videosc2.VideOSCApplication;
+import net.videosc2.activities.VideOSCMainActivity;
 
 import java.util.List;
 
@@ -15,7 +24,7 @@ import java.util.List;
  * Created by stefan on 18.03.17.
  */
 
-public class VideOSCUIHelpers {
+public class VideOSCUIHelpers extends VideOSCMainActivity {
 	final static String TAG = "VideOSCUIHelpers";
 
 //	private LayoutTransition transition = new LayoutTransition();
@@ -25,6 +34,7 @@ public class VideOSCUIHelpers {
 	 *
 	 * @return a boolean indicating whether the device has an inbuilt flashlight
 	 */
+
 	public static boolean hasTorch(Camera camera) {
 		if (camera == null) {
 			return false;
