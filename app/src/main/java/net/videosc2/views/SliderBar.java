@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import net.videosc2.VideOSCApplication;
+
 import java.lang.reflect.Type;
 
 /**
@@ -27,20 +29,13 @@ public class SliderBar extends View {
 	Canvas mCanvas;
 	String pixelNum;
 	Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
-	LinearLayout mPixelNumLayout;
 	int left, top, right, bottom;
 	Rect mArea = new Rect(left, top, right, bottom);
 	int touchY;
 
-	public SliderBar(Context context, int left, int top, int right, int bottom, int touchY, String num) {
+	public SliderBar(Context context) {
 		super(context);
 		setFocusable(true);
-		this.left = left;
-		this.top = top;
-		this.right = right;
-		this.bottom = bottom;
-		this.touchY = touchY;
-		this.pixelNum = num;
 
 		mPaint = new Paint();
 		mCanvas = new Canvas();
@@ -101,6 +96,7 @@ public class SliderBar extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
 		Log.v(TAG, "width measure spec: " + MeasureSpec.toString(widthMeasureSpec));
 		Log.v(TAG, "height measure spec: " + MeasureSpec.toString(heightMeasureSpec));
 
@@ -154,5 +150,21 @@ public class SliderBar extends View {
 	public boolean performClick() {
 		super.performClick();
 		return false;
+	}
+
+	public void setTouchY(int touchY) {
+		this.touchY = touchY;
+	}
+
+	public int getTouchY() {
+		return this.touchY;
+	}
+
+	public void setNum(String num) {
+		this.pixelNum = num;
+	}
+
+	public String getNum() {
+		return this.pixelNum;
 	}
 }

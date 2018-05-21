@@ -87,8 +87,8 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 
 			int x = 0;
 			for (int num : sliderNums) {
-				slidersLeft.add(new SliderBar(getActivity(), x, 0, x + barWidth, barHeight, 0, String.valueOf(num)));
-				slidersRight.add(new SliderBar(getActivity(), x, 0, x + barWidth, barHeight, 0, String.valueOf(num)));
+				slidersLeft.add(new SliderBar(getActivity()));
+				slidersRight.add(new SliderBar(getActivity()));
 //			x = x + barWidth;
 //				Button testButton = new Button(getActivity());
 //				testButton.setWidth(dimensions.x/2/sliderNums.size());
@@ -96,6 +96,9 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 			}
 
 			for (SliderBar slider : slidersLeft) {
+				// TODO slider needs to know its touchY within the instance to draw its bar properly
+				// maybe keep Ys in an array symmetrically to slidersLeft
+				// slider.setTouchY();
 				mMSViewLeft.addView(slider);
 //				Log.d(TAG, "slider props: " + slider.getX() + ", " + slider.getY() + ", " + slider.getWidth() + ", " + slider.getHeight());
 			}
@@ -134,7 +137,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 
 			for(int i = 0; i < getChildCount(); i++) {
 				getChildAt(i).setLayoutParams(params);
-				Log.d(TAG, "child at " + i + ": " + getChildAt(i).getWidth() + ", " + getChildAt(i).getHeight());
+				Log.d(TAG, "child at " + i + ": " + getChildAt(i).getLayoutParams());
 			}
 
 		}
