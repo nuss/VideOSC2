@@ -984,6 +984,23 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		}
 	}
 
+	/* @Override
+	public void onDetach() {
+		Log.d(TAG, "settings fragment on detach");
+	} */
+
+	/* @Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "settings fragment on destroy");
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.d(TAG, "settings fragment on destroy view");
+	} */
+
 	private class Address {
 		private long rowId;
 		private String ip;

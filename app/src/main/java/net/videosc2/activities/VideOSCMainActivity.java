@@ -71,6 +71,7 @@ import net.videosc2.db.SettingsContract;
 import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
+import net.videosc2.fragments.VideOSCMultiSliderFragment;
 import net.videosc2.fragments.VideOSCSettingsFragment;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
@@ -81,6 +82,7 @@ import net.videosc2.utilities.enums.RGBToolbarStatus;
 import net.videosc2.views.SliderBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -106,6 +108,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private boolean isMultiSliderVisible = false;
 
 	private Fragment mCameraPreview;
+	private Fragment mMultiSliderView;
 	// ID of currently opened camera
 	public static int backsideCameraId;
 	public static int frontsideCameraId;
@@ -139,7 +142,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// the settings list
 	private ViewGroup settingsList;
 	// multislider view
-	private ViewGroup mMultiSliderView;
+//	private ViewGroup mMultiSliderView;
 
 	// drawer menu
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
@@ -167,7 +170,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		VideOSCUIHelpers.resetSystemUIState(mDecorView);
 
 		starterIntent = getIntent();
-		requestSettingsPermission();
+//		requestSettingsPermission();
 
 		mApp = (VideOSCApplication) getApplicationContext();
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -206,7 +209,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		cursor.close();
 
 		final LayoutInflater inflater = getLayoutInflater();
-		final Activity activity = this;
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -259,7 +261,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		tools.recycle();
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
-		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
+//		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 
 		// get keys for toolsDrawer
@@ -447,20 +449,34 @@ public class VideOSCMainActivity extends AppCompatActivity
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
-						VideOSCUIHelpers.setTransitionAnimation(mMultiSliderView);
+						mMultiSliderView = new VideOSCMultiSliderFragment();
+						fragmentManager.beginTransaction()
+								.add(R.id.camera_preview, mMultiSliderView, "MultiSliderView")
+								.commit();
+						VideOSCMultiSliderFragment multiSliderView = (VideOSCMultiSliderFragment) fragmentManager.findFragmentByTag("MultiSliderView");
+						Bundle msArgsBundle = new Bundle();
+						ArrayList<Integer> testList = new ArrayList<>(Arrays.asList(2, 4, 5, 7, 9, 12, 14, 15, 17, 19, 21, 22, 23, 30, 34, 37, 34));
+						msArgsBundle.putIntegerArrayList("nums", testList);
+						mMultiSliderView.setArguments(msArgsBundle);
+
+						/* VideOSCUIHelpers.setTransitionAnimation(mMultiSliderView);
 						isMultiSliderVisible = VideOSCUIHelpers.addView(mMultiSliderView, (FrameLayout) mCamView);
-						SliderBar slider = new SliderBar(activity,20, 20, 200, mDimensions.y - 20, 20);
-						mMultiSliderView.addView(slider);
+						SliderBar slider = new SliderBar(activity,20, 20, 200, mDimensions.y - 20, 20, "13");
+						mMultiSliderView.addView(slider); */
 					} else if (mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 						mInteractionMode = InteractionModes.BASIC;
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
-						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
+						if (mMultiSliderView != null)
+							fragmentManager.beginTransaction().remove(mMultiSliderView).commit();
+//						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 					} else {
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
-						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
+						if (mMultiSliderView != null)
+							fragmentManager.beginTransaction().remove(mMultiSliderView).commit();
+//						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 					}
 					imgView.setImageDrawable(img);
 				} else if (i == SELECT_CAM) {
@@ -577,9 +593,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		switch (settingsLevel) {
 			case 1:
+				FragmentManager manager = getFragmentManager();
+				Fragment fragment = manager.findFragmentByTag("settings selection");
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
+				if (fragment != null)
+					manager.beginTransaction().remove(fragment).commit();
 				mToolsDrawerLayout.closeDrawer(Gravity.END);
 				mApp.setSettingsLevel(0);
 				break;
@@ -675,7 +695,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 	}
 
-	private void requestSettingsPermission() {
+	/* private void requestSettingsPermission() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (!Settings.System.canWrite(this)) {
 				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
@@ -683,7 +703,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				startActivityForResult(intent, VideOSCMainActivity.CODE_WRITE_SETTINGS_PERMISSION);
 			}
 		}
-	}
+	} */
 
 	private void requestCameraPermission() {
 		if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
