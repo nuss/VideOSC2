@@ -35,13 +35,14 @@ public class SliderBar extends View {
 
 	public SliderBar(Context context) {
 		super(context);
+//		Log.d(TAG, "new SliderBar instance");
 		setFocusable(true);
 
 		mPaint = new Paint();
 		mCanvas = new Canvas();
 
-		this.setMinimumWidth(right);
-		this.setMinimumHeight(bottom);
+//		this.setMinimumWidth(right);
+//		this.setMinimumHeight(bottom);
 	}
 
 	public SliderBar(Context context, AttributeSet attrs) {
@@ -52,9 +53,15 @@ public class SliderBar extends View {
 		super(context, attrs, defStyle);
 	}
 
+	/*@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		measure(MeasureSpec.AT_MOST, MeasureSpec.AT_MOST);
+	}*/
+
 	@Override
 	protected void onDraw(Canvas canvas) {
-//		Log.d(TAG, "slider bar on draw");
+		Log.d(TAG, "slider bar on draw");
 		mPaint.setAntiAlias(true);
 //		mPaint.setDither(true);
 		mPaint.setStyle(Paint.Style.STROKE);
@@ -83,7 +90,15 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-//		Log.d(TAG, "slider bar on layout");
+//		Log.d(TAG, "slider bar on layout: " + left + ", " + top + ", " + right + ", " + bottom);
+//		this.setLeft(left);
+//		this.setTop(top);
+//		this.setRight(right);
+//		this.setBottom(bottom);
+		this.left = left;
+		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
 	}
 
 	/* @Override
@@ -97,11 +112,13 @@ public class SliderBar extends View {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-		Log.v(TAG, "width measure spec: " + MeasureSpec.toString(widthMeasureSpec));
-		Log.v(TAG, "height measure spec: " + MeasureSpec.toString(heightMeasureSpec));
+//		Log.v(TAG, "width measure spec: " + MeasureSpec.toString(widthMeasureSpec));
+//		Log.v(TAG, "height measure spec: " + MeasureSpec.toString(heightMeasureSpec));
 
 		int desiredWidth = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight();
 		int desiredHeight = getSuggestedMinimumHeight() + getPaddingTop() + getPaddingBottom();
+
+		Log.d(TAG, "desired width: " + desiredWidth + ", desired height: " + desiredHeight);
 
 		setMeasuredDimension(measureDimension(desiredWidth, widthMeasureSpec),
 				measureDimension(desiredHeight, heightMeasureSpec));
@@ -131,7 +148,7 @@ public class SliderBar extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		Log.d(TAG, "touched!");
 		performClick();
-		this.getParent().requestDisallowInterceptTouchEvent(true);
+//		this.getParent().requestDisallowInterceptTouchEvent(true);
 
 		int tempTouchX = (int) event.getX();
 		int tempTouchY = (int) event.getY();

@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import net.videosc2.R;
@@ -17,9 +15,6 @@ import net.videosc2.VideOSCApplication;
 import net.videosc2.views.SliderBar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by stefan on 19.05.18, package net.videosc2.views, project VideOSC22.
@@ -30,7 +25,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	private View mMSContainer;
 	private MultiSliderView mMSViewRight;
 	private MultiSliderView mMSViewLeft;
-	private int barHeight, barWidth;
+//	private int barHeight, barWidth;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragment() {
@@ -44,7 +39,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		mMSViewLeft = new MultiSliderView(getActivity());
 		mMSViewRight = new MultiSliderView(getActivity());
 		mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
-		Log.d(TAG, "mMSContainer is " + mMSContainer.getClass());
+//		Log.d(TAG, "mMSContainer is " + mMSContainer.getClass());
 
 		return mMSContainer;
 	}
@@ -52,7 +47,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
+		Log.d(TAG, "activity created");
 		addSliders();
 	}
 
@@ -80,37 +75,45 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 //		ViewGroup right = (ViewGroup) mMSContainer.findViewById(R.id.multislider_view_right);
 
 			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) left.getLayoutParams();
-			barHeight = dimensions.y - lp.bottomMargin - lp.topMargin;
-			barWidth = (dimensions.x / 2 - lp.leftMargin - lp.rightMargin) / sliderNums.size();
+			int barHeight = dimensions.y - lp.bottomMargin - lp.topMargin;
+			int barWidth = (dimensions.x / 2 - lp.leftMargin - lp.rightMargin) / sliderNums.size();
 
-			Log.d(TAG, "bar height: " + barHeight + ", bar width: " + barWidth);
+//			Log.d(TAG, "bar height: " + barHeight + ", bar width: " + barWidth);
 
-			int x = 0;
 			for (int num : sliderNums) {
-				slidersLeft.add(new SliderBar(getActivity()));
-				slidersRight.add(new SliderBar(getActivity()));
+				SliderBar barLeft = new SliderBar(getActivity());
+				barLeft.setNum(String.valueOf(num));
+				SliderBar barRight = new SliderBar(getActivity());
+				barRight.setNum(String.valueOf(num));
+				slidersLeft.add(barLeft);
+				slidersRight.add(barRight);
 //			x = x + barWidth;
 //				Button testButton = new Button(getActivity());
 //				testButton.setWidth(dimensions.x/2/sliderNums.size());
 //				mMSViewLeft.addView(testButton);
 			}
 
+			int x = 0;
 			for (SliderBar slider : slidersLeft) {
 				// TODO slider needs to know its touchY within the instance to draw its bar properly
 				// maybe keep Ys in an array symmetrically to slidersLeft
 				// slider.setTouchY();
+//				Log.d(TAG, "mMSViewLeft: " + mMSViewLeft.getChildCount());
 				mMSViewLeft.addView(slider);
+				slider.layout(x, 0, x + barWidth, barHeight);
+				x += barWidth;
 //				Log.d(TAG, "slider props: " + slider.getX() + ", " + slider.getY() + ", " + slider.getWidth() + ", " + slider.getHeight());
 			}
+			x = 0;
 			for (SliderBar slider : slidersRight) {
 				mMSViewRight.addView(slider);
+				slider.layout(x, 0, x + barWidth, barHeight);
+				x += barWidth;
 			}
 		}
 	}
 
 	public class MultiSliderView extends ViewGroup {
-		private LayoutParams params = new LayoutParams(barWidth, barHeight);
-
 		public MultiSliderView(Context context) {
 			super(context);
 		}
@@ -118,7 +121,6 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		@Override
 		protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 			Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
-
 		}
 
 		@Override
@@ -135,10 +137,9 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 			int measureHeight = measureDimension(desiredHeight, heightMeasureSpec);
 			setMeasuredDimension(measureWidth, measureHeight);
 
-			for(int i = 0; i < getChildCount(); i++) {
-				getChildAt(i).setLayoutParams(params);
-				Log.d(TAG, "child at " + i + ": " + getChildAt(i).getLayoutParams());
-			}
+			/*for(int i = 0; i < getChildCount(); i++) {
+				Log.d(TAG, "child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getRight());
+			}*/
 
 		}
 
@@ -170,7 +171,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 			int tempTouchX = (int) event.getX();
 			int tempTouchY = (int) event.getY();
 
-//			Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
+			Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
 
 //			if (mArea.contains(tempTouchX, tempTouchY)) {
 //				touchY = tempTouchY;
