@@ -27,22 +27,24 @@ public class SliderBar extends View {
 
 	public SliderBar(Context context) {
 		super(context);
-//		Log.d(TAG, "new SliderBar instance");
-		setFocusable(true);
-
-		mPaint = new Paint();
-		mCanvas = new Canvas();
-
-//		this.setMinimumWidth(right);
-//		this.setMinimumHeight(bottom);
+		init(null, 0);
 	}
 
 	public SliderBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		init(attrs, 0);
 	}
 
 	public SliderBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		init(attrs, defStyle);
+	}
+
+	private void init(AttributeSet attrs, int defStyle) {
+		setFocusable(true);
+
+		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		mCanvas = new Canvas();
 	}
 
 	/*@Override
@@ -54,7 +56,6 @@ public class SliderBar extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		Log.d(TAG, "slider bar on draw");
-		mPaint.setAntiAlias(true);
 //		mPaint.setDither(true);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
@@ -134,31 +135,6 @@ public class SliderBar extends View {
 			Log.e(TAG, "The view is too small, the content might get cut");
 		}
 		return result;
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		Log.d(TAG, "touched!");
-		performClick();
-//		this.getParent().requestDisallowInterceptTouchEvent(true);
-
-		int tempTouchX = (int) event.getX();
-		int tempTouchY = (int) event.getY();
-
-		Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
-
-		if (mArea.contains(tempTouchX, tempTouchY)) {
-			touchY = tempTouchY;
-		}
-
-		invalidate();
-		return true;
-	}
-
-	@Override
-	public boolean performClick() {
-		super.performClick();
-		return false;
 	}
 
 	public void setTouchY(int touchY) {
