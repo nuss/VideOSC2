@@ -2,22 +2,14 @@ package net.videosc2.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import net.videosc2.VideOSCApplication;
-
-import java.lang.reflect.Type;
 
 /**
  * Created by stefan on 17.05.18, package net.videosc2.views, project VideOSC22.

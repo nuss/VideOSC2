@@ -1,11 +1,9 @@
 package net.videosc2.fragments;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,6 +11,7 @@ import android.widget.LinearLayout;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.views.SliderBar;
+import net.videosc2.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
 
@@ -23,8 +22,8 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCApplication mApp;
 	private View mMSContainer;
-	private MultiSliderView mMSViewRight;
-	private MultiSliderView mMSViewLeft;
+	private VideOSCMultiSliderView mMSViewRight;
+	private VideOSCMultiSliderView mMSViewLeft;
 //	private int barHeight, barWidth;
 
 	// empty public constructor
@@ -36,9 +35,9 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		mApp = (VideOSCApplication) getActivity().getApplication();
-		mMSViewLeft = new MultiSliderView(getActivity());
-		mMSViewRight = new MultiSliderView(getActivity());
 		mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
+		mMSViewLeft = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_left);
+		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
 //		Log.d(TAG, "mMSContainer is " + mMSContainer.getClass());
 
 		return mMSContainer;
@@ -52,17 +51,11 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	}
 
 	private void addSliders() {
-		ViewGroup left;
-		ViewGroup right;
 		if (mMSContainer.findViewById(R.id.multislider_view) != null) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.MATCH_PARENT,
 					LinearLayout.LayoutParams.MATCH_PARENT
 			);
-			left = (ViewGroup) mMSContainer.findViewById(R.id.multislider_view_left);
-			left.addView(mMSViewLeft, params);
-			right = (ViewGroup) mMSContainer.findViewById(R.id.multislider_view_right);
-			right.addView(mMSViewRight, params);
 
 			Point dimensions = mApp.getDimensions();
 			Bundle numsBundle = this.getArguments();
@@ -74,7 +67,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 //		ViewGroup left = (ViewGroup) mMSContainer.findViewById(R.id.multislider_view_left);
 //		ViewGroup right = (ViewGroup) mMSContainer.findViewById(R.id.multislider_view_right);
 
-			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) left.getLayoutParams();
+			ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 			int barHeight = dimensions.y - lp.bottomMargin - lp.topMargin;
 			int barWidth = (dimensions.x / 2 - lp.leftMargin - lp.rightMargin) / sliderNums.size();
 
@@ -113,78 +106,4 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		}
 	}
 
-	public class MultiSliderView extends ViewGroup {
-		public MultiSliderView(Context context) {
-			super(context);
-		}
-
-		@Override
-		protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-			Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
-		}
-
-		@Override
-		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-			Log.d(TAG, "number of children: " + getChildCount());
-			Log.v(TAG, "width measure spec: " + MeasureSpec.toString(widthMeasureSpec));
-			Log.v(TAG, "height measure spec: " + MeasureSpec.toString(heightMeasureSpec));
-
-			int desiredWidth = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight();
-			int desiredHeight = getSuggestedMinimumHeight() + getPaddingTop() + getPaddingBottom();
-
-			int measureWidth = measureDimension(desiredWidth, widthMeasureSpec);
-			int measureHeight = measureDimension(desiredHeight, heightMeasureSpec);
-			setMeasuredDimension(measureWidth, measureHeight);
-
-			/*for(int i = 0; i < getChildCount(); i++) {
-				Log.d(TAG, "child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getRight());
-			}*/
-
-		}
-
-		private int measureDimension(int desiredSize, int measureSpec) {
-			int result;
-			int specMode = MeasureSpec.getMode(measureSpec);
-			int specSize = MeasureSpec.getSize(measureSpec);
-
-			if (specMode == MeasureSpec.EXACTLY) {
-				result = specSize;
-			} else {
-				result = desiredSize;
-				if (specMode == MeasureSpec.AT_MOST) {
-					result = Math.min(result, specSize);
-				}
-			}
-
-			if (result < desiredSize){
-				Log.e(TAG, "The view is too small, the content might get cut");
-			}
-			return result;
-		}
-
-		@Override
-		public boolean onTouchEvent(MotionEvent event) {
-			performClick();
-			this.getParent().requestDisallowInterceptTouchEvent(true);
-
-			int tempTouchX = (int) event.getX();
-			int tempTouchY = (int) event.getY();
-
-			Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
-
-//			if (mArea.contains(tempTouchX, tempTouchY)) {
-//				touchY = tempTouchY;
-//			}
-
-			invalidate();
-			return true;
-		}
-
-		@Override
-		public boolean performClick() {
-			super.performClick();
-			return false;
-		}
-	}
 }
