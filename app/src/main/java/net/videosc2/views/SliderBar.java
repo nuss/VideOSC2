@@ -55,7 +55,7 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		Log.d(TAG, "slider bar on draw");
+		Log.d(TAG, "slider bar on draw: " + left + ", " + top + ", " + right + ", " + bottom);
 //		mPaint.setDither(true);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
@@ -83,7 +83,7 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-//		Log.d(TAG, "slider bar on layout: " + left + ", " + top + ", " + right + ", " + bottom);
+		Log.d(TAG, "slider bar on layout: " + left + ", " + top + ", " + right + ", " + bottom);
 //		this.setLeft(left);
 //		this.setTop(top);
 //		this.setRight(right);
@@ -94,7 +94,7 @@ public class SliderBar extends View {
 		this.bottom = bottom;
 	}
 
-	/* @Override
+	/*@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		super.onWindowFocusChanged(hasFocus);
 		Log.d(TAG, "window focus changed");

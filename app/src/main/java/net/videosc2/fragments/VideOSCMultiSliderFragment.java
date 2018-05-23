@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCApplication mApp;
-	private View mMSContainer;
+//	private View mMSContainer;
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
 //	private int barHeight, barWidth;
@@ -34,12 +34,34 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView");
 //		mApp = (VideOSCApplication) getActivity().getApplication();
-		mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
+		View mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_left);
 		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
 		Bundle numsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
+
+		ArrayList<SliderBar> sliders = new ArrayList<>();
+		for (int num : sliderNums) {
+			SliderBar bar = new SliderBar(getActivity());
+			bar.setNum(String.valueOf(num));
+			sliders.add(bar);
+//			x = x + barWidth;
+//				Button testButton = new Button(getActivity());
+//				testButton.setWidth(dimensions.x/2/sliderNums.size());
+//				mMSViewLeft.addView(testButton);
+		}
+
+		int x = 0;
+		for (SliderBar slider : sliders) {
+			// TODO slider needs to know its touchY within the instance to draw its bar properly
+			// maybe keep Ys in an array symmetrically to slidersLeft
+			// slider.setTouchY();
+			mMSViewLeft.addView(slider);
+			Log.d(TAG, "slider: " + slider.getLeft() + ", " + slider.getRight() + ", " + slider.getX() + ", " + slider.getWidth());
+//			x += barWidth;
+		}
 
 //		Log.d(TAG, "mMSContainer is " + mMSContainer.getClass());
 		setSliderProps(sliderNums);

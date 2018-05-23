@@ -7,12 +7,14 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
-public class VideOSCMultiSliderView extends ViewGroup {
+public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
 	private ArrayList<Integer> sliderNums;
 	private Point screenDimensions;
@@ -25,7 +27,6 @@ public class VideOSCMultiSliderView extends ViewGroup {
 	public VideOSCMultiSliderView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init(attrs, 0);
-
 	}
 
 	public VideOSCMultiSliderView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -40,7 +41,8 @@ public class VideOSCMultiSliderView extends ViewGroup {
 	}
 
 	private void init(AttributeSet attrs, int defStyleAttr) {
-
+		Log.d(TAG, "MultiSliderView init - attrs: " + attrs + ", orientation: " + this.getOrientation());
+		this.setOrientation(LinearLayout.HORIZONTAL);
 	}
 
 	public void setSliderNums(ArrayList<Integer> sliderNums) {
@@ -49,12 +51,6 @@ public class VideOSCMultiSliderView extends ViewGroup {
 
 	public void setScreenDimensions(Point dimensions) {
 		this.screenDimensions = dimensions;
-	}
-
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
-		addSliders();
 	}
 
 	@Override
@@ -72,7 +68,7 @@ public class VideOSCMultiSliderView extends ViewGroup {
 		setMeasuredDimension(measureWidth, measureHeight);
 
 		for (int i = 0; i < getChildCount(); i++) {
-			Log.d(TAG, "child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getRight());
+			Log.d(TAG, "onMeasure - child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getRight());
 		}
 	}
 
@@ -95,6 +91,13 @@ public class VideOSCMultiSliderView extends ViewGroup {
 		}
 		return result;
 	}
+
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
+//		addSliders();
+	}
+
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -121,20 +124,24 @@ public class VideOSCMultiSliderView extends ViewGroup {
 	}
 
 	private void addSliders() {
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.MATCH_PARENT
-		);
+//		ArrayList<SliderBar> sliders = new ArrayList<>();
 
-		ArrayList<SliderBar> sliders = new ArrayList<>();
-
-		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) this.getLayoutParams();
+		MarginLayoutParams lp = (MarginLayoutParams) this.getLayoutParams();
 		int barHeight = screenDimensions.y - lp.bottomMargin - lp.topMargin;
 		int barWidth = (screenDimensions.x / 2 - lp.leftMargin - lp.rightMargin) / sliderNums.size();
 
 		Log.d(TAG, "bar height: " + barHeight + ", bar width: " + barWidth);
 
-		for (int num : sliderNums) {
+		LinearLayout.LayoutParams childParams = new LinearLayout.LayoutParams(barWidth, barHeight);
+		childParams.rightMargin = 0;
+		childParams.leftMargin = 0;
+
+		for (int i = 0; i < this.getChildCount(); i++) {
+			SliderBar child = (SliderBar) getChildAt(i);
+			child.setLayoutParams(childParams);
+		}
+
+		/*for (int num : sliderNums) {
 			SliderBar bar = new SliderBar(getContext());
 			bar.setNum(String.valueOf(num));
 			sliders.add(bar);
@@ -149,12 +156,11 @@ public class VideOSCMultiSliderView extends ViewGroup {
 			// TODO slider needs to know its touchY within the instance to draw its bar properly
 			// maybe keep Ys in an array symmetrically to slidersLeft
 			// slider.setTouchY();
-//				Log.d(TAG, "mMSViewLeft: " + mMSViewLeft.getChildCount());
-			this.addView(slider);
 			slider.layout(x, 0, x + barWidth, barHeight);
+			this.addView(slider, childParams);
+			Log.d(TAG, "slider: " + slider.getLeft() + ", " + slider.getRight() + ", " + slider.getX() + ", " + slider.getWidth());
 			x += barWidth;
-//				Log.d(TAG, "slider props: " + slider.getX() + ", " + slider.getY() + ", " + slider.getWidth() + ", " + slider.getHeight());
-		}
+		}*/
 	}
 
 }
