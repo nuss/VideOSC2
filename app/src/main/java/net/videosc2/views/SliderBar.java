@@ -8,7 +8,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -41,7 +40,7 @@ public class SliderBar extends View {
 	}
 
 	private void init(AttributeSet attrs, int defStyle) {
-		setFocusable(true);
+//		setFocusable(true);
 
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		mCanvas = new Canvas();
@@ -83,11 +82,12 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		Log.d(TAG, "slider bar on layout: " + left + ", " + top + ", " + right + ", " + bottom);
-//		this.setLeft(left);
-//		this.setTop(top);
-//		this.setRight(right);
-//		this.setBottom(bottom);
+//		Log.d(TAG, "slider bar on layout: " + this.isShown() + ", " + left + ", " + top + ", " + right + ", " + bottom);
+		this.setLeft(left);
+		this.setTop(top);
+		this.setRight(right);
+		this.setBottom(bottom);
+		Log.d(TAG, "slider position: " + this.getLeft() + ", " + this.getRight());
 		this.left = left;
 		this.top = top;
 		this.right = right;

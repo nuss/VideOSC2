@@ -68,7 +68,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		setMeasuredDimension(measureWidth, measureHeight);
 
 		for (int i = 0; i < getChildCount(); i++) {
-			Log.d(TAG, "onMeasure - child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getRight());
+			Log.d(TAG, "onMeasure - child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getMeasuredWidth());
 		}
 	}
 
@@ -95,7 +95,22 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
+		int barWidth = getMeasuredWidth()/sliderNums.size();
+		int barHeight = getMeasuredHeight();
+		int x = 0;
+		for (int i = 0; i < getChildCount(); i++) {
+			SliderBar child = (SliderBar) getChildAt(i);
+//			child.setLeft(x);
+//			child.setTop(0);
+//			child.setRight(barWidth);
+//			child.setBottom(barHeight);
+
+			child.layout(x, 0, x + barWidth, barHeight);
+			x += barWidth;
+//			Log.d(TAG, "child at " + i + ": " + child.getLeft() + ", " + child.getTop() + ", " + child.getRight() + ", " + child.getBottom());
+		}
 //		addSliders();
+
 	}
 
 

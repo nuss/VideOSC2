@@ -1,5 +1,6 @@
 package net.videosc2.fragments;
 
+import android.app.Fragment;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
 
 		ArrayList<SliderBar> sliders = new ArrayList<>();
+		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar bar = new SliderBar(getActivity());
 			bar.setNum(String.valueOf(num));
