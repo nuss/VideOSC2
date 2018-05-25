@@ -16,13 +16,12 @@ import android.view.View;
 public class SliderBar extends View {
 
 	final static String TAG = "SliderBar";
-	Paint mPaint;
-	Canvas mCanvas;
-	String pixelNum;
-	Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
-	int left, top, right, bottom;
-	Rect mArea = new Rect(left, top, right, bottom);
-	int touchY;
+	private Paint mPaint;
+	private String pixelNum;
+	private Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
+	private int left = 0, top = 0, right, bottom;
+	private Rect mArea = new Rect(left, top, right, bottom);
+	private int touchY;
 
 	public SliderBar(Context context) {
 		super(context);
@@ -41,16 +40,8 @@ public class SliderBar extends View {
 
 	private void init(AttributeSet attrs, int defStyle) {
 //		setFocusable(true);
-
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mCanvas = new Canvas();
 	}
-
-	/*@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		measure(MeasureSpec.AT_MOST, MeasureSpec.AT_MOST);
-	}*/
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -72,36 +63,22 @@ public class SliderBar extends View {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 			canvas.drawRoundRect((float) left, (float) touchY, (float) right, (float) bottom, (float) 10.0, (float) 10.0, mPaint);
 		else
-			canvas.drawRect(left, touchY, right, bottom, mPaint);
+			canvas.drawRect(left, touchY, right - left, bottom, mPaint);
 		mPaint.setTextAlign(Paint.Align.CENTER);
 		mPaint.setTypeface(typeFace);
 		mPaint.setTextSize((float) 30);
 		mPaint.setColor(0xffffffff);
-		canvas.drawText(pixelNum, right/2, bottom - 20, mPaint);
+		canvas.drawText(pixelNum, (right - left)/2, bottom - 20, mPaint);
 	}
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-//		Log.d(TAG, "slider bar on layout: " + this.isShown() + ", " + left + ", " + top + ", " + right + ", " + bottom);
-		this.setLeft(left);
-		this.setTop(top);
-		this.setRight(right);
-		this.setBottom(bottom);
-		Log.d(TAG, "slider position: " + this.getLeft() + ", " + this.getRight());
-		this.left = left;
-		this.top = top;
-		this.right = right;
+		Log.d(TAG, "slider bar on layout: " + this.isShown() + ", " + left + ", " + top + ", " + right + ", " + bottom);
+		this.right = right - left;
 		this.bottom = bottom;
 	}
 
 	/*@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		Log.d(TAG, "window focus changed");
-		mArea = new Rect(this.left, this.top, this.right, this.bottom);
-	} */
-
-	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -135,7 +112,7 @@ public class SliderBar extends View {
 			Log.e(TAG, "The view is too small, the content might get cut");
 		}
 		return result;
-	}
+	}*/
 
 	public void setTouchY(int touchY) {
 		this.touchY = touchY;

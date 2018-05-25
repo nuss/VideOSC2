@@ -1,23 +1,15 @@
 package net.videosc2.views;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
 import java.util.ArrayList;
 
 public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
 	private ArrayList<Integer> sliderNums;
-	private Point screenDimensions;
 
 	public VideOSCMultiSliderView(Context context) {
 		super(context);
@@ -34,12 +26,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		init(attrs, defStyleAttr);
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	public VideOSCMultiSliderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
-		init(attrs, defStyleAttr);
-	}
-
 	private void init(AttributeSet attrs, int defStyleAttr) {
 		Log.d(TAG, "MultiSliderView init - attrs: " + attrs + ", orientation: " + this.getOrientation());
 		this.setOrientation(LinearLayout.HORIZONTAL);
@@ -47,11 +33,12 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setSliderNums(ArrayList<Integer> sliderNums) {
 		this.sliderNums = sliderNums;
+//		invalidate();
 	}
 
-	public void setScreenDimensions(Point dimensions) {
+	/*public void setScreenDimensions(Point dimensions) {
 		this.screenDimensions = dimensions;
-	}
+	}*/
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -66,10 +53,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int measureWidth = measureDimension(desiredWidth, widthMeasureSpec);
 		int measureHeight = measureDimension(desiredHeight, heightMeasureSpec);
 		setMeasuredDimension(measureWidth, measureHeight);
-
-		for (int i = 0; i < getChildCount(); i++) {
-			Log.d(TAG, "onMeasure - child at " + i + ": " + getChildAt(i).getLeft() + ", " + getChildAt(i).getMeasuredWidth());
-		}
 	}
 
 	private int measureDimension(int desiredSize, int measureSpec) {
@@ -94,25 +77,15 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		Log.d(TAG, "MultiSliderView on layout: " + left + ", " + top + ", " + right + ", " + bottom);
 		int barWidth = getMeasuredWidth()/sliderNums.size();
 		int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
-//			child.setLeft(x);
-//			child.setTop(0);
-//			child.setRight(barWidth);
-//			child.setBottom(barHeight);
-
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += barWidth;
-//			Log.d(TAG, "child at " + i + ": " + child.getLeft() + ", " + child.getTop() + ", " + child.getRight() + ", " + child.getBottom());
 		}
-//		addSliders();
-
 	}
-
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -137,46 +110,5 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		super.performClick();
 		return false;
 	}
-
-	private void addSliders() {
-//		ArrayList<SliderBar> sliders = new ArrayList<>();
-
-		MarginLayoutParams lp = (MarginLayoutParams) this.getLayoutParams();
-		int barHeight = screenDimensions.y - lp.bottomMargin - lp.topMargin;
-		int barWidth = (screenDimensions.x / 2 - lp.leftMargin - lp.rightMargin) / sliderNums.size();
-
-		Log.d(TAG, "bar height: " + barHeight + ", bar width: " + barWidth);
-
-		LinearLayout.LayoutParams childParams = new LinearLayout.LayoutParams(barWidth, barHeight);
-		childParams.rightMargin = 0;
-		childParams.leftMargin = 0;
-
-		for (int i = 0; i < this.getChildCount(); i++) {
-			SliderBar child = (SliderBar) getChildAt(i);
-			child.setLayoutParams(childParams);
-		}
-
-		/*for (int num : sliderNums) {
-			SliderBar bar = new SliderBar(getContext());
-			bar.setNum(String.valueOf(num));
-			sliders.add(bar);
-//			x = x + barWidth;
-//				Button testButton = new Button(getActivity());
-//				testButton.setWidth(dimensions.x/2/sliderNums.size());
-//				mMSViewLeft.addView(testButton);
-		}
-
-		int x = 0;
-		for (SliderBar slider : sliders) {
-			// TODO slider needs to know its touchY within the instance to draw its bar properly
-			// maybe keep Ys in an array symmetrically to slidersLeft
-			// slider.setTouchY();
-			slider.layout(x, 0, x + barWidth, barHeight);
-			this.addView(slider, childParams);
-			Log.d(TAG, "slider: " + slider.getLeft() + ", " + slider.getRight() + ", " + slider.getX() + ", " + slider.getWidth());
-			x += barWidth;
-		}*/
-	}
-
 }
 

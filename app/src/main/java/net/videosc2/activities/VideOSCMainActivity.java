@@ -543,11 +543,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		mToolsDrawerLayout.openDrawer(Gravity.END);
 
-//		DisplayMetrics dm = new DisplayMetrics();
-//		mDimensions = new Point(dm.widthPixels, dm.heightPixels);
 		mDimensions = getAbsoluteScreenSize();
 		mApp.setDimensions(mDimensions);
-		Log.d(TAG, "absolut screen dimensions: " + mDimensions);
 
 		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
 		menuButton.setOnClickListener(new View.OnClickListener() {
@@ -788,7 +785,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		Point dimensions = new Point();
 
 		final Display display = getWindowManager().getDefaultDisplay();
-
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
 			display.getRealSize(dimensions);
 		else display.getSize(dimensions);
