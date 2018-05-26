@@ -179,6 +179,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		}
 		currentCameraID = backsideCameraId;
 
+		final float scale = getResources().getDisplayMetrics().density;
+		mApp.setScreenDensity(scale);
+
 		// keep db access open through the app's lifetime
 		mDbHelper = new SettingsDBHelper(this);
 		final SQLiteDatabase db = mDbHelper.getReadableDatabase();

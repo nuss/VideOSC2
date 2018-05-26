@@ -27,6 +27,7 @@ public class VideOSCApplication extends Application {
 	private boolean mExposureIsFixed = false;
 	private boolean mExposureSettingHasBeenCancelled = false;
 	private boolean mBackPressed;
+	private float mDensity;
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
 
@@ -143,5 +144,13 @@ public class VideOSCApplication extends Application {
 
 	public void setDimensions(Point dimensions) {
 		mDimensions = dimensions;
+	}
+
+	public void setScreenDensity(float density) {
+		mDensity = density;
+	}
+
+	public float getScreenDensity() {
+		return mDensity;
 	}
 }

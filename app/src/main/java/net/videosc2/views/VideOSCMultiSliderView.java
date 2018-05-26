@@ -35,7 +35,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setSliderNums(ArrayList<Integer> sliderNums) {
 		this.sliderNums = sliderNums;
-//		invalidate();
 	}
 
 	/*public void setScreenDimensions(Point dimensions) {
@@ -110,10 +109,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 				bar.invalidate();
 			}
 		}
-
-//			if (mArea.contains(tempTouchX, tempTouchY)) {
-//				touchY = tempTouchY;
-//			}
 
 		invalidate();
 		return true;

@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import net.videosc2.VideOSCApplication;
+
 /**
  * Created by stefan on 17.05.18, package net.videosc2.views, project VideOSC22.
  */
@@ -22,6 +24,7 @@ public class SliderBar extends View {
 	private int left = 0, top = 0, right, bottom;
 	public Rect mArea = new Rect(left, top, right, bottom);
 	private int touchY;
+	public float mScreenDensity;
 
 	public SliderBar(Context context) {
 		super(context);
@@ -45,7 +48,8 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		Log.d(TAG, "touchY: " + touchY);
+		Log.d(TAG, "screen density: " + mScreenDensity);
+		int touchBarTop, touchBarBottom;
 		touchY = touchY == 0 ? touchY = 2 : getTouchY();
 //		Log.d(TAG, "slider bar on draw: " + left + ", " + top + ", " + right + ", " + bottom);
 //		mPaint.setDither(true);
@@ -54,7 +58,7 @@ public class SliderBar extends View {
 		mPaint.setStrokeWidth(0);
 		mPaint.setColor(0x99000000);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, (float) 10.0, (float) 10.0, mPaint);
+			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, (float) 10.0 * mScreenDensity, (float) 10.0 * mScreenDensity, mPaint);
 		else
 			canvas.drawRect(left, top, right, bottom, mPaint);
 		mArea.set(getLeft(), getTop(), getRight(), getBottom());
@@ -63,7 +67,7 @@ public class SliderBar extends View {
 		if (touchY + 2 <= top) touchY = top + 2;
 		if (touchY - 2 > bottom) touchY = bottom - 2;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			canvas.drawRoundRect((float) left + 2, (float) touchY, (float) right - 4, (float) bottom - 2, (float) 10.0, (float) 10.0, mPaint);
+			canvas.drawRoundRect((float) left + 2, (float) touchY, (float) right - 4, (float) bottom - 2, (float) 10.0 * mScreenDensity, (float) 10.0 * mScreenDensity, mPaint);
 		else
 			canvas.drawRect(left, touchY, right - left, bottom, mPaint);
 		mPaint.setTextAlign(Paint.Align.CENTER);

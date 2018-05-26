@@ -36,14 +36,18 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
 		Bundle numsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
+		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
+		float density = app.getScreenDensity();
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar barLeft = new SliderBar(getActivity());
+			barLeft.mScreenDensity = density;
 			barLeft.setNum(String.valueOf(num));
 			mMSViewLeft.bars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
+			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(num));
 			mMSViewRight.bars.add(barRight);
 			mMSViewRight.addView(barRight);
