@@ -19,7 +19,6 @@ import java.util.ArrayList;
  */
 public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
-	private VideOSCApplication mApp;
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
 
@@ -38,23 +37,16 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		Bundle numsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
 
-		ArrayList<SliderBar> slidersLeft = new ArrayList<>();
-		ArrayList<SliderBar> slidersRight = new ArrayList<>();
 		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar barLeft = new SliderBar(getActivity());
 			barLeft.setNum(String.valueOf(num));
-			slidersLeft.add(barLeft);
+			mMSViewLeft.bars.add(barLeft);
+			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
 			barRight.setNum(String.valueOf(num));
-			slidersRight.add(barRight);
-		}
-
-		for (SliderBar slider : slidersLeft) {
-			mMSViewLeft.addView(slider);
-		}
-		for (SliderBar slider : slidersRight) {
-			mMSViewRight.addView(slider);
+			mMSViewRight.bars.add(barRight);
+			mMSViewRight.addView(barRight);
 		}
 
 		setSliderProps(sliderNums);

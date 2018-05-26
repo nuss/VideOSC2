@@ -20,7 +20,7 @@ public class SliderBar extends View {
 	private String pixelNum;
 	private Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
 	private int left = 0, top = 0, right, bottom;
-	private Rect mArea = new Rect(left, top, right, bottom);
+	public Rect mArea = new Rect(left, top, right, bottom);
 	private int touchY;
 
 	public SliderBar(Context context) {
@@ -45,23 +45,25 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		Log.d(TAG, "slider bar on draw: " + left + ", " + top + ", " + right + ", " + bottom);
+		Log.d(TAG, "touchY: " + touchY);
+		touchY = touchY == 0 ? touchY = 2 : getTouchY();
+//		Log.d(TAG, "slider bar on draw: " + left + ", " + top + ", " + right + ", " + bottom);
 //		mPaint.setDither(true);
-		mPaint.setStyle(Paint.Style.STROKE);
+		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
-		mPaint.setStrokeWidth(6);
-		mPaint.setColor(0x66ffffff);
+		mPaint.setStrokeWidth(0);
+		mPaint.setColor(0x99000000);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, (float) 10.0, (float) 10.0, mPaint);
 		else
 			canvas.drawRect(left, top, right, bottom, mPaint);
-		mArea.set(left, top, right, bottom);
+		mArea.set(getLeft(), getTop(), getRight(), getBottom());
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		mPaint.setColor(0x66000000);
-		if (touchY <= top) touchY = top;
-		if (touchY > bottom) touchY = bottom;
+		mPaint.setColor(0x33ffffff);
+		if (touchY + 2 <= top) touchY = top + 2;
+		if (touchY - 2 > bottom) touchY = bottom - 2;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			canvas.drawRoundRect((float) left, (float) touchY, (float) right, (float) bottom, (float) 10.0, (float) 10.0, mPaint);
+			canvas.drawRoundRect((float) left + 2, (float) touchY, (float) right - 4, (float) bottom - 2, (float) 10.0, (float) 10.0, mPaint);
 		else
 			canvas.drawRect(left, touchY, right - left, bottom, mPaint);
 		mPaint.setTextAlign(Paint.Align.CENTER);

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
+	public ArrayList<SliderBar> bars = new ArrayList<>();
+
 	private ArrayList<Integer> sliderNums;
 
 	public VideOSCMultiSliderView(Context context) {
@@ -77,13 +79,16 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		int barWidth = getMeasuredWidth()/sliderNums.size();
+		int numSliders = sliderNums.size();
+		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
+		int barWidth = (getMeasuredWidth() - marginsTotal)/numSliders;
+		Log.d(TAG, "numSliders: " + numSliders + ", marginsTotal: " + marginsTotal + ", barWidth: " + barWidth);
 		int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
 			child.layout(x, 0, x + barWidth, barHeight);
-			x += barWidth;
+			x += (barWidth + 1);
 		}
 	}
 
@@ -96,6 +101,15 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int tempTouchY = (int) event.getY();
 
 		Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
+
+		for (int i = 0; i < bars.size(); i++) {
+			SliderBar bar = bars.get(i);
+//			Log.d(TAG, "mArea: " + bar.mArea.left + ", " + bar.mArea.top + ", " + bar.mArea.right + ", " + bar.mArea.bottom);
+			if (bar.mArea.contains(tempTouchX, tempTouchY)) {
+				bar.setTouchY(tempTouchY);
+				bar.invalidate();
+			}
+		}
 
 //			if (mArea.contains(tempTouchX, tempTouchY)) {
 //				touchY = tempTouchY;
