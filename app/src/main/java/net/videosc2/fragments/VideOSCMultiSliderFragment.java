@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
@@ -34,6 +35,8 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		View mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_left);
 		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
+		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
+		int topMargin = lp.topMargin;
 		Bundle numsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
 		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
@@ -42,11 +45,18 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar barLeft = new SliderBar(getActivity());
+			// sensitive area for touch events should extent to
+			// full screenheight, otherwise it's hard to set sliders to
+			// minimum or maximum
+			barLeft.areaTop = 0 - topMargin;
+			barLeft.areaBottom = app.getDimensions().y;
 			barLeft.mScreenDensity = density;
 			barLeft.setNum(String.valueOf(num));
 			mMSViewLeft.bars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
+			barRight.areaTop = 0 - topMargin;
+			barRight.areaBottom = app.getDimensions().y;
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(num));
 			mMSViewRight.bars.add(barRight);

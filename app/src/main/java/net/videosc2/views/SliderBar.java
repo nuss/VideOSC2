@@ -22,7 +22,8 @@ public class SliderBar extends View {
 	private String pixelNum;
 	private Typeface typeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
 	private int left = 0, top = 0, right, bottom;
-	public Rect mArea = new Rect(left, top, right, bottom);
+	public int areaTop, areaBottom;
+	public Rect mArea = new Rect(left, areaTop, right, areaBottom);
 	private int touchY;
 	public float mScreenDensity;
 
@@ -48,7 +49,6 @@ public class SliderBar extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		Log.d(TAG, "screen density: " + mScreenDensity);
 		int touchBarTop, touchBarBottom;
 		touchY = touchY == 0 ? touchY = 2 : getTouchY();
 //		Log.d(TAG, "slider bar on draw: " + left + ", " + top + ", " + right + ", " + bottom);
@@ -58,18 +58,19 @@ public class SliderBar extends View {
 		mPaint.setStrokeWidth(0);
 		mPaint.setColor(0x99000000);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, (float) 10.0 * mScreenDensity, (float) 10.0 * mScreenDensity, mPaint);
+			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
 		else
 			canvas.drawRect(left, top, right, bottom, mPaint);
-		mArea.set(getLeft(), getTop(), getRight(), getBottom());
+		Log.d(TAG, "mArea: " + getLeft() + ", " + getTop() + ", " + getRight() + ", " + getBottom());
+		mArea.set(getLeft(), areaTop, getRight(), areaBottom);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		mPaint.setColor(0x33ffffff);
 		if (touchY + 2 <= top) touchY = top + 2;
 		if (touchY - 2 > bottom) touchY = bottom - 2;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			canvas.drawRoundRect((float) left + 2, (float) touchY, (float) right - 4, (float) bottom - 2, (float) 10.0 * mScreenDensity, (float) 10.0 * mScreenDensity, mPaint);
+			canvas.drawRoundRect((float) left + 2, (float) touchY, (float) right - 4, (float) bottom - 2, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
 		else
-			canvas.drawRect(left, touchY, right - left, bottom, mPaint);
+			canvas.drawRect(left + 2, touchY, right - 4, bottom - 2, mPaint);
 		mPaint.setTextAlign(Paint.Align.CENTER);
 		mPaint.setTypeface(typeFace);
 		mPaint.setTextSize((float) 30);
