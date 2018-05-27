@@ -90,7 +90,7 @@ import java.util.List;
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
 public class VideOSCMainActivity extends AppCompatActivity
-		implements VideOSCBaseFragment.OnFragmentInteractionListener {
+		implements VideOSCBaseFragment.OnFragmentInteractionListener/*, VideOSCCameraFragment.OnCompleteCameraFragmentListener*/ {
 
 	static final String TAG = "VideOSCMainActivity";
 
@@ -291,10 +291,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
 				Context context = getApplicationContext();
-				// cameraView provides all instance methods of the camera preview
+				// cameraFragment provides all instance methods of the camera preview
 				// no reflections needed
-				VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-				Camera camera = cameraView.mCamera;
+				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				Camera camera = cameraFragment.mCamera;
 				Camera.Parameters cameraParameters;
 
 				if (i == START_STOP) {
@@ -517,7 +517,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					imgView.setImageDrawable(img);
 					// invoke setting of new camera
 					// camera ID should already have been set in currentCameraID
-					cameraView.safeCameraOpenInView(mCamView);
+					cameraFragment.safeCameraOpenInView(mCamView);
 				} else if (i == INFO) {
 					if (isColorModePanelOpen) {
 						isColorModePanelOpen = VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView);
@@ -830,16 +830,24 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onFragmentInteraction(Uri uri) {
-
+		Log.d(TAG, "onFragmentInteraction, uri: " + uri);
 	}
 
 	@Override
 	public void onFragmentInteraction(String id) {
-
+		Log.d(TAG, "onFragmentInteraction, id: " + id);
 	}
 
 	@Override
 	public void onFragmentInteraction(int actionId) {
-
+		Log.d(TAG, "onFragmentInteraction, actionId: " + actionId);
 	}
+
+	/*@Override
+	public void onCompleteCameraFragment() {
+		Log.d(TAG, "onCompleteCameraFragment");
+		final FragmentManager fragmentManager = getFragmentManager();
+		final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+		Log.d(TAG, "camera fragment: " + cameraFragment.mPreview);
+	}*/
 }

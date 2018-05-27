@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -256,6 +257,23 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
+	/*public interface OnCompleteCameraFragmentListener {
+		void onCompleteCameraFragment();
+	}
+
+	OnCompleteCameraFragmentListener mListener;
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+
+		try {
+			this.mListener = (OnCompleteCameraFragmentListener) context;
+		} catch (final ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implement OnCompleteListener");
+		}
+	}*/
+
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
@@ -311,6 +329,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Log.d(TAG, "CameraPreview(): " + camera);
 			// Capture the context
 			setCamera(camera);
+			// explicitely trigger drawing (onDraw)
+			setWillNotDraw(false);
 
 			// Install a SurfaceHolder.Callback so we get notified when the
 			// underlying surface is created and destroyed.
@@ -597,6 +617,25 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean performClick() {
 			super.performClick();
 			return false;
+		}
+
+		// hack: haven't been able to implement a proper callback
+		// that would've allowed me to implement an OnClickListener from within
+		// the activity
+		// at least this doesn't cause memory leaks... (hopefully)
+		@Override
+		protected void onDraw(Canvas canvas) {
+			super.onDraw(canvas);
+			Log.d(TAG, "onDraw");
+
+			// hide elements on screen when clicked outside of them
+			setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+					VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+				}
+			});
 		}
 
 		/**
