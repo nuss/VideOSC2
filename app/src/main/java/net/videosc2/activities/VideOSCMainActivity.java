@@ -219,7 +219,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		setContentView(mainLayout);
 
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
-		mApp.setCamView((FrameLayout) mCamView);
 
 		// maybe needed on devices other than Google Nexus?
 		// startActivity(new Intent(this, RefreshScreen.class));
@@ -265,7 +264,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		tools.recycle();
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
-		mApp.setColorModePanel(mModePanel);
 //		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 

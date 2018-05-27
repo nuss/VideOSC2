@@ -559,11 +559,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			performClick();
 			Camera.Parameters params = pCamera.getParameters();
 
-			ViewGroup colorModePanel = mApp.getColorModePanel();
+			/* ViewGroup colorModePanel = mApp.getColorModePanel();
 			boolean isColorModePanelOpen = mApp.getIsColorModePanelOpen();
 			if (colorModePanel != null && isColorModePanelOpen)
-				VideOSCUIHelpers.removeView(colorModePanel, mApp.getCamView());
-			
+				VideOSCUIHelpers.removeView(colorModePanel, mApp.getCamView()); */
+
 //			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
 				Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
