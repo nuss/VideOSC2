@@ -626,7 +626,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-			Log.d(TAG, "onDraw");
 
 			// hide elements on screen when clicked outside of them
 			setOnClickListener(new OnClickListener() {
