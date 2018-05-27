@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Point;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.squareup.leakcanary.LeakCanary;
 
@@ -28,6 +30,9 @@ public class VideOSCApplication extends Application {
 	private boolean mExposureSettingHasBeenCancelled = false;
 	private boolean mBackPressed;
 	private float mDensity;
+	private ViewGroup mColorModePanel;
+	private boolean isColorModePanelOpen;
+	private FrameLayout mCamView;
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
 
@@ -152,5 +157,29 @@ public class VideOSCApplication extends Application {
 
 	public float getScreenDensity() {
 		return mDensity;
+	}
+
+	public void setColorModePanel(ViewGroup modePanel) {
+		this.mColorModePanel = modePanel;
+	}
+
+	public ViewGroup getColorModePanel() {
+		return this.mColorModePanel;
+	}
+
+	public void setIsColorModePanelOpen(boolean open) {
+		this.isColorModePanelOpen = open;
+	}
+
+	public boolean getIsColorModePanelOpen() {
+		return this.isColorModePanelOpen;
+	}
+
+	public void setCamView(FrameLayout camView) {
+		this.mCamView = camView;
+	}
+
+	public FrameLayout getCamView() {
+		return this.mCamView;
 	}
 }

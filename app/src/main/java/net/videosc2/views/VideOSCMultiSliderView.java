@@ -29,7 +29,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	}
 
 	private void init(AttributeSet attrs, int defStyleAttr) {
-		Log.d(TAG, "MultiSliderView init - attrs: " + attrs + ", orientation: " + this.getOrientation());
 		this.setOrientation(LinearLayout.HORIZONTAL);
 	}
 
@@ -37,16 +36,9 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		this.sliderNums = sliderNums;
 	}
 
-	/*public void setScreenDimensions(Point dimensions) {
-		this.screenDimensions = dimensions;
-	}*/
-
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		Log.d(TAG, "number of children: " + getChildCount());
-		Log.v(TAG, "width measure spec: " + MeasureSpec.toString(widthMeasureSpec));
-		Log.v(TAG, "height measure spec: " + MeasureSpec.toString(heightMeasureSpec));
 
 		int desiredWidth = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight();
 		int desiredHeight = getSuggestedMinimumHeight() + getPaddingTop() + getPaddingBottom();
@@ -98,8 +90,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 		int tempTouchX = (int) event.getX();
 		int tempTouchY = (int) event.getY();
-
-		Log.d(TAG, "touch position: " + tempTouchX + ", " + tempTouchY);
 
 		for (int i = 0; i < bars.size(); i++) {
 			SliderBar bar = bars.get(i);

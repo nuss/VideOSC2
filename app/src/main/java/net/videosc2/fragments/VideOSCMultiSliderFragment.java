@@ -1,18 +1,13 @@
 package net.videosc2.fragments;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.views.SliderBar;
 import net.videosc2.views.VideOSCMultiSliderView;
-
 import java.util.ArrayList;
 
 /**
@@ -31,7 +26,6 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		Log.d(TAG, "onCreateView");
 		View mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_left);
 		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
@@ -66,12 +60,6 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		setSliderProps(sliderNums);
 
 		return mMSContainer;
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		Log.d(TAG, "activity created");
 	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {
