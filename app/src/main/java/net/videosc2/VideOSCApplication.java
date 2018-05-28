@@ -11,6 +11,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
+import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
 import oscP5.OscMessage;
@@ -19,8 +20,8 @@ import oscP5.OscMessage;
  * Created by stefan on 05.07.17, package net.videosc2, project VideOSC22.
  */
 public class VideOSCApplication extends Application {
-	private boolean isRGBPositive = true; // always init to true
-	private Enum mColorMode = RGBModes.RGB;
+	private boolean mIsRGBPositive = true; // always init to true
+	private RGBModes mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
 	private boolean mPlay = false; // send pixel values via OSC
 	private boolean mNormalized = false;
@@ -30,7 +31,9 @@ public class VideOSCApplication extends Application {
 	private boolean mExposureSettingHasBeenCancelled = false;
 	private boolean mBackPressed;
 	private float mDensity;
-	private boolean isColorModePanelOpen;
+	private boolean mIsColorModePanelOpen = false;
+	private boolean mHasTorch;
+	private InteractionModes mInterActionMode = InteractionModes.BASIC;
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
 
@@ -41,6 +44,8 @@ public class VideOSCApplication extends Application {
 	// 2: editor setting details
 	// 3: beyond details - e.g. setting exposure lock
 	private short settingsLevel = 0;
+	private boolean mIsTorchOn = false;
+	private boolean mIsFPSCalcPanelOpen = false;
 
 	@Override
 	public void onCreate() {
@@ -58,18 +63,18 @@ public class VideOSCApplication extends Application {
 	}
 
 	public void setIsRGBPositive(boolean boolVal) {
-		this.isRGBPositive = boolVal;
+		this.mIsRGBPositive = boolVal;
 	}
 
 	public boolean getIsRGBPositive() {
-		return this.isRGBPositive;
+		return this.mIsRGBPositive;
 	}
 
-	public void setColorMode(Enum mColorMode) {
+	public void setColorMode(RGBModes mColorMode) {
 		this.mColorMode = mColorMode;
 	}
 
-	public Enum getColorMode() {
+	public RGBModes getColorMode() {
 		return this.mColorMode;
 	}
 
@@ -158,10 +163,42 @@ public class VideOSCApplication extends Application {
 	}
 
 	public void setIsColorModePanelOpen(boolean open) {
-		this.isColorModePanelOpen = open;
+		this.mIsColorModePanelOpen = open;
 	}
 
 	public boolean getIsColorModePanelOpen() {
-		return this.isColorModePanelOpen;
+		return this.mIsColorModePanelOpen;
+	}
+
+	public void setIsTorchOn(boolean isTorchOn) {
+		this.mIsTorchOn = isTorchOn;
+	}
+
+	public boolean getIsTorchOn() {
+		return this.mIsTorchOn;
+	}
+
+	public void setIsFPSCalcPanelOpen(boolean panelOpen) {
+		this.mIsFPSCalcPanelOpen = panelOpen;
+	}
+
+	public boolean getIsFPSCalcPanelOpen() {
+		return this.mIsFPSCalcPanelOpen;
+	}
+
+	public void setInteractionMode(InteractionModes mode) {
+		this.mInterActionMode = mode;
+	}
+
+	public InteractionModes getInteractionMode() {
+		return this.mInterActionMode;
+	}
+
+	public void setHasTorch(boolean hasTorch) {
+		this.mHasTorch = hasTorch;
+	}
+
+	public boolean getHasTorch() {
+		return this.mHasTorch;
 	}
 }

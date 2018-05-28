@@ -36,6 +36,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -58,6 +59,7 @@ import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
+import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
 import java.io.IOException;
@@ -114,6 +116,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private String mRed, mGreen, mBlue;
 
 	private VideOSCApplication mApp;
+	private LayoutInflater mInflater;
 	private static OscP5 mOscP5;
 
 
@@ -129,6 +132,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		mApp = (VideOSCApplication) getActivity().getApplication();
+		mInflater = inflater;
 		mOscP5 = mApp.mOscHelper.getOscP5();
 //		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
@@ -578,14 +582,37 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			performClick();
 			Camera.Parameters params = pCamera.getParameters();
+			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+			ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
 
-			/* ViewGroup colorModePanel = mApp.getColorModePanel();
-			boolean isColorModePanelOpen = mApp.getIsColorModePanelOpen();
-			if (colorModePanel != null && isColorModePanelOpen)
-				VideOSCUIHelpers.removeView(colorModePanel, mApp.getCamView()); */
+			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
-//			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE)
-				Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
+			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
+					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
+				}
+			}
+
+			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
+				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
+					if (mApp.getIsFPSCalcPanelOpen())
+						VideOSCUIHelpers.addView(fpsRateCalcPanel, mPreviewContainer);
+					indicators = mApp.getHasTorch() ?
+							(ViewGroup) mInflater.inflate(R.layout.indicator_panel, mPreviewContainer, false) :
+							(ViewGroup) mInflater.inflate(R.layout.indicator_panel_no_torch, mPreviewContainer, false);
+					VideOSCUIHelpers.addView(indicators, mPreviewContainer);
+					BitmapDrawable img = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.interaction_plus_indicator);
+					final ImageView interactionModeIndicator = (ImageView) indicators.findViewById(R.id.indicator_interaction);
+					interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
+					interactionModeIndicator.setImageDrawable(img);
+					// TODO: indicators for play state, color mode, current camera and torch need to be set accordingly
+				}
+			}
 
 			if (motionEvent.getPointerCount() > 1 && params.isZoomSupported()) {
 				int zoom = params.getZoom();
@@ -623,7 +650,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// that would've allowed me to implement an OnClickListener from within
 		// the activity
 		// at least this doesn't cause memory leaks... (hopefully)
-		@Override
+		/*@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
 
@@ -635,7 +662,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
 				}
 			});
-		}
+		}*/
 
 		/**
 		 * Determine the space between the first two fingers
