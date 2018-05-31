@@ -23,7 +23,6 @@ public class VideOSCApplication extends Application {
 	private boolean mIsRGBPositive = true; // always init to true
 	private RGBModes mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
-	private boolean mPlay = false; // send pixel values via OSC
 	private boolean mNormalized = false;
 	private boolean mHidePixelImage = false;
 	private static boolean mDebugPixelOsc = false;
@@ -46,6 +45,8 @@ public class VideOSCApplication extends Application {
 	private short settingsLevel = 0;
 	private boolean mIsTorchOn = false;
 	private boolean mIsFPSCalcPanelOpen = false;
+	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
+	private int mCurrentCameraId;
 
 	@Override
 	public void onCreate() {
@@ -88,14 +89,6 @@ public class VideOSCApplication extends Application {
 
 	public SettingsDBHelper getSettingsHelper() {
 		return this.mSettingsHelper;
-	}
-
-	public boolean getPlay() {
-		return this.mPlay;
-	}
-
-	public void setPlay(boolean play) {
-		this.mPlay = play;
 	}
 
 	public boolean getNormalized() {
@@ -200,5 +193,21 @@ public class VideOSCApplication extends Application {
 
 	public boolean getHasTorch() {
 		return this.mHasTorch;
+	}
+
+	public void setCameraOSCisPlaying(boolean playing) {
+		this.mCameraOSCisPlaying = playing;
+	}
+
+	public boolean getCameraOSCisPlaying() {
+		return this.mCameraOSCisPlaying;
+	}
+
+	public void setCurrentCameraId(int id) {
+		this.mCurrentCameraId = id;
+	}
+
+	public int getCurrentCameraId() {
+		return this.mCurrentCameraId;
 	}
 }

@@ -168,7 +168,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
 			frontsideCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 		}
-		currentCameraID = backsideCameraId;
+		mApp.setCurrentCameraId(backsideCameraId);
 
 		final float scale = getResources().getDisplayMetrics().density;
 		mApp.setScreenDensity(scale);
@@ -234,6 +234,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final LayoutInflater inflater = getLayoutInflater();
 		final FragmentManager fragmentManager = getFragmentManager();
 		final Activity activity = this;
+		final Context context = getApplicationContext();
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -282,7 +283,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final ImageView cameraIndicator = (ImageView) findViewById(R.id.indicator_camera);
 				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
 				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
-				Context context = getApplicationContext();
 				// cameraFragment provides all instance methods of the camera preview
 				// no reflections needed
 				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
@@ -292,13 +292,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 				if (i == START_STOP) {
 					closeColorModePanel();
-					if (!mApp.getPlay()) {
-						mApp.setPlay(true);
+					if (!mApp.getCameraOSCisPlaying()) {
+						mApp.setCameraOSCisPlaying(true);
 						mToolsDrawerListState.put(START_STOP, R.drawable.stop);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.stop);
 						oscIndicatorView.setImageResource(R.drawable.osc_playing);
 					} else {
-						mApp.setPlay(false);
+						mApp.setCameraOSCisPlaying(false);
 						mToolsDrawerListState.put(START_STOP, R.drawable.start);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.start);
 						oscIndicatorView.setImageResource(R.drawable.osc_paused);
@@ -307,7 +307,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				} else if (i == TORCH) {
 					closeColorModePanel();
 					cameraParameters = camera.getParameters();
-					if (currentCameraID == Camera.CameraInfo.CAMERA_FACING_BACK) {
+					if (mApp.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
 						String flashMode = cameraParameters.getFlashMode();
 						mApp.setIsTorchOn(!mApp.getIsTorchOn());
 						if (!flashMode.equals("torch")) {
@@ -349,8 +349,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 						VideOSCUIHelpers.setMargins(modePanelInner, 0, y, 60, 0);
 
 						for (int k = 0; k < ((ViewGroup) modePanelInner).getChildCount(); k++) {
-							final Context iContext = context;
-
 							View button = ((ViewGroup) modePanelInner).getChildAt(k);
 							button.setFocusableInTouchMode(true);
 							button.setOnTouchListener(new View.OnTouchListener() {
@@ -366,7 +364,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 													rgbHasChanged = true;
 												}
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
 												rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 												break;
@@ -377,7 +375,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 													rgbHasChanged = true;
 												}
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
-												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb_inv));
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb_inv));
 												rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
 												break;
@@ -385,11 +383,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mApp.setColorMode(RGBModes.R);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r));
 													mColorModeToolsDrawer = RGBToolbarStatus.R;
 												} else {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.r_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.r_inv));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r_inv));
 													mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
 												}
 												break;
@@ -398,11 +396,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mApp.setColorMode(RGBModes.G);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g));
 													mColorModeToolsDrawer = RGBToolbarStatus.G;
 												} else {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.g_inv));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g_inv));
 													mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
 												}
 												break;
@@ -411,18 +409,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 												mApp.setColorMode(RGBModes.B);
 												if (mApp.getIsRGBPositive()) {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b));
 													mColorModeToolsDrawer = RGBToolbarStatus.B;
 												} else {
 													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.b_inv));
+													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b_inv));
 													mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
 												}
 												break;
 											default:
 												mApp.setColorMode(RGBModes.RGB);
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-												imgView.setImageDrawable(ContextCompat.getDrawable(iContext, R.drawable.rgb));
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
 												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 										}
 										view.clearFocus();
@@ -468,8 +466,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 				} else if (i == SELECT_CAM) {
 					closeColorModePanel();
 					cameraParameters = camera.getParameters();
-					if (currentCameraID == backsideCameraId) {
-						currentCameraID = frontsideCameraId;
+					if (mApp.getCurrentCameraId() == backsideCameraId) {
+						mApp.setCurrentCameraId(frontsideCameraId);
+						mApp.setIsTorchOn(false);
 						mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.front_camera);
 						if (mApp.getHasTorch() && cameraParameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
@@ -481,7 +480,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						}
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
 					} else {
-						currentCameraID = backsideCameraId;
+						mApp.setCurrentCameraId(backsideCameraId);
 						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.back_camera);
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
@@ -538,6 +537,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		int indicatorXMLiD = mApp.getHasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+//		final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
 	}
 
 	private void closeColorModePanel() {
@@ -640,7 +640,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onDestroy() {
 		// stop sending OSC (probably not necessary)
-		mApp.setPlay(false);
+		mApp.setCameraOSCisPlaying(false);
 		// reset inverted colors
 		mApp.setIsRGBPositive(true);
 		// reset debug settings

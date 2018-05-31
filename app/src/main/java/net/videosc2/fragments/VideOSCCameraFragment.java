@@ -261,13 +261,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
-	/*public interface OnCompleteCameraFragmentListener {
-		void onCompleteCameraFragment();
+	public interface OnTouchCameraSurface {
+		void onTouchCameraSurface();
 	}
 
-	OnCompleteCameraFragmentListener mListener;
+	OnTouchCameraSurface mListener;
 
-	@Override
+	/*@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
 
@@ -318,6 +318,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Thread mGreenOscSender;
 		private Thread mBlueOscSender;
 
+		private Rect mPixelRect;
+		private Bitmap mTile;
+		private BitmapDrawable mPixelTileDrawable;
+
 		private volatile OscMessage oscR, oscG, oscB;
 
 		// debugging
@@ -364,6 +368,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mBlueOscSender = new Thread(mBlueOscRunnable);
 				mBlueOscSender.start();
 			}
+
+
 
 			// ???
 			/* WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -581,12 +587,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		@Override
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			performClick();
+			final Context context = getContext();
 			Camera.Parameters params = pCamera.getParameters();
 			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
 			ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+			boolean hasTorch = mApp.getHasTorch();
+			BitmapDrawable img;
 
-			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
+//			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
@@ -606,11 +615,59 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							(ViewGroup) mInflater.inflate(R.layout.indicator_panel, mPreviewContainer, false) :
 							(ViewGroup) mInflater.inflate(R.layout.indicator_panel_no_torch, mPreviewContainer, false);
 					VideOSCUIHelpers.addView(indicators, mPreviewContainer);
-					BitmapDrawable img = (BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.interaction_plus_indicator);
+					// play indicator
+					final ImageView playIndicator = (ImageView) indicators.findViewById(R.id.indicator_osc);
+					if (mApp.getCameraOSCisPlaying()) {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_playing);
+						playIndicator.setImageResource(R.drawable.osc_playing);
+					} else {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_paused);
+						playIndicator.setImageResource(R.drawable.osc_paused);
+					}
+					playIndicator.setImageDrawable(img);
+
+					// rgb status
+					final ImageView rgbIndicator = (ImageView) indicators.findViewById(R.id.indicator_color);
+					if (mApp.getIsRGBPositive()) {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_indicator);
+						rgbIndicator.setImageResource(R.drawable.rgb_indicator);
+					} else {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_inv_indicator);
+						rgbIndicator.setImageResource(R.drawable.rgb_inv_indicator);
+					}
+					rgbIndicator.setImageDrawable(img);
+
+					// camera indicator
+					final ImageView cameraIndicator = (ImageView) indicators.findViewById(R.id.indicator_camera);
+					if (mApp.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_back);
+						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
+					} else {
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_front);
+						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
+					}
+					cameraIndicator.setImageDrawable(img);
+
+					// torch status indicator
+					final ImageView torchIndicator = hasTorch ? (ImageView) indicators.findViewById(R.id.torch_status_indicator) : null;
+					if (torchIndicator != null) {
+						if (mApp.getIsTorchOn()) {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on_indicator);
+							torchIndicator.setImageResource(R.drawable.light_on_indicator);
+						} else {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_off_indicator);
+							torchIndicator.setImageResource(R.drawable.light_off_indicator);
+						}
+						torchIndicator.setImageDrawable(img);
+					}
+
+					// interaction indicator - always in plus mode
 					final ImageView interactionModeIndicator = (ImageView) indicators.findViewById(R.id.indicator_interaction);
+					img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction_plus_indicator);
 					interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					interactionModeIndicator.setImageDrawable(img);
-					// TODO: indicators for play state, color mode, current camera and torch need to be set accordingly
+
+
 				}
 			}
 
@@ -635,7 +692,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 			}
 
-			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
+//			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
+			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+				Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()) + ", rect: " + getCurrentPixelRect(getHoverPixel(motionEvent.getX(), motionEvent.getY())));
+			}
+
 
 			return true;
 		}
@@ -707,6 +768,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			int vIndex = (int) y / mPixelSize.y;
 
 			return vIndex * getResolution().x + hIndex;
+		}
+
+		// TODO: get the math right
+		private Rect getCurrentPixelRect(int pixelId) {
+			Point pixelSize = getPixelSize();
+			return new Rect(pixelId * getPixelSize().x, mPixelSize.y * pixelId / getResolution().x, mPixelSize.x, mPixelSize.y);
 		}
 
 		// set the preview fps range and update framerate immediately
@@ -803,7 +870,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					pixels[i] = Color.argb(0, 0, 0, 0);
 				}
 
-				if (mApp.getPlay()) {
+				if (mApp.getCameraOSCisPlaying()) {
 //					if (calcsPerPeriod == 1) {
 					if (mApp.getNormalized()) {
 						rval = (float) rVal / 255;
