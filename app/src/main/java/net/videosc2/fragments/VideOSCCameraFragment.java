@@ -30,25 +30,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -320,7 +317,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private Rect mPixelRect;
 		private Bitmap mTile;
-		private BitmapDrawable mPixelTileDrawable;
+		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
+		private Paint mPaint = new Paint();
+		private BitmapDrawable mSelectedTileDrawable;
 
 		private volatile OscMessage oscR, oscG, oscB;
 
@@ -369,7 +368,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mBlueOscSender.start();
 			}
 
-
+			mSelectedTileDrawable = (BitmapDrawable) context.getResources().getDrawable((R.drawable.hover_rect_tile));
+			mSelectedTileDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
 			// ???
 			/* WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -666,8 +666,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction_plus_indicator);
 					interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					interactionModeIndicator.setImageDrawable(img);
-
-
 				}
 			}
 
@@ -694,11 +692,29 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 //			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-				Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()) + ", rect: " + getCurrentPixelRect(getHoverPixel(motionEvent.getX(), motionEvent.getY())));
+//				Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()) + ", rect: " + getCurrentPixelRect(getHoverPixel(motionEvent.getX(), motionEvent.getY())));
+				int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
+				Rect currRect = getCurrentPixelRect(currPixel);
+				Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
+				if (!containsRect(mSelectedPixels, currRect)) {
+					mSelectedPixels.add(currRect);
+					layout(currRect.left, currRect.top, currRect.right, currRect.bottom);
+				}
+				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}
 
 
 			return true;
+		}
+
+		private boolean containsRect(ArrayList<Rect> rectList, Rect rect) {
+			for (Rect testRect : rectList) {
+				if (testRect.equals(rect)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		@Override
@@ -707,23 +723,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return false;
 		}
 
-		// hack: haven't been able to implement a proper callback
-		// that would've allowed me to implement an OnClickListener from within
-		// the activity
-		// at least this doesn't cause memory leaks... (hopefully)
-		/*@Override
+		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-
-			// hide elements on screen when clicked outside of them
-			setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
-					VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
-				}
-			});
-		}*/
+			for (int i = 0; i < mSelectedPixels.size(); i++) {
+				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
+				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
+				mSelectedTileDrawable.draw(canvas);
+			}
+		}
 
 		/**
 		 * Determine the space between the first two fingers
@@ -757,6 +765,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Point resolution = getResolution();
 			mPixelSize.x = surfaceFrame.width() / resolution.x;
 			mPixelSize.y = surfaceFrame.height() / resolution.y;
+			Log.d(TAG, "setPixelSize called: " + mPixelSize);
 		}
 
 		private Point getPixelSize() {
@@ -770,10 +779,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return vIndex * getResolution().x + hIndex;
 		}
 
-		// TODO: get the math right
 		private Rect getCurrentPixelRect(int pixelId) {
-			Point pixelSize = getPixelSize();
-			return new Rect(pixelId * getPixelSize().x, mPixelSize.y * pixelId / getResolution().x, mPixelSize.x, mPixelSize.y);
+			return new Rect(pixelId % mResolution.x * mPixelSize.x, pixelId / mResolution.x * mPixelSize.y, mPixelSize.x, mPixelSize.y);
 		}
 
 		// set the preview fps range and update framerate immediately
