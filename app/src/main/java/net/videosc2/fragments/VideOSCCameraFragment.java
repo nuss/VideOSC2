@@ -37,6 +37,8 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -320,6 +322,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 		private Paint mPaint = new Paint();
 		private BitmapDrawable mSelectedTileDrawable;
+		private Canvas mCanvas;
 
 		private volatile OscMessage oscR, oscG, oscB;
 
@@ -471,16 +474,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 *
 		 * @param holder the surface holder
 		 */
+		@Override
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + pCamera);
 			try {
-				pCamera.setPreviewDisplay(mHolder);
+				pCamera.setPreviewDisplay(holder);
 				pCamera.startPreview();
+				mCanvas = holder.lockCanvas();
+				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
 				menuButton.bringToFront();
 				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
 				indicatorPanel.bringToFront();
-				Log.d(TAG, "preview should be started");
+				Log.d(TAG, "holder: " + holder);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -491,6 +497,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 *
 		 * @param holder the surface holder
 		 */
+		@Override
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
 			// prevent errors resulting from camera being used after Camera.release() has been
@@ -510,6 +517,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param w      the surface width
 		 * @param h      the surface height
 		 */
+		@Override
 		public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist
@@ -550,7 +558,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-//						bmp = Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true);
 						bmp = drawFrame(Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true), outWidth, outHeight);
 						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), bmp);
 						bmpDraw.setAntiAlias(false);
@@ -564,7 +571,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				e.printStackTrace();
 			}
 		}
-
 
 		/**
 		 * @param sizes the ArrayList of possible preview sizes
@@ -698,11 +704,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
 				if (!containsRect(mSelectedPixels, currRect)) {
 					mSelectedPixels.add(currRect);
-					layout(currRect.left, currRect.top, currRect.right, currRect.bottom);
+					layout(0, 0, mHolder.getSurfaceFrame().width(), mHolder.getSurfaceFrame().height());
 				}
 				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}
-
 
 			return true;
 		}
@@ -723,15 +728,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return false;
 		}
 
-		@Override
-		protected void onDraw(Canvas canvas) {
-			super.onDraw(canvas);
-			for (int i = 0; i < mSelectedPixels.size(); i++) {
-				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
-				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
-				mSelectedTileDrawable.draw(canvas);
-			}
-		}
+//		@Override
+//		protected void onDraw(Canvas canvas) {
+//			super.onDraw(canvas);
+//			for (int i = 0; i < mSelectedPixels.size(); i++) {
+//				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
+//				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
+//				mSelectedTileDrawable.draw(canvas);
+//			}
+//		}
 
 		/**
 		 * Determine the space between the first two fingers
@@ -763,9 +768,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private void setPixelSize() {
 			Rect surfaceFrame = mHolder.getSurfaceFrame();
 			Point resolution = getResolution();
+			Log.d(TAG, "surfaceFrame: " + surfaceFrame.width() + " x " + surfaceFrame.height() + ", resolution: " + resolution);
 			mPixelSize.x = surfaceFrame.width() / resolution.x;
 			mPixelSize.y = surfaceFrame.height() / resolution.y;
-			Log.d(TAG, "setPixelSize called: " + mPixelSize);
 		}
 
 		private Point getPixelSize() {
@@ -773,6 +778,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private int getHoverPixel(float x, float y) {
+			Log.d(TAG, "getHoverPixel: " + mPixelSize.x + ", " + mPixelSize.y);
 			int hIndex = (int) x / mPixelSize.x;
 			int vIndex = (int) y / mPixelSize.y;
 
