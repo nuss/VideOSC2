@@ -79,6 +79,8 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * @return true
 	 */
 	public static boolean addView(View view, FrameLayout parent) {
+		if (view.getParent() != null)
+			((ViewGroup) view.getParent()).removeView(view);
 		parent.addView(view);
 		return true;
 	}
@@ -105,6 +107,8 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * @return true
 	 */
 	public static boolean addView(View view, ViewGroup parent) {
+		if (view.getParent() != null)
+			((ViewGroup) view.getParent()).removeView(view);
 		parent.addView(view);
 		return true;
 	}

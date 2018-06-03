@@ -98,6 +98,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// Reference to the ImageView containing the downscaled video frame
 	private ImageView mImage;
+	private View mOverlay;
 
 	/**
 	 * Default empty constructor.
@@ -319,9 +320,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private Rect mPixelRect;
 		private Bitmap mTile;
-		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 		private Paint mPaint = new Paint();
 		private BitmapDrawable mSelectedTileDrawable;
+		private View mDrawOverlay;
 		private Canvas mCanvas;
 
 		private volatile OscMessage oscR, oscG, oscB;
@@ -348,7 +349,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			mHolder.addCallback(this);
 			mHolder.setKeepScreenOn(true);
 			// deprecated setting, but required on Android versions prior to 3.0
-			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//			mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 			if (mRedOscSender == null) {
 				mRedOscRunnable = new RedOscRunnable();
@@ -480,13 +481,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				pCamera.setPreviewDisplay(holder);
 				pCamera.startPreview();
-				mCanvas = holder.lockCanvas();
-				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
+//				mCanvas = holder.lockCanvas();
+//				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
+				mDrawOverlay = mPreviewContainer.findViewById(R.id.tile_draw_view);
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
 				menuButton.bringToFront();
 				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
+
 				indicatorPanel.bringToFront();
-				Log.d(TAG, "holder: " + holder);
+//				Log.d(TAG, "holder: " + holder.lockCanvas());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -518,14 +521,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param h      the surface height
 		 */
 		@Override
-		public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+		public void surfaceChanged(final SurfaceHolder holder, int format, final int w, final int h) {
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist
 				return;
 			}
 
 			// memorize current pixel size
-			setPixelSize();
+			setPixelSize(holder);
 
 			// stop preview before making changes
 			try {
@@ -565,6 +568,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						bmpDraw.setFilterBitmap(false);
 						mImage.bringToFront();
 						mImage.setImageDrawable(bmpDraw);
+//						invalidate();
+//                      geht ned :\
+//						draw(mCanvas);
 					}
 				});
 			} catch (Exception e) {
@@ -604,7 +610,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+//				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+				VideOSCUIHelpers.addView(mDrawOverlay, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
 					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
@@ -612,6 +619,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+				VideOSCUIHelpers.removeView(mDrawOverlay, mPreviewContainer);
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
@@ -702,11 +710,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
 				Rect currRect = getCurrentPixelRect(currPixel);
 				Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
-				if (!containsRect(mSelectedPixels, currRect)) {
-					mSelectedPixels.add(currRect);
-					layout(0, 0, mHolder.getSurfaceFrame().width(), mHolder.getSurfaceFrame().height());
-				}
-				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
+//				FIXME
+//				if (!containsRect(mDrawOverlay, currRect)) {
+//					mSelectedPixels.add(currRect);
+//				}
+				invalidate();
+//				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}
 
 			return true;
@@ -728,15 +737,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return false;
 		}
 
-//		@Override
-//		protected void onDraw(Canvas canvas) {
-//			super.onDraw(canvas);
-//			for (int i = 0; i < mSelectedPixels.size(); i++) {
-//				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
-//				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
-//				mSelectedTileDrawable.draw(canvas);
-//			}
-//		}
+		/*@Override
+		protected void onDraw(Canvas canvas) {
+			super.onDraw(canvas);
+			Log.d(TAG, "I'm the canvas: " + canvas);
+			for (int i = 0; i < mSelectedPixels.size(); i++) {
+				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
+				mPaint.setStrokeWidth(300);
+				mPaint.setColor(0xff2487e1);
+				canvas.drawRect(50.0f, 50.0f, 200.0f, 100.0f, mPaint);*/
+				/*mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
+				mSelectedTileDrawable.draw(canvas);*/
+				/*mImage.bringToFront();
+			}
+		}*/
 
 		/**
 		 * Determine the space between the first two fingers
@@ -765,10 +779,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			pCamera.setParameters(params);
 		}
 
-		private void setPixelSize() {
-			Rect surfaceFrame = mHolder.getSurfaceFrame();
+		private void setPixelSize(SurfaceHolder holder) {
+			Rect surfaceFrame = holder.getSurfaceFrame();
 			Point resolution = getResolution();
-			Log.d(TAG, "surfaceFrame: " + surfaceFrame.width() + " x " + surfaceFrame.height() + ", resolution: " + resolution);
+//			Log.d(TAG, "surfaceFrame: " + surfaceFrame.width() + " x " + surfaceFrame.height() + ", resolution: " + resolution);
 			mPixelSize.x = surfaceFrame.width() / resolution.x;
 			mPixelSize.y = surfaceFrame.height() / resolution.y;
 		}

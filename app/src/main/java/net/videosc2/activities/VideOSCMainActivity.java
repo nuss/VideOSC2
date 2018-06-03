@@ -537,6 +537,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		int indicatorXMLiD = mApp.getHasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+		ViewGroup drawOverlay = (ViewGroup) inflater.inflate(R.layout.tile_overlay_view, (FrameLayout) mCamView, true);
 //		final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
 	}
 
