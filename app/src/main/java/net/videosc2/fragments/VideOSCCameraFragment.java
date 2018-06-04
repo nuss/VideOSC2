@@ -725,6 +725,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 				mOverlayView.setSelectedRects(mSelectedPixels);
 				mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
+				// FIXME: why doesn't the following line trigger drawing in the overlay view
 				mOverlayView.invalidate();
 				//				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}

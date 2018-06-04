@@ -81,6 +81,7 @@ public class TileOverlayView extends View {
 //		mBmp = Bitmap.createBitmap(colors, 10, 10, mInPreferredConfig);
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
+		// FIXME: why can't a bitmap not get scaled up?
 		mBmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.empty, options);
 //		mBmp = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
 //		tmpDrawable = getResources().getDrawable(R.id.tile_selected);
@@ -138,6 +139,7 @@ public class TileOverlayView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		// FIXME: drawing never gets triggered
 		Log.d(TAG, "should be drawing now");
 		for (Rect rect : mSelectPixels) {
 			mPaint.setStyle(Paint.Style.STROKE);
