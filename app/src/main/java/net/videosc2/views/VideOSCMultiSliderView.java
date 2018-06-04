@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
-	public ArrayList<SliderBar> bars = new ArrayList<>();
+	public ArrayList<SliderBar> mBars = new ArrayList<>();
 
 	private ArrayList<Integer> sliderNums;
 
@@ -91,8 +91,8 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int tempTouchX = (int) event.getX();
 		int tempTouchY = (int) event.getY();
 
-		for (int i = 0; i < bars.size(); i++) {
-			SliderBar bar = bars.get(i);
+		for (int i = 0; i < mBars.size(); i++) {
+			SliderBar bar = mBars.get(i);
 //			Log.d(TAG, "mArea: " + bar.mArea.left + ", " + bar.mArea.top + ", " + bar.mArea.right + ", " + bar.mArea.bottom);
 			if (bar.mArea.contains(tempTouchX, tempTouchY)) {
 				bar.setTouchY(tempTouchY);

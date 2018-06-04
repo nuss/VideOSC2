@@ -26,9 +26,9 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		View mMSContainer = inflater.inflate(R.layout.multislider_view, container, false);
-		mMSViewLeft = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_left);
-		mMSViewRight = (VideOSCMultiSliderView) mMSContainer.findViewById(R.id.multislider_view_right);
+		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
+		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
+		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 		int topMargin = lp.topMargin;
 		Bundle numsBundle = this.getArguments();
@@ -46,20 +46,20 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 			barLeft.areaBottom = app.getDimensions().y;
 			barLeft.mScreenDensity = density;
 			barLeft.setNum(String.valueOf(num));
-			mMSViewLeft.bars.add(barLeft);
+			mMSViewLeft.mBars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
 			barRight.areaTop = 0 - topMargin;
 			barRight.areaBottom = app.getDimensions().y;
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(num));
-			mMSViewRight.bars.add(barRight);
+			mMSViewRight.mBars.add(barRight);
 			mMSViewRight.addView(barRight);
 		}
 
 		setSliderProps(sliderNums);
 
-		return mMSContainer;
+		return msContainer;
 	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {

@@ -28,6 +28,8 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -60,6 +62,7 @@ import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
+import net.videosc2.views.TileOverlayView;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -98,7 +101,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// Reference to the ImageView containing the downscaled video frame
 	private ImageView mImage;
-	private View mOverlay;
 
 	/**
 	 * Default empty constructor.
@@ -139,6 +141,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// store the container for later re-use
 		mPreviewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
+//		mOverlay = new TileOverlayView(getActivity());
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
@@ -318,12 +321,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Thread mGreenOscSender;
 		private Thread mBlueOscSender;
 
-		private Rect mPixelRect;
-		private Bitmap mTile;
-		private Paint mPaint = new Paint();
+		private ViewGroup mOverlay;
+		private TileOverlayView mOverlayView;
+		private Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+		private Rect mTileRect = new Rect(0, 0, 0, 0);
 		private BitmapDrawable mSelectedTileDrawable;
-		private View mDrawOverlay;
-		private Canvas mCanvas;
+		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 
 		private volatile OscMessage oscR, oscG, oscB;
 
@@ -372,8 +375,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mBlueOscSender.start();
 			}
 
-			mSelectedTileDrawable = (BitmapDrawable) context.getResources().getDrawable((R.drawable.hover_rect_tile));
+			/*
+			mSelectedTileDrawable = new BitmapDrawable(getResources(), );
 			mSelectedTileDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+			*/
 
 			// ???
 			/* WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -483,7 +488,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				pCamera.startPreview();
 //				mCanvas = holder.lockCanvas();
 //				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
-				mDrawOverlay = mPreviewContainer.findViewById(R.id.tile_draw_view);
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
 				menuButton.bringToFront();
 				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
@@ -493,6 +497,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+			mOverlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
+			mOverlayView = (TileOverlayView) mOverlay.findViewById(R.id.tile_draw_view);
+//			mOverlayView.setDimensions(mApp.getDimensions().x, mApp.getDimensions().y);
+
+			Log.d(TAG, "mOverlay in surfaceCreated: " + mOverlay.getLeft() + ", " + mOverlay.getTop() + ", " + mOverlay.getRight() + ", " + mOverlay.getBottom());
 		}
 
 		/**
@@ -568,7 +578,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						bmpDraw.setFilterBitmap(false);
 						mImage.bringToFront();
 						mImage.setImageDrawable(bmpDraw);
-//						invalidate();
+						mOverlayView.layout(0, 0, mApp.getDimensions().x, mApp.getDimensions().y);
 //                      geht ned :\
 //						draw(mCanvas);
 					}
@@ -611,7 +621,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 //				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
-				VideOSCUIHelpers.addView(mDrawOverlay, mPreviewContainer);
+//				VideOSCUIHelpers.addView(mOverlay, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
 					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
@@ -619,7 +629,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-				VideOSCUIHelpers.removeView(mDrawOverlay, mPreviewContainer);
+//				VideOSCUIHelpers.removeView(mOverlay, mPreviewContainer);
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
@@ -710,12 +720,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
 				Rect currRect = getCurrentPixelRect(currPixel);
 				Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
-//				FIXME
-//				if (!containsRect(mDrawOverlay, currRect)) {
-//					mSelectedPixels.add(currRect);
-//				}
-				invalidate();
-//				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
+				if (!containsRect(mSelectedPixels, currRect)) {
+					mSelectedPixels.add(currRect);
+				}
+				mOverlayView.setSelectedRects(mSelectedPixels);
+				mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
+				mOverlayView.invalidate();
+				//				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}
 
 			return true;
@@ -742,13 +753,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			super.onDraw(canvas);
 			Log.d(TAG, "I'm the canvas: " + canvas);
 			for (int i = 0; i < mSelectedPixels.size(); i++) {
+				Rect rect = mSelectedPixels.get(i);
+				mPaint.setStrokeWidth(0);
+				mPaint.setColor(0x00000000);
+				mPaint.setShader(mShaderSelected);
+				canvas.drawBitmap(mBmp, rect, rect, mPaint);
 				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
-				mPaint.setStrokeWidth(300);
-				mPaint.setColor(0xff2487e1);
-				canvas.drawRect(50.0f, 50.0f, 200.0f, 100.0f, mPaint);*/
-				/*mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
-				mSelectedTileDrawable.draw(canvas);*/
-				/*mImage.bringToFront();
+//				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
+//				mSelectedTileDrawable.draw(canvas);
+//				mImage.bringToFront();
 			}
 		}*/
 
