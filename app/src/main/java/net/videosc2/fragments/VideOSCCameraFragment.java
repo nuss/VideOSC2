@@ -23,6 +23,7 @@
 package net.videosc2.fragments;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -327,6 +328,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Rect mTileRect = new Rect(0, 0, 0, 0);
 		private BitmapDrawable mSelectedTileDrawable;
 		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
+		private List<Integer> mPixelIds = new ArrayList<>();
+		private FragmentManager mManager;
 
 		private volatile OscMessage oscR, oscG, oscB;
 
@@ -426,6 +429,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				lockList.add(falses.clone());
 				offPxls.add(falses.clone());
 			}
+
+			mManager = getFragmentManager();
 		}
 
 		/**
@@ -639,6 +644,17 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					if (mPixelIds.size() > 0) {
+						VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
+						mManager.beginTransaction()
+								.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
+								.commit();
+						VideOSCMultiSliderFragment multiSliderView = (VideOSCMultiSliderFragment) mManager.findFragmentByTag("MultiSliderView");
+						Bundle msArgsBundle = new Bundle();
+						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
+						multiSliderFragment.setArguments(msArgsBundle);
+					}
+
 					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
 					if (mApp.getIsFPSCalcPanelOpen())
 						VideOSCUIHelpers.addView(fpsRateCalcPanel, mPreviewContainer);
@@ -724,8 +740,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
+					if (!mPixelIds.contains(currPixel)) {
+						mPixelIds.add(currPixel);
+						Collections.sort(mPixelIds);
+//						Log.d(TAG, "selected pixels: " + mPixelIds);
+					}
 					Rect currRect = getCurrentPixelRect(currPixel);
-					Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
 					if (!containsRect(mSelectedPixels, currRect)) {
 						mSelectedPixels.add(currRect);
 					}
@@ -811,7 +831,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private int getHoverPixel(float x, float y) {
-			Log.d(TAG, "getHoverPixel: " + mPixelSize.x + ", " + mPixelSize.y);
+//			Log.d(TAG, "getHoverPixel: " + mPixelSize.x + ", " + mPixelSize.y);
 			int hIndex = (int) x / mPixelSize.x;
 			int vIndex = (int) y / mPixelSize.y;
 
