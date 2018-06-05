@@ -649,6 +649,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		VideOSCApplication.setDebugPixelOsc(false);
 		mApp.setHasExposureSettingBeenCancelled(false);
 		mApp.setExposureIsFixed(false);
+		mApp.setInteractionMode(InteractionModes.BASIC);
 		// close db
 		mDbHelper.close();
 		super.onDestroy();

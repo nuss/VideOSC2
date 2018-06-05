@@ -15,20 +15,20 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public VideOSCMultiSliderView(Context context) {
 		super(context);
-		init(null, 0);
+		init();
 	}
 
 	public VideOSCMultiSliderView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(attrs, 0);
+		init();
 	}
 
 	public VideOSCMultiSliderView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(attrs, defStyleAttr);
+		init();
 	}
 
-	private void init(AttributeSet attrs, int defStyleAttr) {
+	private void init() {
 		this.setOrientation(LinearLayout.HORIZONTAL);
 	}
 

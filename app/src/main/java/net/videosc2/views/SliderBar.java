@@ -12,6 +12,9 @@ import android.view.View;
 /**
  * Created by stefan on 17.05.18, package net.videosc2.views, project VideOSC2.
  */
+
+// TODO: define a way to colorize sliderbars
+
 public class SliderBar extends View {
 
 	final static String TAG = "SliderBar";
@@ -23,23 +26,24 @@ public class SliderBar extends View {
 	public Rect mArea = new Rect(left, areaTop, right, areaBottom);
 	private int touchY;
 	public float mScreenDensity;
+	private int mColor = 0x66ffffff;
 
 	public SliderBar(Context context) {
 		super(context);
-		init(null, 0);
+		init();
 	}
 
 	public SliderBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(attrs, 0);
+		init();
 	}
 
 	public SliderBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		init(attrs, defStyle);
+		init();
 	}
 
-	private void init(AttributeSet attrs, int defStyle) {
+	private void init() {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	}
 
@@ -57,7 +61,7 @@ public class SliderBar extends View {
 			canvas.drawRect(left, top, right, bottom, mPaint);
 		mArea.set(getLeft(), areaTop, getRight(), areaBottom);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		mPaint.setColor(0x66ffffff);
+		mPaint.setColor(mColor);
 		if (touchY + 2 <= top) touchY = top + 2;
 		if (touchY - 2 > bottom) touchY = bottom - 2;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -91,5 +95,9 @@ public class SliderBar extends View {
 
 	public String getNum() {
 		return this.pixelNum;
+	}
+
+	public void setColor(int color) {
+		this.mColor = color;
 	}
 }

@@ -740,8 +740,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
-					if (!mPixelIds.contains(currPixel)) {
-						mPixelIds.add(currPixel);
+					if (!mPixelIds.contains(currPixel + 1)) {
+						mPixelIds.add(currPixel + 1);
 						Collections.sort(mPixelIds);
 //						Log.d(TAG, "selected pixels: " + mPixelIds);
 					}
