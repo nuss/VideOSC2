@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/tile_selected"
-        android:src="@drawable/hover_rect_tile"
-        android:tileMode="repeat"/>
-

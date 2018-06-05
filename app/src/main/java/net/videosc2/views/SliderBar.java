@@ -57,7 +57,7 @@ public class SliderBar extends View {
 			canvas.drawRect(left, top, right, bottom, mPaint);
 		mArea.set(getLeft(), areaTop, getRight(), areaBottom);
 		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-		mPaint.setColor(0x33ffffff);
+		mPaint.setColor(0x66ffffff);
 		if (touchY + 2 <= top) touchY = top + 2;
 		if (touchY - 2 > bottom) touchY = bottom - 2;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
