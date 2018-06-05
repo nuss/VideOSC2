@@ -500,9 +500,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			mOverlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
 			mOverlayView = (TileOverlayView) mOverlay.findViewById(R.id.tile_draw_view);
+//			mPreviewContainer.addView(mOverlay);
+			VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
 //			mOverlayView.setDimensions(mApp.getDimensions().x, mApp.getDimensions().y);
 
-			Log.d(TAG, "mOverlay in surfaceCreated: " + mOverlay.getLeft() + ", " + mOverlay.getTop() + ", " + mOverlay.getRight() + ", " + mOverlay.getBottom());
+			Log.d(TAG, "mOverlay in surfaceCreated: " + getLeft() + ", " + getTop() + ", " + getRight() + ", " + getBottom());
 		}
 
 		/**
@@ -630,6 +632,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 //				VideOSCUIHelpers.removeView(mOverlay, mPreviewContainer);
+				// clear selected pixels on up
+				mSelectedPixels.clear();
+				mOverlayView.setSelectedRects(mSelectedPixels);
+				mOverlayView.invalidate();
+
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
@@ -714,20 +721,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 			}
 
-//			Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()));
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-//				Log.d(TAG, "current pixel: " + getHoverPixel(motionEvent.getX(), motionEvent.getY()) + ", rect: " + getCurrentPixelRect(getHoverPixel(motionEvent.getX(), motionEvent.getY())));
-				int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
-				Rect currRect = getCurrentPixelRect(currPixel);
-				Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
-				if (!containsRect(mSelectedPixels, currRect)) {
-					mSelectedPixels.add(currRect);
+				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
+					Rect currRect = getCurrentPixelRect(currPixel);
+					Log.d(TAG, "current pixel: " + currPixel + ", square: " + currRect);
+					if (!containsRect(mSelectedPixels, currRect)) {
+						mSelectedPixels.add(currRect);
+					}
+					mOverlayView.setSelectedRects(mSelectedPixels);
+					mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
+					mOverlayView.invalidate();
 				}
-				mOverlayView.setSelectedRects(mSelectedPixels);
-				mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
-				// FIXME: why doesn't the following line trigger drawing in the overlay view
-				mOverlayView.invalidate();
-				//				Log.d(TAG, "selected pixels: " + mSelectedPixels.size());
 			}
 
 			return true;
@@ -814,7 +819,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private Rect getCurrentPixelRect(int pixelId) {
-			return new Rect(pixelId % mResolution.x * mPixelSize.x, pixelId / mResolution.x * mPixelSize.y, mPixelSize.x, mPixelSize.y);
+			int left = pixelId % mResolution.x * mPixelSize.x;
+			int top = pixelId / mResolution.x * mPixelSize.y;
+			int right = left + mPixelSize.x;
+			int bottom = top + mPixelSize.y;
+			return new Rect(left, top, right, bottom);
 		}
 
 		// set the preview fps range and update framerate immediately

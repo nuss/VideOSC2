@@ -6,18 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import net.videosc2.R;
 
@@ -25,13 +19,8 @@ import java.util.ArrayList;
 
 public class TileOverlayView extends View {
 	final private static String TAG = "TileOverlayView";
-	private Context mContext;
-	private Point mDimensions = new Point(0, 0);
 
-	final Bitmap.Config mInPreferredConfig = Bitmap.Config.ARGB_8888;
-//	final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-	final Paint mPaint = new Paint();
-	private Bitmap mBmp;
+	final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private BitmapShader mShaderSelected;
 	private ArrayList<Rect> mSelectPixels = new ArrayList<>();
 	/**
@@ -42,7 +31,7 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context) {
 		super(context);
-		init(context);
+		init();
 	}
 
 	/**
@@ -52,7 +41,7 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		init();
 	}
 
 	/**
@@ -66,28 +55,13 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context);
+		init();
 	}
 
-	private void init(Context context) {
-		Log.d(TAG, "init");
-		mContext = context;
-		int pixelSurface = 100;
-		int[] colors = new int[pixelSurface];
-		for (int i = 0; i < pixelSurface; i++)
-			colors[i] = 0x00000000;
-//		Drawable tmpDrawable = getResources().getDrawable(R.id.selected_pixel_rect_bitmap);
-//		mBmp = ((BitmapDrawable) tmpDrawable).getBitmap();
-//		mBmp = Bitmap.createBitmap(colors, 10, 10, mInPreferredConfig);
+	private void init() {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
-		// FIXME: why can't a bitmap not get scaled up?
-		mBmp = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.empty, options);
-//		mBmp = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-//		tmpDrawable = getResources().getDrawable(R.id.tile_selected);
-//		Bitmap patSrc = ((BitmapDrawable) tmpDrawable).getBitmap();
 		Bitmap patSrc = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.hover_rect_tile, options);
-		Log.d(TAG, "mBmp: " + mBmp + ", patSrc: " + patSrc);
 		mShaderSelected = new BitmapShader(patSrc, Shader.TileMode.REPEAT,Shader.TileMode.REPEAT);
 	}
 
@@ -124,34 +98,16 @@ public class TileOverlayView extends View {
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		Log.d(TAG, "onLayout");
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			if (!mSelectPixels.isEmpty()) {
-				mBmp.reconfigure(
-						mSelectPixels.get(0).left - mSelectPixels.get(0).right,
-						mSelectPixels.get(0).top - mSelectPixels.get(0).bottom,
-						mInPreferredConfig
-				);
-			}
-		}
-	}
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		// FIXME: drawing never gets triggered
-		Log.d(TAG, "should be drawing now");
+		mPaint.setColor(0xff000000);
+		mPaint.setStyle(Paint.Style.FILL);
+		mPaint.setShader(mShaderSelected);
 		for (Rect rect : mSelectPixels) {
-			mPaint.setStyle(Paint.Style.STROKE);
-			mPaint.setStrokeWidth(2);
-			mPaint.setColor(0xFFCC0000);
 			canvas.drawRect(rect, mPaint);
-//			mPaint.setColor(0x00000000);
-//			mPaint.setShader(mShaderSelected);
-//			canvas.drawBitmap(mBmp, rect, rect, mPaint);
-			Log.d(TAG, "onDraw: " + rect);
 		}
-
 	}
 
 	public void setSelectedRects(ArrayList<Rect> rects) {
