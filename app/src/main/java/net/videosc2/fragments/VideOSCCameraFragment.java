@@ -645,14 +645,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					if (mPixelIds.size() > 0) {
-						VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
-						mManager.beginTransaction()
-								.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
-								.commit();
-						VideOSCMultiSliderFragment multiSliderView = (VideOSCMultiSliderFragment) mManager.findFragmentByTag("MultiSliderView");
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
-						multiSliderFragment.setArguments(msArgsBundle);
+						if (!mApp.getColorMode().equals(RGBModes.RGB)) {
+							VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
+							mManager.beginTransaction()
+									.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
+									.commit();
+							multiSliderFragment.setArguments(msArgsBundle);
+						} else {
+							VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
+							mManager.beginTransaction()
+									.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
+									.commit();
+							multiSliderFragment.setArguments(msArgsBundle);
+						}
 					}
 
 					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);

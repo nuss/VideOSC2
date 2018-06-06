@@ -12,9 +12,6 @@ import android.view.View;
 /**
  * Created by stefan on 17.05.18, package net.videosc2.views, project VideOSC2.
  */
-
-// TODO: define a way to colorize sliderbars
-
 public class SliderBar extends View {
 
 	final static String TAG = "SliderBar";
@@ -51,16 +48,14 @@ public class SliderBar extends View {
 	protected void onDraw(Canvas canvas) {
 		int top = 0;
 		touchY = touchY == 0 ? touchY = 2 : getTouchY();
-		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
-		mPaint.setStrokeWidth(0);
 		mPaint.setColor(0x99000000);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 			canvas.drawRoundRect((float) left, (float) top, (float) right, (float) bottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
 		else
 			canvas.drawRect(left, top, right, bottom, mPaint);
 		mArea.set(getLeft(), areaTop, getRight(), areaBottom);
-		mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		mPaint.setColor(mColor);
 		if (touchY + 2 <= top) touchY = top + 2;
 		if (touchY - 2 > bottom) touchY = bottom - 2;

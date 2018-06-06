@@ -10,8 +10,9 @@ import java.util.ArrayList;
 public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
-
-	private ArrayList<Integer> sliderNums;
+	private ArrayList<Integer> mSliderNums;
+	private int mDisplayHeight;
+	private int mParentTopMargin;
 
 	public VideOSCMultiSliderView(Context context) {
 		super(context);
@@ -30,10 +31,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	private void init() {
 		this.setOrientation(LinearLayout.HORIZONTAL);
-	}
-
-	public void setSliderNums(ArrayList<Integer> sliderNums) {
-		this.sliderNums = sliderNums;
 	}
 
 	@Override
@@ -70,14 +67,15 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		int numSliders = sliderNums.size();
+		int numSliders = mSliderNums.size();
 		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
 		int barWidth = (getMeasuredWidth() - marginsTotal)/numSliders;
-		Log.d(TAG, "numSliders: " + numSliders + ", marginsTotal: " + marginsTotal + ", barWidth: " + barWidth);
 		int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
+			child.areaTop = 0 - getTop() - mParentTopMargin - 1;
+			child.areaBottom = mDisplayHeight;
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
 		}
@@ -93,7 +91,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 		for (int i = 0; i < mBars.size(); i++) {
 			SliderBar bar = mBars.get(i);
-//			Log.d(TAG, "mArea: " + bar.mArea.left + ", " + bar.mArea.top + ", " + bar.mArea.right + ", " + bar.mArea.bottom);
 			if (bar.mArea.contains(tempTouchX, tempTouchY)) {
 				bar.setTouchY(tempTouchY);
 				bar.invalidate();
@@ -109,5 +106,18 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		super.performClick();
 		return false;
 	}
+
+	public void setDisplayHeight(int height) {
+		this.mDisplayHeight = height;
+	}
+
+	public void setParentTopMargin(int topMargin) {
+		this.mParentTopMargin = topMargin;
+	}
+
+	public void setSliderNums(ArrayList<Integer> sliderNums) {
+		this.mSliderNums = sliderNums;
+	}
+
 }
 

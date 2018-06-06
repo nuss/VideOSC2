@@ -42,15 +42,15 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			barLeft.areaTop = 0 - topMargin;
-			barLeft.areaBottom = app.getDimensions().y;
+			mMSViewLeft.setParentTopMargin(topMargin);
+			mMSViewLeft.setDisplayHeight(app.getDimensions().y);
 			barLeft.mScreenDensity = density;
 			barLeft.setNum(String.valueOf(num));
 			mMSViewLeft.mBars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
-			barRight.areaTop = 0 - topMargin;
-			barRight.areaBottom = app.getDimensions().y;
+			mMSViewRight.setParentTopMargin(topMargin);
+			mMSViewRight.setDisplayHeight(app.getDimensions().y);
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(num));
 			mMSViewRight.mBars.add(barRight);

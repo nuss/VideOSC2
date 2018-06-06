@@ -1,6 +1,7 @@
 package net.videosc2.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,8 @@ import java.util.ArrayList;
 /**
  * Created by stefan on 19.05.18, package net.videosc2.views, project VideOSC22.
  */
-
-// TODO: define a way to colorize sliderbars
-
 public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
-	private final static String TAG = "MultiSliderFragment";
+	private final static String TAG = "MultiSliderFragmentRGB";
 	private VideOSCMultiSliderView mMSViewRedRight;
 	private VideOSCMultiSliderView mMSViewRedLeft;
 	private VideOSCMultiSliderView mMSViewGreenRight;
@@ -58,15 +56,17 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			barRedLeft.areaTop = 0 - topMargin;
-			barRedLeft.areaBottom = app.getDimensions().y;
+			mMSViewRedLeft.setParentTopMargin(topMargin);
+			mMSViewRedLeft.setDisplayHeight(app.getDimensions().y);
+			barRedLeft.setColor(0x99ff0000);
 			barRedLeft.mScreenDensity = density;
 			barRedLeft.setNum(String.valueOf(num));
 			mMSViewRedLeft.mBars.add(barRedLeft);
 			mMSViewRedLeft.addView(barRedLeft);
 			SliderBar barRedRight = new SliderBar(getActivity());
-			barRedRight.areaTop = 0 - topMargin;
-			barRedRight.areaBottom = app.getDimensions().y;
+			mMSViewRedRight.setParentTopMargin(topMargin);
+			mMSViewRedRight.setDisplayHeight(app.getDimensions().y);
+			barRedRight.setColor(0x99ff0000);
 			barRedRight.mScreenDensity = density;
 			barRedRight.setNum(String.valueOf(num));
 			mMSViewRedRight.mBars.add(barRedRight);
@@ -76,17 +76,17 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			// FIXME
-			barGreenLeft.areaTop = 0 - topMargin; // ??? should be topMargin - barGreenLeft.getTop()
-			barGreenLeft.areaBottom = app.getDimensions().y;
+			mMSViewGreenLeft.setParentTopMargin(topMargin);
+			mMSViewGreenLeft.setDisplayHeight(app.getDimensions().y);
+			barGreenLeft.setColor(0x9900ff00);
 			barGreenLeft.mScreenDensity = density;
 			barGreenLeft.setNum(String.valueOf(num));
 			mMSViewGreenLeft.mBars.add(barGreenLeft);
 			mMSViewGreenLeft.addView(barGreenLeft);
 			SliderBar barGreenRight = new SliderBar(getActivity());
-			// FIXME
-			barGreenRight.areaTop = 0 - topMargin;
-			barGreenRight.areaBottom = app.getDimensions().y;
+			mMSViewGreenRight.setParentTopMargin(topMargin);
+			mMSViewGreenRight.setDisplayHeight(app.getDimensions().y);
+			barGreenRight.setColor(0x9900ff00);
 			barGreenRight.mScreenDensity = density;
 			barGreenRight.setNum(String.valueOf(num));
 			mMSViewGreenRight.mBars.add(barGreenRight);
@@ -96,17 +96,17 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			// FIXME
-			barBlueLeft.areaTop = 0 - topMargin;
-			barBlueLeft.areaBottom = app.getDimensions().y;
+			mMSViewBlueLeft.setParentTopMargin(topMargin);
+			mMSViewBlueLeft.setDisplayHeight(app.getDimensions().y);
+			barBlueLeft.setColor(0x990000ff);
 			barBlueLeft.mScreenDensity = density;
 			barBlueLeft.setNum(String.valueOf(num));
 			mMSViewBlueLeft.mBars.add(barBlueLeft);
 			mMSViewBlueLeft.addView(barBlueLeft);
 			SliderBar barBlueRight = new SliderBar(getActivity());
-			// FIXME
-			barBlueRight.areaTop = 0 - topMargin;
-			barBlueRight.areaBottom = app.getDimensions().y;
+			mMSViewBlueRight.setParentTopMargin(topMargin);
+			mMSViewBlueRight.setDisplayHeight(app.getDimensions().y);
+			barBlueRight.setColor(0x990000ff);
 			barBlueRight.mScreenDensity = density;
 			barBlueRight.setNum(String.valueOf(num));
 			mMSViewBlueRight.mBars.add(barBlueRight);

@@ -5,6 +5,8 @@
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
                 android:baselineAligned="false"
+                android:clickable="true"
+                android:focusable="true"
                 android:orientation="horizontal">
 
 	<View
@@ -18,30 +20,30 @@
 		android:id="@+id/multislider_rgb_left_column"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_marginBottom="15dp"
+		android:layout_marginEnd="5dp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="5dp"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="15dp"
 		android:layout_toLeftOf="@+id/center_shim"
 		android:layout_toStartOf="@+id/center_shim"
-		android:layout_marginStart="10dp"
-		android:layout_marginLeft="10dp"
-		android:layout_marginTop="15dp"
-		android:layout_marginBottom="15dp"
-		android:layout_marginRight="5dp"
-		android:layout_marginEnd="5dp"
 		android:orientation="vertical">
 
 		<net.videosc2.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_r_left"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="0.333333"
 			android:layout_marginBottom="5dp"
+			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
 		<net.videosc2.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_g_left"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="0.333333"
 			android:layout_marginBottom="5dp"
+			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
 		<net.videosc2.views.VideOSCMultiSliderView
@@ -57,30 +59,30 @@
 		android:id="@+id/multislider_rgb_right_column"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:layout_marginBottom="15dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginStart="5dp"
+		android:layout_marginTop="15dp"
 		android:layout_toEndOf="@+id/center_shim"
 		android:layout_toRightOf="@+id/center_shim"
-		android:layout_marginStart="5dp"
-		android:layout_marginLeft="5dp"
-		android:layout_marginTop="15dp"
-		android:layout_marginBottom="15dp"
-		android:layout_marginRight="10dp"
-		android:layout_marginEnd="10dp"
 		android:orientation="vertical">
 
 		<net.videosc2.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_r_right"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="0.333333"
 			android:layout_marginBottom="5dp"
+			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
 		<net.videosc2.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_g_right"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="0.333333"
 			android:layout_marginBottom="5dp"
+			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
 		<net.videosc2.views.VideOSCMultiSliderView

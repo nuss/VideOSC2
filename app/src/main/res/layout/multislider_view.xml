@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/multislider_view"
-              android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:animateLayoutChanges="true"
-              android:baselineAligned="false">
+              android:baselineAligned="false"
+              android:clickable="true"
+              android:focusable="true"
+              android:orientation="horizontal">
 
 	<net.videosc2.views.VideOSCMultiSliderView
 		android:id="@+id/multislider_view_left"
