@@ -50,22 +50,31 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
 		float density = app.getScreenDensity();
 
+		mMSViewRedLeft.setParentTopMargin(topMargin);
+		mMSViewRedLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewRedRight.setParentTopMargin(topMargin);
+		mMSViewRedRight.setDisplayHeight(app.getDimensions().y);
+		mMSViewGreenLeft.setParentTopMargin(topMargin);
+		mMSViewGreenLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewGreenRight.setParentTopMargin(topMargin);
+		mMSViewGreenRight.setDisplayHeight(app.getDimensions().y);
+		mMSViewBlueLeft.setParentTopMargin(topMargin);
+		mMSViewBlueLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewBlueRight.setParentTopMargin(topMargin);
+		mMSViewBlueRight.setDisplayHeight(app.getDimensions().y);
+
 		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar barRedLeft = new SliderBar(getActivity());
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			mMSViewRedLeft.setParentTopMargin(topMargin);
-			mMSViewRedLeft.setDisplayHeight(app.getDimensions().y);
 			barRedLeft.setColor(0x99ff0000);
 			barRedLeft.mScreenDensity = density;
 			barRedLeft.setNum(String.valueOf(num));
 			mMSViewRedLeft.mBars.add(barRedLeft);
 			mMSViewRedLeft.addView(barRedLeft);
 			SliderBar barRedRight = new SliderBar(getActivity());
-			mMSViewRedRight.setParentTopMargin(topMargin);
-			mMSViewRedRight.setDisplayHeight(app.getDimensions().y);
 			barRedRight.setColor(0x99ff0000);
 			barRedRight.mScreenDensity = density;
 			barRedRight.setNum(String.valueOf(num));
@@ -76,16 +85,12 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			mMSViewGreenLeft.setParentTopMargin(topMargin);
-			mMSViewGreenLeft.setDisplayHeight(app.getDimensions().y);
 			barGreenLeft.setColor(0x9900ff00);
 			barGreenLeft.mScreenDensity = density;
 			barGreenLeft.setNum(String.valueOf(num));
 			mMSViewGreenLeft.mBars.add(barGreenLeft);
 			mMSViewGreenLeft.addView(barGreenLeft);
 			SliderBar barGreenRight = new SliderBar(getActivity());
-			mMSViewGreenRight.setParentTopMargin(topMargin);
-			mMSViewGreenRight.setDisplayHeight(app.getDimensions().y);
 			barGreenRight.setColor(0x9900ff00);
 			barGreenRight.mScreenDensity = density;
 			barGreenRight.setNum(String.valueOf(num));
@@ -96,16 +101,12 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
-			mMSViewBlueLeft.setParentTopMargin(topMargin);
-			mMSViewBlueLeft.setDisplayHeight(app.getDimensions().y);
 			barBlueLeft.setColor(0x990000ff);
 			barBlueLeft.mScreenDensity = density;
 			barBlueLeft.setNum(String.valueOf(num));
 			mMSViewBlueLeft.mBars.add(barBlueLeft);
 			mMSViewBlueLeft.addView(barBlueLeft);
 			SliderBar barBlueRight = new SliderBar(getActivity());
-			mMSViewBlueRight.setParentTopMargin(topMargin);
-			mMSViewBlueRight.setDisplayHeight(app.getDimensions().y);
 			barBlueRight.setColor(0x990000ff);
 			barBlueRight.mScreenDensity = density;
 			barBlueRight.setNum(String.valueOf(num));

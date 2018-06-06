@@ -81,6 +81,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		}
 	}
 
+	// TODO: get values of sliders (0.0-1.0) and make them available in CameraView
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		performClick();
