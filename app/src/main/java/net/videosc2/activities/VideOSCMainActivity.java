@@ -650,6 +650,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mApp.setHasExposureSettingBeenCancelled(false);
 		mApp.setExposureIsFixed(false);
 		mApp.setInteractionMode(InteractionModes.BASIC);
+		mApp.setColorMode(RGBModes.RGB);
 		// close db
 		mDbHelper.close();
 		super.onDestroy();
