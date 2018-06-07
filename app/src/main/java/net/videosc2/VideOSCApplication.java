@@ -47,6 +47,7 @@ public class VideOSCApplication extends Application {
 	private boolean mIsFPSCalcPanelOpen = false;
 	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
 	private int mCurrentCameraId;
+	private Point mResolution;
 
 	@Override
 	public void onCreate() {
@@ -209,5 +210,13 @@ public class VideOSCApplication extends Application {
 
 	public int getCurrentCameraId() {
 		return this.mCurrentCameraId;
+	}
+
+	public void setResolution(Point resolution) {
+		this.mResolution = resolution;
+	}
+
+	public Point getResolution() {
+		return this.mResolution;
 	}
 }

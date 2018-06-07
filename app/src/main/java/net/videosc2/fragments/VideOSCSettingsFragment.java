@@ -2,15 +2,13 @@ package net.videosc2.fragments;
 
 import android.app.FragmentManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Gravity;
@@ -20,7 +18,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -35,16 +32,15 @@ import android.widget.Toast;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.db.SettingsContract;
-import net.videosc2.utilities.VideOSCDialogHelper;
-import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
-//import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import ketai.net.KetaiNet;
+
+//import java.lang.reflect.Method;
 
 /**
  * Created by stefan on 12.03.17.
@@ -52,7 +48,9 @@ import ketai.net.KetaiNet;
 
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
-	public VideOSCSettingsFragment() {}
+
+	public VideOSCSettingsFragment() {
+	}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -393,7 +391,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						String[] items = new String[supportedPreviewFpsRange.size()];
 						for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
 							int[] item = supportedPreviewFpsRange.get(j);
-							items[j] = (item[0]/1000) + " / " + (item[1]/1000);
+							items[j] = (item[0] / 1000) + " / " + (item[1] / 1000);
 						}
 						ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(getActivity(), R.layout.framerate_selection_item, items);
 						selectFramerate.setAdapter(fpsAdapter);
@@ -439,7 +437,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												camera.setParameters(params);
 												app.setExposureIsFixed(true);
 												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
-												bg.setVisibility(View.VISIBLE);new Toast(getActivity());
+												bg.setVisibility(View.VISIBLE);
+												new Toast(getActivity());
 												resolutionSettingsView.setVisibility(View.VISIBLE);
 												app.setSettingsLevel(2);
 											}
@@ -465,7 +464,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										params.setAutoExposureLock(false);
 										camera.setParameters(params);
 										app.setExposureIsFixed(false);
-										app.setHasExposureSettingBeenCancelled(false);									}
+										app.setHasExposureSettingBeenCancelled(false);
+									}
 								}
 							});
 						}
@@ -489,9 +489,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setResolutionHorizontal(Short.parseShort(resH));
 									// update camera preview immediately
-									cameraView.setResolution(
-											Integer.parseInt(resH),
-											cameraView.getResolution().y
+									app.setResolution(
+											new Point(
+													Integer.parseInt(resH),
+													app.getResolution().y
+											)
 									);
 								}
 							}
@@ -516,9 +518,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setResolutionVertical(Short.parseShort(resV));
 									// update camera preview immediately
-									cameraView.setResolution(
-											cameraView.getResolution().x,
-											Integer.parseInt(resV)
+									app.setResolution(
+											new Point(
+													app.getResolution().x,
+													Integer.parseInt(resV)
+											)
 									);
 								}
 							}
@@ -1008,7 +1012,10 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private int receivePort;
 		private String protocol;
 
-		Address() {};
+		Address() {
+		}
+
+		;
 
 		void setRowId(long id) {
 			this.rowId = id;
@@ -1063,7 +1070,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private int udpReceivePort;
 		private int tcpReceivePort;
 
-		Settings() {}
+		Settings() {
+		}
 
 		void setRowId(long id) {
 			this.rowId = id;
@@ -1160,7 +1168,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private boolean humiditySensorActivated;
 		private boolean locationSensorActivated;
 
-		Sensors() {}
+		Sensors() {
+		}
 
 		void setRowId(long rowId) {
 			this.rowId = rowId;

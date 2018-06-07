@@ -120,5 +120,10 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		this.mSliderNums = sliderNums;
 	}
 
+	public double getSliderValueAt(int index) {
+		// TODO
+
+		return index;
+	}
 }
 

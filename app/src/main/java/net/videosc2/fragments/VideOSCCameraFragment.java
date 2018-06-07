@@ -29,19 +29,13 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,6 +58,7 @@ import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.views.TileOverlayView;
+import net.videosc2.views.VideOSCMultiSliderView;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -239,14 +234,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 	}
 
-	public void setResolution(int width, int height) {
-		mResolution.set(width, height);
-	}
-
-	public Point getResolution() {
-		return mResolution;
-	}
-
 	public void setColorOscCmds(String cmd) {
 		mRed = String.format("/%1$s/red", cmd);
 		mGreen = String.format("/%1$s/green", cmd);
@@ -409,9 +396,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			);
 
 			if (cursor.moveToFirst()) {
-				setResolution(
-						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H)),
-						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V))
+				mApp.setResolution(
+						new Point(
+								cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H)),
+								cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V))
+						)
 				);
 				setFramerateRange(
 						cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE))
@@ -424,7 +413,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			cursor.close();
 
 			// triplets of booleans, to be added to lockList, offPxls;
-			Point res = getResolution();
+			Point res = mApp.getResolution();
 			for (int i = 0; i < res.x * res.y; i++) {
 				lockList.add(falses.clone());
 				offPxls.add(falses.clone());
@@ -567,8 +556,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
 						if (zoomText != null)
 							zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
-						int outWidth = getResolution().x;
-						int outHeight = getResolution().y;
+						Point resolution = mApp.getResolution();
+						int outWidth = resolution.x;
+						int outHeight = resolution.y;
 						int previewSize = outWidth * outHeight;
 						int diff = previewSize - offPxls.size();
 						if (diff != 0) pad(diff);
@@ -827,7 +817,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void setPixelSize(SurfaceHolder holder) {
 			Rect surfaceFrame = holder.getSurfaceFrame();
-			Point resolution = getResolution();
+			Point resolution = mApp.getResolution();
 //			Log.d(TAG, "surfaceFrame: " + surfaceFrame.width() + " x " + surfaceFrame.height() + ", resolution: " + resolution);
 			mPixelSize.x = surfaceFrame.width() / resolution.x;
 			mPixelSize.y = surfaceFrame.height() / resolution.y;
@@ -842,12 +832,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			int hIndex = (int) x / mPixelSize.x;
 			int vIndex = (int) y / mPixelSize.y;
 
-			return vIndex * getResolution().x + hIndex;
+			return vIndex * mApp.getResolution().x + hIndex;
 		}
 
 		private Rect getCurrentPixelRect(int pixelId) {
-			int left = pixelId % mResolution.x * mPixelSize.x;
-			int top = pixelId / mResolution.x * mPixelSize.y;
+			Point resolution = mApp.getResolution();
+			int left = pixelId % resolution.x * mPixelSize.x;
+			int top = pixelId / resolution.x * mPixelSize.y;
 			int right = left + mPixelSize.x;
 			int bottom = top + mPixelSize.y;
 			return new Rect(left, top, right, bottom);
@@ -876,10 +867,23 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
 			float rval, gval, bval, alpha;
-			int dimensions = getResolution().x * getResolution().y;
+			Point resolution = mApp.getResolution();
+			int dimensions = resolution.x * resolution.y;
 			int[] pixels = new int[width * height];
 
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
+
+			if (mApp.getColorMode().equals(RGBModes.RGB)) {
+				VideOSCMultiSliderView msRedLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_left);
+				VideOSCMultiSliderView msRedRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_right);
+				VideOSCMultiSliderView msGreenLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_left);
+				VideOSCMultiSliderView msGreenRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_right);
+				VideOSCMultiSliderView msBlueLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_left);
+				VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
+			} else {
+				VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
+				VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
+			}
 
 			for (int i = 0; i < dimensions; i++) {
 				// only the downsampled image gets inverted as inverting the original would slow
@@ -900,19 +904,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (mApp.getColorMode().equals(RGBModes.RGB)) {
 						if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 							// mRed
-//						alpha = pCamera.isStarted() ? 255 / 3 : 0;
 							pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
 						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 							// mGreen;
-//						alpha = cam.isStarted() ? 255 / 3 : 0;
 							pixels[i] = Color.argb(255 / 3, rVal, 0, bVal);
 						} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
 							// mBlue;
-//						alpha = cam.isStarted() ? 255 / 3 : 0;
 							pixels[i] = Color.argb(255 / 3, rVal, gVal, 0);
 						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 							// rg;
-//						alpha = cam.isStarted ? 255 / 3 * 2 : 0;
 							pixels[i] = Color.argb(255 / 3 * 2, 0, 0, bVal);
 						} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
 							// rb;
@@ -920,7 +920,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							pixels[i] = Color.argb(255 / 3 * 2, 0, gVal, 0);
 						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 							// bg;
-//						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
 							pixels[i] = Color.argb(255 / 3 * 2, rVal, 0, 0);
 						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 							// rgb
