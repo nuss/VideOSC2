@@ -11,6 +11,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
+	private Double[] mValuesArray;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
 
@@ -74,8 +75,8 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
-			child.areaTop = 0 - getTop() - mParentTopMargin - 1;
-			child.areaBottom = mDisplayHeight;
+			child.mAreaTop = 0 - getTop() - mParentTopMargin - 1;
+			child.mAreaBottom = mDisplayHeight;
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
 		}
@@ -120,10 +121,12 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		this.mSliderNums = sliderNums;
 	}
 
-	public double getSliderValueAt(int index) {
-		// TODO
+	public void setValuesArray(int numPixels) {
+		this.mValuesArray = new Double[numPixels];
+	}
 
-		return index;
+	public double getSliderValueAt(int index) {
+		return this.mValuesArray[index];
 	}
 }
 

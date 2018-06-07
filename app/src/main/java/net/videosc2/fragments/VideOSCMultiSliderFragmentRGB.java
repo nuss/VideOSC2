@@ -1,5 +1,6 @@
 package net.videosc2.fragments;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,34 +35,44 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
+		Point resolution = app.getResolution();
+		int numTotalPixels = resolution.x * resolution.y;
+
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
+		mMSViewRedLeft.setValuesArray(numTotalPixels);
 		mMSViewRedRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_right);
+		mMSViewRedRight.setValuesArray(numTotalPixels);
 		mMSViewGreenLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_left);
+		mMSViewGreenLeft.setValuesArray(numTotalPixels);
 		mMSViewGreenRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_right);
+		mMSViewGreenRight.setValuesArray(numTotalPixels);
 		mMSViewBlueLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_left);
+		mMSViewBlueLeft.setValuesArray(numTotalPixels);
 		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
+		mMSViewBlueRight.setValuesArray(numTotalPixels);
 
 		ViewGroup column = (ViewGroup) msContainer.findViewById(R.id.multislider_rgb_left_column);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
 		int topMargin = lp.topMargin;
 		Bundle numsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
-		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
 		float density = app.getScreenDensity();
+		int displayHeight = app.getDimensions().y;
 
 		mMSViewRedLeft.setParentTopMargin(topMargin);
-		mMSViewRedLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewRedLeft.setDisplayHeight(displayHeight);
 		mMSViewRedRight.setParentTopMargin(topMargin);
-		mMSViewRedRight.setDisplayHeight(app.getDimensions().y);
+		mMSViewRedRight.setDisplayHeight(displayHeight);
 		mMSViewGreenLeft.setParentTopMargin(topMargin);
-		mMSViewGreenLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewGreenLeft.setDisplayHeight(displayHeight);
 		mMSViewGreenRight.setParentTopMargin(topMargin);
-		mMSViewGreenRight.setDisplayHeight(app.getDimensions().y);
+		mMSViewGreenRight.setDisplayHeight(displayHeight);
 		mMSViewBlueLeft.setParentTopMargin(topMargin);
-		mMSViewBlueLeft.setDisplayHeight(app.getDimensions().y);
+		mMSViewBlueLeft.setDisplayHeight(displayHeight);
 		mMSViewBlueRight.setParentTopMargin(topMargin);
-		mMSViewBlueRight.setDisplayHeight(app.getDimensions().y);
+		mMSViewBlueRight.setDisplayHeight(displayHeight);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {

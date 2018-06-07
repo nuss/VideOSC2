@@ -637,18 +637,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (mPixelIds.size() > 0) {
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
-						if (!mApp.getColorMode().equals(RGBModes.RGB)) {
-							VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
-							mManager.beginTransaction()
-									.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
-									.commit();
-							multiSliderFragment.setArguments(msArgsBundle);
-						} else {
-							VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
-							mManager.beginTransaction()
-									.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
-									.commit();
-							multiSliderFragment.setArguments(msArgsBundle);
+						if (mManager.findFragmentByTag("MultiSliderView") == null) {
+							if (!mApp.getColorMode().equals(RGBModes.RGB)) {
+								VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
+								mManager.beginTransaction()
+										.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
+										.commit();
+								multiSliderFragment.setArguments(msArgsBundle);
+
+							} else {
+								VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
+								mManager.beginTransaction()
+										.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
+										.commit();
+								multiSliderFragment.setArguments(msArgsBundle);
+							}
 						}
 					}
 
