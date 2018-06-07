@@ -294,6 +294,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
+		private Bitmap mBmp;
 
 		// lock the state of a pixel after changing its state, otherwise pixels would constantly
 		// change their state as long as they're hoevered
@@ -568,8 +569,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-						bmp = drawFrame(Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true), outWidth, outHeight);
-						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), bmp);
+						mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true), outWidth, outHeight);
+						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
 						bmpDraw.setFilterBitmap(false);
@@ -634,9 +635,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// TODO: if multisliders shall be shown on ACTION_UP this must be considered in the show-hide logic separately
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
+					// colors keeps the integer color values of the pixels denoted in mPixelIds
 					if (mPixelIds.size() > 0) {
+						short numSelectedPixels = (short) mPixelIds.size();
+						int[] colors = new int[numSelectedPixels];
+						for (int i = 0; i < numSelectedPixels; i++) {
+							int id = mPixelIds.get(i) - 1;
+							int width = mApp.getResolution().x;
+							colors[i] = mBmp.getPixel(id % width, id / width);
+						}
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
+						msArgsBundle.putIntArray("colors", colors);
 						if (mManager.findFragmentByTag("MultiSliderView") == null) {
 							if (!mApp.getColorMode().equals(RGBModes.RGB)) {
 								VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
@@ -740,6 +751,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
+//					Log.d(TAG, "current pixel color: " + mBmp.getPixel(currPixel % mApp.getResolution().x, currPixel / mApp.getResolution().x));
 					if (!mPixelIds.contains(currPixel + 1)) {
 						mPixelIds.add(currPixel + 1);
 						Collections.sort(mPixelIds);
@@ -869,26 +881,27 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
-			float rval, gval, bval, alpha;
+			float rval, gval, bval;
 			Point resolution = mApp.getResolution();
 			int dimensions = resolution.x * resolution.y;
 			int[] pixels = new int[width * height];
 
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
-			if (mApp.getColorMode().equals(RGBModes.RGB)) {
-				VideOSCMultiSliderView msRedLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_left);
-				VideOSCMultiSliderView msRedRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_right);
-				VideOSCMultiSliderView msGreenLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_left);
-				VideOSCMultiSliderView msGreenRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_right);
-				VideOSCMultiSliderView msBlueLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_left);
-				VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
-			} else {
-				VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
-				VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
-			}
+			VideOSCMultiSliderView msRedLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_left);
+			VideOSCMultiSliderView msRedRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_right);
+			VideOSCMultiSliderView msGreenLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_left);
+			VideOSCMultiSliderView msGreenRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_right);
+			VideOSCMultiSliderView msBlueLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_left);
+			VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
+			VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
+			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
 
 			for (int i = 0; i < dimensions; i++) {
+//				if (mApp.getColorMode().equals(RGBModes.RGB) && msRedLeft != null && msRedRight != null && msGreenLeft != null && msGreenRight != null && msBlueLeft != null && msBlueRight != null)
+//					Log.d(TAG, "index: " + i + ", red val: " + msRedLeft.getSliderValueAt(i) + ", red mix: " + msRedRight.getSliderValueAt(i) + "\ngreen val: " + msGreenLeft.getSliderValueAt(i) + ", green mix: " + msGreenRight.getSliderValueAt(i) + "\nblue val: " + msBlueLeft.getSliderValueAt(i) + ", blue mix: " + msBlueRight.getSliderValueAt(i));
+//				else if (!mApp.getColorMode().equals(RGBModes.RGB) && msLeft != null && msRight != null)
+//					Log.d(TAG, "index: " + i + ", val: " + msLeft.getSliderValueAt(i) + ", mix: " + msRight.getSliderValueAt(i));
 				// only the downsampled image gets inverted as inverting the original would slow
 				// down the application considerably
 				int rVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
@@ -1056,7 +1069,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			bmp.setPixels(pixels, 0, width, 0, 0, width, height);
-
 			return bmp;
 		}
 

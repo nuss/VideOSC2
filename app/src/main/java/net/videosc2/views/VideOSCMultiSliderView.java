@@ -85,6 +85,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	// TODO: get values of sliders (0.0-1.0) and make them available in CameraView
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		double sliderValue;
 		performClick();
 		this.getParent().requestDisallowInterceptTouchEvent(true);
 
@@ -94,7 +95,20 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		for (int i = 0; i < mBars.size(); i++) {
 			SliderBar bar = mBars.get(i);
 			if (bar.mArea.contains(tempTouchX, tempTouchY)) {
+				int barHeight = bar.getBarHeight();
 				bar.setTouchY(tempTouchY);
+
+				// pixel index
+				int index = Integer.parseInt(bar.getNum(), 10) - 1;
+				// the value of the slider
+				if (tempTouchY <= 0)
+					sliderValue = 1.0;
+				else if (tempTouchY >= barHeight)
+					sliderValue = 0.0;
+				else
+					sliderValue = ((double) barHeight - (double) tempTouchY) / (double) barHeight;
+				// FIXME: mSliderValues must have the size of the downsampled resolution.x * downsampled resolution.y
+				mValuesArray[index] = sliderValue;
 				bar.invalidate();
 			}
 		}
@@ -123,9 +137,10 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setValuesArray(int numPixels) {
 		this.mValuesArray = new Double[numPixels];
+		Log.d("VideOSCCameraFragment", "mValuesArray initialized: " + this.mValuesArray.length);
 	}
 
-	public double getSliderValueAt(int index) {
+	public Double getSliderValueAt(int index) {
 		return this.mValuesArray[index];
 	}
 }
