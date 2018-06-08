@@ -927,12 +927,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msGreenLeft != null
 						&& msGreenRight != null
 						&& msBlueLeft != null
-						&& msBlueRight != null) {
+						&& msBlueRight != null)
+				{
 					// Log.d(TAG, "index: " + i + ", red val: " + msRedLeft.getSliderValueAt(i) + ", red mix: " + msRedRight.getSliderValueAt(i) + "\ngreen val: " + msGreenLeft.getSliderValueAt(i) + ", green mix: " + msGreenRight.getSliderValueAt(i) + "\nblue val: " + msBlueLeft.getSliderValueAt(i) + ", blue mix: " + msBlueRight.getSliderValueAt(i));
 					mRedValues[i] = msRedLeft.getSliderValueAt(i);
 					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
 					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
-				} else if (!mApp.getColorMode().equals(RGBModes.RGB) && msLeft != null && msRight != null) {
+				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
+						&& msLeft != null
+						&& msRight != null)
+				{
 					// Log.d(TAG, "index: " + i + ", val: " + msLeft.getSliderValueAt(i) + ", mix: " + msRight.getSliderValueAt(i));
 					switch (mApp.getColorMode()) {
 						case R:
