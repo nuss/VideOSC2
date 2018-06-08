@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -24,6 +25,7 @@ public class SliderBar extends View {
 	private int mTouchY;
 	public float mScreenDensity;
 	private int mColor = 0x66ffffff;
+	private double mPixelVal;
 
 	public SliderBar(Context context) {
 		super(context);
@@ -74,6 +76,10 @@ public class SliderBar extends View {
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		this.mRight = right - left;
 		this.mBottom = bottom;
+		if (this.mPixelVal > 0) {
+			Log.d(TAG, "pixel value: " + mPixelVal);
+			this.mTouchY = (int) (bottom * this.mPixelVal);
+		}
 	}
 
 	public void setTouchY(int touchY) {
@@ -98,5 +104,10 @@ public class SliderBar extends View {
 
 	public int getBarHeight() {
 		return this.mBottom;
+	}
+
+	public void setPixelValue(int value) {
+		Log.d(TAG, "raw value: " + value);
+		mPixelVal = (double) (255 - value) / 255;
 	}
 }

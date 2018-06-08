@@ -39,6 +39,10 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;
 
+		Bundle argsBundle = this.getArguments();
+		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		int[] allColors = argsBundle.getIntArray("colors");
+
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
@@ -53,11 +57,23 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
 
+		assert allColors != null;
+		int[] reds = new int[allColors.length];
+		int[] greens = new int[allColors.length];
+		int[] blues = new int[allColors.length];
+		for (int i = 0; i < allColors.length; i++) {
+			reds[i] = (allColors[i] >> 16) & 0xFF;
+			greens[i] = (allColors[i] >> 8) & 0xFF;
+			blues[i] = allColors[i] & 0xFF;
+		}
+
+		mMSViewRedLeft.setColors(reds);
+		mMSViewGreenLeft.setColors(greens);
+		mMSViewBlueLeft.setColors(blues);
+
 		ViewGroup column = (ViewGroup) msContainer.findViewById(R.id.multislider_rgb_left_column);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
 		int topMargin = lp.topMargin;
-		Bundle numsBundle = this.getArguments();
-		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
 		float density = app.getScreenDensity();
 		int displayHeight = app.getDimensions().y;
 

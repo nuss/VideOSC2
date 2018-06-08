@@ -30,7 +30,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -117,6 +116,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private LayoutInflater mInflater;
 	private static OscP5 mOscP5;
 
+	// pixels set by multislider
+	// these arrays shouldn't get get reinitialized
+	// when switching the camera
+	private Double[] mRedValues;
+	private Double[] mGreenValues;
+	private Double[] mBlueValues;
+
+	private Double[] mRedMixValues;
+	private Double[] mGreenMixValues;
+	private Double[] mBlueMixValues;
 
 	/**
 	 * OnCreateView fragment override
@@ -312,9 +321,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private ViewGroup mOverlay;
 		private TileOverlayView mOverlayView;
-		private Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-		private Rect mTileRect = new Rect(0, 0, 0, 0);
-		private BitmapDrawable mSelectedTileDrawable;
 		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 		private List<Integer> mPixelIds = new ArrayList<>();
 		private FragmentManager mManager;
@@ -419,6 +425,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				lockList.add(falses.clone());
 				offPxls.add(falses.clone());
 			}
+
+			if (mRedValues == null)
+				mRedValues = new Double[res.x * res.y];
+			if (mGreenValues == null)
+				mGreenValues = new Double[res.x * res.y];
+			if (mBlueValues == null)
+				mBlueValues = new Double[res.x * res.y];
+
+			if (mRedMixValues == null)
+				mRedMixValues = new Double[res.x * res.y];
+			if (mGreenMixValues == null)
+				mGreenMixValues = new Double[res.x * res.y];
+			if (mBlueMixValues == null)
+				mBlueMixValues = new Double[res.x * res.y];
 
 			mManager = getFragmentManager();
 		}
@@ -644,6 +664,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							int id = mPixelIds.get(i) - 1;
 							int width = mApp.getResolution().x;
 							colors[i] = mBmp.getPixel(id % width, id / width);
+							mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
+							mGreenValues[id] = ((colors[i] >> 8) & 0xFF) / 255.0;
+							mBlueValues[id] = (colors[i] & 0xFF) / 255.0;
 						}
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
@@ -898,10 +921,31 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
 
 			for (int i = 0; i < dimensions; i++) {
-//				if (mApp.getColorMode().equals(RGBModes.RGB) && msRedLeft != null && msRedRight != null && msGreenLeft != null && msGreenRight != null && msBlueLeft != null && msBlueRight != null)
-//					Log.d(TAG, "index: " + i + ", red val: " + msRedLeft.getSliderValueAt(i) + ", red mix: " + msRedRight.getSliderValueAt(i) + "\ngreen val: " + msGreenLeft.getSliderValueAt(i) + ", green mix: " + msGreenRight.getSliderValueAt(i) + "\nblue val: " + msBlueLeft.getSliderValueAt(i) + ", blue mix: " + msBlueRight.getSliderValueAt(i));
-//				else if (!mApp.getColorMode().equals(RGBModes.RGB) && msLeft != null && msRight != null)
-//					Log.d(TAG, "index: " + i + ", val: " + msLeft.getSliderValueAt(i) + ", mix: " + msRight.getSliderValueAt(i));
+				if (mApp.getColorMode().equals(RGBModes.RGB)
+						&& msRedLeft != null
+						&& msRedRight != null
+						&& msGreenLeft != null
+						&& msGreenRight != null
+						&& msBlueLeft != null
+						&& msBlueRight != null) {
+					// Log.d(TAG, "index: " + i + ", red val: " + msRedLeft.getSliderValueAt(i) + ", red mix: " + msRedRight.getSliderValueAt(i) + "\ngreen val: " + msGreenLeft.getSliderValueAt(i) + ", green mix: " + msGreenRight.getSliderValueAt(i) + "\nblue val: " + msBlueLeft.getSliderValueAt(i) + ", blue mix: " + msBlueRight.getSliderValueAt(i));
+					mRedValues[i] = msRedLeft.getSliderValueAt(i);
+					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
+					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+				} else if (!mApp.getColorMode().equals(RGBModes.RGB) && msLeft != null && msRight != null) {
+					// Log.d(TAG, "index: " + i + ", val: " + msLeft.getSliderValueAt(i) + ", mix: " + msRight.getSliderValueAt(i));
+					switch (mApp.getColorMode()) {
+						case R:
+							mRedValues[i] = msLeft.getSliderValueAt(i);
+							break;
+						case G:
+							mGreenValues[i] = msLeft.getSliderValueAt(i);
+							break;
+						case B:
+							mBlueValues[i] = msLeft.getSliderValueAt(i);
+							break;
+					}
+				}
 				// only the downsampled image gets inverted as inverting the original would slow
 				// down the application considerably
 				int rVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)

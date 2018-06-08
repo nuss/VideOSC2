@@ -14,6 +14,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	private Double[] mValuesArray;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
+	private int[] mColors;
 
 	public VideOSCMultiSliderView(Context context) {
 		super(context);
@@ -77,6 +78,8 @@ public class VideOSCMultiSliderView extends LinearLayout {
 			SliderBar child = (SliderBar) getChildAt(i);
 			child.mAreaTop = 0 - getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;
+			if (mColors != null)
+				child.setPixelValue(mColors[i]);
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
 		}
@@ -137,11 +140,14 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setValuesArray(int numPixels) {
 		this.mValuesArray = new Double[numPixels];
-		Log.d("VideOSCCameraFragment", "mValuesArray initialized: " + this.mValuesArray.length);
 	}
 
 	public Double getSliderValueAt(int index) {
 		return this.mValuesArray[index];
+	}
+
+	public void setColors(int[] colors) {
+		this.mColors = colors;
 	}
 }
 

@@ -2,6 +2,7 @@ package net.videosc2.fragments;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,18 +30,41 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		int color = 0x66ffffff;
+		int pixelVal = 255;
 		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;
+
+		Bundle argsBundle = this.getArguments();
+		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		int[] allColors = argsBundle.getIntArray("colors");
+
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
+
+		assert allColors != null;
+		int[] colors = new int[allColors.length];
+		for (int i = 0; i < allColors.length; i++) {
+			switch (app.getColorMode()) {
+				case R:
+					colors[i] = (allColors[i] >> 16) & 0xFF;
+					break;
+				case G:
+					colors[i] = (allColors[i] >> 8) & 0xFF;
+					break;
+				case B:
+					colors[i] = allColors[i] & 0xFF;
+					break;
+			}
+		}
+		// colors are determining slider positions on the left
+		mMSViewLeft.setColors(colors);
+
 		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 		int topMargin = lp.topMargin;
-		Bundle numsBundle = this.getArguments();
-		ArrayList<Integer> sliderNums = numsBundle.getIntegerArrayList("nums");
 		float density = app.getScreenDensity();
 
 		int displayHeight = app.getDimensions().y;
@@ -62,20 +86,22 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		}
 
 		assert sliderNums != null;
-		for (int num : sliderNums) {
+
+		for (int i = 0; i < sliderNums.size(); i++) {
 			SliderBar barLeft = new SliderBar(getActivity());
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
 			barLeft.mScreenDensity = density;
-			barLeft.setNum(String.valueOf(num));
+			barLeft.setNum(String.valueOf(sliderNums.get(i)));
 			barLeft.setColor(color);
 			mMSViewLeft.mBars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(getActivity());
 			barRight.mScreenDensity = density;
-			barRight.setNum(String.valueOf(num));
+			barRight.setNum(String.valueOf(sliderNums.get(i)));
 			barRight.setColor(color);
+			// TODO: mix value must have been stored internally somewhere, otherwise it should just be 1.0
 			mMSViewRight.mBars.add(barRight);
 			mMSViewRight.addView(barRight);
 		}
