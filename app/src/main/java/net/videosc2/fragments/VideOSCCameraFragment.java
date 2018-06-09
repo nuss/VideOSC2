@@ -49,7 +49,6 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
@@ -126,6 +125,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private Double[] mRedMixValues;
 	private Double[] mGreenMixValues;
 	private Double[] mBlueMixValues;
+
+	// must be owned by the fragment - no idea why
+	private Bitmap mBmp;
 
 	/**
 	 * OnCreateView fragment override
@@ -303,7 +305,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private double mOldFingerDistance = 0.0;
 		private Point mPixelSize = new Point();
-		private Bitmap mBmp;
 
 		// lock the state of a pixel after changing its state, otherwise pixels would constantly
 		// change their state as long as they're hoevered
@@ -371,16 +372,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mBlueOscSender = new Thread(mBlueOscRunnable);
 				mBlueOscSender.start();
 			}
-
-			/*
-			mSelectedTileDrawable = new BitmapDrawable(getResources(), );
-			mSelectedTileDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-			*/
-
-			// ???
-			/* WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			display.getSize(mApp.getDimensions()); */
 
 			// get initial settings from database
 			String[] settingsFields = new String[]{
@@ -583,22 +574,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						int previewSize = outWidth * outHeight;
 						int diff = previewSize - offPxls.size();
 						if (diff != 0) pad(diff);
-//						Log.d(TAG, "width: " + outWidth + ", height: " + outHeight + ", offPxls size: " + offPxls.size());
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
 						int[] out = new int[mPreviewSize.width * mPreviewSize.height];
 						GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
 						mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, outWidth, outHeight, true), outWidth, outHeight);
+//						Log.d(TAG, "scaled bitmap: " + mBmp);
 						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
 						bmpDraw.setFilterBitmap(false);
 						mImage.bringToFront();
 						mImage.setImageDrawable(bmpDraw);
-						mOverlayView.layout(0, 0, mApp.getDimensions().x, mApp.getDimensions().y);
-//                      geht ned :\
-//						draw(mCanvas);
+						Point dimensions = mApp.getDimensions();
+						mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
 					}
 				});
 			} catch (Exception e) {
@@ -797,7 +787,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					return true;
 				}
 			}
-
 			return false;
 		}
 
@@ -806,23 +795,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			super.performClick();
 			return false;
 		}
-
-		/*@Override
-		protected void onDraw(Canvas canvas) {
-			super.onDraw(canvas);
-			Log.d(TAG, "I'm the canvas: " + canvas);
-			for (int i = 0; i < mSelectedPixels.size(); i++) {
-				Rect rect = mSelectedPixels.get(i);
-				mPaint.setStrokeWidth(0);
-				mPaint.setColor(0x00000000);
-				mPaint.setShader(mShaderSelected);
-				canvas.drawBitmap(mBmp, rect, rect, mPaint);
-				Log.d(TAG, "onDraw: " + mSelectedPixels.get(i));
-//				mSelectedTileDrawable.setBounds(mSelectedPixels.get(i));
-//				mSelectedTileDrawable.draw(canvas);
-//				mImage.bringToFront();
-			}
-		}*/
 
 		/**
 		 * Determine the space between the first two fingers
@@ -864,7 +836,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private int getHoverPixel(float x, float y) {
-//			Log.d(TAG, "getHoverPixel: " + mPixelSize.x + ", " + mPixelSize.y);
 			int hIndex = (int) x / mPixelSize.x;
 			int vIndex = (int) y / mPixelSize.y;
 
@@ -925,20 +896,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msGreenLeft != null
 						&& msGreenRight != null
 						&& msBlueLeft != null
-						&& msBlueRight != null)
-				{
-					 // color values
-					 mRedValues[i] = msRedLeft.getSliderValueAt(i);
-					 mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
-					 mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
-					 // mix values
-					 mRedMixValues[i] = msRedRight.getSliderValueAt(i);
-					 mGreenMixValues[i] = msGreenRight.getSliderValueAt(i);
-					 mBlueMixValues[i] = msBlueRight.getSliderValueAt(i);
+						&& msBlueRight != null) {
+					// color values
+					mRedValues[i] = msRedLeft.getSliderValueAt(i);
+					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
+					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+					// mix values
+					mRedMixValues[i] = msRedRight.getSliderValueAt(i);
+					mGreenMixValues[i] = msGreenRight.getSliderValueAt(i);
+					mBlueMixValues[i] = msBlueRight.getSliderValueAt(i);
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
-						&& msRight != null)
-				{
+						&& msRight != null) {
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
