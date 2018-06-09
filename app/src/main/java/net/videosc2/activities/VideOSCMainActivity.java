@@ -466,6 +466,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				} else if (i == SELECT_CAM) {
 					closeColorModePanel();
 					cameraParameters = camera.getParameters();
+					Log.d(TAG, "current camera id: " + mApp.getCurrentCameraId() + ", backside camera: " + backsideCameraId + ", frontside camera: " + frontsideCameraId);
 					if (mApp.getCurrentCameraId() == backsideCameraId) {
 						mApp.setCurrentCameraId(frontsideCameraId);
 						mApp.setIsTorchOn(false);

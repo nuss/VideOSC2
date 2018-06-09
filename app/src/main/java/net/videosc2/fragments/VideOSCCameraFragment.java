@@ -164,7 +164,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// cache current zoom
 		int zoom = mPreview != null ? mPreview.getCurrentZoom() : 0;
 		releaseCameraAndPreview();
-		mCamera = getCameraInstance();
+		mCamera = getCameraInstance(mApp);
 		if (mCamera != null) {
 			mCameraParams = mCamera.getParameters();
 			mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
@@ -205,11 +205,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 *
 	 * @return Camera instance
 	 */
-	private static Camera getCameraInstance() {
+	private static Camera getCameraInstance(VideOSCApplication app) {
 		Camera c = null;
 
 		try {
-			c = Camera.open(VideOSCMainActivity.currentCameraID); // attempt to get a Camera instance
+			c = Camera.open(app.getCurrentCameraId()); // attempt to get a Camera instance
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -638,8 +638,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
-//				VideOSCUIHelpers.addView(mOverlay, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
 					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
@@ -929,24 +927,30 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msBlueLeft != null
 						&& msBlueRight != null)
 				{
-					// Log.d(TAG, "index: " + i + ", red val: " + msRedLeft.getSliderValueAt(i) + ", red mix: " + msRedRight.getSliderValueAt(i) + "\ngreen val: " + msGreenLeft.getSliderValueAt(i) + ", green mix: " + msGreenRight.getSliderValueAt(i) + "\nblue val: " + msBlueLeft.getSliderValueAt(i) + ", blue mix: " + msBlueRight.getSliderValueAt(i));
-					mRedValues[i] = msRedLeft.getSliderValueAt(i);
-					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
-					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+					 // color values
+					 mRedValues[i] = msRedLeft.getSliderValueAt(i);
+					 mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
+					 mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+					 // mix values
+					 mRedMixValues[i] = msRedRight.getSliderValueAt(i);
+					 mGreenMixValues[i] = msGreenRight.getSliderValueAt(i);
+					 mBlueMixValues[i] = msBlueRight.getSliderValueAt(i);
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
 						&& msRight != null)
 				{
-					// Log.d(TAG, "index: " + i + ", val: " + msLeft.getSliderValueAt(i) + ", mix: " + msRight.getSliderValueAt(i));
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
+							mRedMixValues[i] = msRight.getSliderValueAt(i);
 							break;
 						case G:
 							mGreenValues[i] = msLeft.getSliderValueAt(i);
+							mGreenMixValues[i] = msRight.getSliderValueAt(i);
 							break;
 						case B:
 							mBlueValues[i] = msLeft.getSliderValueAt(i);
+							mBlueMixValues[i] = msRight.getSliderValueAt(i);
 							break;
 					}
 				}
