@@ -48,6 +48,8 @@ public class VideOSCApplication extends Application {
 	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
 	private int mCurrentCameraId;
 	private Point mResolution;
+	private boolean mIsMultiSliderActive;
+	private boolean mIndicatorPanelOpen;
 
 	@Override
 	public void onCreate() {
@@ -218,5 +220,21 @@ public class VideOSCApplication extends Application {
 
 	public Point getResolution() {
 		return this.mResolution;
+	}
+
+	public void setIsMultiSliderActive(boolean active) {
+		this.mIsMultiSliderActive = active;
+	}
+
+	public boolean getIsMultiSliderActive() {
+		return this.mIsMultiSliderActive;
+	}
+
+	public void setIsIndicatorPanelOpen(boolean open) {
+		this.mIndicatorPanelOpen = open;
+	}
+
+	public boolean getIsIndicatorPanelOpen() {
+		return this.mIndicatorPanelOpen;
 	}
 }

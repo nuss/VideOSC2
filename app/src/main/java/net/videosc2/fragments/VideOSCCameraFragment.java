@@ -545,8 +545,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
+			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+
 			// memorize current pixel size
 			setPixelSize(holder);
+
+			if (mApp.getIsMultiSliderActive()) {
+				if (mApp.getIsFPSCalcPanelOpen())
+					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
+				if (mApp.getIsColorModePanelOpen())
+					VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+				if (mApp.getIsIndicatorPanelOpen()) {
+					mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
+				}
+			}
 
 			// stop preview before making changes
 			try {
@@ -618,7 +632,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			performClick();
 			final Context context = getContext();
-			Camera.Parameters params = pCamera.getParameters();
+			final Camera.Parameters params = pCamera.getParameters();
 			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
 			ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
@@ -628,6 +642,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //			Log.d(TAG, "motion event: " + motionEvent.getActionMasked() + ", x: " + motionEvent.getX() + ", y: " + motionEvent.getY() + ", pressure: " + motionEvent.getPressure());
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
 					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
@@ -666,7 +681,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 										.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 										.commit();
 								multiSliderFragment.setArguments(msArgsBundle);
-
 							} else {
 								VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
 								mManager.beginTransaction()
@@ -674,67 +688,73 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 										.commit();
 								multiSliderFragment.setArguments(msArgsBundle);
 							}
+							mApp.setIsMultiSliderActive(true);
+							mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
+							mApp.setIsFPSCalcPanelOpen(VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer));
+							mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mPreviewContainer));
 						}
 					}
 
-					fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
-					if (mApp.getIsFPSCalcPanelOpen())
-						VideOSCUIHelpers.addView(fpsRateCalcPanel, mPreviewContainer);
-					indicators = mApp.getHasTorch() ?
-							(ViewGroup) mInflater.inflate(R.layout.indicator_panel, mPreviewContainer, false) :
-							(ViewGroup) mInflater.inflate(R.layout.indicator_panel_no_torch, mPreviewContainer, false);
-					VideOSCUIHelpers.addView(indicators, mPreviewContainer);
-					// play indicator
-					final ImageView playIndicator = (ImageView) indicators.findViewById(R.id.indicator_osc);
-					if (mApp.getCameraOSCisPlaying()) {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_playing);
-						playIndicator.setImageResource(R.drawable.osc_playing);
-					} else {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_paused);
-						playIndicator.setImageResource(R.drawable.osc_paused);
-					}
-					playIndicator.setImageDrawable(img);
-
-					// rgb status
-					final ImageView rgbIndicator = (ImageView) indicators.findViewById(R.id.indicator_color);
-					if (mApp.getIsRGBPositive()) {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_indicator);
-						rgbIndicator.setImageResource(R.drawable.rgb_indicator);
-					} else {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_inv_indicator);
-						rgbIndicator.setImageResource(R.drawable.rgb_inv_indicator);
-					}
-					rgbIndicator.setImageDrawable(img);
-
-					// camera indicator
-					final ImageView cameraIndicator = (ImageView) indicators.findViewById(R.id.indicator_camera);
-					if (mApp.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_back);
-						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
-					} else {
-						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_front);
-						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
-					}
-					cameraIndicator.setImageDrawable(img);
-
-					// torch status indicator
-					final ImageView torchIndicator = hasTorch ? (ImageView) indicators.findViewById(R.id.torch_status_indicator) : null;
-					if (torchIndicator != null) {
-						if (mApp.getIsTorchOn()) {
-							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on_indicator);
-							torchIndicator.setImageResource(R.drawable.light_on_indicator);
+					if (!mApp.getIsMultiSliderActive()) {
+						fpsRateCalcPanel = (ViewGroup) mInflater.inflate(R.layout.framerate_calculation_indicator, mPreviewContainer, false);
+						if (mApp.getIsFPSCalcPanelOpen())
+							VideOSCUIHelpers.addView(fpsRateCalcPanel, mPreviewContainer);
+						indicators = mApp.getHasTorch() ?
+								(ViewGroup) mInflater.inflate(R.layout.indicator_panel, mPreviewContainer, false) :
+								(ViewGroup) mInflater.inflate(R.layout.indicator_panel_no_torch, mPreviewContainer, false);
+						VideOSCUIHelpers.addView(indicators, mPreviewContainer);
+						// play indicator
+						final ImageView playIndicator = (ImageView) indicators.findViewById(R.id.indicator_osc);
+						if (mApp.getCameraOSCisPlaying()) {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_playing);
+							playIndicator.setImageResource(R.drawable.osc_playing);
 						} else {
-							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_off_indicator);
-							torchIndicator.setImageResource(R.drawable.light_off_indicator);
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.osc_paused);
+							playIndicator.setImageResource(R.drawable.osc_paused);
 						}
-						torchIndicator.setImageDrawable(img);
-					}
+						playIndicator.setImageDrawable(img);
 
-					// interaction indicator - always in plus mode
-					final ImageView interactionModeIndicator = (ImageView) indicators.findViewById(R.id.indicator_interaction);
-					img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction_plus_indicator);
-					interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
-					interactionModeIndicator.setImageDrawable(img);
+						// rgb status
+						final ImageView rgbIndicator = (ImageView) indicators.findViewById(R.id.indicator_color);
+						if (mApp.getIsRGBPositive()) {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_indicator);
+							rgbIndicator.setImageResource(R.drawable.rgb_indicator);
+						} else {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.rgb_inv_indicator);
+							rgbIndicator.setImageResource(R.drawable.rgb_inv_indicator);
+						}
+						rgbIndicator.setImageDrawable(img);
+
+						// camera indicator
+						final ImageView cameraIndicator = (ImageView) indicators.findViewById(R.id.indicator_camera);
+						if (mApp.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_back);
+							cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
+						} else {
+							img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.indicator_camera_front);
+							cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
+						}
+						cameraIndicator.setImageDrawable(img);
+
+						// torch status indicator
+						final ImageView torchIndicator = hasTorch ? (ImageView) indicators.findViewById(R.id.torch_status_indicator) : null;
+						if (torchIndicator != null) {
+							if (mApp.getIsTorchOn()) {
+								img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_on_indicator);
+								torchIndicator.setImageResource(R.drawable.light_on_indicator);
+							} else {
+								img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.light_off_indicator);
+								torchIndicator.setImageResource(R.drawable.light_off_indicator);
+							}
+							torchIndicator.setImageDrawable(img);
+						}
+
+						// interaction indicator - always in plus mode
+						final ImageView interactionModeIndicator = (ImageView) indicators.findViewById(R.id.indicator_interaction);
+						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction_plus_indicator);
+						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
+						interactionModeIndicator.setImageDrawable(img);
+					}
 				}
 			}
 

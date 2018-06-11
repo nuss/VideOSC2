@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<net.videosc2.views.SliderBar xmlns:android="http://schemas.android.com/apk/res/android"
-                              android:id="@+id/slider_bar"
-                              android:layout_width="wrap_content"
-                              android:layout_height="match_parent"/>

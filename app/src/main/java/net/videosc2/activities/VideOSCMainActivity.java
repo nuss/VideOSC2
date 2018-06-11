@@ -31,12 +31,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -147,6 +149,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
 	private View mDecorView;
+	private Resources mRes;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -155,6 +158,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mRes = getResources();
 		// immersive fullscreen
 		mDecorView = getWindow().getDecorView();
 
@@ -257,8 +261,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		tools.recycle();
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
+		Drawable shape = mRes.getDrawable(R.drawable.black_rounded_rect);
+		mModePanel.setBackground(shape);
 //		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
+		mFrameRateCalculationPanel.setBackground(shape);
 
 		// get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
