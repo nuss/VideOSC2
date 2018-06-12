@@ -24,14 +24,10 @@ import java.util.ArrayList;
 /**
  * Created by stefan on 19.05.18, package net.videosc2.views, project VideOSC22.
  */
-public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
+public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
-	private ViewGroup mContainer;
-	private ViewGroup mOkCancel;
-	private FragmentManager mManager;
-	private VideOSCMultiSliderFragment mFragment;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragment() {
@@ -133,31 +129,6 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		mFragment = this;
 
 		return msContainer;
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		mOkCancel.bringToFront();
-		ImageButton ok = (ImageButton) mOkCancel.findViewById(R.id.ok);
-		ImageButton cancel = (ImageButton) mOkCancel.findViewById(R.id.cancel);
-
-		cancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mManager.beginTransaction().remove(mFragment).commit();
-				mContainer.removeView(mOkCancel);
-				// TODO: reset pixels that have been fixed from within this multislider view
-			}
-		});
-
-		ok.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mManager.beginTransaction().remove(mFragment).commit();
-				mContainer.removeView(mOkCancel);
-			}
-		});
 	}
 
 	/*@Override

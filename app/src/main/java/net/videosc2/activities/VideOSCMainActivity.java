@@ -261,10 +261,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		tools.recycle();
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
-		Drawable shape = mRes.getDrawable(R.drawable.black_rounded_rect);
-		mModePanel.setBackground(shape);
+		Drawable modePanelShape = mRes.getDrawable(R.drawable.black_rounded_rect);
+		mModePanel.setBackground(modePanelShape);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
-		mFrameRateCalculationPanel.setBackground(shape);
+		Drawable fpsPanelShape = mRes.getDrawable(R.drawable.black_rounded_rect);
+		mFrameRateCalculationPanel.setBackground(fpsPanelShape);
 
 		// get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
@@ -544,8 +545,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		int indicatorXMLiD = mApp.getHasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
 		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
-//		ViewGroup drawOverlay = (ViewGroup) inflater.inflate(R.layout.tile_overlay_view, (FrameLayout) mCamView, true);
-//		final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
 	}
 
 	private void closeColorModePanel() {
@@ -658,6 +657,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mApp.setExposureIsFixed(false);
 		mApp.setInteractionMode(InteractionModes.BASIC);
 		mApp.setColorMode(RGBModes.RGB);
+		mApp.setIsColorModePanelOpen(false);
+		mApp.setIsIndicatorPanelOpen(false);
+		mApp.setIsFPSCalcPanelOpen(false);
+		mApp.setIsMultiSliderActive(false);
+		mApp.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
 		// close db
 		mDbHelper.close();
 		super.onDestroy();

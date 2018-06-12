@@ -647,8 +647,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (fpsRateCalcPanel != null)
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 					indicators.setVisibility(View.INVISIBLE);
-					/*VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
-					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);*/
+					if (mPixelIds.size() > 0)
+						mPixelIds.clear();
 				}
 			}
 
@@ -684,12 +684,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 										.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 										.commit();
 								multiSliderFragment.setArguments(msArgsBundle);
+								multiSliderFragment.setParentContainer(mPreviewContainer);
 							} else {
 								VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
 								mManager.beginTransaction()
 										.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 										.commit();
 								multiSliderFragment.setArguments(msArgsBundle);
+								multiSliderFragment.setParentContainer(mPreviewContainer);
 							}
 
 							mApp.setIsMultiSliderActive(true);
