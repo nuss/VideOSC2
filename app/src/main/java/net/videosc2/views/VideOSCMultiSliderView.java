@@ -1,10 +1,20 @@
 package net.videosc2.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import net.videosc2.R;
+import net.videosc2.fragments.VideOSCMultiSliderFragment;
+import net.videosc2.fragments.VideOSCMultiSliderFragmentRGB;
+import net.videosc2.utilities.VideOSCUIHelpers;
+
 import java.util.ArrayList;
 
 public class VideOSCMultiSliderView extends LinearLayout {
@@ -15,6 +25,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	private int mDisplayHeight;
 	private int mParentTopMargin;
 	private int[] mColors;
+	private ViewGroup mContainer;
 
 	public VideOSCMultiSliderView(Context context) {
 		super(context);
@@ -88,6 +99,14 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	// TODO: get values of sliders (0.0-1.0) and make them available in CameraView
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		ViewGroup okCancel = (ViewGroup) mContainer.findViewById(R.id.ok_cancel_buttons);
+
+		if (event.getAction() == MotionEvent.ACTION_UP)
+			okCancel.setVisibility(View.VISIBLE);
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN)
+			okCancel.setVisibility(View.INVISIBLE);
+
 		double sliderValue;
 		performClick();
 		this.getParent().requestDisallowInterceptTouchEvent(true);
@@ -148,6 +167,10 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setColors(int[] colors) {
 		this.mColors = colors;
+	}
+
+	public void setContainerView(ViewGroup container) {
+		this.mContainer = container;
 	}
 }
 

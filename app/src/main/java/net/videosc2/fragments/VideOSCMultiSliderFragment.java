@@ -1,13 +1,21 @@
 package net.videosc2.fragments;
 
+import android.app.FragmentManager;
+import android.content.res.Resources;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.views.SliderBar;
 import net.videosc2.views.VideOSCMultiSliderView;
@@ -20,6 +28,10 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
+	private ViewGroup mContainer;
+	private ViewGroup mOkCancel;
+	private FragmentManager mManager;
+	private VideOSCMultiSliderFragment mFragment;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragment() {
@@ -35,6 +47,8 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;
 
+		mManager = getFragmentManager();
+
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
 		int[] allColors = argsBundle.getIntArray("colors");
@@ -42,6 +56,8 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
+		mMSViewLeft.setContainerView(container);
+		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 		assert allColors != null;
 		int[] colors = new int[allColors.length];
@@ -63,6 +79,7 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 
 		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
+		mMSViewRight.setContainerView(container);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 		int topMargin = lp.topMargin;
 		float density = app.getScreenDensity();
@@ -107,9 +124,56 @@ public class VideOSCMultiSliderFragment extends VideOSCBaseFragment {
 		}
 
 		setSliderProps(sliderNums);
+		VideOSCUIHelpers.addView(mOkCancel, container);
+		Resources res = getResources();
+		Drawable shape = res.getDrawable(R.drawable.black_rounded_rect);
+		mOkCancel.setBackground(shape);
+
+		mContainer = container;
+		mFragment = this;
 
 		return msContainer;
 	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		mOkCancel.bringToFront();
+		ImageButton ok = (ImageButton) mOkCancel.findViewById(R.id.ok);
+		ImageButton cancel = (ImageButton) mOkCancel.findViewById(R.id.cancel);
+
+		cancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mManager.beginTransaction().remove(mFragment).commit();
+				mContainer.removeView(mOkCancel);
+				// TODO: reset pixels that have been fixed from within this multislider view
+			}
+		});
+
+		ok.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mManager.beginTransaction().remove(mFragment).commit();
+				mContainer.removeView(mOkCancel);
+			}
+		});
+	}
+
+	/*@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setUserVisibleHint(true);
+	}
+
+	@Override
+	public void setUserVisibleHint(final boolean visible) {
+		super.setUserVisibleHint(visible);
+		if (visible) {
+			Log.d(TAG, "menu visible");
+			mOkCancel.bringToFront();
+		}
+	}*/
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {
 		mMSViewLeft.setSliderNums(sliderNums);

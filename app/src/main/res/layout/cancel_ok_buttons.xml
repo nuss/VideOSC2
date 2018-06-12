@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ok_cancel_buttons"
+              style="?android:attr/buttonBarStyle"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end|bottom"
+              android:layout_marginBottom="60dp"
+              android:layout_marginEnd="60dp"
+              android:layout_marginRight="60dp"
+              android:animateLayoutChanges="true"
+              android:descendantFocusability="blocksDescendants"
+              android:orientation="horizontal">
+
+	<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+	             android:id="@+id/cancel"
+	             style="?android:attr/buttonBarButtonStyle"
+	             android:layout_width="40dp"
+	             android:layout_height="40dp"
+	             android:layout_margin="5dp"
+	             android:background="@drawable/cancel_button_shape"
+	             android:contentDescription="@string/cancel"
+	             android:src="@drawable/cancel" />
+
+	<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+	             android:id="@+id/ok"
+	             style="?android:attr/buttonBarButtonStyle"
+	             android:layout_width="40dp"
+	             android:layout_height="40dp"
+	             android:layout_margin="5dp"
+	             android:layout_marginBottom="10dp"
+	             android:background="@drawable/ok_button_shape"
+	             android:contentDescription="@string/OK"
+	             android:src="@drawable/ok" />
+
+</LinearLayout>

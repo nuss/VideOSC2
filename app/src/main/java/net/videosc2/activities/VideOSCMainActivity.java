@@ -263,7 +263,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
 		Drawable shape = mRes.getDrawable(R.drawable.black_rounded_rect);
 		mModePanel.setBackground(shape);
-//		mMultiSliderView = (ViewGroup) inflater.inflate(R.layout.multislider_view, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel.setBackground(shape);
 
@@ -609,7 +608,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				mApp.setSettingsLevel(1);
 				break;
 			case 3:
-				View exposureSetters = findViewById(R.id.fix_exposure_button_layout);
+				View exposureSetters = findViewById(R.id.ok_cancel_buttons);
 				Switch exposureSwitch = (Switch) findViewById(R.id.fix_exposure_checkbox);
 				// temporarily disable checked-change listener
 				mApp.setBackPressed(true);

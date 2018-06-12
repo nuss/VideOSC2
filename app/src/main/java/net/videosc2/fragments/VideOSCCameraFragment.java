@@ -322,6 +322,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private ViewGroup mOverlay;
 		private TileOverlayView mOverlayView;
+		private ViewGroup mOkCancelSetPixel;
 		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 		private List<Integer> mPixelIds = new ArrayList<>();
 		private FragmentManager mManager;
@@ -506,9 +507,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			mOverlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
 			mOverlayView = (TileOverlayView) mOverlay.findViewById(R.id.tile_draw_view);
-//			mPreviewContainer.addView(mOverlay);
 			VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
-//			mOverlayView.setDimensions(mApp.getDimensions().x, mApp.getDimensions().y);
+			mOkCancelSetPixel = (ViewGroup) mInflater.inflate(R.layout.cancel_ok_buttons, mPreviewContainer, false);
 
 			Log.d(TAG, "mOverlay in surfaceCreated: " + getLeft() + ", " + getTop() + ", " + getRight() + ", " + getBottom());
 		}
@@ -644,8 +644,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
-					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
-					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);
+					if (fpsRateCalcPanel != null)
+						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
+					indicators.setVisibility(View.INVISIBLE);
+					/*VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
+					VideOSCUIHelpers.removeView(indicators, mPreviewContainer);*/
 				}
 			}
 
@@ -688,9 +691,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 										.commit();
 								multiSliderFragment.setArguments(msArgsBundle);
 							}
+
 							mApp.setIsMultiSliderActive(true);
-							mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
-							mApp.setIsFPSCalcPanelOpen(VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer));
+							indicators.setVisibility(View.INVISIBLE);
+							if (fpsRateCalcPanel != null)
+								fpsRateCalcPanel.setVisibility(View.INVISIBLE);
+//							modePanel.setVisibility(View.INVISIBLE);
+							/*mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
+							mApp.setIsFPSCalcPanelOpen(VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer));*/
 							mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mPreviewContainer));
 						}
 					}

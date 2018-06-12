@@ -1,15 +1,20 @@
 package net.videosc2.fragments;
 
+import android.app.FragmentManager;
+import android.content.res.Resources;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.views.SliderBar;
 import net.videosc2.views.VideOSCMultiSliderView;
 
@@ -26,6 +31,10 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 	private VideOSCMultiSliderView mMSViewGreenLeft;
 	private VideOSCMultiSliderView mMSViewBlueRight;
 	private VideOSCMultiSliderView mMSViewBlueLeft;
+	private ViewGroup mContainer;
+	private ViewGroup mOkCancel;
+	private FragmentManager mManager;
+	private VideOSCMultiSliderFragmentRGB mFragment;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragmentRGB() {
@@ -39,6 +48,8 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;
 
+		mManager = getFragmentManager();
+
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
 		int[] allColors = argsBundle.getIntArray("colors");
@@ -46,16 +57,22 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
+		mMSViewRedLeft.setContainerView(container);
 		mMSViewRedRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_right);
 		mMSViewRedRight.setValuesArray(numTotalPixels);
+		mMSViewRedRight.setContainerView(container);
 		mMSViewGreenLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_left);
 		mMSViewGreenLeft.setValuesArray(numTotalPixels);
+		mMSViewGreenLeft.setContainerView(container);
 		mMSViewGreenRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_right);
 		mMSViewGreenRight.setValuesArray(numTotalPixels);
+		mMSViewGreenRight.setContainerView(container);
 		mMSViewBlueLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_left);
 		mMSViewBlueLeft.setValuesArray(numTotalPixels);
+		mMSViewBlueLeft.setContainerView(container);
 		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
+		mMSViewBlueRight.setContainerView(container);
 
 		assert allColors != null;
 		int[] reds = new int[allColors.length];
@@ -89,6 +106,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		mMSViewBlueLeft.setDisplayHeight(displayHeight);
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
+		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
@@ -142,8 +160,40 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCBaseFragment {
 		}
 
 		setSliderProps(sliderNums);
+		VideOSCUIHelpers.addView(mOkCancel, container);
+		Resources res = getResources();
+		Drawable shape = res.getDrawable(R.drawable.black_rounded_rect);
+		mOkCancel.setBackground(shape);
+
+		mContainer = container;
+		mFragment = this;
 
 		return msContainer;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		mOkCancel.bringToFront();
+		ImageButton ok = (ImageButton) mOkCancel.findViewById(R.id.ok);
+		ImageButton cancel = (ImageButton) mOkCancel.findViewById(R.id.cancel);
+
+		cancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mManager.beginTransaction().remove(mFragment).commit();
+				mContainer.removeView(mOkCancel);
+				// TODO: reset pixels that have been fixed from within this multislider view
+			}
+		});
+
+		ok.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mManager.beginTransaction().remove(mFragment).commit();
+				mContainer.removeView(mOkCancel);
+			}
+		});
 	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {

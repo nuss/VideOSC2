@@ -65,6 +65,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		Log.d(TAG, "container: " + container);
+		final Resources res = getResources();
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
@@ -108,7 +109,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// add the scroll view background to the container (camView)
 		container.addView(bg);
 		final View mCamView = container.findViewById(R.id.camera_preview);
-		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.fix_exposure_button, (FrameLayout) mCamView, false);
+		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, (FrameLayout) mCamView, false);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -429,7 +430,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										toast.show();
 
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
-										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
+										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.ok);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
@@ -443,7 +444,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												app.setSettingsLevel(2);
 											}
 										});
-										final ImageButton cancelExposureFixed = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_cancel);
+										final ImageButton cancelExposureFixed = (ImageButton) fixExposureButtonLayout.findViewById(R.id.cancel);
 										cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
