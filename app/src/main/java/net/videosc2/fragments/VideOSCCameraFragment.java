@@ -498,7 +498,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
 				menuButton.bringToFront();
 				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
-
 				indicatorPanel.bringToFront();
 //				Log.d(TAG, "holder: " + holder.lockCanvas());
 			} catch (IOException e) {
@@ -902,7 +901,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
-			float rval, gval, bval;
+			double rValue;
+			double gValue;
+			double bValue;
 			Point resolution = mApp.getResolution();
 			int dimensions = resolution.x * resolution.y;
 			int[] pixels = new int[width * height];
@@ -973,66 +974,74 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 				// only the downsampled image gets inverted as inverting the original would slow
 				// down the application considerably
-				int rVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
+				int rPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
 						: (pixels[i] >> 16) & 0xFF;
-				int gVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 8) & 0xFF)
+				int gPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 8) & 0xFF)
 						: (pixels[i] >> 8) & 0xFF;
-				int bVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
+				int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
 						: pixels[i] & 0xFF;
 
 //				if (!mApp.getIsRGBPositive())
-//					pixels[i] = Color.argb(255, rVal, gVal, bVal);
+//					pixels[i] = Color.argb(255, rPixVal, gPixVal, bPixVal);
 
-				rVal = mRedValues[i] == null ? rVal : (int) Math.round(mRedValues[i] * 255);
-				gVal = mGreenValues[i] == null ? gVal : (int) Math.round(mGreenValues[i] * 255);
-				bVal = mBlueValues[i] == null ? bVal : (int) Math.round(mBlueValues[i] * 255);
+				// set values considering values coming from the 'mix' multislider
+				// should allow a non-linear, exponential crossfade
+				if (mRedValues[i] != null) {
+					if (mRedMixValues[i] != null && mRedMixValues[i] < 1.0) {
+						double mixCubed = Math.pow(mRedMixValues[i], 3);
+						double mixReciprCubed = Math.pow(1.0 - mRedMixValues[i], 3);
+						double mult = 1.0 / (mixCubed + mixReciprCubed);
+						rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues[i] * mixCubed) * mult;
+					} else {
+						rValue = mRedValues[i];
+					}
+				} else rValue = rPixVal / 255.0;
 
-				pixels[i] = Color.argb(255, rVal, gVal, bVal);
+				if (mGreenValues[i] != null) {
+					if (mGreenMixValues[i] != null && mGreenMixValues[i] < 1.0) {
+						double mixCubed = Math.pow(mGreenMixValues[i], 3);
+						double mixReciprCubed = Math.pow(1.0 - mGreenMixValues[i], 3);
+						double mult = 1.0 / (mixCubed + mixReciprCubed);
+						gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues[i] * mixCubed) * mult;
+					} else {
+						gValue = mGreenValues[i];
+					}
+				} else gValue = gPixVal / 255.0;
+
+				if (mBlueValues[i] != null) {
+					if (mBlueMixValues[i] != null && mBlueMixValues[i] < 1.0) {
+						double mixCubed = Math.pow(mBlueMixValues[i], 3);
+						double mixReciprCubed = Math.pow(1.0 - mBlueMixValues[i], 3);
+						double mult = 1.0 / (mixCubed + mixReciprCubed);
+						bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues[i] * mixCubed) * mult;
+					} else {
+						bValue = mBlueValues[i];
+					}
+				} else bValue = bPixVal / 255.0;
+
+				/*if (i == 0) {
+					Log.d(TAG, "camera at " + i + ": " + rPixVal + ", " + gPixVal + ", " + bPixVal);
+					Log.d(TAG, "pixel at " + i + ": " + rValue * 255.0 + ", " + gValue * 255.0 + ", " + bValue * 255.0);
+				}*/
+
+				/*rPixVal = mRedValues[i] == null ? rPixVal : (int) Math.round(mRedValues[i] * 255);
+				gPixVal = mGreenValues[i] == null ? gPixVal : (int) Math.round(mGreenValues[i] * 255);
+				bPixVal = mBlueValues[i] == null ? bPixVal : (int) Math.round(mBlueValues[i] * 255);*/
+				rPixVal = (int) Math.round(rValue * 255);
+				gPixVal = (int) Math.round(gValue * 255);
+				bPixVal = (int) Math.round(bValue * 255);
 
 				// compose basic OSC message for slot
 
 				if (!mApp.getPixelImageHidden()) {
-//					Log.d(TAG, "pixel: " + i + ", red: " + mRedValues[i] + ", " + mRedMixValues[i] + ", green: " + mGreenValues[i] + ", " + mGreenMixValues[i] + ", blue: " + mBlueValues[i] + ", " + mBlueMixValues[i]);
 					if (mApp.getColorMode().equals(RGBModes.RGB)) {
-
-						/*if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-							// mRed
-							pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
-						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-							// mGreen;
-							pixels[i] = Color.argb(255 / 3, rVal, 0, bVal);
-						} else if (!offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
-							// mBlue;
-							pixels[i] = Color.argb(255 / 3, rVal, gVal, 0);
-						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
-							// rg;
-							pixels[i] = Color.argb(255 / 3 * 2, 0, 0, bVal);
-						} else if (offPxls.get(i)[0] && !offPxls.get(i)[1] && offPxls.get(i)[2]) {
-							// rb;
-//						alpha = cam.isStarted() ? 255 / 3 * 2 : 0;
-							pixels[i] = Color.argb(255 / 3 * 2, 0, gVal, 0);
-						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
-							// bg;
-							pixels[i] = Color.argb(255 / 3 * 2, rVal, 0, 0);
-						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
-							// rgb
-							pixels[i] = Color.argb(0, 0, 0, 0);
-						}*/
+						pixels[i] = Color.argb(255, rPixVal, gPixVal, bPixVal);
 					} else if (mApp.getColorMode().equals(RGBModes.R)) {
-						if (offPxls.get(i)[0])
-							pixels[i] = Color.argb(255, rVal, 255, 255);
-						else
-							pixels[i] = Color.argb(255, rVal, 0, 0);
+						pixels[i] = Color.argb(255, rPixVal, 0, 0);
 					} else if (mApp.getColorMode().equals(RGBModes.G)) {
-						if (offPxls.get(i)[1])
-							pixels[i] = Color.argb(255, 255, gVal, 255);
-						else
-							pixels[i] = Color.argb(255, 0, gVal, 0);
+						pixels[i] = Color.argb(255, 0, gPixVal, 0);
 					} else if (mApp.getColorMode().equals(RGBModes.B)) {
-						if (offPxls.get(i)[2])
-							pixels[i] = Color.argb(255, 255, 255, bVal);
-						else
-							pixels[i] = Color.argb(255, 0, 0, bVal);
+						pixels[i] = Color.argb(255, 0, 0, bPixVal);
 					}
 				} else {
 					// all pixels fully transparent
@@ -1042,13 +1051,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mApp.getCameraOSCisPlaying()) {
 //					if (calcsPerPeriod == 1) {
 					if (mApp.getNormalized()) {
-						rval = (float) rVal / 255;
-						gval = (float) gVal / 255;
-						bval = (float) bVal / 255;
+						rValue = (float) rPixVal / 255;
+						gValue = (float) gPixVal / 255;
+						bValue = (float) bPixVal / 255;
 					} else {
-						rval = rVal;
-						gval = gVal;
-						bval = bVal;
+						rValue = rPixVal;
+						gValue = gPixVal;
+						bValue = bPixVal;
 					}
 
 					// all OSC messaging (message construction sending) must happen synchronized
@@ -1057,7 +1066,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					synchronized (mRedOscRunnable.mOscLock) {
 						if (!offPxls.get(i)[0]) {
 							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-							oscR.add(rval);
+							oscR.add(rValue);
 							if (VideOSCApplication.getDebugPixelOsc()) {
 								RedOscRunnable.setDebugPixelOsc(true);
 								oscR.add(++mCountR);
@@ -1072,7 +1081,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					synchronized (mGreenOscRunnable.mOscLock) {
 						if (!offPxls.get(i)[1]) {
 							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-							oscG.add(gval);
+							oscG.add(gValue);
 							if (VideOSCApplication.getDebugPixelOsc()) {
 								GreenOscRunnable.setDebugPixelOsc(true);
 								oscG.add(++mCountG);
@@ -1087,7 +1096,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					synchronized (mBlueOscRunnable.mOscLock) {
 						if (!offPxls.get(i)[2]) {
 							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-							oscB.add(bval);
+							oscB.add(bValue);
 							if (VideOSCApplication.getDebugPixelOsc()) {
 								BlueOscRunnable.setDebugPixelOsc(true);
 								oscB.add(++mCountB);
@@ -1100,33 +1109,33 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}
 /*
 					} else {
-						curInput[0] = (float) rVal;
-						curInput[1] = (float) gVal;
-						curInput[2] = (float) bVal;
+						curInput[0] = (float) rPixVal;
+						curInput[1] = (float) gPixVal;
+						curInput[2] = (float) bPixVal;
 
 						curInputList.add(curInput.clone());
 
 						if (lastInputList.size() >= dimensions) {
-							rval = lastInputList.get(i)[0];
-							gval = lastInputList.get(i)[1];
-							bval = lastInputList.get(i)[2];
+							rValue = lastInputList.get(i)[0];
+							gValue = lastInputList.get(i)[1];
+							bValue = lastInputList.get(i)[2];
 
 							if (normalize) {
-								rval = rval / 255;
-								gval = gval / 255;
-								bval = bval / 255;
+								rValue = rValue / 255;
+								gValue = gValue / 255;
+								bValue = bValue / 255;
 							}
 
 							if (!offPxls.get(i)[0]) {
-								oscR.add(rval);
+								oscR.add(rValue);
 								oscP5.send(oscR, broadcastLoc);
 							}
 							if (!offPxls.get(i)[1]) {
-								oscG.add(gval);
+								oscG.add(gValue);
 								oscP5.send(oscG, broadcastLoc);
 							}
 							if (!offPxls.get(i)[2]) {
-								oscB.add(bval);
+								oscB.add(bValue);
 								oscP5.send(oscB, broadcastLoc);
 							}
 
