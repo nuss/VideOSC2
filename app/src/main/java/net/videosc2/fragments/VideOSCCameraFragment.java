@@ -509,8 +509,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			mOverlayView = (TileOverlayView) mOverlay.findViewById(R.id.tile_draw_view);
 			VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
 			mOkCancelSetPixel = (ViewGroup) mInflater.inflate(R.layout.cancel_ok_buttons, mPreviewContainer, false);
-
-			Log.d(TAG, "mOverlay in surfaceCreated: " + getLeft() + ", " + getTop() + ", " + getRight() + ", " + getBottom());
 		}
 
 		/**
@@ -668,6 +666,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						int[] colors = new int[numSelectedPixels];
 						for (int i = 0; i < numSelectedPixels; i++) {
 							int id = mPixelIds.get(i) - 1;
+							Log.d(TAG, "selected id: " + id);
 							int width = mApp.getResolution().x;
 							colors[i] = mBmp.getPixel(id % width, id / width);
 							mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
@@ -920,6 +919,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
 
 			for (int i = 0; i < dimensions; i++) {
+				Double mixVal;
+
 				if (mApp.getColorMode().equals(RGBModes.RGB)
 						&& msRedLeft != null
 						&& msRedRight != null
@@ -928,28 +929,45 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msBlueLeft != null
 						&& msBlueRight != null) {
 					// color values
-					mRedValues[i] = msRedLeft.getSliderValueAt(i);
-					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
-					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+//					if (msRedLeft.getSliderAtTouched(i))
+						mRedValues[i] = msRedLeft.getSliderValueAt(i);
+//					if (msGreenLeft.getSliderAtTouched(i))
+						mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
+//					if (msBlueLeft.getSliderAtTouched(i))
+						mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
 					// mix values
-					mRedMixValues[i] = msRedRight.getSliderValueAt(i);
-					mGreenMixValues[i] = msGreenRight.getSliderValueAt(i);
-					mBlueMixValues[i] = msBlueRight.getSliderValueAt(i);
+					// preliminary: default value should maybe be settable in preferences to 1.0 or 0.0
+					if (mRedValues[i] != null) {
+						mixVal = msRedRight.getSliderValueAt(i);
+						mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
+					}
+					if (mGreenValues[i] != null) {
+						mixVal = msGreenRight.getSliderValueAt(i);
+						mGreenMixValues[i] = mixVal == null ? 1.0 : mixVal;
+					}
+					if (mBlueValues[i] != null) {
+						mixVal = msBlueRight.getSliderValueAt(i);
+						mBlueMixValues[i] = mixVal == null ? 1.0 : mixVal;
+					}
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
 						&& msRight != null) {
+					mixVal = msRight.getSliderValueAt(i);
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
-							mRedMixValues[i] = msRight.getSliderValueAt(i);
+							if (mRedValues != null)
+								mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
 							break;
 						case G:
 							mGreenValues[i] = msLeft.getSliderValueAt(i);
-							mGreenMixValues[i] = msRight.getSliderValueAt(i);
+							if (mGreenValues != null)
+								mGreenMixValues[i] = mixVal == null ? 1.0 : mixVal;
 							break;
 						case B:
 							mBlueValues[i] = msLeft.getSliderValueAt(i);
-							mBlueMixValues[i] = msRight.getSliderValueAt(i);
+							if (mBlueValues != null)
+								mBlueMixValues[i] = mixVal == null ? 1.0 : mixVal;
 							break;
 					}
 				}
@@ -962,14 +980,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				int bVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
 						: pixels[i] & 0xFF;
 
-				if (!mApp.getIsRGBPositive())
-					pixels[i] = Color.argb(255, rVal, gVal, bVal);
+//				if (!mApp.getIsRGBPositive())
+//					pixels[i] = Color.argb(255, rVal, gVal, bVal);
+
+				rVal = mRedValues[i] == null ? rVal : (int) Math.round(mRedValues[i] * 255);
+				gVal = mGreenValues[i] == null ? gVal : (int) Math.round(mGreenValues[i] * 255);
+				bVal = mBlueValues[i] == null ? bVal : (int) Math.round(mBlueValues[i] * 255);
+
+				pixels[i] = Color.argb(255, rVal, gVal, bVal);
 
 				// compose basic OSC message for slot
 
 				if (!mApp.getPixelImageHidden()) {
+//					Log.d(TAG, "pixel: " + i + ", red: " + mRedValues[i] + ", " + mRedMixValues[i] + ", green: " + mGreenValues[i] + ", " + mGreenMixValues[i] + ", blue: " + mBlueValues[i] + ", " + mBlueMixValues[i]);
 					if (mApp.getColorMode().equals(RGBModes.RGB)) {
-						if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
+
+						/*if (offPxls.get(i)[0] && !offPxls.get(i)[1] && !offPxls.get(i)[2]) {
 							// mRed
 							pixels[i] = Color.argb(255 / 3, 0, gVal, bVal);
 						} else if (!offPxls.get(i)[0] && offPxls.get(i)[1] && !offPxls.get(i)[2]) {
@@ -991,7 +1017,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						} else if (offPxls.get(i)[0] && offPxls.get(i)[1] && offPxls.get(i)[2]) {
 							// rgb
 							pixels[i] = Color.argb(0, 0, 0, 0);
-						}
+						}*/
 					} else if (mApp.getColorMode().equals(RGBModes.R)) {
 						if (offPxls.get(i)[0])
 							pixels[i] = Color.argb(255, rVal, 255, 255);

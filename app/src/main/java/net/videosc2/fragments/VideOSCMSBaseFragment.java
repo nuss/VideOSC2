@@ -32,6 +32,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		cancel.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				app.setIsMultiSliderActive(false);
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mOkCancel);
 				indicatorPanel.setVisibility(View.VISIBLE);
@@ -44,11 +45,13 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		ok.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				app.setIsMultiSliderActive(false);
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mOkCancel);
 				indicatorPanel.setVisibility(View.VISIBLE);
 				if (app.getIsFPSCalcPanelOpen())
 					fpsCalcPanel.setVisibility(View.VISIBLE);
+
 			}
 		});
 	}
