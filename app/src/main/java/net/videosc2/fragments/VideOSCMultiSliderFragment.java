@@ -52,6 +52,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
+		mMSViewLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewLeft.setContainerView(container);
 		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
@@ -75,6 +76,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 
 		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
+		mMSViewRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRight.setContainerView(container);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 		int topMargin = lp.topMargin;

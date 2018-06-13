@@ -53,21 +53,27 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
+		mMSViewRedLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRedLeft.setContainerView(container);
 		mMSViewRedRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_right);
 		mMSViewRedRight.setValuesArray(numTotalPixels);
+		mMSViewRedRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRedRight.setContainerView(container);
 		mMSViewGreenLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_left);
 		mMSViewGreenLeft.setValuesArray(numTotalPixels);
+		mMSViewGreenLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewGreenLeft.setContainerView(container);
 		mMSViewGreenRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_right);
 		mMSViewGreenRight.setValuesArray(numTotalPixels);
+		mMSViewGreenRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewGreenRight.setContainerView(container);
 		mMSViewBlueLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_left);
 		mMSViewBlueLeft.setValuesArray(numTotalPixels);
+		mMSViewBlueLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueLeft.setContainerView(container);
 		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
+		mMSViewBlueRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueRight.setContainerView(container);
 
 		assert allColors != null;

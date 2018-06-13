@@ -929,11 +929,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msBlueLeft != null
 						&& msBlueRight != null) {
 					// color values
-//					if (msRedLeft.getSliderAtTouched(i))
+					if (msRedLeft.getSliderAtTouched(i))
 						mRedValues[i] = msRedLeft.getSliderValueAt(i);
-//					if (msGreenLeft.getSliderAtTouched(i))
+					if (msGreenLeft.getSliderAtTouched(i))
 						mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
-//					if (msBlueLeft.getSliderAtTouched(i))
+					if (msBlueLeft.getSliderAtTouched(i))
 						mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
 					// mix values
 					// preliminary: default value should maybe be settable in preferences to 1.0 or 0.0

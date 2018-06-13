@@ -22,7 +22,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
-	private ArrayList<Boolean> mSlidersTouched = new ArrayList<>();
+	private boolean[] mSlidersTouched;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
 	private int[] mColors;
@@ -94,7 +94,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 				child.setPixelValue(mColors[i]);
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
-			mSlidersTouched.add(false);
 		}
 	}
 
@@ -124,6 +123,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 				// pixel index
 				int index = Integer.parseInt(bar.getNum(), 10) - 1;
+				mSlidersTouched[index] = true;
 				// the value of the slider
 				if (tempTouchY <= 0)
 					sliderValue = 1.0;
@@ -174,8 +174,14 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		this.mContainer = container;
 	}
 
+	public void setSlidersTouchedArray(int numPixels) {
+		this.mSlidersTouched = new boolean[numPixels];
+		for (int i = 0; i < numPixels; i++)
+			this.mSlidersTouched[i] = false;
+	}
+
 	public boolean getSliderAtTouched(int index) {
-		return this.mSlidersTouched.get(index);
+		return this.mSlidersTouched[index];
 	}
 }
 
