@@ -38,7 +38,6 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		int color = 0x66ffffff;
-		int pixelVal = 255;
 		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;

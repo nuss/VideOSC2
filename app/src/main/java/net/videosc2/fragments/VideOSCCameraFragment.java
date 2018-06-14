@@ -77,7 +77,7 @@ import oscP5.OscP5;
  * Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
-	final static String TAG = "VideOSCCameraFragment";
+	private final static String TAG = "VideOSCCameraFragment";
 
 	private long mNow, mPrev = 0;
 	private float mFrameRate;
@@ -103,7 +103,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		super();
 	}
 
-	public float mCamZoom = 1f;
+	private float mCamZoom = 1f;
 
 	private Point mResolution = new Point();
 
@@ -255,11 +255,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return new String[]{mRed, mGreen, mBlue};
 	}
 
-	public void setFramerateRange(int index) {
+	private void setFramerateRange(int index) {
 		mFrameRateRange = mSupportedPreviewFpsRanges.get(index);
 	}
 
-	public int[] getFramerateRange() {
+	private int[] getFramerateRange() {
 		return mFrameRateRange;
 	}
 
@@ -304,13 +304,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private List<String> mSupportedFlashModes;
 
 		private double mOldFingerDistance = 0.0;
-		private Point mPixelSize = new Point();
+		private final Point mPixelSize = new Point();
 
 		// lock the state of a pixel after changing its state, otherwise pixels would constantly
 		// change their state as long as they're hoevered
-		private ArrayList<Boolean[]> lockList = new ArrayList<Boolean[]>();
+		private final ArrayList<Boolean[]> lockList = new ArrayList<>();
 		// store the states of all pixels
-		private ArrayList<Boolean[]> offPxls = new ArrayList<Boolean[]>();
+		private final ArrayList<Boolean[]> offPxls = new ArrayList<>();
 		final private Boolean[] falses = {false, false, false};
 
 		private RedOscRunnable mRedOscRunnable;
@@ -323,9 +323,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private ViewGroup mOverlay;
 		private TileOverlayView mOverlayView;
 		private ViewGroup mOkCancelSetPixel;
-		private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
-		private List<Integer> mPixelIds = new ArrayList<>();
-		private FragmentManager mManager;
+		private final ArrayList<Rect> mSelectedPixels = new ArrayList<>();
+		private final List<Integer> mPixelIds = new ArrayList<>();
+		private final FragmentManager mManager;
 
 		private volatile OscMessage oscR, oscG, oscB;
 
@@ -336,7 +336,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param context the context of the application
 		 * @param camera  an instance of Camera, to be used throughout CameraPreview
 		 */
-		public CameraPreview(Context context, Camera camera) {
+		CameraPreview(Context context, Camera camera) {
 			super(context);
 
 			Log.d(TAG, "CameraPreview(): " + camera);
@@ -498,7 +498,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
 				menuButton.bringToFront();
 				View indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
-				indicatorPanel.bringToFront();
+				if (indicatorPanel != null)
+					indicatorPanel.bringToFront();
 //				Log.d(TAG, "holder: " + holder.lockCanvas());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -668,9 +669,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							Log.d(TAG, "selected id: " + id);
 							int width = mApp.getResolution().x;
 							colors[i] = mBmp.getPixel(id % width, id / width);
-							mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
-							mGreenValues[id] = ((colors[i] >> 8) & 0xFF) / 255.0;
-							mBlueValues[id] = (colors[i] & 0xFF) / 255.0;
+							// once a value has been set manually the value should not get reset
+							// when editing the same pixel again
+							if (mRedValues[id] == null)
+								mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
+							if (mGreenValues[id] == null)
+								mGreenValues[id] = ((colors[i] >> 8) & 0xFF) / 255.0;
+							if (mBlueValues[id] == null)
+								mBlueValues[id] = (colors[i] & 0xFF) / 255.0;
 						}
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
@@ -919,8 +925,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
 			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
 
+
 			for (int i = 0; i < dimensions; i++) {
 				Double mixVal;
+				double assignedMixVal;
 
 				if (mApp.getColorMode().equals(RGBModes.RGB)
 						&& msRedLeft != null
@@ -930,25 +938,33 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msBlueLeft != null
 						&& msBlueRight != null) {
 					// color values
+					if (i == 0)
+						Log.d(TAG, "pixel 0, value: " + mRedValues[i] + ", mix: " + mRedMixValues[i]);
+
 					if (msRedLeft.getSliderAtTouched(i))
 						mRedValues[i] = msRedLeft.getSliderValueAt(i);
 					if (msGreenLeft.getSliderAtTouched(i))
 						mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
 					if (msBlueLeft.getSliderAtTouched(i))
 						mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
-					// mix values
+					// mix values: once a mix value has been set it should be remembered until it's set
+					// to a new value (by moving the slider. Next time the regarding pixel is edited
+					// the slider should be set to the value that has been stored on the last edit
 					// preliminary: default value should maybe be settable in preferences to 1.0 or 0.0
 					if (mRedValues[i] != null) {
 						mixVal = msRedRight.getSliderValueAt(i);
-						mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
+						assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
+						mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 					if (mGreenValues[i] != null) {
 						mixVal = msGreenRight.getSliderValueAt(i);
-						mGreenMixValues[i] = mixVal == null ? 1.0 : mixVal;
+						assignedMixVal = mGreenMixValues[i] == null ? 1.0 : mGreenMixValues[i];
+						mGreenMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 					if (mBlueValues[i] != null) {
 						mixVal = msBlueRight.getSliderValueAt(i);
-						mBlueMixValues[i] = mixVal == null ? 1.0 : mixVal;
+						assignedMixVal = mBlueMixValues[i] == null ? 1.0 : mBlueMixValues[i];
+						mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
@@ -957,8 +973,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
-							if (mRedValues != null)
-								mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
+							if (mRedValues != null) {
+								assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
+								mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
+							}
 							break;
 						case G:
 							mGreenValues[i] = msLeft.getSliderValueAt(i);
