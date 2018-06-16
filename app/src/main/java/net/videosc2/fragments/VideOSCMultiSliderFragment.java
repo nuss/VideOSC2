@@ -1,22 +1,16 @@
 package net.videosc2.fragments;
 
-import android.app.FragmentManager;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.utilities.VideOSCUIHelpers;
-import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.views.SliderBar;
 import net.videosc2.views.VideOSCMultiSliderView;
 import java.util.ArrayList;
@@ -38,6 +32,8 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		int color = 0x66ffffff;
+		double[] vals = new double[]{};
+		double[] mixVals = new double[]{};
 		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
 		Point resolution = app.getResolution();
 		int numTotalPixels = resolution.x * resolution.y;
@@ -46,7 +42,21 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
-		int[] allColors = argsBundle.getIntArray("colors");
+//		int[] allColors = argsBundle.getIntArray("colors");
+		switch (app.getColorMode()) {
+			case R:
+				vals = argsBundle.getDoubleArray("redVals");
+				mixVals = argsBundle.getDoubleArray("redMixVals");
+				break;
+			case G:
+				vals = argsBundle.getDoubleArray("greenVals");
+				mixVals = argsBundle.getDoubleArray("greenMixVals");
+				break;
+			case B:
+				vals = argsBundle.getDoubleArray("blueVals");
+				mixVals = argsBundle.getDoubleArray("blueMixVals");
+				break;
+		}
 
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
@@ -55,7 +65,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		mMSViewLeft.setContainerView(container);
 		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
-		assert allColors != null;
+		/*assert allColors != null;
 		int[] colors = new int[allColors.length];
 		for (int i = 0; i < allColors.length; i++) {
 			switch (app.getColorMode()) {
@@ -69,14 +79,16 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 					colors[i] = allColors[i] & 0xFF;
 					break;
 			}
-		}
-		// colors are determining slider positions on the left
-		mMSViewLeft.setColors(colors);
-
+		}*/
 		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
 		mMSViewRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRight.setContainerView(container);
+
+		// colors are determining slider positions on the left
+		mMSViewLeft.setValues(vals);
+		mMSViewRight.setValues(mixVals);
+
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
 		int topMargin = lp.topMargin;
 		float density = app.getScreenDensity();

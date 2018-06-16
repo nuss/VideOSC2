@@ -25,7 +25,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	private boolean[] mSlidersTouched;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
-	private int[] mColors;
+	private double[] mValues;
 	private ViewGroup mContainer;
 
 	public VideOSCMultiSliderView(Context context) {
@@ -90,8 +90,8 @@ public class VideOSCMultiSliderView extends LinearLayout {
 			SliderBar child = (SliderBar) getChildAt(i);
 			child.mAreaTop = 0 - getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;
-			if (mColors != null)
-				child.setPixelValue(mColors[i]);
+			if (mValues != null)
+				child.setPixelValue(mValues[i]);
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
 		}
@@ -166,8 +166,8 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return this.mValuesArray[index];
 	}
 
-	public void setColors(int[] colors) {
-		this.mColors = colors;
+	public void setValues(double[] values) {
+		this.mValues = values;
 	}
 
 	public void setContainerView(ViewGroup container) {

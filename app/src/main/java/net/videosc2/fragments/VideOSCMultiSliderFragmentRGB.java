@@ -1,16 +1,12 @@
 package net.videosc2.fragments;
 
-import android.app.FragmentManager;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
@@ -48,7 +44,13 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
-		int[] allColors = argsBundle.getIntArray("colors");
+//		int[] allColors = argsBundle.getIntArray("colors");
+		double[] redVals = argsBundle.getDoubleArray("redVals");
+		double[] redMixVals = argsBundle.getDoubleArray("redMixVals");
+		double[] greenVals = argsBundle.getDoubleArray("greenVals");
+		double[] greenMixVals = argsBundle.getDoubleArray("greenMixVals");
+		double[] blueVals = argsBundle.getDoubleArray("blueVals");
+		double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
 
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
@@ -76,7 +78,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueRight.setContainerView(container);
 
-		assert allColors != null;
+		/*assert allColors != null;
 		int[] reds = new int[allColors.length];
 		int[] greens = new int[allColors.length];
 		int[] blues = new int[allColors.length];
@@ -84,11 +86,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			reds[i] = (allColors[i] >> 16) & 0xFF;
 			greens[i] = (allColors[i] >> 8) & 0xFF;
 			blues[i] = allColors[i] & 0xFF;
-		}
+		}*/
 
-		mMSViewRedLeft.setColors(reds);
-		mMSViewGreenLeft.setColors(greens);
-		mMSViewBlueLeft.setColors(blues);
+		mMSViewRedLeft.setValues(redVals);
+		mMSViewRedRight.setValues(redMixVals);
+		mMSViewGreenLeft.setValues(greenVals);
+		mMSViewGreenRight.setValues(greenMixVals);
+		mMSViewBlueLeft.setValues(blueVals);
+		mMSViewBlueRight.setValues(blueMixVals);
 
 		ViewGroup column = (ViewGroup) msContainer.findViewById(R.id.multislider_rgb_left_column);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
@@ -108,6 +113,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueLeft.setDisplayHeight(displayHeight);
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
+
 		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 		assert sliderNums != null;
