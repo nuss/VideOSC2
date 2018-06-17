@@ -3,6 +3,7 @@ package net.videosc2.views;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -88,10 +89,14 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
+			int index = Integer.parseInt(child.getNum(), 10) - 1;
 			child.mAreaTop = 0 - getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;
-			if (mValues != null)
+			if (mValues != null) {
 				child.setPixelValue(mValues[i]);
+				// get value immediately on create
+				this.mValuesArray[index] = mValues[i];
+			}
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
 		}

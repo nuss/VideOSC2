@@ -126,6 +126,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private Double[] mGreenMixValues;
 	private Double[] mBlueMixValues;
 
+	private boolean[] mSlidersEdited;
+
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
 
@@ -152,6 +154,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
+
+		Point res = mApp.getResolution();
+		mSlidersEdited = new boolean[res.x * res.y];
+		for (int i = 0; i < res.x * res.y; i++)
+			mSlidersEdited[i] = false;
 
 		return view;
 	}
@@ -267,9 +274,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		void onTouchCameraSurface();
 	}
 
-	OnTouchCameraSurface mListener;
+	/*OnTouchCameraSurface mListener;
 
-	/*@Override
+	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
 
@@ -942,10 +949,23 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
 			VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
 			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
-			
+
 			for (int i = 0; i < dimensions; i++) {
 				Double mixVal;
 				double assignedMixVal;
+
+				// only the downsampled image gets inverted as inverting the original would slow
+				// down the application considerably
+				int rPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
+						: (pixels[i] >> 16) & 0xFF;
+				int gPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 8) & 0xFF)
+						: (pixels[i] >> 8) & 0xFF;
+				int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
+						: pixels[i] & 0xFF;
+
+
+				/*if (i == 0)
+					Log.d(TAG, "0: " + rPixVal + ", " + gPixVal + ", " + bPixVal);*/
 
 				if (mApp.getColorMode().equals(RGBModes.RGB)
 						&& msRedLeft != null
@@ -954,13 +974,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msGreenRight != null
 						&& msBlueLeft != null
 						&& msBlueRight != null) {
+
+//					if (i == 0)
+//						Log.d(TAG, "has slider ever been touched? " + msRedLeft.getSliderAtTouched(i));
 					// color values
-					if (msRedLeft.getSliderAtTouched(i))
-						mRedValues[i] = msRedLeft.getSliderValueAt(i);
-					if (msGreenLeft.getSliderAtTouched(i))
-						mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
-					if (msBlueLeft.getSliderAtTouched(i))
-						mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+//					if (msRedLeft.getSliderAtTouched(i))
+					mRedValues[i] = msRedLeft.getSliderValueAt(i);
+					if (mRedValues[i] != null) mSlidersEdited[i] = true;
+//					if (msGreenLeft.getSliderAtTouched(i))
+					mGreenValues[i] = msGreenLeft.getSliderValueAt(i);
+					if (mGreenValues[i] != null) mSlidersEdited[i] = true;
+//					if (msBlueLeft.getSliderAtTouched(i))
+					mBlueValues[i] = msBlueLeft.getSliderValueAt(i);
+					if (mBlueValues[i] != null) mSlidersEdited[i] = true;
 					// mix values: once a mix value has been set it should be remembered until it's set
 					// to a new value (by moving the slider. Next time the regarding pixel is edited
 					// the slider should be set to the value that has been stored on the last edit
@@ -981,7 +1007,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 					/*if (i == 0)
-						Log.d(TAG, "pixel 0, value: " + mRedValues[i] + ", mix: " + mRedMixValues[i]);*/
+						Log.d(TAG, "pixel 0, value: " + mRedValues[i] + ", " + mGreenValues[i] + ", " + mBlueValues[i] + "\nmix: " + mRedMixValues[i] + ", " + mGreenMixValues[i] + ", " + mBlueMixValues[i]);*/
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
 						&& msRight != null) {
@@ -989,6 +1015,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
+							if (mRedValues[i] != null) mSlidersEdited[i] = true;
 							if (mRedValues[i] != null) {
 								assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
 								mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
@@ -996,6 +1023,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							break;
 						case G:
 							mGreenValues[i] = msLeft.getSliderValueAt(i);
+							if (mGreenValues[i] != null) mSlidersEdited[i] = true;
 							if (mGreenValues[i] != null) {
 								assignedMixVal = mGreenMixValues[i] == null ? 1.0 : mGreenMixValues[i];
 								mGreenMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
@@ -1003,6 +1031,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							break;
 						case B:
 							mBlueValues[i] = msLeft.getSliderValueAt(i);
+							if (mBlueValues[i] != null) mSlidersEdited[i] = true;
 							if (mBlueValues[i] != null) {
 								assignedMixVal = mBlueMixValues[i] == null ? 1.0 : mBlueMixValues[i];
 								mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
@@ -1010,15 +1039,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							break;
 					}
 				}
-				// only the downsampled image gets inverted as inverting the original would slow
-				// down the application considerably
-				int rPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
-						: (pixels[i] >> 16) & 0xFF;
-				int gPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 8) & 0xFF)
-						: (pixels[i] >> 8) & 0xFF;
-				int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
-						: pixels[i] & 0xFF;
-
 //				if (!mApp.getIsRGBPositive())
 //					pixels[i] = Color.argb(255, rPixVal, gPixVal, bPixVal);
 
@@ -1026,22 +1046,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// should allow a non-linear, exponential crossfade
 				if (mRedValues[i] != null) {
 					if (mRedMixValues[i] != null && mRedMixValues[i] < 1.0) {
-						if (i == 0)
-							Log.d(TAG, "0 mixed, value: " + mRedValues[i] + ", mix value: " + mRedMixValues[i]);
 						double mixCubed = Math.pow(mRedMixValues[i], 3);
 						double mixReciprCubed = Math.pow(1.0 - mRedMixValues[i], 3);
 						double mult = 1.0 / (mixCubed + mixReciprCubed);
 						rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues[i] * mixCubed) * mult;
-					} else {
-						if (i == 0)
-							Log.d(TAG, "0 not mixed, value: " + mRedValues[i] + ", mix value: " + mRedMixValues[i]);
-						rValue = mRedValues[i];
-					}
-				} else {
-					if (i == 0)
-						Log.d(TAG, "0 no change: " + mRedValues[i] + ", mix value: " + mRedMixValues[i]);
-					rValue = rPixVal / 255.0;
-				}
+					} else rValue = mRedValues[i];
+				} else rValue = rPixVal / 255.0;
 
 				if (mGreenValues[i] != null) {
 					if (mGreenMixValues[i] != null && mGreenMixValues[i] < 1.0) {
@@ -1049,9 +1059,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						double mixReciprCubed = Math.pow(1.0 - mGreenMixValues[i], 3);
 						double mult = 1.0 / (mixCubed + mixReciprCubed);
 						gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues[i] * mixCubed) * mult;
-					} else {
-						gValue = mGreenValues[i];
-					}
+					} else gValue = mGreenValues[i];
 				} else gValue = gPixVal / 255.0;
 
 				if (mBlueValues[i] != null) {
@@ -1060,25 +1068,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						double mixReciprCubed = Math.pow(1.0 - mBlueMixValues[i], 3);
 						double mult = 1.0 / (mixCubed + mixReciprCubed);
 						bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues[i] * mixCubed) * mult;
-					} else {
-						bValue = mBlueValues[i];
-					}
+					} else bValue = mBlueValues[i];
 				} else bValue = bPixVal / 255.0;
 
-				/*if (i == 0) {
-					Log.d(TAG, "camera at " + i + ": " + rPixVal + ", " + gPixVal + ", " + bPixVal);
-					Log.d(TAG, "pixel at " + i + ": " + rValue * 255.0 + ", " + gValue * 255.0 + ", " + bValue * 255.0);
-				}*/
+				// pixels can only be set to ints in a range from 0-255
+				rPixVal = mRedValues[i] == null ? rPixVal : (int) Math.round(rValue * 255);
+				gPixVal = mGreenValues[i] == null ? gPixVal : (int) Math.round(gValue * 255);
+				bPixVal = mBlueValues[i] == null ? bPixVal : (int) Math.round(bValue * 255);
+				if (i == 0 && msRedLeft != null)
+					Log.d(TAG, "slider value at 0: " + msRedLeft.getSliderValueAt(i) + ", mRedValues[0]: " + mRedValues[i] + ", " + rPixVal);
+				/*if (i == 0)
+					Log.d(TAG, "0, rPixVal: " + rPixVal + ", gPixVal: " + gPixVal + ". bPixVal: " + bPixVal);*/
 
-				/*rPixVal = mRedValues[i] == null ? rPixVal : (int) Math.round(mRedValues[i] * 255);
-				gPixVal = mGreenValues[i] == null ? gPixVal : (int) Math.round(mGreenValues[i] * 255);
-				bPixVal = mBlueValues[i] == null ? bPixVal : (int) Math.round(mBlueValues[i] * 255);*/
-				rPixVal = (int) Math.round(rValue * 255);
-				gPixVal = (int) Math.round(gValue * 255);
-				bPixVal = (int) Math.round(bValue * 255);
-
-				// compose basic OSC message for slot
-
+				// set pixels
 				if (!mApp.getPixelImageHidden()) {
 					if (mApp.getColorMode().equals(RGBModes.RGB)) {
 						pixels[i] = Color.argb(255, rPixVal, gPixVal, bPixVal);
@@ -1094,6 +1096,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					pixels[i] = Color.argb(0, 0, 0, 0);
 				}
 
+				// compose basic OSC message for slot
 				if (mApp.getCameraOSCisPlaying()) {
 //					if (calcsPerPeriod == 1) {
 					if (mApp.getNormalized()) {
