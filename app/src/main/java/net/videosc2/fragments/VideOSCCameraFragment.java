@@ -684,18 +684,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							colors[i] = mBmp.getPixel(id % res.x, id / res.x);
 							// once a value has been set manually the value should not get reset
 							// when editing the same pixel again
-							if (mRedValues[id] == null)
-								mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
-							redVals[i] = mRedValues[id];
-							redMixVals[i] = mRedMixValues[id] == null ? 1.0 : mRedMixValues[id];
-							if (mGreenValues[id] == null)
-								mGreenValues[id] = ((colors[i] >> 8) & 0xFF) / 255.0;
-							greenVals[i] = mGreenValues[id];
-							greenMixVals[i] = mGreenMixValues[id] == null ? 1.0 : mGreenMixValues[id];
-							if (mBlueValues[id] == null)
-								mBlueValues[id] = (colors[i] & 0xFF) / 255.0;
-							blueVals[i] = mBlueValues[id];
-							blueMixVals[i] = mBlueMixValues[id] == null ? 1.0 : mBlueMixValues[id];
+							if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+								if (mRedValues[id] == null)
+									mRedValues[id] = ((colors[i] >> 16) & 0xFF) / 255.0;
+								redVals[i] = mRedValues[id];
+								redMixVals[i] = mRedMixValues[id] == null ? 1.0 : mRedMixValues[id];
+							}
+							if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+								if (mGreenValues[id] == null)
+									mGreenValues[id] = ((colors[i] >> 8) & 0xFF) / 255.0;
+								greenVals[i] = mGreenValues[id];
+								greenMixVals[i] = mGreenMixValues[id] == null ? 1.0 : mGreenMixValues[id];
+							}
+							if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+								if (mBlueValues[id] == null)
+									mBlueValues[id] = (colors[i] & 0xFF) / 255.0;
+								blueVals[i] = mBlueValues[id];
+								blueMixVals[i] = mBlueMixValues[id] == null ? 1.0 : mBlueMixValues[id];
+							}
 						}
 						Bundle msArgsBundle = new Bundle();
 						msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
@@ -963,9 +969,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
 						: pixels[i] & 0xFF;
 
-
-				/*if (i == 0)
-					Log.d(TAG, "0: " + rPixVal + ", " + gPixVal + ", " + bPixVal);*/
+//				if (i == 0)
+//					Log.d(TAG, "0, before, red value: " + mRedValues[i] + ", green value: " + mGreenValues[i] + ", blue value: " + mBlueValues[i]);
 
 				if (mApp.getColorMode().equals(RGBModes.RGB)
 						&& msRedLeft != null
@@ -1015,24 +1020,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					switch (mApp.getColorMode()) {
 						case R:
 							mRedValues[i] = msLeft.getSliderValueAt(i);
-							if (mRedValues[i] != null) mSlidersEdited[i] = true;
 							if (mRedValues[i] != null) {
+								mSlidersEdited[i] = true;
 								assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
 								mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
 							break;
 						case G:
 							mGreenValues[i] = msLeft.getSliderValueAt(i);
-							if (mGreenValues[i] != null) mSlidersEdited[i] = true;
 							if (mGreenValues[i] != null) {
+								mSlidersEdited[i] = true;
 								assignedMixVal = mGreenMixValues[i] == null ? 1.0 : mGreenMixValues[i];
 								mGreenMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
 							break;
 						case B:
 							mBlueValues[i] = msLeft.getSliderValueAt(i);
-							if (mBlueValues[i] != null) mSlidersEdited[i] = true;
 							if (mBlueValues[i] != null) {
+								mSlidersEdited[i] = true;
 								assignedMixVal = mBlueMixValues[i] == null ? 1.0 : mBlueMixValues[i];
 								mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
@@ -1044,39 +1049,52 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// set values considering values coming from the 'mix' multislider
 				// should allow a non-linear, exponential crossfade
-				if (mRedValues[i] != null) {
-					if (mRedMixValues[i] != null && mRedMixValues[i] < 1.0) {
-						double mixCubed = Math.pow(mRedMixValues[i], 3);
-						double mixReciprCubed = Math.pow(1.0 - mRedMixValues[i], 3);
-						double mult = 1.0 / (mixCubed + mixReciprCubed);
-						rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues[i] * mixCubed) * mult;
-					} else rValue = mRedValues[i];
-				} else rValue = rPixVal / 255.0;
 
-				if (mGreenValues[i] != null) {
-					if (mGreenMixValues[i] != null && mGreenMixValues[i] < 1.0) {
-						double mixCubed = Math.pow(mGreenMixValues[i], 3);
-						double mixReciprCubed = Math.pow(1.0 - mGreenMixValues[i], 3);
-						double mult = 1.0 / (mixCubed + mixReciprCubed);
-						gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues[i] * mixCubed) * mult;
-					} else gValue = mGreenValues[i];
-				} else gValue = gPixVal / 255.0;
+				// default values before being set through sliders
+				rValue = rPixVal / 255.0;
+				gValue = gPixVal / 255.0;
+				bValue = bPixVal / 255.0;
 
-				if (mBlueValues[i] != null) {
-					if (mBlueMixValues[i] != null && mBlueMixValues[i] < 1.0) {
-						double mixCubed = Math.pow(mBlueMixValues[i], 3);
-						double mixReciprCubed = Math.pow(1.0 - mBlueMixValues[i], 3);
-						double mult = 1.0 / (mixCubed + mixReciprCubed);
-						bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues[i] * mixCubed) * mult;
-					} else bValue = mBlueValues[i];
-				} else bValue = bPixVal / 255.0;
+				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+					if (mRedValues[i] != null) {
+						if (mRedMixValues[i] != null && mRedMixValues[i] < 1.0) {
+							double mixCubed = Math.pow(mRedMixValues[i], 3);
+							double mixReciprCubed = Math.pow(1.0 - mRedMixValues[i], 3);
+							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues[i] * mixCubed) * mult;
+						} else rValue = mRedValues[i];
+					};
+				}
+
+				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+					if (mGreenValues[i] != null) {
+						if (mGreenMixValues[i] != null && mGreenMixValues[i] < 1.0) {
+							double mixCubed = Math.pow(mGreenMixValues[i], 3);
+							double mixReciprCubed = Math.pow(1.0 - mGreenMixValues[i], 3);
+							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues[i] * mixCubed) * mult;
+						} else gValue = mGreenValues[i];
+					};
+				}
+
+				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+					if (mBlueValues[i] != null) {
+						if (mBlueMixValues[i] != null && mBlueMixValues[i] < 1.0) {
+							double mixCubed = Math.pow(mBlueMixValues[i], 3);
+							double mixReciprCubed = Math.pow(1.0 - mBlueMixValues[i], 3);
+							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues[i] * mixCubed) * mult;
+						} else bValue = mBlueValues[i];
+					};
+				}
+
+//				if (i == 0)
+//					Log.d(TAG, "0, after, red value: " + mRedValues[i] + ", green value: " + mGreenValues[i] + ", blue value: " + mBlueValues[i]);
 
 				// pixels can only be set to ints in a range from 0-255
-				rPixVal = mRedValues[i] == null ? rPixVal : (int) Math.round(rValue * 255);
-				gPixVal = mGreenValues[i] == null ? gPixVal : (int) Math.round(gValue * 255);
-				bPixVal = mBlueValues[i] == null ? bPixVal : (int) Math.round(bValue * 255);
-				if (i == 0 && msRedLeft != null)
-					Log.d(TAG, "slider value at 0: " + msRedLeft.getSliderValueAt(i) + ", mRedValues[0]: " + mRedValues[i] + ", " + rPixVal);
+				if (mRedValues[i] != null) rPixVal = (int) Math.round(rValue * 255);
+				if (mGreenValues[i] != null) gPixVal = (int) Math.round(gValue * 255);
+				if (mBlueValues[i] != null) bPixVal = (int) Math.round(bValue * 255);
 				/*if (i == 0)
 					Log.d(TAG, "0, rPixVal: " + rPixVal + ", gPixVal: " + gPixVal + ". bPixVal: " + bPixVal);*/
 
