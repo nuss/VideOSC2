@@ -51,7 +51,6 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				indicatorPanel.setVisibility(View.VISIBLE);
 				if (app.getIsFPSCalcPanelOpen())
 					fpsCalcPanel.setVisibility(View.VISIBLE);
-
 			}
 		});
 	}
