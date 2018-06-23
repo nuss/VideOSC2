@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="297mm"
+   height="210mm"
+   viewBox="0 0 1052.3622 744.09448"
+   id="svg4538"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="edited_markers.svg">
+  <defs
+     id="defs4540">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter5249"
+       x="-0.083999992"
+       width="1.168"
+       y="-0.084000008"
+       height="1.168">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.9005296"
+         id="feGaussianBlur5251" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.0628314"
+     inkscape:cx="256.05709"
+     inkscape:cy="384.30242"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1031"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       position="329.55231,371.20576"
+       orientation="0,1"
+       id="guide5086" />
+    <sodipodi:guide
+       position="0.3535534,175.86016"
+       orientation="-390.6912,390.6912"
+       id="guide5108" />
+    <sodipodi:guide
+       position="100.35355,175.86016"
+       orientation="-390.6912,390.6912"
+       id="guide5110" />
+    <sodipodi:guide
+       position="200.35355,175.86016"
+       orientation="-390.6912,390.6912"
+       id="guide5112" />
+    <sodipodi:guide
+       position="600.35356,175.86016"
+       orientation="-390.6912,390.69005"
+       id="guide5158" />
+    <sodipodi:guide
+       position="500.35356,175.86016"
+       orientation="-390.6912,390.69005"
+       id="guide5166" />
+    <sodipodi:guide
+       position="400.35356,175.86016"
+       orientation="-390.6912,390.69005"
+       id="guide5168" />
+    <sodipodi:guide
+       position="300.35355,175.86016"
+       orientation="-390.6912,390.69005"
+       id="guide5170" />
+    <sodipodi:guide
+       position="250,459.96993"
+       orientation="1,0"
+       id="guide5191"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="350.00001,500.6829"
+       orientation="1,0"
+       id="guide5193"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="450.00001,535.83751"
+       orientation="1,0"
+       id="guide5195"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="550.00001,526.98359"
+       orientation="1,0"
+       id="guide5197"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="650.00001,587.30624"
+       orientation="1,0"
+       id="guide5199"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="750.00001,619.04651"
+       orientation="1,0"
+       id="guide5201"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="850.00001,524.24379"
+       orientation="1,0"
+       id="guide5203"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="950.00002,556.12184"
+       orientation="1,0"
+       id="guide5205"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="190,395.6876"
+       orientation="1,0"
+       id="guide5256"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="271.03989,431.206"
+       orientation="0,1"
+       id="guide5258"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4543">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="shadows">
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)"
+       d="m 250,318.58788 0,54.30084 -54.30085,0 L 250,318.58788"
+       id="path5207-3"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5264"
+       d="m 350.00025,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)"
+       d="m 450.00026,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5270"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5276"
+       d="m 550.00027,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)"
+       d="m 650.00028,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5282"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5288"
+       d="m 750.00026,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5249)"
+       d="m 850.00024,318.58788 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5294"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+  </g>
+  <g
+     inkscape:label="bmp selection"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-308.26772)"
+     style="display:inline">
+    <path
+       style="fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 250,626.8556 0,54.30084 -54.30085,0 L 250,626.8556"
+       id="path5207"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/r_corner.png"
+       inkscape:export-xdpi="54.099998"
+       inkscape:export-ydpi="54.099998" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5268"
+       d="m 350.00025,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#00ff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/g_corner.png"
+       inkscape:export-xdpi="18.030001"
+       inkscape:export-ydpi="18.030001" />
+    <path
+       style="fill:#0000ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 450.00026,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5274"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/b_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5280"
+       d="m 550.00027,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#ffff00;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/rg_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <path
+       style="fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 650.00028,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5286"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/gb_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path5292"
+       d="m 750.00026,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       style="fill:#ff00ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/rb_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 850.00024,626.8556 0,54.30084 -54.30085,0 54.30085,-54.30084"
+       id="path5298"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/rgb_corner.png"
+       inkscape:export-xdpi="18.030001"
+       inkscape:export-ydpi="18.030001" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="corners">
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5254"
+       width="59.889252"
+       height="60.084538"
+       x="190.11075"
+       y="312.8042"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/r_corner.png"
+       inkscape:export-xdpi="54.099998"
+       inkscape:export-ydpi="54.099998" />
+    <rect
+       y="312.8042"
+       x="290.11099"
+       height="60.084538"
+       width="59.889252"
+       id="rect5266"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/g_corner.png"
+       inkscape:export-xdpi="18.030001"
+       inkscape:export-ydpi="18.030001" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5272"
+       width="59.889252"
+       height="60.084538"
+       x="390.11099"
+       y="312.8042"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/b_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <rect
+       y="312.8042"
+       x="490.11099"
+       height="60.084538"
+       width="59.889252"
+       id="rect5278"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/rg_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5284"
+       width="59.889252"
+       height="60.084538"
+       x="590.11102"
+       y="312.8042"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/gb_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <rect
+       y="312.8042"
+       x="690.11102"
+       height="60.084538"
+       width="59.889252"
+       id="rect5290"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/rb_corner.png"
+       inkscape:export-xdpi="27.049999"
+       inkscape:export-ydpi="27.049999" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect5296"
+       width="59.889252"
+       height="60.084538"
+       x="790.11102"
+       y="312.8042"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/rgb_corner.png"
+       inkscape:export-xdpi="18.030001"
+       inkscape:export-ydpi="18.030001" />
+  </g>
+</svg>

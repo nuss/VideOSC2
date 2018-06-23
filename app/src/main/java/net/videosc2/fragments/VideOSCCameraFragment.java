@@ -105,7 +105,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private float mCamZoom = 1f;
 
-	private Point mResolution = new Point();
+	private Point mResolution;
 
 	private int[] mFrameRateRange;
 
@@ -148,7 +148,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		// store the container for later re-use
 		mPreviewContainer = container;
 		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
-//		mOverlay = new TileOverlayView(getActivity());
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
@@ -547,6 +546,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
 
+			mResolution = mApp.getResolution();
+
 			// memorize current pixel size
 			setPixelSize(holder);
 
@@ -600,7 +601,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mImage.bringToFront();
 						mImage.setImageDrawable(bmpDraw);
 						Point dimensions = mApp.getDimensions();
+						// provide neccessary information for overlay
+						mOverlayView.setParentResolution(resolution);
+						mOverlayView.setColorMode(mApp.getColorMode());
+						mOverlayView.setPixelSize(mPixelSize);
+						mOverlayView.setRedMixValues(mRedMixValues);
+						mOverlayView.setGreenMixValues(mGreenMixValues);
+						mOverlayView.setBlueMixValues(mBlueMixValues);
 						mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
+						mOverlayView.invalidate();
 					}
 				});
 			} catch (Exception e) {
@@ -948,7 +957,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCMultiSliderView msGreenRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_right);
 			VideOSCMultiSliderView msBlueLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_left);
 			VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
-			// color mode R, G orB
+			// color mode R, G or B
 			VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
 			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
 
@@ -977,8 +986,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						&& msBlueRight != null) {
 
 					// color values
-					if (i == 0)
-						Log.d(TAG, "red mix slider value at 0: " + msRedRight.getSliderValueAt(i));
 					redSliderVal = msRedLeft.getSliderValueAt(i);
 					if (redSliderVal != null) {
 						mRedValues[i] = redSliderVal;
@@ -988,33 +995,19 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						// TODO: default value should maybe be settable in preferences to 1.0 or 0.0
 						mixVal = msRedRight.getSliderValueAt(i);
 						mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//						assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
-//						mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 					greenSliderVal = msGreenLeft.getSliderValueAt(i);
 					if (greenSliderVal != null) {
 						mGreenValues[i] = greenSliderVal;
 						mixVal = msGreenRight.getSliderValueAt(i);
 						mGreenMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//						assignedMixVal = mGreenMixValues[i] == null ? 1.0 : mGreenMixValues[i];
-//						mGreenMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
 					blueSliderVal = msBlueLeft.getSliderValueAt(i);
 					if (blueSliderVal != null) {
 						mBlueValues[i] = blueSliderVal;
 						mixVal = msBlueRight.getSliderValueAt(i);
 						mBlueMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//						assignedMixVal = mBlueMixValues[i] == null ? 1.0 : mBlueMixValues[i];
-//						mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 					}
-//					if (mRedValues[i] != null) {
-//					}
-//					if (mGreenValues[i] != null) {
-//					}
-//					if (mBlueValues[i] != null) {
-//					}
-					/*if (i == 0)
-						Log.d(TAG, "pixel 0, value: " + mRedValues[i] + ", " + mGreenValues[i] + ", " + mBlueValues[i] + "\nmix: " + mRedMixValues[i] + ", " + mGreenMixValues[i] + ", " + mBlueMixValues[i]);*/
 				} else if (!mApp.getColorMode().equals(RGBModes.RGB)
 						&& msLeft != null
 						&& msRight != null) {
@@ -1023,33 +1016,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							redSliderVal = msLeft.getSliderValueAt(i);
 							if (redSliderVal != null) {
 								mRedValues[i] = redSliderVal;
-//								mSlidersEdited[i] = true;
 								mixVal = msRight.getSliderValueAt(i);
 								mRedMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//								assignedMixVal = mRedMixValues[i] == null ? 1.0 : mRedMixValues[i];
-//								mRedMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
 							break;
 						case G:
 							greenSliderVal = msLeft.getSliderValueAt(i);
 							if (greenSliderVal != null) {
 								mGreenValues[i] = greenSliderVal;
-//								mSlidersEdited[i] = true;
 								mixVal = msRight.getSliderValueAt(i);
 								mGreenMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//								assignedMixVal = mGreenMixValues[i] == null ? 1.0 : mGreenMixValues[i];
-//								mGreenMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
 							break;
 						case B:
 							blueSliderVal = msLeft.getSliderValueAt(i);
 							if (blueSliderVal != null) {
 								mBlueValues[i] = blueSliderVal;
-//								mSlidersEdited[i] = true;
 								mixVal = msRight.getSliderValueAt(i);
 								mBlueMixValues[i] = mixVal == null ? 1.0 : mixVal;
-//								assignedMixVal = mBlueMixValues[i] == null ? 1.0 : mBlueMixValues[i];
-//								mBlueMixValues[i] = mixVal == null ? assignedMixVal : mixVal;
 							}
 							break;
 					}
@@ -1182,64 +1166,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							mBlueOscRunnable.mOscLock.notify();
 						}
 					}
-/*
-					} else {
-						curInput[0] = (float) rPixVal;
-						curInput[1] = (float) gPixVal;
-						curInput[2] = (float) bPixVal;
-
-						curInputList.add(curInput.clone());
-
-						if (lastInputList.size() >= dimensions) {
-							rValue = lastInputList.get(i)[0];
-							gValue = lastInputList.get(i)[1];
-							bValue = lastInputList.get(i)[2];
-
-							if (normalize) {
-								rValue = rValue / 255;
-								gValue = gValue / 255;
-								bValue = bValue / 255;
-							}
-
-							if (!offPxls.get(i)[0]) {
-								oscR.add(rValue);
-								oscP5.send(oscR, broadcastLoc);
-							}
-							if (!offPxls.get(i)[1]) {
-								oscG.add(gValue);
-								oscP5.send(oscG, broadcastLoc);
-							}
-							if (!offPxls.get(i)[2]) {
-								oscB.add(bValue);
-								oscP5.send(oscB, broadcastLoc);
-							}
-
-							float lastInputR = lastInputList.get(i)[0];
-							float lastInputG = lastInputList.get(i)[1];
-							float lastInputB = lastInputList.get(i)[2];
-
-							slope[0] = (curInput[0] - lastInputR) / calcsPerPeriod;
-							slope[1] = (curInput[1] - lastInputG) / calcsPerPeriod;
-							slope[2] = (curInput[2] - lastInputB) / calcsPerPeriod;
-
-							slopes.add(slope.clone());
-						}
-					}
-*/
 				}
 			}
 
 			bmp.setPixels(pixels, 0, width, 0, 0, width, height);
 			return bmp;
 		}
-
-/*
-		private void prepareAndSendOsc(OscMessage msg, float val) {
-			msg.add(val);
-			mOscRunnable.mMsg = msg;
-			mOscRunnable.mOscLock.notify();
-		}
-*/
 	}
 
 	// prevent memory leaks by declaring Runnable static
