@@ -602,6 +602,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mImage.setImageDrawable(bmpDraw);
 						Point dimensions = mApp.getDimensions();
 						// provide neccessary information for overlay
+						mOverlayView.setInterActionMode(mApp.getInteractionMode());
 						mOverlayView.setParentResolution(resolution);
 						mOverlayView.setColorMode(mApp.getColorMode());
 						mOverlayView.setPixelSize(mPixelSize);
