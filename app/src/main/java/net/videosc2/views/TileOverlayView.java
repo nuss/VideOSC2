@@ -79,8 +79,7 @@ public class TileOverlayView extends View {
 		mShaderSelected = new BitmapShader(patSrc, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 		mRCorner = BitmapFactory.decodeResource(res, R.drawable.r_corner);
 		mBCorner = BitmapFactory.decodeResource(res, R.drawable.b_corner);
-		mGCorner = BitmapFactory.decodeResource(res, R.drawable.g_corner)
-		;
+		mGCorner = BitmapFactory.decodeResource(res, R.drawable.g_corner);
 		mRGCorner = BitmapFactory.decodeResource(res, R.drawable.rg_corner);
 		mRBCorner = BitmapFactory.decodeResource(res, R.drawable.rb_corner);
 		mGBCorner = BitmapFactory.decodeResource(res, R.drawable.gb_corner);
@@ -134,18 +133,19 @@ public class TileOverlayView extends View {
 			canvas.drawRect(rect, mPaint);
 		}
 		mPaint.setShader(null);
+		mPaint.setColor(0xffffffff);
+		mPaint.setTextAlign(Paint.Align.LEFT);
+		mPaint.setTypeface(mTypeFace);
+		mPaint.setTextSize((float) 30);
 		if (mParentResolution != null) {
 			int numPixels = mParentResolution.x * mParentResolution.y;
 			if (mRedMixValues != null
 					&& mGreenMixValues != null
 					&& mBlueMixValues != null
-					&& mColorMode != null) {
+					&& mColorMode != null)
+			{
 				for (int i = 0; i < numPixels; i++) {
 					if (mInteractionMode != null && mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
-						mPaint.setTextAlign(Paint.Align.LEFT);
-						mPaint.setTypeface(mTypeFace);
-						mPaint.setTextSize((float) 30);
-						mPaint.setColor(0xffffffff);
 						canvas.drawText(
 								String.valueOf(i + 1),
 								i % mParentResolution.x * mPixelSize.x + 10,

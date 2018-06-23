@@ -44,7 +44,6 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
-//		int[] allColors = argsBundle.getIntArray("colors");
 		double[] redVals = argsBundle.getDoubleArray("redVals");
 		double[] redMixVals = argsBundle.getDoubleArray("redMixVals");
 		double[] greenVals = argsBundle.getDoubleArray("greenVals");
@@ -77,16 +76,6 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
 		mMSViewBlueRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueRight.setContainerView(container);
-
-		/*assert allColors != null;
-		int[] reds = new int[allColors.length];
-		int[] greens = new int[allColors.length];
-		int[] blues = new int[allColors.length];
-		for (int i = 0; i < allColors.length; i++) {
-			reds[i] = (allColors[i] >> 16) & 0xFF;
-			greens[i] = (allColors[i] >> 8) & 0xFF;
-			blues[i] = allColors[i] & 0xFF;
-		}*/
 
 		mMSViewRedLeft.setValues(redVals);
 		mMSViewRedRight.setValues(redMixVals);
@@ -135,7 +124,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			mMSViewRedRight.addView(barRedRight);
 
 			SliderBar barGreenLeft = new SliderBar(getActivity());
-			// sensitive area for touch events should extent to
+			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
 			barGreenLeft.setColor(0x9900ff00);

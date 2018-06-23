@@ -262,23 +262,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
-	public interface OnTouchCameraSurface {
-		void onTouchCameraSurface();
-	}
-
-	/*OnTouchCameraSurface mListener;
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-
-		try {
-			this.mListener = (OnCompleteCameraFragmentListener) context;
-		} catch (final ClassCastException e) {
-			throw new ClassCastException(context.toString() + " must implement OnCompleteListener");
-		}
-	}*/
-
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
