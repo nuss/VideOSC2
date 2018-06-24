@@ -49,8 +49,7 @@ import ketai.net.KetaiNet;
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
 
-	public VideOSCSettingsFragment() {
-	}
+	public VideOSCSettingsFragment() {}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -64,7 +63,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
-		Log.d(TAG, "container: " + container);
+//		Log.d(TAG, "container: " + container);
 		final Resources res = getResources();
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
@@ -405,7 +404,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 						if (isAutoExposureLockSupported) {
-							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
+//							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
 							final Switch fixExposureCB =
 									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
 							fixExposureCB.setChecked(app.getExposureIsFixed());
@@ -1007,265 +1006,260 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	} */
 
 	private class Address {
-		private long rowId;
-		private String ip;
-		private int port;
-		private int receivePort;
-		private String protocol;
+		private long mRowId;
+		private String mIp;
+		private int mPort;
+		private int mReceivePort;
+		private String mProtocol;
 
-		Address() {
-		}
-
-		;
+		Address() {}
 
 		void setRowId(long id) {
-			this.rowId = id;
+			this.mRowId = id;
 		}
 
 		void setIP(String ip) {
-			this.ip = ip;
+			this.mIp = ip;
 		}
 
 		void setPort(int port) {
-			this.port = port;
+			this.mPort = port;
 		}
 
 		void setReceivePort(int port) {
-			this.receivePort = port;
+			this.mReceivePort = port;
 		}
 
 		void setProtocol(String protocol) {
-			this.protocol = protocol;
+			this.mProtocol = protocol;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		String getIP() {
-			return this.ip;
+			return this.mIp;
 		}
 
 		int getPort() {
-			return this.port;
+			return this.mPort;
 		}
 
 		int getReceivePort() {
-			return this.receivePort;
+			return this.mReceivePort;
 		}
 
 		String getProtocol() {
-			return this.protocol;
+			return this.mProtocol;
 		}
 	}
 
 	private class Settings {
-		private long rowId;
-		private short resolutionHorizontal;
-		private short resolutionVertical;
-		private short framerateRange;
-		private boolean normalized;
-		private boolean rememberPixelStates;
-		private short calculationPeriod;
-		private String rootCmd;
-		private int udpReceivePort;
-		private int tcpReceivePort;
+		private long mRowId;
+		private short mResolutionHorizontal;
+		private short mResolutionVertical;
+		private short mFramerateRange;
+		private boolean mNormalized;
+		private boolean mRememberPixelStates;
+		private short mCalculationPeriod;
+		private String mRootCmd;
+		private int mUdpReceivePort;
+		private int mTcpReceivePort;
 
-		Settings() {
-		}
+		Settings() {}
 
 		void setRowId(long id) {
-			this.rowId = id;
+			this.mRowId = id;
 		}
 
 		void setResolutionHorizontal(short resolutionH) {
-			this.resolutionHorizontal = resolutionH;
+			this.mResolutionHorizontal = resolutionH;
 		}
 
 		void setResolutionVertical(short resolutionV) {
-			this.resolutionVertical = resolutionV;
+			this.mResolutionVertical = resolutionV;
 		}
 
 		void setFramerateRange(short index) {
-			this.framerateRange = index;
+			this.mFramerateRange = index;
 		}
 
 		void setNormalized(short boolVal) {
-			this.normalized = boolVal > 0;
+			this.mNormalized = boolVal > 0;
 		}
 
 		void setRememberPixelStates(short boolVal) {
-			this.rememberPixelStates = boolVal > 0;
+			this.mRememberPixelStates = boolVal > 0;
 		}
 
 		void setCalculationPeriod(short calcPeriod) {
-			this.calculationPeriod = calcPeriod;
+			this.mCalculationPeriod = calcPeriod;
 		}
 
 		void setRootCmd(String cmdName) {
-			this.rootCmd = cmdName;
+			this.mRootCmd = cmdName;
 		}
 
 		void setUdpReceivePort(int port) {
-			this.udpReceivePort = port;
+			this.mUdpReceivePort = port;
 		}
 
 		void setTcpReceivePort(int port) {
-			this.tcpReceivePort = port;
+			this.mTcpReceivePort = port;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		short getResolutionHorizontal() {
-			return this.resolutionHorizontal;
+			return this.mResolutionHorizontal;
 		}
 
 		short getResolutionVertical() {
-			return this.resolutionVertical;
+			return this.mResolutionVertical;
 		}
 
 		short getFramerateRange() {
-			return this.framerateRange;
+			return this.mFramerateRange;
 		}
 
 		boolean getNormalized() {
-			return this.normalized;
+			return this.mNormalized;
 		}
 
 		boolean getRememberPixelStates() {
-			return this.rememberPixelStates;
+			return this.mRememberPixelStates;
 		}
 
 		short getCalculationPeriod() {
-			return this.calculationPeriod;
+			return this.mCalculationPeriod;
 		}
 
 		String getRootCmd() {
-			return this.rootCmd;
+			return this.mRootCmd;
 		}
 
 		int getUdpReceivePort() {
-			return this.udpReceivePort;
+			return this.mUdpReceivePort;
 		}
 
 		int getTcpReceivePort() {
-			return this.tcpReceivePort;
+			return this.mTcpReceivePort;
 		}
 	}
 
 	private class Sensors {
-		private long rowId;
-		private boolean orientationSensorActivated;
-		private boolean accelerationSensorActivated;
-		private boolean linAccelerationSensorActivated;
-		private boolean magneticSensorActivated;
-		private boolean gravitySensorActivated;
-		private boolean proximitySensorActivated;
-		private boolean lightSensorActivated;
-		private boolean pressureSensorActivated;
-		private boolean temperatureSensorActivated;
-		private boolean humiditySensorActivated;
-		private boolean locationSensorActivated;
+		private long mRowId;
+		private boolean mOrientationSensorActivated;
+		private boolean mAccelerationSensorActivated;
+		private boolean mLinAccelerationSensorActivated;
+		private boolean mMagneticSensorActivated;
+		private boolean mGravitySensorActivated;
+		private boolean mProximitySensorActivated;
+		private boolean mLightSensorActivated;
+		private boolean mPressureSensorActivated;
+		private boolean mTemperatureSensorActivated;
+		private boolean mHumiditySensorActivated;
+		private boolean mLocationSensorActivated;
 
-		Sensors() {
-		}
+		Sensors() {}
 
 		void setRowId(long rowId) {
-			this.rowId = rowId;
+			this.mRowId = rowId;
 		}
 
 		void setOrientationSensorActivated(short boolVal) {
-			this.orientationSensorActivated = boolVal > 0;
+			this.mOrientationSensorActivated = boolVal > 0;
 		}
 
 		void setAccelerationSensorActivated(short boolVal) {
-			this.accelerationSensorActivated = boolVal > 0;
+			this.mAccelerationSensorActivated = boolVal > 0;
 		}
 
 		void setLinAccelerationSensorActivated(short boolVal) {
-			this.linAccelerationSensorActivated = boolVal > 0;
+			this.mLinAccelerationSensorActivated = boolVal > 0;
 		}
 
 		void setMagneticSensorActivated(short boolVal) {
-			this.magneticSensorActivated = boolVal > 0;
+			this.mMagneticSensorActivated = boolVal > 0;
 		}
 
 		void setGravitySensorActivated(short boolVal) {
-			this.gravitySensorActivated = boolVal > 0;
+			this.mGravitySensorActivated = boolVal > 0;
 		}
 
 		void setProximitySensorActivated(short boolVal) {
-			this.proximitySensorActivated = boolVal > 0;
+			this.mProximitySensorActivated = boolVal > 0;
 		}
 
 		void setLightSensorActivated(short boolVal) {
-			this.lightSensorActivated = boolVal > 0;
+			this.mLightSensorActivated = boolVal > 0;
 		}
 
 		void setPressureSensorActivated(short boolVal) {
-			this.pressureSensorActivated = boolVal > 0;
+			this.mPressureSensorActivated = boolVal > 0;
 		}
 
 		void setTemperatureSensorActivated(short boolVal) {
-			this.temperatureSensorActivated = boolVal > 0;
+			this.mTemperatureSensorActivated = boolVal > 0;
 		}
 
 		void setHumiditySensorActivated(short boolVal) {
-			this.humiditySensorActivated = boolVal > 0;
+			this.mHumiditySensorActivated = boolVal > 0;
 		}
 
 		void setLocationSensorActivated(short boolVal) {
-			this.locationSensorActivated = boolVal > 0;
+			this.mLocationSensorActivated = boolVal > 0;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		boolean getOrientationSensorActivated() {
-			return this.orientationSensorActivated;
+			return this.mOrientationSensorActivated;
 		}
 
 		boolean getAccelerationSensorActivated() {
-			return this.accelerationSensorActivated;
+			return this.mAccelerationSensorActivated;
 		}
 
 		boolean getLinAccelerationSensorActivated() {
-			return this.linAccelerationSensorActivated;
+			return this.mLinAccelerationSensorActivated;
 		}
 
 		boolean getMagneticSensorActivated() {
-			return this.magneticSensorActivated;
+			return this.mMagneticSensorActivated;
 		}
 
 		boolean getGravitySensorActivated() {
-			return this.gravitySensorActivated;
+			return this.mGravitySensorActivated;
 		}
 
 		boolean getProximitySensorActivated() {
-			return this.proximitySensorActivated;
+			return this.mProximitySensorActivated;
 		}
 
 		boolean getLightSensorActivated() {
-			return this.lightSensorActivated;
+			return this.mLightSensorActivated;
 		}
 
 		boolean getPressureSensorActivated() {
-			return this.pressureSensorActivated;
+			return this.mPressureSensorActivated;
 		}
 
 		boolean getTemperatureSensorActivated() {
-			return this.temperatureSensorActivated;
+			return this.mTemperatureSensorActivated;
 		}
 
 		boolean getHumiditySensorActivated() {
-			return this.humiditySensorActivated;
+			return this.mHumiditySensorActivated;
 		}
 
 		boolean getLocationSensorActivated() {
-			return this.locationSensorActivated;
+			return this.mLocationSensorActivated;
 		}
 	}
 }

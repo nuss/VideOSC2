@@ -50,6 +50,7 @@ public class VideOSCApplication extends Application {
 	private Point mResolution;
 	private boolean mIsMultiSliderActive;
 	private boolean mIndicatorPanelOpen;
+	private Point mPixelSize;
 
 	@Override
 	public void onCreate() {
@@ -236,5 +237,13 @@ public class VideOSCApplication extends Application {
 
 	public boolean getIsIndicatorPanelOpen() {
 		return this.mIndicatorPanelOpen;
+	}
+
+	public void setPixeSize(Point size) {
+		this.mPixelSize = size;
+	}
+
+	public Point getPixelSize() {
+		return this.mPixelSize;
 	}
 }

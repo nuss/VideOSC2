@@ -1,5 +1,6 @@
 package net.videosc2.views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 
 import net.videosc2.R;
+import net.videosc2.VideOSCApplication;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
@@ -29,13 +31,10 @@ public class TileOverlayView extends View {
 	private BitmapShader mShaderSelected;
 	private Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
 	private ArrayList<Rect> mSelectPixels = new ArrayList<>();
-	private Point mParentResolution;
-	private Double[] mRedMixValues, mGreenMixValues, mBlueMixValues;
-	private RGBModes mColorMode;
+	private ArrayList<Double> mRedMixValues, mGreenMixValues, mBlueMixValues;
 	private Bitmap mRCorner, mGCorner, mBCorner, mRGCorner, mGBCorner, mRBCorner, mRGBCorner;
-	private Point mPixelSize;
 	private Point mCornerDimensions;
-	private InteractionModes mInteractionMode;
+	private VideOSCApplication mApp;
 
 	/**
 	 * Simple constructor to use when creating a view from code.
@@ -45,7 +44,7 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context) {
 		super(context);
-		init();
+		init(context);
 	}
 
 	/**
@@ -55,7 +54,7 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		init();
+		init(context);
 	}
 
 	/**
@@ -68,11 +67,11 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init();
+		init(context);
 	}
 
-	private void init() {
-		Resources res = getContext().getResources();
+	private void init(Context context) {
+		Resources res = context.getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
 		Bitmap patSrc = BitmapFactory.decodeResource(res, R.drawable.hover_rect_tile, options);
@@ -85,6 +84,7 @@ public class TileOverlayView extends View {
 		mGBCorner = BitmapFactory.decodeResource(res, R.drawable.gb_corner);
 		mRGBCorner = BitmapFactory.decodeResource(res, R.drawable.rgb_corner);
 		mCornerDimensions = new Point(mRGBCorner.getWidth(), mRGBCorner.getHeight());
+		mApp = (VideOSCApplication) ((Activity) context).getApplication();
 	}
 
 	@Override
@@ -126,6 +126,11 @@ public class TileOverlayView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		Bitmap bitmap;
+		Point resolution = mApp.getResolution();
+		Point pixelSize = mApp.getPixelSize();
+		InteractionModes interactionMode = mApp.getInteractionMode();
+		RGBModes colorMode = mApp.getColorMode();
+		Log.d(TAG, "color mode: " + colorMode);
 		mPaint.setColor(0xff000000);
 		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setShader(mShaderSelected);
@@ -137,141 +142,135 @@ public class TileOverlayView extends View {
 		mPaint.setTextAlign(Paint.Align.LEFT);
 		mPaint.setTypeface(mTypeFace);
 		mPaint.setTextSize((float) 30);
-		if (mParentResolution != null) {
-			int numPixels = mParentResolution.x * mParentResolution.y;
-			if (mRedMixValues != null
-					&& mGreenMixValues != null
-					&& mBlueMixValues != null
-					&& mColorMode != null)
-			{
-				for (int i = 0; i < numPixels; i++) {
-					if (mInteractionMode != null && mInteractionMode.equals(InteractionModes.SINGLE_PIXEL)) {
-						canvas.drawText(
-								String.valueOf(i + 1),
-								i % mParentResolution.x * mPixelSize.x + 10,
-								i / mParentResolution.x * mPixelSize.y + mPixelSize.y - 10,
-								mPaint
-						);
-					}
-					switch (mColorMode) {
-						case R:
-							if (mRedMixValues[i] != null && mRedMixValues[i] > 0.0) {
-								// draw bitmap - RGB corner (white)
-								bitmap = mRGBCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							}
-							break;
-						case G:
-							if (mGreenMixValues[i] != null && mGreenMixValues[i] > 0.0) {
-								// draw bitmap - RGB corner (white)
-								bitmap = mRGBCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							}
-							break;
-						case B:
-							if (mBlueMixValues[i] != null && mBlueMixValues[i] > 0.0) {
-								// draw bitmap - RGB corner (white)
-								bitmap = mRGBCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							}
-							break;
-						default: // RGB
-							if (mRedMixValues[i] != null && mGreenMixValues[i] == null && mBlueMixValues[i] == null && mRedMixValues[i] > 0.0) {
+		int numPixels = resolution.x * resolution.y;
+		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
+			for (int i = 0; i < numPixels; i++) {
+				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
+					canvas.drawText(
+							String.valueOf(i + 1),
+							i % resolution.x * pixelSize.x + 10,
+							i / resolution.x * pixelSize.y + pixelSize.y - 10,
+							mPaint
+					);
+				}
+				switch (colorMode) {
+					case R:
+						if (mRedMixValues.get(i) != null && mRedMixValues.get(i) > 0.0) {
+							// draw bitmap - RGB corner (white)
+							bitmap = mRGBCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						}
+						break;
+					case G:
+						if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) > 0.0) {
+							// draw bitmap - RGB corner (white)
+							bitmap = mRGBCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						}
+						break;
+					case B:
+						if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
+							// draw bitmap - RGB corner (white)
+							bitmap = mRGBCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						}
+						break;
+					default: // RGB
+						if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) == null && mRedMixValues.get(i) > 0.0) {
+							// draw red corner bitmap
+							bitmap = mRCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null && mGreenMixValues.get(i) > 0.0) {
+							// draw green corner bitmap
+							bitmap = mGBCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
+							// draw blue corner bitmap
+							bitmap = mBCorner;
+							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null) {
+							if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0) {
+								// draw yellow corner bitmap (rg)
+								bitmap = mRGCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0) {
+								// draw green corner bitmap
+								bitmap = mGCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0) {
 								// draw red corner bitmap
 								bitmap = mRCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							} else if (mRedMixValues[i] == null && mGreenMixValues[i] != null && mBlueMixValues[i] == null && mGreenMixValues[i] > 0.0) {
-								// draw green corner bitmap
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} // else both values are 0.0 - do nothing
+						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
+							if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw light blue corner bitmap
 								bitmap = mGBCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							} else if (mRedMixValues[i] == null && mGreenMixValues[i] == null && mBlueMixValues[i] != null && mBlueMixValues[i] > 0.0) {
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
 								// draw blue corner bitmap
 								bitmap = mBCorner;
-								drawCornerBitmap(canvas, i, bitmap);
-							} else if (mRedMixValues[i] != null && mGreenMixValues[i] != null && mBlueMixValues[i] == null) {
-								if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] > 0.0) {
-									// draw yellow corner bitmap (rg)
-									bitmap = mRGCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] == 0.0 && mGreenMixValues[i] > 0.0) {
-									// draw green corner bitmap
-									bitmap = mGCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] > 0.0) {
-									// draw red corner bitmap
-									bitmap = mRCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} // else both values are 0.0 - do nothing
-							} else if (mRedMixValues[i] == null && mGreenMixValues[i] != null && mBlueMixValues[i] != null) {
-								if (mGreenMixValues[i] > 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw light blue corner bitmap
-									bitmap = mGBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mGreenMixValues[i] == 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw blue corner bitmap
-									bitmap = mBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mGreenMixValues[i] > 0.0 && mBlueMixValues[i] == 0.0) {
-									// draw green corner bitmap
-									bitmap = mGCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} // do nothing
-							} else if (mRedMixValues[i] != null && mGreenMixValues[i] == null && mBlueMixValues[i] != null) {
-								if (mRedMixValues[i] > 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw magenta corner bitmap
-									bitmap = mRBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] == 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw blue corner bitmap
-									bitmap = mBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] > 0.0 && mBlueMixValues[i] == 0.0) {
-									// draw red corner bitmap
-									bitmap = mRCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} // do nothing
-							} else if (mRedMixValues[i] != null && mGreenMixValues[i] != null && mBlueMixValues[i] != null) {
-								if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] > 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw white corner bitmap (RGB)
-									bitmap = mRGBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] > 0.0 && mBlueMixValues[i] == 0.0) {
-									// draw yellow corner bitmap (rg)
-									bitmap = mRGCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] == 0.0 && mGreenMixValues[i] > 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw light blue corner bitmap (gb)
-									bitmap = mGBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] == 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw magenta corner bitmap
-									bitmap = mRBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] > 0.0 && mGreenMixValues[i] == 0.0 && mBlueMixValues[i] == 0.0) {
-									// draw red corner bitmap
-									bitmap = mRCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] == 0.0 && mGreenMixValues[i] > 0.0 && mBlueMixValues[i] == 0.0) {
-									// draw green corner bitmap
-									bitmap = mGCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} else if (mRedMixValues[i] == 0.0 && mGreenMixValues[i] == 0.0 && mBlueMixValues[i] > 0.0) {
-									// draw blue corner bitmap
-									bitmap = mBCorner;
-									drawCornerBitmap(canvas, i, bitmap);
-								} // else do nothing
-							} // else all values == null - do nothing
-					}
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+								// draw green corner bitmap
+								bitmap = mGCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} // do nothing
+						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null) {
+							if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw magenta corner bitmap
+								bitmap = mRBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw blue corner bitmap
+								bitmap = mBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+								// draw red corner bitmap
+								bitmap = mRCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} // do nothing
+						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
+							if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw white corner bitmap (RGB)
+								bitmap = mRGBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+								// draw yellow corner bitmap (rg)
+								bitmap = mRGCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw light blue corner bitmap (gb)
+								bitmap = mGBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw magenta corner bitmap
+								bitmap = mRBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) == 0.0) {
+								// draw red corner bitmap
+								bitmap = mRCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+								// draw green corner bitmap
+								bitmap = mGCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+								// draw blue corner bitmap
+								bitmap = mBCorner;
+								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+							} // else do nothing
+						} // else all values == null - do nothing
 				}
 			}
 		}
 	}
 
-	private void drawCornerBitmap(Canvas canvas, int pixIndex, Bitmap bitmap) {
+	private void drawCornerBitmap(Canvas canvas, int pixIndex, Bitmap bitmap, Point resolution, Point pixelSize) {
 		canvas.drawBitmap(
 				bitmap,
-				(float) (pixIndex % mParentResolution.x * mPixelSize.x + mPixelSize.x - mCornerDimensions.x),
-				(float) (pixIndex / mParentResolution.x * mPixelSize.y + mPixelSize.y - mCornerDimensions.y),
+				(float) (pixIndex % resolution.x * pixelSize.x + pixelSize.x - mCornerDimensions.x),
+				(float) (pixIndex / resolution.x * pixelSize.y + pixelSize.y - mCornerDimensions.y),
 				mPaint
 		);
 	}
@@ -280,31 +279,15 @@ public class TileOverlayView extends View {
 		this.mSelectPixels = rects;
 	}
 
-	public void setParentResolution(Point resolution) {
-		this.mParentResolution = resolution;
-	}
-
-	public void setRedMixValues(Double[] values) {
+	public void setRedMixValues(ArrayList<Double> values) {
 		this.mRedMixValues = values;
 	}
 
-	public void setGreenMixValues(Double[] values) {
+	public void setGreenMixValues(ArrayList<Double> values) {
 		this.mGreenMixValues = values;
 	}
 
-	public void setBlueMixValues(Double[] values) {
+	public void setBlueMixValues(ArrayList<Double> values) {
 		this.mBlueMixValues = values;
-	}
-
-	public void setColorMode(RGBModes mode) {
-		this.mColorMode = mode;
-	}
-
-	public void setPixelSize(Point size) {
-		this.mPixelSize = size;
-	}
-
-	public void setInterActionMode(InteractionModes mode) {
-		this.mInteractionMode = mode;
 	}
 }
