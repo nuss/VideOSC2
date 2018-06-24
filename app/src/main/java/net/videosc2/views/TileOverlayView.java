@@ -130,7 +130,6 @@ public class TileOverlayView extends View {
 		Point pixelSize = mApp.getPixelSize();
 		InteractionModes interactionMode = mApp.getInteractionMode();
 		RGBModes colorMode = mApp.getColorMode();
-		Log.d(TAG, "color mode: " + colorMode);
 		mPaint.setColor(0xff000000);
 		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setShader(mShaderSelected);
