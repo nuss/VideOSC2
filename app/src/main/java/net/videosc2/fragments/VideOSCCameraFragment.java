@@ -1081,14 +1081,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// compose basic OSC message for slot
 				if (mApp.getCameraOSCisPlaying()) {
 //					if (calcsPerPeriod == 1) {
-					if (mApp.getNormalized()) {
-						rValue = (float) rPixVal / 255;
-						gValue = (float) gPixVal / 255;
-						bValue = (float) bPixVal / 255;
-					} else {
-						rValue = rPixVal;
-						gValue = gPixVal;
-						bValue = bPixVal;
+					if (!mApp.getNormalized()) {
+						rValue *= 255.0;
+						gValue *= 255.0;
+						bValue *= 255.0;
 					}
 
 					// all OSC messaging (message construction sending) must happen synchronized
