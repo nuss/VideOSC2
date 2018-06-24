@@ -52,6 +52,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -120,7 +121,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			float frameRate = Math.round(1000.0f / (now - mPrev) * 10.0f) / 10.0f;
 			mPrev = now;
 			TextView frameRateText = (TextView) mContainer.findViewById(R.id.fps);
-			if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
+			if (frameRateText != null) frameRateText.setText(String.format(Locale.getDefault(), "%.1f", frameRate));
 		}
 
 	};
@@ -239,8 +240,10 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 				throw new RuntimeException("Time out waiting to lock camera opening.");
 			}
 			Log.d(TAG, "opening camera, camera id: " + mCameraId + ", callback: " + mStateCallback + ", handler: " + mBackgroundHandler);
-			manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
-			Log.d(TAG, "camera opened");
+			if (manager != null) {
+				manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+				Log.d(TAG, "camera opened");
+			}
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -406,35 +409,37 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		ArrayList<Integer> productList = new ArrayList<>();
 
 		try {
-			for (String cameraId : manager.getCameraIdList()) {
-				CameraCharacteristics characteristics
-						= manager.getCameraCharacteristics(cameraId);
+			if (manager != null) {
+				for (String cameraId : manager.getCameraIdList()) {
+					CameraCharacteristics characteristics
+							= manager.getCameraCharacteristics(cameraId);
 
-				// We don't use a front facing camera in this sample.
-				Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-				if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
+					// We don't use a front facing camera in this sample.
+					Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+					if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
 
-					StreamConfigurationMap map = characteristics.get(
-							CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-					if (map == null) {
-						continue;
+						StreamConfigurationMap map = characteristics.get(
+								CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+						if (map == null) {
+							continue;
+						}
+
+						int[] outputFormats = map.getOutputFormats();
+						for(int format : outputFormats) {
+							Log.d(TAG, "format: " + format);
+						}
+						Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
+
+						for (Size tmpSize : previewSizes) {
+							productList.add(tmpSize.getWidth() * tmpSize.getHeight());
+						}
+
+						int minIndex = productList.indexOf(Collections.min(productList));
+						mPreviewSize = previewSizes[minIndex];
+						mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+						mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+						mCameraId = cameraId;
 					}
-
-					int[] outputFormats = map.getOutputFormats();
-					for(int format : outputFormats) {
-						Log.d(TAG, "format: " + format);
-					}
-					Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
-
-					for (Size tmpSize : previewSizes) {
-						productList.add(tmpSize.getWidth() * tmpSize.getHeight());
-					}
-
-					int minIndex = productList.indexOf(Collections.min(productList));
-					mPreviewSize = previewSizes[minIndex];
-					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
-					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
-					mCameraId = cameraId;
 				}
 			}
 		} catch (CameraAccessException e) {
@@ -472,7 +477,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		 * The JPEG image
 		 */
 		private final Image mImage;
-
 
 		ImageSaver(Image image) {
 			mImage = image;
