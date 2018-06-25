@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import net.videosc2.R;
@@ -105,13 +106,13 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	// TODO: get values of sliders (0.0-1.0) and make them available in CameraView
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		ViewGroup okCancel = (ViewGroup) mContainer.findViewById(R.id.ok_cancel_buttons);
+		ViewGroup okButton = (ViewGroup) mContainer.findViewById(R.id.ok_button_layout);
 
 		if (event.getAction() == MotionEvent.ACTION_UP)
-			okCancel.setVisibility(View.VISIBLE);
+			okButton.setVisibility(View.VISIBLE);
 
 		if (event.getAction() == MotionEvent.ACTION_DOWN)
-			okCancel.setVisibility(View.INVISIBLE);
+			okButton.setVisibility(View.INVISIBLE);
 
 		double sliderValue;
 		performClick();
@@ -128,7 +129,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 				// pixel index
 				int index = Integer.parseInt(bar.getNum(), 10) - 1;
-				mSlidersTouched[index] = true;
 				// the value of the slider
 				if (tempTouchY <= 0)
 					sliderValue = 1.0;
@@ -177,16 +177,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public void setContainerView(ViewGroup container) {
 		this.mContainer = container;
-	}
-
-	public void setSlidersTouchedArray(int numPixels) {
-		this.mSlidersTouched = new boolean[numPixels];
-		for (int i = 0; i < numPixels; i++)
-			this.mSlidersTouched[i] = false;
-	}
-
-	public boolean getSliderAtTouched(int index) {
-		return this.mSlidersTouched[index];
 	}
 }
 

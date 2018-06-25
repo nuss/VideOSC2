@@ -1,8 +1,6 @@
 package net.videosc2.fragments;
 
-import android.content.res.Resources;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,27 +52,21 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
-		mMSViewRedLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRedLeft.setContainerView(container);
 		mMSViewRedRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_right);
 		mMSViewRedRight.setValuesArray(numTotalPixels);
-		mMSViewRedRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRedRight.setContainerView(container);
 		mMSViewGreenLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_left);
 		mMSViewGreenLeft.setValuesArray(numTotalPixels);
-		mMSViewGreenLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewGreenLeft.setContainerView(container);
 		mMSViewGreenRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_right);
 		mMSViewGreenRight.setValuesArray(numTotalPixels);
-		mMSViewGreenRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewGreenRight.setContainerView(container);
 		mMSViewBlueLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_left);
 		mMSViewBlueLeft.setValuesArray(numTotalPixels);
-		mMSViewBlueLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueLeft.setContainerView(container);
 		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
-		mMSViewBlueRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewBlueRight.setContainerView(container);
 
 		mMSViewRedLeft.setValues(redVals);
@@ -103,7 +95,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
 
-		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
+		mOkButton = (ViewGroup) inflater.inflate(R.layout.ok_button, container, false);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
@@ -157,10 +149,8 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		}
 
 		setSliderProps(sliderNums);
-		VideOSCUIHelpers.addView(mOkCancel, container);
-		Resources res = getResources();
-		Drawable shape = res.getDrawable(R.drawable.black_rounded_rect);
-		mOkCancel.setBackground(shape);
+
+		VideOSCUIHelpers.addView(mOkButton, container);
 
 		mContainer = container;
 		mFragment = this;

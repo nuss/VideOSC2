@@ -1,8 +1,6 @@
 package net.videosc2.fragments;
 
-import android.content.res.Resources;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +40,6 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 
 		Bundle argsBundle = this.getArguments();
 		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
-//		int[] allColors = argsBundle.getIntArray("colors");
 		switch (app.getColorMode()) {
 			case R:
 				vals = argsBundle.getDoubleArray("redVals");
@@ -61,28 +58,12 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
 		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
-		mMSViewLeft.setSlidersTouchedArray(numTotalPixels);
 		mMSViewLeft.setContainerView(container);
-		mOkCancel = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
-		/*assert allColors != null;
-		int[] colors = new int[allColors.length];
-		for (int i = 0; i < allColors.length; i++) {
-			switch (app.getColorMode()) {
-				case R:
-					colors[i] = (allColors[i] >> 16) & 0xFF;
-					break;
-				case G:
-					colors[i] = (allColors[i] >> 8) & 0xFF;
-					break;
-				case B:
-					colors[i] = allColors[i] & 0xFF;
-					break;
-			}
-		}*/
+		mOkButton = (ViewGroup) inflater.inflate(R.layout.ok_button, container, false);
+
 		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
-		mMSViewRight.setSlidersTouchedArray(numTotalPixels);
 		mMSViewRight.setContainerView(container);
 
 		// colors are determining slider positions on the left
@@ -133,10 +114,8 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		}
 
 		setSliderProps(sliderNums);
-		VideOSCUIHelpers.addView(mOkCancel, container);
-		Resources res = getResources();
-		Drawable shape = res.getDrawable(R.drawable.black_rounded_rect);
-		mOkCancel.setBackground(shape);
+
+		VideOSCUIHelpers.addView(mOkButton, container);
 
 		mContainer = container;
 		mFragment = this;

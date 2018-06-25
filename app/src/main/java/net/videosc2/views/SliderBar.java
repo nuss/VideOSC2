@@ -108,11 +108,6 @@ public class SliderBar extends View {
 
 	public void setPixelValue(double value) {
 		Log.d(TAG, "raw value: " + value);
-//		mPixelVal = (double) (255 - value) / 255;
 		this.mPixelVal = 1.0 - value;
-	}
-
-	public double getPixelValue() {
-		return this.mPixelVal;
 	}
 }

@@ -891,7 +891,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		private void pad(int diff) {
-//			Log.d(TAG, "padding value arrays, diff: " + diff);
 			if (diff > 0) {
 				for (int i = 0; i < diff; i++) {
 					mRedValues.add(null);
@@ -913,6 +912,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private Bitmap drawFrame(Bitmap bmp, int width, int height) {
 			double rValue, gValue, bValue;
+			double mixCubed, mixReciprCubed, mult;
 			Double redSliderVal, greenSliderVal, blueSliderVal;
 			Point resolution = mApp.getResolution();
 			int dimensions = resolution.x * resolution.y;
@@ -942,9 +942,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						: (pixels[i] >> 8) & 0xFF;
 				int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
 						: pixels[i] & 0xFF;
-
-//				if (i == 0)
-//					Log.d(TAG, "0, before, red value: " + mRedValues[i] + ", green value: " + mGreenValues.get(i) + ", blue value: " + mBlueValues.get(i));
 
 				if (mApp.getColorMode().equals(RGBModes.RGB)
 						&& msRedLeft != null
@@ -1019,48 +1016,40 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
 					if (mRedValues.get(i) != null) {
 						if (mRedMixValues.get(i) != null && mRedMixValues.get(i) < 1.0) {
-							double mixCubed = Math.pow(mRedMixValues.get(i), 3);
-							double mixReciprCubed = Math.pow(1.0 - mRedMixValues.get(i), 3);
-							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							mixCubed = Math.pow(mRedMixValues.get(i), 3);
+							mixReciprCubed = Math.pow(1.0 - mRedMixValues.get(i), 3);
+							mult = 1.0 / (mixCubed + mixReciprCubed);
 							rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues.get(i) * mixCubed) * mult;
 						} else rValue = mRedValues.get(i);
 					}
-					;
 				}
 
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
 					if (mGreenValues.get(i) != null) {
 						if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) < 1.0) {
-							double mixCubed = Math.pow(mGreenMixValues.get(i), 3);
-							double mixReciprCubed = Math.pow(1.0 - mGreenMixValues.get(i), 3);
-							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							mixCubed = Math.pow(mGreenMixValues.get(i), 3);
+							mixReciprCubed = Math.pow(1.0 - mGreenMixValues.get(i), 3);
+							mult = 1.0 / (mixCubed + mixReciprCubed);
 							gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues.get(i) * mixCubed) * mult;
 						} else gValue = mGreenValues.get(i);
 					}
-					;
 				}
 
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
 					if (mBlueValues.get(i) != null) {
 						if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) < 1.0) {
-							double mixCubed = Math.pow(mBlueMixValues.get(i), 3);
-							double mixReciprCubed = Math.pow(1.0 - mBlueMixValues.get(i), 3);
-							double mult = 1.0 / (mixCubed + mixReciprCubed);
+							mixCubed = Math.pow(mBlueMixValues.get(i), 3);
+							mixReciprCubed = Math.pow(1.0 - mBlueMixValues.get(i), 3);
+							mult = 1.0 / (mixCubed + mixReciprCubed);
 							bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues.get(i) * mixCubed) * mult;
 						} else bValue = mBlueValues.get(i);
 					}
-					;
 				}
-
-//				if (i == 0)
-//					Log.d(TAG, "0, after, red value: " + mRedValues.get(i) + ", green value: " + mGreenValues.get(i) + ", blue value: " + mBlueValues[i]);
 
 				// pixels can only be set to ints in a range from 0-255
 				if (mRedValues.get(i) != null) rPixVal = (int) Math.round(rValue * 255);
 				if (mGreenValues.get(i) != null) gPixVal = (int) Math.round(gValue * 255);
 				if (mBlueValues.get(i) != null) bPixVal = (int) Math.round(bValue * 255);
-				/*if (i == 0)
-					Log.d(TAG, "0, rPixVal: " + rPixVal + ", gPixVal: " + gPixVal + ". bPixVal: " + bPixVal);*/
 
 				// set pixels
 				if (!mApp.getPixelImageHidden()) {
@@ -1080,7 +1069,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				// compose basic OSC message for slot
 				if (mApp.getCameraOSCisPlaying()) {
-//					if (calcsPerPeriod == 1) {
 					if (!mApp.getNormalized()) {
 						rValue *= 255.0;
 						gValue *= 255.0;
@@ -1089,7 +1077,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
-
 					synchronized (mRedOscRunnable.mOscLock) {
 						oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
 						oscR.add(rValue);
