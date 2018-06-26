@@ -36,7 +36,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -49,6 +51,7 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
@@ -92,20 +95,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	public CameraPreview mPreview;
 	// preview container
 	private ViewGroup mPreviewContainer;
+	// the toolsDrawer on the right
+	private DrawerLayout mToolsDrawer;
 
 	// Reference to the ImageView containing the downscaled video frame
 	private ImageView mImage;
 
-	/**
-	 * Default empty constructor.
-	 */
-	public VideOSCCameraFragment() {
-		super();
-	}
-
 	private float mCamZoom = 1f;
-
-	private Point mResolution;
 
 	private int[] mFrameRateRange;
 
@@ -130,6 +126,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private Bitmap mBmp;
 
 	/**
+	 * Default empty constructor.
+	 */
+	public VideOSCCameraFragment() {
+		super();
+	}
+
+	/**
 	 * OnCreateView fragment override
 	 *
 	 * @param inflater           the layout inflater inflating the layout for the view
@@ -140,7 +143,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		mApp = (VideOSCApplication) getActivity().getApplication();
+		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		mApp = (VideOSCApplication) activity.getApplication();
+		mToolsDrawer = activity.mToolsDrawerLayout;
 		mInflater = inflater;
 		mOscP5 = mApp.mOscHelper.getOscP5();
 //		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
@@ -708,6 +713,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							if (fpsRateCalcPanel != null)
 								fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 							mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mPreviewContainer));
+							mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 						}
 					}
 

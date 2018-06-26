@@ -98,7 +98,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	private View mCamView;
 	private Point mDimensions;
-	private DrawerLayout mToolsDrawerLayout;
+	public DrawerLayout mToolsDrawerLayout;
 
 	// is the multisliderview currently visible?
 	private boolean isMultiSliderVisible = false;

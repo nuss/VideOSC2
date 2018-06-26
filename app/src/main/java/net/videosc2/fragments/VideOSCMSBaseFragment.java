@@ -1,12 +1,14 @@
 package net.videosc2.fragments;
 
 import android.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.activities.VideOSCMainActivity;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
@@ -21,7 +23,9 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
+		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final DrawerLayout toolsDrawer = activity.mToolsDrawerLayout;
 		ImageButton ok = (ImageButton) mOkButton.findViewById(R.id.ok_button);
 		final ViewGroup fpsCalcPanel = (ViewGroup) mParentContainer.findViewById(R.id.fps_calc_period_indicator);
 		final ViewGroup indicatorPanel = (ViewGroup) mParentContainer.findViewById(R.id.indicator_panel);
@@ -37,6 +41,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				indicatorPanel.setVisibility(View.VISIBLE);
 				if (app.getIsFPSCalcPanelOpen())
 					fpsCalcPanel.setVisibility(View.VISIBLE);
+				toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 			}
 		});
 	}
