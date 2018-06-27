@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.87488889"
      inkscape:cx="708.66142"
-     inkscape:cy="372.04724"
+     inkscape:cy="326.32715"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -101,7 +101,8 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="bg color"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
        y="67.5662"
        x="490.17792"
@@ -116,6 +117,13 @@
        height="440.91281"
        x="926.17792"
        y="67.5662" />
+    <rect
+       style="fill:#0000ff;fill-opacity:1;stroke:#ffffff;stroke-width:8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4271"
+       width="397.60114"
+       height="440.91281"
+       x="56.177917"
+       y="67.5662" />
   </g>
   <g
      inkscape:label="hg"
@@ -124,164 +132,190 @@
      transform="translate(0,-308.26772)"
      style="display:inline">
     <rect
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4155"
-       width="100"
-       height="100"
-       x="100"
-       y="452.36221"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <path
-       style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 200,280.56055 100,-97.05664 0,-39.41016 -100,0 0,100 m 0,63.01758 0,36.98242 -100,0 0,100 100,0 100,0 0,-100 100,0 0,-100 -100,0 0,-34.59961 -29.33984,66.59961 49.33984,16 -140,132 50.41797,-106.12305"
-       transform="translate(-6.1035156e-5,308.26772)"
-       id="rect4157"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccccccccccccccc"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 300,452.36221 100,0 0,100 -100,0"
-       id="rect4159"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <rect
-       y="652.36218"
-       x="300"
-       height="100"
-       width="100"
-       id="rect4165"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <path
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 100,552.36218 0,100 100,0"
-       id="rect4167"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccc"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <rect
        y="452.36221"
        x="546"
        height="100"
        width="100"
        id="rect4199"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4201"
        width="100"
        height="100"
        x="646"
        y="452.36221"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
        y="452.36221"
        x="746"
        height="100"
        width="100"
        id="rect4203"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4205"
        width="100"
        height="100"
        x="546"
        y="652.36218"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
        y="652.36218"
        x="646"
        height="100"
        width="100"
        id="rect4207"
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4209"
        width="100"
        height="100"
        x="746"
        y="652.36218"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
        y="552.36218"
        x="546"
        height="100"
        width="100"
        id="rect4211"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4213"
        width="100"
        height="100"
        x="646"
        y="552.36218"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <rect
        y="552.36218"
        x="746"
        height="100"
        width="100"
        id="rect4215"
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:7;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:export-xdpi="72.129997"
-       inkscape:export-ydpi="72.129997" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="13.85"
+       inkscape:export-ydpi="13.85"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/pixel_edit.png" />
     <circle
        style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:16;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4239"
        cx="1115.7114"
        cy="600.65076"
        r="146.00003"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 199.9285,551.02873 0,35.61752"
-       id="path4269"
-       inkscape:connector-curvature="0"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
+       inkscape:export-xdpi="17.530001"
+       inkscape:export-ydpi="17.530001"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/delete.png" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="vg"
      style="display:inline">
+    <rect
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4155"
+       width="100"
+       height="100"
+       x="100"
+       y="131.52147"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
     <path
-       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 180,299.97128 50.41808,18 L 180,424.09448 l 140,-132 -49.34038,-16 49.34038,-112 z"
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 199.99994,261.98752 100,-97.05664 0,-33.41016 -100,0 0,100 m 0,63.01758 0,36.98242 -100.000001,0 0,100 100.000001,0 100,0 0,-100 100,0 0,-100 -100,0 0,-26.59961 -25.33984,54.59961 51.33984,20 -146,132 46.41797,-106.12305"
+       id="rect4157"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccccccccccccc"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 300,131.52147 100,0 0,100 -100,0"
+       id="rect4159"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
+    <rect
+       y="331.52145"
+       x="300"
+       height="100"
+       width="100"
+       id="rect4165"
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
+    <path
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 100,231.52144 0,100 100,0"
+       id="rect4167"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 197.9285,234.18799 0,35.61752"
+       id="path4269"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
+    <path
+       style="display:inline;fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:5.36533308;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 303.16692,217.57835 0.11741,-29.66367"
+       id="path4273"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png"
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 180,287.39825 50.41808,18 L 180,411.52145 l 140,-132 -49.34038,-16 49.34038,-112 z"
        id="path4192"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
+       inkscape:export-xdpi="4.6199999"
+       inkscape:export-ydpi="4.6199999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/pixel_quick_edit.png" />
     <path
        style="fill:#ffffff;fill-rule:evenodd;stroke:#ffffff;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 1014.0295,402.32936 1215.9678,185.8596"
        id="path4241"
        inkscape:connector-curvature="0"
-       inkscape:export-xdpi="72"
-       inkscape:export-ydpi="72" />
+       inkscape:export-xdpi="17.530001"
+       inkscape:export-ydpi="17.530001"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/delete.png" />
   </g>
 </svg>

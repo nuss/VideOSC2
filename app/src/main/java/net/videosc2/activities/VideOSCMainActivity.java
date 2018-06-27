@@ -35,6 +35,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.drm.DrmStore;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -53,6 +54,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -149,7 +151,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
 	private View mDecorView;
-	private Resources mRes;
+	private ViewGroup mPixelEditor;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -158,7 +160,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mRes = getResources();
 		// immersive fullscreen
 		mDecorView = getWindow().getDecorView();
 
@@ -262,6 +263,56 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
+		mPixelEditor = (ViewGroup) inflater.inflate(R.layout.pixel_editor_toolbox, (FrameLayout) mCamView, false);
+		// TODO: editor should be movable - as of now touch events don't seem to get through
+		mPixelEditor.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				v.performClick();
+				if (event.getAction() == (MotionEvent.ACTION_MOVE)) {
+					Log.d(TAG, "moving, moving");
+				}
+				return false;
+			}
+		});
+
+		final ImageButton quickEditPixels = (ImageButton) mPixelEditor.findViewById(R.id.quick_edit_pixels);
+		final ImageButton editPixels = (ImageButton) mPixelEditor.findViewById(R.id.edit_pixels);
+		final ImageButton deleteEditsInPixels = (ImageButton) mPixelEditor.findViewById(R.id.delete_edits);
+		final ImageButton applyPixelSelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
+
+		quickEditPixels.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				v.setActivated(true);
+				editPixels.setActivated(false);
+				deleteEditsInPixels.setActivated(false);
+				applyPixelSelection.setActivated(false);
+				applyPixelSelection.setEnabled(false);
+			}
+		});
+
+		editPixels.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				v.setActivated(true);
+				quickEditPixels.setActivated(false);
+				deleteEditsInPixels.setActivated(false);
+				applyPixelSelection.setActivated(true);
+				applyPixelSelection.setEnabled(true);
+			}
+		});
+
+		deleteEditsInPixels.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				v.setActivated(true);
+				quickEditPixels.setActivated(false);
+				editPixels.setActivated(false);
+				applyPixelSelection.setActivated(false);
+				applyPixelSelection.setEnabled(false);
+			}
+		});
 
 		// get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
@@ -347,89 +398,82 @@ public class VideOSCMainActivity extends AppCompatActivity
 							blue.setImageResource(blueRes);
 						}
 
-						final View modePanelInner = mModePanel.findViewById(R.id.color_mode_panel);
+						VideOSCUIHelpers.setMargins(mModePanel, 0, y, 60, 0);
 
-						VideOSCUIHelpers.setMargins(modePanelInner, 0, y, 60, 0);
-
-						for (int k = 0; k < ((ViewGroup) modePanelInner).getChildCount(); k++) {
-							View button = ((ViewGroup) modePanelInner).getChildAt(k);
-							button.setFocusableInTouchMode(true);
-							button.setOnTouchListener(new View.OnTouchListener() {
+						for (int k = 0; k < mModePanel.getChildCount(); k++) {
+							View button = mModePanel.getChildAt(k);
+							button.setOnClickListener(new View.OnClickListener() {
 								@Override
-								public boolean onTouch(View view, MotionEvent motionEvent) {
-									view.performClick();
-									if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-										switch (view.getId()) {
-											case R.id.mode_rgb:
-												mApp.setColorMode(RGBModes.RGB);
-												if (!mApp.getIsRGBPositive()) {
-													mApp.setIsRGBPositive(true);
-													rgbHasChanged = true;
-												}
-												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
-												rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
-												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
-												break;
-											case R.id.mode_rgb_inv:
-												mApp.setColorMode(RGBModes.RGB);
-												if (mApp.getIsRGBPositive()) {
-													mApp.setIsRGBPositive(false);
-													rgbHasChanged = true;
-												}
-												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
-												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb_inv));
-												rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
-												mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
-												break;
-											case R.id.mode_r:
-												mApp.setColorMode(RGBModes.R);
-												if (mApp.getIsRGBPositive()) {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r));
-													mColorModeToolsDrawer = RGBToolbarStatus.R;
-												} else {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.r_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r_inv));
-													mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
-												}
-												break;
-											case R.id.mode_g:
+								public void onClick(View v) {
+									switch (v.getId()) {
+										case R.id.mode_rgb:
+											mApp.setColorMode(RGBModes.RGB);
+											if (!mApp.getIsRGBPositive()) {
+												mApp.setIsRGBPositive(true);
+												rgbHasChanged = true;
+											}
+											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
+											imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
+											rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
+											mColorModeToolsDrawer = RGBToolbarStatus.RGB;
+											break;
+										case R.id.mode_rgb_inv:
+											mApp.setColorMode(RGBModes.RGB);
+											if (mApp.getIsRGBPositive()) {
+												mApp.setIsRGBPositive(false);
+												rgbHasChanged = true;
+											}
+											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
+											imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb_inv));
+											rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
+											mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
+											break;
+										case R.id.mode_r:
+											mApp.setColorMode(RGBModes.R);
+											if (mApp.getIsRGBPositive()) {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r));
+												mColorModeToolsDrawer = RGBToolbarStatus.R;
+											} else {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.r_inv);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.r_inv));
+												mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
+											}
+											break;
+										case R.id.mode_g:
 //												Log.d(TAG, "green");
-												mApp.setColorMode(RGBModes.G);
-												if (mApp.getIsRGBPositive()) {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g));
-													mColorModeToolsDrawer = RGBToolbarStatus.G;
-												} else {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.g_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g_inv));
-													mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
-												}
-												break;
-											case R.id.mode_b:
+											mApp.setColorMode(RGBModes.G);
+											if (mApp.getIsRGBPositive()) {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g));
+												mColorModeToolsDrawer = RGBToolbarStatus.G;
+											} else {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.g_inv);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.g_inv));
+												mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
+											}
+											break;
+										case R.id.mode_b:
 //												Log.d(TAG, "blue");
-												mApp.setColorMode(RGBModes.B);
-												if (mApp.getIsRGBPositive()) {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b));
-													mColorModeToolsDrawer = RGBToolbarStatus.B;
-												} else {
-													mToolsDrawerListState.put(COLOR_MODE, R.drawable.b_inv);
-													imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b_inv));
-													mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
-												}
-												break;
-											default:
-												mApp.setColorMode(RGBModes.RGB);
-												mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
-												mColorModeToolsDrawer = RGBToolbarStatus.RGB;
-										}
-										view.clearFocus();
-										mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView));
+											mApp.setColorMode(RGBModes.B);
+											if (mApp.getIsRGBPositive()) {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b));
+												mColorModeToolsDrawer = RGBToolbarStatus.B;
+											} else {
+												mToolsDrawerListState.put(COLOR_MODE, R.drawable.b_inv);
+												imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.b_inv));
+												mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
+											}
+											break;
+										default:
+											mApp.setColorMode(RGBModes.RGB);
+											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
+											imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
+											mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 									}
-									return false;
+//									v.clearFocus();
+									mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView));
 								}
 							});
 						}
@@ -439,20 +483,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 					if (mApp.getInteractionMode().equals(InteractionModes.BASIC)) {
 						mApp.setInteractionMode(InteractionModes.SINGLE_PIXEL);
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
+						VideOSCUIHelpers.addView(mPixelEditor, (FrameLayout) mCamView);
+
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
-						/*mMultiSliderView = new VideOSCMultiSliderFragment();
-						fragmentManager.beginTransaction()
-								.add(R.id.camera_preview, mMultiSliderView, "MultiSliderView")
-								.commit();
-						VideOSCMultiSliderFragment multiSliderView = (VideOSCMultiSliderFragment) fragmentManager.findFragmentByTag("MultiSliderView");
-						Bundle msArgsBundle = new Bundle();
-						ArrayList<Integer> testList = new ArrayList<>(Arrays.asList(2, 4, 5, 7, 9, 12, 14, 15, 17, 19, 21, 22, 23, 30, 34, 37, 34));
-						msArgsBundle.putIntegerArrayList("nums", testList);
-						mMultiSliderView.setArguments(msArgsBundle);*/
 					} else if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 						mApp.setInteractionMode(InteractionModes.BASIC);
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
+						VideOSCUIHelpers.removeView(mPixelEditor, (FrameLayout) mCamView);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 						if (mMultiSliderView != null)
