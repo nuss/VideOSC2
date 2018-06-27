@@ -95,5 +95,8 @@
 	<string name="camera_permissions_denied">Camera Permission was denied.</string>
 	<string name="outline_for_a_multislider_bar">outline for a multislider bar</string>
 	<string name="multislider_bar_fill">multislider bar fill</string>
+	<string name="delete_edits_on_pixels">delete edits on pixels</string>
+	<string name="select_pixels_stepwise">select pixels stepwise</string>
+	<string name="quickly_select_pixels">quickly select pixels</string>
 
 </resources>
