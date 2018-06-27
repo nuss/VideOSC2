@@ -130,6 +130,7 @@ public class TileOverlayView extends View {
 		Point pixelSize = mApp.getPixelSize();
 		InteractionModes interactionMode = mApp.getInteractionMode();
 		RGBModes colorMode = mApp.getColorMode();
+
 		mPaint.setColor(0xff000000);
 		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setShader(mShaderSelected);
@@ -145,6 +146,7 @@ public class TileOverlayView extends View {
 		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
 			for (int i = 0; i < numPixels; i++) {
 				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
+					mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 					canvas.drawText(
 							String.valueOf(i + 1),
 							i % resolution.x * pixelSize.x + 10,
@@ -152,6 +154,7 @@ public class TileOverlayView extends View {
 							mPaint
 					);
 				}
+				mPaint.clearShadowLayer();
 				switch (colorMode) {
 					case R:
 						if (mRedMixValues.get(i) != null && mRedMixValues.get(i) > 0.0) {

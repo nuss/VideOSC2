@@ -261,11 +261,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		tools.recycle();
 
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
-		Drawable modePanelShape = mRes.getDrawable(R.drawable.black_rounded_rect);
-		mModePanel.setBackground(modePanelShape);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
-		Drawable fpsPanelShape = mRes.getDrawable(R.drawable.black_rounded_rect);
-		mFrameRateCalculationPanel.setBackground(fpsPanelShape);
 
 		// get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
