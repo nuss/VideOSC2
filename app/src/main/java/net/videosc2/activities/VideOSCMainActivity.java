@@ -65,6 +65,7 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -84,6 +85,7 @@ import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 import net.videosc2.views.SliderBar;
+import net.videosc2.views.VideOSCPixelEditorToolbox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,11 +96,11 @@ import java.util.List;
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
 public class VideOSCMainActivity extends AppCompatActivity
-		implements VideOSCBaseFragment.OnFragmentInteractionListener/*, VideOSCCameraFragment.OnCompleteCameraFragmentListener*/ {
+		implements VideOSCBaseFragment.OnFragmentInteractionListener, View.OnTouchListener {
 
 	static final String TAG = "VideOSCMainActivity";
 
-	private View mCamView;
+	public View mCamView;
 	private Point mDimensions;
 	public DrawerLayout mToolsDrawerLayout;
 
@@ -152,6 +154,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	private View mDecorView;
 	private ViewGroup mPixelEditor;
+	private int mXDelta;
+	private int mYDelta;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -265,16 +269,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 		mPixelEditor = (ViewGroup) inflater.inflate(R.layout.pixel_editor_toolbox, (FrameLayout) mCamView, false);
 		// TODO: editor should be movable - as of now touch events don't seem to get through
-		mPixelEditor.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				v.performClick();
-				if (event.getAction() == (MotionEvent.ACTION_MOVE)) {
-					Log.d(TAG, "moving, moving");
-				}
-				return false;
-			}
-		});
+		mPixelEditor.requestDisallowInterceptTouchEvent(true);
+		mPixelEditor.setOnTouchListener(this);
 
 		final ImageButton quickEditPixels = (ImageButton) mPixelEditor.findViewById(R.id.quick_edit_pixels);
 		final ImageButton editPixels = (ImageButton) mPixelEditor.findViewById(R.id.edit_pixels);
@@ -289,6 +285,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				deleteEditsInPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
+				Log.d(TAG, "quick edit pixels");
 			}
 		});
 
@@ -300,6 +297,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				deleteEditsInPixels.setActivated(false);
 				applyPixelSelection.setActivated(true);
 				applyPixelSelection.setEnabled(true);
+				Log.d(TAG, "edit pixels");
 			}
 		});
 
@@ -311,10 +309,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 				editPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
+				Log.d(TAG, "delete edits");
 			}
 		});
 
-		// get keys for toolsDrawer
+//		get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
 		START_STOP = toolsDrawerKeys.get("startStop");
 		if (toolsDrawerKeys.containsKey("torch"))
@@ -482,9 +481,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 					closeColorModePanel();
 					if (mApp.getInteractionMode().equals(InteractionModes.BASIC)) {
 						mApp.setInteractionMode(InteractionModes.SINGLE_PIXEL);
-						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
+//						mPixelEditor = new VideOSCPixelEditorToolbox(context);
 						VideOSCUIHelpers.addView(mPixelEditor, (FrameLayout) mCamView);
-
+						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
@@ -584,6 +583,45 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private void closeColorModePanel() {
 		if (mApp.getIsColorModePanelOpen())
 			mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView));
+	}
+
+	/**
+	 * Called when a touch event is dispatched to a view. This allows listeners to
+	 * get a chance to respond before the target view.
+	 *
+	 * @param v     The view the touch event has been dispatched to.
+	 * @param event The MotionEvent object containing full information about
+	 *              the event.
+	 * @return True if the listener has consumed the event, false otherwise.
+	 */
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		v.performClick();
+		Log.d(TAG, "action: " + event.getAction());
+		final int x = (int) event.getRawX();
+		final int y = (int) event.getRawY();
+		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+		switch (event.getAction() & MotionEvent.ACTION_MASK) {
+			case MotionEvent.ACTION_DOWN:
+				mXDelta = x - lp.leftMargin;
+				mYDelta = y - lp.topMargin;
+				break;
+			case MotionEvent.ACTION_UP:
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				break;
+			case MotionEvent.ACTION_MOVE:
+				lp.leftMargin = x - mXDelta;
+				lp.topMargin = y - mYDelta;
+//				layoutParams.rightMargin = ;
+//				layoutParams.bottomMargin = -250;
+				v.setLayoutParams(lp);
+				break;
+		}
+		mCamView.invalidate();
+		return true;
 	}
 
 	@Override
@@ -758,8 +796,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		Camera camera = null;
-
 		if(requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Log.d(TAG, "onRequestPermissionsResult()");
