@@ -84,11 +84,8 @@ import net.videosc2.utilities.enums.GestureModes;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
-import net.videosc2.views.SliderBar;
-import net.videosc2.views.VideOSCPixelEditorToolbox;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -481,7 +478,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 					closeColorModePanel();
 					if (mApp.getInteractionMode().equals(InteractionModes.BASIC)) {
 						mApp.setInteractionMode(InteractionModes.SINGLE_PIXEL);
-//						mPixelEditor = new VideOSCPixelEditorToolbox(context);
 						VideOSCUIHelpers.addView(mPixelEditor, (FrameLayout) mCamView);
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interactionplus);
