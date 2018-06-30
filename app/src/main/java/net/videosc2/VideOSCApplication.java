@@ -12,6 +12,7 @@ import com.squareup.leakcanary.LeakCanary;
 import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.InteractionModes;
+import net.videosc2.utilities.enums.PixelEditModes;
 import net.videosc2.utilities.enums.RGBModes;
 
 import oscP5.OscMessage;
@@ -51,6 +52,7 @@ public class VideOSCApplication extends Application {
 	private boolean mIsMultiSliderActive;
 	private boolean mIndicatorPanelOpen;
 	private Point mPixelSize;
+	private PixelEditModes mPixelEditMode;
 
 	@Override
 	public void onCreate() {
@@ -245,5 +247,13 @@ public class VideOSCApplication extends Application {
 
 	public Point getPixelSize() {
 		return this.mPixelSize;
+	}
+
+	public void setPixelEditMode(PixelEditModes mode) {
+		this.mPixelEditMode = mode;
+	}
+
+	public PixelEditModes getPixelEditMode() {
+		return this.mPixelEditMode;
 	}
 }

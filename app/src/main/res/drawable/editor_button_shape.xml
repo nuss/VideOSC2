@@ -30,7 +30,7 @@
 				android:right="10dp"
 				android:top="10dp"/>
 			<solid
-				android:color="#cc000000"/>
+				android:color="#cc000066"/>
 			<stroke
 				android:width="2dp"
 				android:color="#eeffffff"/>

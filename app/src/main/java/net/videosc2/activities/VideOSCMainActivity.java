@@ -82,6 +82,7 @@ import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.utilities.enums.GestureModes;
 import net.videosc2.utilities.enums.InteractionModes;
+import net.videosc2.utilities.enums.PixelEditModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
@@ -150,9 +151,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private static final int PERMISSION_REQUEST_CAMERA = 1;
 
 	private View mDecorView;
-	private ViewGroup mPixelEditor;
-	private int mXDelta;
-	private int mYDelta;
+	public ViewGroup mPixelEditor;
+	private int mOldX;
+	private int mOldY;
+	private float mEditorBoxAlpha;
+
+	public ImageButton mSelectionButton;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -270,6 +274,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mPixelEditor.setOnTouchListener(this);
 
 		final ImageButton quickEditPixels = (ImageButton) mPixelEditor.findViewById(R.id.quick_edit_pixels);
+		quickEditPixels.setActivated(true);
+		mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
 		final ImageButton editPixels = (ImageButton) mPixelEditor.findViewById(R.id.edit_pixels);
 		final ImageButton deleteEditsInPixels = (ImageButton) mPixelEditor.findViewById(R.id.delete_edits);
 		final ImageButton applyPixelSelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
@@ -282,6 +288,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				deleteEditsInPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
+				mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
 				Log.d(TAG, "quick edit pixels");
 			}
 		});
@@ -294,6 +301,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				deleteEditsInPixels.setActivated(false);
 				applyPixelSelection.setActivated(true);
 				applyPixelSelection.setEnabled(true);
+				mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
 				Log.d(TAG, "edit pixels");
 			}
 		});
@@ -306,7 +314,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 				editPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
+				mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
 				Log.d(TAG, "delete edits");
+			}
+		});
+
+		applyPixelSelection.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
 			}
 		});
 
@@ -593,30 +609,35 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		v.performClick();
-		Log.d(TAG, "action: " + event.getAction());
 		final int x = (int) event.getRawX();
 		final int y = (int) event.getRawY();
-		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+		int deltaX, deltaY;
+		final int width = v.getWidth();
+		final int height = v.getHeight();
+		final int left = v.getLeft();
+		final int top = v.getTop();
+		final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
-				mXDelta = x - lp.leftMargin;
-				mYDelta = y - lp.topMargin;
+				mEditorBoxAlpha = v.getAlpha();
+				v.setAlpha(0.3f);
+				mOldX = x;
+				mOldY = y;
 				break;
 			case MotionEvent.ACTION_UP:
-				break;
-			case MotionEvent.ACTION_POINTER_DOWN:
-				break;
-			case MotionEvent.ACTION_POINTER_UP:
+				v.setAlpha(mEditorBoxAlpha);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				lp.leftMargin = x - mXDelta;
-				lp.topMargin = y - mYDelta;
-//				layoutParams.rightMargin = ;
-//				layoutParams.bottomMargin = -250;
+				deltaX = x - mOldX;
+				deltaY = y - mOldY;
+				lp.topMargin = lp.topMargin + deltaY;
+				lp.rightMargin = lp.rightMargin - deltaX;
 				v.setLayoutParams(lp);
+				mOldX = x;
+				mOldY = y;
 				break;
 		}
-		mCamView.invalidate();
+//		mCamView.invalidate();
 		return true;
 	}
 

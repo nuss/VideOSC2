@@ -99,5 +99,6 @@
 	<string name="select_pixels_stepwise">select pixels stepwise</string>
 	<string name="quickly_select_pixels">quickly select pixels</string>
 	<string name="apply_current_pixel_selection">apply current pixel selection</string>
+	<string name="move_the_editor">move the editor</string>
 
 </resources>
