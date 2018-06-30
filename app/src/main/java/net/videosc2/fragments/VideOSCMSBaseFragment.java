@@ -51,4 +51,15 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	public void setParentContainer(ViewGroup container) {
 		this.mParentContainer = container;
 	}
+
+	protected OnCreateViewCallback createViewCallback = null;
+
+	public void setCreateViewCallBack(OnCreateViewCallback createViewCallBack) {
+		this.createViewCallback = createViewCallBack;
+	}
+
+	public interface OnCreateViewCallback {
+		void onCreateView();
+	}
+
 }

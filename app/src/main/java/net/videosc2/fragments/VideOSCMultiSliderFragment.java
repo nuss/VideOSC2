@@ -123,20 +123,14 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		return msContainer;
 	}
 
-	/*@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setUserVisibleHint(true);
-	}
-
 	@Override
-	public void setUserVisibleHint(final boolean visible) {
-		super.setUserVisibleHint(visible);
-		if (visible) {
-			Log.d(TAG, "menu visible");
-			mOkCancel.bringToFront();
+	public void onDestroy() {
+		super.onDestroy();
+		if (createViewCallback != null) {
+			createViewCallback.onCreateView();
+			createViewCallback = null;
 		}
-	}*/
+	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {
 		mMSViewLeft.setSliderNums(sliderNums);

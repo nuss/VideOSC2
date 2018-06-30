@@ -159,6 +159,15 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		return msContainer;
 	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (createViewCallback != null) {
+			createViewCallback.onCreateView();
+			createViewCallback = null;
+		}
+	}
+
 	private void setSliderProps(ArrayList<Integer> sliderNums) {
 		mMSViewRedLeft.setSliderNums(sliderNums);
 		mMSViewRedRight.setSliderNums(sliderNums);
@@ -167,4 +176,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueLeft.setSliderNums(sliderNums);
 		mMSViewBlueRight.setSliderNums(sliderNums);
 	}
+
+//	protected OnCreateViewCallback createViewCallback = null;
+//
+//	public void setCreateViewCallBack(OnCreateViewCallback createViewCallBack) {
+//		this.createViewCallback = createViewCallBack;
+//	}
+//
+//	public interface OnCreateViewCallback {
+//		void onCreateView();
+//	}
 }

@@ -319,13 +319,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		applyPixelSelection.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-			}
-		});
-
 //		get keys for toolsDrawer
 		HashMap<String, Integer> toolsDrawerKeys = toolsDrawerKeys();
 		START_STOP = toolsDrawerKeys.get("startStop");
@@ -778,16 +771,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 			mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 		}
 	}
-
-	/* private void requestSettingsPermission() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (!Settings.System.canWrite(this)) {
-				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-				intent.setData(Uri.parse("package:" + getPackageName()));
-				startActivityForResult(intent, VideOSCMainActivity.CODE_WRITE_SETTINGS_PERMISSION);
-			}
-		}
-	} */
 
 	private void requestCameraPermission() {
 		if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {

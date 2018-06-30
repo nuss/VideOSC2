@@ -278,7 +278,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * <p>
 	 * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 	 */
-	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback{
 
 		// SurfaceHolder
 		private SurfaceHolder mHolder;
@@ -507,11 +507,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			applySelection.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					mSelectedPixels.clear();
-					mPixelEditor.setVisibility(View.INVISIBLE);
-					Log.d(TAG, "pixel nums: " + mPixelIds);
-					createMultiSliders(indicatorPanel, fpsRateCalcPanel, modePanel);
-					mPixelIds.clear();
+					if (mSelectedPixels.size() > 0) {
+						mSelectedPixels.clear();
+						mPixelEditor.setVisibility(View.INVISIBLE);
+						createMultiSliders(indicatorPanel, fpsRateCalcPanel, modePanel);
+					}
 				}
 			});
 		}
@@ -653,14 +653,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 					indicators.setVisibility(View.INVISIBLE);
 					pixelEditorToolbox.setVisibility(View.INVISIBLE);
-					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)) {
-						if (mPixelIds.size() > 0)
-							mPixelIds.clear();
-					}
 				}
 			}
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)
+						&& mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS))
+					mPixelEditor.setVisibility(View.VISIBLE);
 				// clear selected pixels on up
 				if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)) {
 					mSelectedPixels.clear();
@@ -759,7 +758,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						params.setZoom(zoom);
 						mOldFingerDistance = currFingerDistance;
 						mViewCamera.setParameters(params);
-//					Log.d(TAG, "zoom: " + params.getZoom() + ", ratio: " + params.getZoomRatios().get(params.getZoom()));
 						mCamZoom = (float) (params.getZoomRatios().get(params.getZoom()) / 100.0);
 					}
 				}
@@ -768,29 +766,45 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
-//					    Log.d(TAG, "current pixel color: " + mBmp.getPixel(currPixel % mApp.getResolution().x, currPixel / mApp.getResolution().x));
-					if (!mPixelIds.contains(currPixel + 1)) {
-						mPixelIds.add(currPixel + 1);
-						Collections.sort(mPixelIds);
-					}
 					Rect currRect = getCurrentPixelRect(currPixel);
-					if (!containsRect(mSelectedPixels, currRect)) {
-						if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS))
-							mSelectedPixels.add(currRect);
-						else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
-							mSelectedPixels.add(currRect);
-							mLockedPixels.set(currPixel, true);
+					if (!mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
+						if (!mPixelIds.contains(currPixel + 1)) {
+							if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)
+									|| (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)))
+								mPixelIds.add(currPixel + 1);
+							Collections.sort(mPixelIds);
 						}
+						if (!containsRect(mSelectedPixels, currRect)) {
+							if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS))
+								mSelectedPixels.add(currRect);
+							else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
+								mSelectedPixels.add(currRect);
+								mLockedPixels.set(currPixel, true);
+							}
+						} else {
+							// only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
+							if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
+								removeRect(mSelectedPixels, currRect);
+								mLockedPixels.set(currPixel, true);
+							}
+						}
+						mOverlayView.setSelectedRects(mSelectedPixels);
+						mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
+						mOverlayView.invalidate();
 					} else {
-						// only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
-						if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
-							removeRect(mSelectedPixels, currRect);
-							mLockedPixels.set(currPixel, true);
+						if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+							mRedValues.set(currPixel, null);
+							mRedMixValues.set(currPixel, null);
+						}
+						if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+							mGreenValues.set(currPixel, null);
+							mGreenMixValues.set(currPixel, null);
+						}
+						if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+							mBlueValues.set(currPixel, null);
+							mBlueMixValues.set(currPixel, null);
 						}
 					}
-					mOverlayView.setSelectedRects(mSelectedPixels);
-					mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
-					mOverlayView.invalidate();
 				}
 			}
 
@@ -843,6 +857,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					blueMixVals[i] = mBlueMixValues.get(id) == null ? 1.0 : mBlueMixValues.get(id);
 				}
 			}
+
 			Bundle msArgsBundle = new Bundle();
 			Log.d(TAG, "pixel nums: " + mPixelIds);
 			msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
@@ -858,6 +873,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				msArgsBundle.putDoubleArray("blueVals", blueVals);
 				msArgsBundle.putDoubleArray("blueMixVals", blueMixVals);
 			}
+
 			if (mManager.findFragmentByTag("MultiSliderView") == null) {
 				if (!mApp.getColorMode().equals(RGBModes.RGB)) {
 					VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
@@ -866,13 +882,29 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 							.commit();
 					multiSliderFragment.setArguments(msArgsBundle);
 					multiSliderFragment.setParentContainer(mPreviewContainer);
+					if (multiSliderFragment.getView() == null) {
+						multiSliderFragment.setCreateViewCallBack(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
+							@Override
+							public void onCreateView() {
+								mPixelIds.clear();
+							}
+						});
+					} else mPixelIds.clear();
 				} else {
-					VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
+					final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
 					mManager.beginTransaction()
 							.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 							.commit();
 					multiSliderFragment.setArguments(msArgsBundle);
 					multiSliderFragment.setParentContainer(mPreviewContainer);
+					if (multiSliderFragment.getView() == null) {
+						multiSliderFragment.setCreateViewCallBack(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
+							@Override
+							public void onCreateView() {
+								mPixelIds.clear();
+							}
+						});
+					} else mPixelIds.clear();
 				}
 
 				mApp.setIsMultiSliderActive(true);
@@ -1190,6 +1222,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			bmp.setPixels(pixels, 0, width, 0, 0, width, height);
 			return bmp;
 		}
+
+		// needed by the VideOSCMultiSliderFragmentRGB.OnCreateViewCallback
+		@Override
+		public void onCreateView() { }
 	}
 
 	// prevent memory leaks by declaring Runnable static
