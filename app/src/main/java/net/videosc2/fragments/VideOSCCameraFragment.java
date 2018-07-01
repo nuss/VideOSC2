@@ -123,8 +123,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private ArrayList<Double> mGreenMixValues = new ArrayList<>();
 	private ArrayList<Double> mBlueMixValues = new ArrayList<>();
 
-	// lock pixels on select or deselect in pixel edit mode EDIT_PIXELS
-	private ArrayList<Boolean> mLockedPixels = new ArrayList<>();
+	final public ArrayList<Rect> mSelectedPixels = new ArrayList<>();
 
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
@@ -305,10 +304,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Thread mGreenOscSender;
 		private Thread mBlueOscSender;
 
+		// lock pixels on select or deselect in pixel edit mode EDIT_PIXELS
+		final private ArrayList<Boolean> mLockedPixels = new ArrayList<>();
+
 		private ViewGroup mOverlay;
 		private TileOverlayView mOverlayView;
-		private final ArrayList<Rect> mSelectedPixels = new ArrayList<>();
-		private final ArrayList<Boolean> mDeselected = new ArrayList<>();
 		private final List<Integer> mPixelIds = new ArrayList<>();
 		private final FragmentManager mManager;
 
@@ -480,6 +480,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + mViewCamera);
 			final ViewGroup indicatorPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+
 			try {
 				mViewCamera.setPreviewDisplay(holder);
 				mViewCamera.startPreview();
@@ -499,8 +502,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
 			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 
-			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 
 			mPixelEditor = activity.mPixelEditor;
 			ImageButton applySelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
@@ -510,7 +511,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (mSelectedPixels.size() > 0) {
 						mSelectedPixels.clear();
 						mPixelEditor.setVisibility(View.INVISIBLE);
-						createMultiSliders(indicatorPanel, fpsRateCalcPanel, modePanel);
+						createMultiSliders(indicatorPanel, fpsRateCalcPanel, colorModePanel);
 					}
 				}
 			});
@@ -549,7 +550,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
-			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
 			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
 
@@ -560,7 +561,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mApp.getIsFPSCalcPanelOpen())
 					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
 				if (mApp.getIsColorModePanelOpen())
-					VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+					VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
 				if (mApp.getIsIndicatorPanelOpen()) {
 					mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
 				}
@@ -639,16 +640,18 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			performClick();
 			final Context context = getContext();
 			final Camera.Parameters params = mViewCamera.getParameters();
-			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
 			ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
 			final ViewGroup pixelEditorToolbox = (ViewGroup) mPreviewContainer.findViewById(R.id.pixel_editor_toolbox);
+
 			boolean hasTorch = mApp.getHasTorch();
 			BitmapDrawable img;
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-				VideOSCUIHelpers.removeView(modePanel, mPreviewContainer);
+				VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
+					Log.d(TAG, "should hide indicators, fps rate calc panel, pixelEditor");
 					if (fpsRateCalcPanel != null)
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 					indicators.setVisibility(View.INVISIBLE);
@@ -675,7 +678,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
 					// colors keeps the integer color values of the pixels denoted in mPixelIds
 					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0) {
-						createMultiSliders(indicators, fpsRateCalcPanel, modePanel);
+						createMultiSliders(indicators, fpsRateCalcPanel, colorModePanel);
 					}
 
 					if (!mApp.getIsMultiSliderActive()) {

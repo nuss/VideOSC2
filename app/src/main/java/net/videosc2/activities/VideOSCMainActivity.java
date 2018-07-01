@@ -53,6 +53,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -155,8 +156,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private int mOldX;
 	private int mOldY;
 	private float mEditorBoxAlpha;
-
-	public ImageButton mSelectionButton;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -493,6 +492,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 						mApp.setInteractionMode(InteractionModes.BASIC);
+						cameraFragment.mSelectedPixels.clear();
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						VideOSCUIHelpers.removeView(mPixelEditor, (FrameLayout) mCamView);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
@@ -605,11 +605,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final int x = (int) event.getRawX();
 		final int y = (int) event.getRawY();
 		int deltaX, deltaY;
-		final int width = v.getWidth();
-		final int height = v.getHeight();
-		final int left = v.getLeft();
-		final int top = v.getTop();
 		final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+		final int drawerWidth = (int) (50 * mApp.getScreenDensity());
+		final int maxTopMargin = mApp.getDimensions().y - v.getHeight();
+		final int maxRightMargin = mApp.getDimensions().x - v.getWidth();
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
 				mEditorBoxAlpha = v.getAlpha();
@@ -623,14 +622,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 			case MotionEvent.ACTION_MOVE:
 				deltaX = x - mOldX;
 				deltaY = y - mOldY;
-				lp.topMargin = lp.topMargin + deltaY;
-				lp.rightMargin = lp.rightMargin - deltaX;
+				lp.topMargin = lp.topMargin >= 0 ? lp.topMargin + deltaY : 0;
+				if (lp.topMargin >= maxTopMargin) lp.topMargin = maxTopMargin;
+				lp.rightMargin = lp.rightMargin >= drawerWidth ?
+						lp.rightMargin - deltaX : drawerWidth;
+				if (lp.rightMargin >= maxRightMargin) lp.rightMargin = maxRightMargin;
 				v.setLayoutParams(lp);
 				mOldX = x;
 				mOldY = y;
 				break;
 		}
-//		mCamView.invalidate();
 		return true;
 	}
 
