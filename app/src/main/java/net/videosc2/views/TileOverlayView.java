@@ -29,7 +29,7 @@ public class TileOverlayView extends View {
 
 	final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 	private BitmapShader mShaderSelected;
-	private Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
+	final private Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
 	private ArrayList<Rect> mSelectPixels = new ArrayList<>();
 	private ArrayList<Double> mRedMixValues, mGreenMixValues, mBlueMixValues;
 	private Bitmap mRCorner, mGCorner, mBCorner, mRGCorner, mGBCorner, mRBCorner, mRGBCorner;
@@ -71,6 +71,7 @@ public class TileOverlayView extends View {
 	}
 
 	private void init(Context context) {
+		Log.d(TAG, "new tile overlay");
 		Resources res = context.getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;

@@ -106,8 +106,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public static int frontsideCameraId;
 	public static int currentCameraID;
 
-	private View mIndicatorPanel;
-
 	// the global application, used to exchange various temporary data
 	private VideOSCApplication mApp;
 
@@ -130,7 +128,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// panel for displaying frame rate, calculation period
 	private ViewGroup mFrameRateCalculationPanel;
 	// the settings list
-	private ViewGroup settingsList;
 	// multislider view
 //	private ViewGroup mMultiSliderView;
 
@@ -306,6 +303,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 				editPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
+				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				cameraFragment.getSelectedPixels().clear();
+				cameraFragment.getPixelNumbers().clear();
 				mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
 				Log.d(TAG, "delete edits");
 			}
@@ -485,7 +485,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 						mApp.setInteractionMode(InteractionModes.BASIC);
-						cameraFragment.mSelectedPixels.clear();
+						cameraFragment.getSelectedPixels().clear();
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						VideOSCUIHelpers.removeView(mPixelEditor, (FrameLayout) mCamView);
 						img = (BitmapDrawable) ContextCompat.getDrawable(context, R.drawable.interaction);
@@ -575,7 +575,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		});
 
 		int indicatorXMLiD = mApp.getHasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;
-		mIndicatorPanel = inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
+		inflater.inflate(indicatorXMLiD, (FrameLayout) mCamView, true);
 	}
 
 	private void closeColorModePanel() {

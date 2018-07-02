@@ -115,18 +115,22 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// pixels set by multislider
 	// these arrays shouldn't get get reinitialized
 	// when switching the camera
-	private ArrayList<Double> mRedValues = new ArrayList<>();
-	private ArrayList<Double> mGreenValues = new ArrayList<>();
-	private ArrayList<Double> mBlueValues = new ArrayList<>();
+	final private ArrayList<Double> mRedValues = new ArrayList<>();
+	final private ArrayList<Double> mGreenValues = new ArrayList<>();
+	final private ArrayList<Double> mBlueValues = new ArrayList<>();
 
-	private ArrayList<Double> mRedMixValues = new ArrayList<>();
-	private ArrayList<Double> mGreenMixValues = new ArrayList<>();
-	private ArrayList<Double> mBlueMixValues = new ArrayList<>();
+	final private ArrayList<Double> mRedMixValues = new ArrayList<>();
+	final private ArrayList<Double> mGreenMixValues = new ArrayList<>();
+	final private ArrayList<Double> mBlueMixValues = new ArrayList<>();
 
-	final public ArrayList<Rect> mSelectedPixels = new ArrayList<>();
+	final private ArrayList<Rect> mSelectedPixels = new ArrayList<>();
+	final private List<Integer> mPixelIds = new ArrayList<>();
+	// lock pixels on select or deselect in pixel edit mode EDIT_PIXELS
+	final private ArrayList<Boolean> mLockedPixels = new ArrayList<>();
 
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
+	private TileOverlayView mOverlayView;
 	private ViewGroup mPixelEditor;
 
 	/**
@@ -271,6 +275,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return mFrameRateRange;
 	}
 
+	public ArrayList<Rect> getSelectedPixels() {
+		return this.mSelectedPixels;
+	}
+
+	public List<Integer> getPixelNumbers() {
+		return this.mPixelIds;
+	}
+
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.
@@ -304,12 +316,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private Thread mGreenOscSender;
 		private Thread mBlueOscSender;
 
-		// lock pixels on select or deselect in pixel edit mode EDIT_PIXELS
-		final private ArrayList<Boolean> mLockedPixels = new ArrayList<>();
-
-		private ViewGroup mOverlay;
-		private TileOverlayView mOverlayView;
-		private final List<Integer> mPixelIds = new ArrayList<>();
 		private final FragmentManager mManager;
 
 		private volatile OscMessage oscR, oscG, oscB;
@@ -480,8 +486,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + mViewCamera);
 			final ViewGroup indicatorPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
-			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 
 			try {
 				mViewCamera.setPreviewDisplay(holder);
@@ -497,12 +501,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				e.printStackTrace();
 			}
 
-			mOverlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
-			mOverlayView = (TileOverlayView) mOverlay.findViewById(R.id.tile_draw_view);
-			VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
+			if (mOverlayView == null) {
+				ViewGroup overlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
+				mOverlayView = (TileOverlayView) overlay.findViewById(R.id.tile_draw_view);
+				VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
+			}
+
 			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-
-
 			mPixelEditor = activity.mPixelEditor;
 			ImageButton applySelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
 			applySelection.setOnClickListener(new OnClickListener() {
@@ -511,7 +516,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (mSelectedPixels.size() > 0) {
 						mSelectedPixels.clear();
 						mPixelEditor.setVisibility(View.INVISIBLE);
-						Log.d(TAG, "frame rate calc panel: " + fpsRateCalcPanel);
 						createMultiSliders();
 					}
 				}
@@ -647,7 +651,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
-					Log.d(TAG, "should hide indicators, fps rate calc panel, pixelEditor");
 					if (fpsRateCalcPanel != null)
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 					indicators.setVisibility(View.INVISIBLE);
@@ -673,9 +676,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
 					// colors keeps the integer color values of the pixels denoted in mPixelIds
-					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0) {
+					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0)
 						createMultiSliders();
-					}
 
 					if (!mApp.getIsMultiSliderActive()) {
 						if (fpsRateCalcPanel != null)
@@ -712,28 +714,38 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					int currPixel = getHoverPixel(motionEvent.getX(), motionEvent.getY());
 					Rect currRect = getCurrentPixelRect(currPixel);
+					final boolean isInQuickEditMode = mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS);
+					final boolean isInEditMode = mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS);
+//					Log.d(TAG, "new move - isInEditMode: " + isInEditMode + ", isInQuickEditMode: " + isInQuickEditMode);
+
 					if (!mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
 						if (!mPixelIds.contains(currPixel + 1)) {
-							if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)
-									|| (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)))
+							if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+//								Log.d(TAG, "add pixel " + (currPixel + 1));
 								mPixelIds.add(currPixel + 1);
+							}
 							Collections.sort(mPixelIds);
+//							Log.d(TAG, "pixels after add: " + mPixelIds);
 						}
 						if (!containsRect(mSelectedPixels, currRect)) {
-							if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS))
+							if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+//								Log.d(TAG, "add pixel: " + (currPixel + 1));
 								mSelectedPixels.add(currRect);
-							else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
-								mSelectedPixels.add(currRect);
-								mLockedPixels.set(currPixel, true);
+								if (isInEditMode && !mLockedPixels.get(currPixel))
+									mLockedPixels.set(currPixel, true);
 							}
+//							Log.d(TAG, "locked pixels after add: " + mLockedPixels);
 						} else {
 							// only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
-							if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
+							if (isInEditMode && !mLockedPixels.get(currPixel)) {
+//								Log.d(TAG, "remove pixel " +(currPixel + 1));
 								mPixelIds.remove(Integer.valueOf(currPixel + 1));
 								removeRect(mSelectedPixels, currRect);
 								mLockedPixels.set(currPixel, true);
+//								Log.d(TAG, "pixels after remove: " + mPixelIds);
 							}
 						}
+//						Log.d(TAG, "mPixelIds: " + mPixelIds);
 						mOverlayView.setSelectedRects(mSelectedPixels);
 						mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
 						mOverlayView.invalidate();
@@ -804,7 +816,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			Bundle msArgsBundle = new Bundle();
-			Log.d(TAG, "pixel nums: " + mPixelIds);
 			msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
 			if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
 				msArgsBundle.putDoubleArray("redVals", redVals);
