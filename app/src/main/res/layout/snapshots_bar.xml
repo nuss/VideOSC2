@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/snapshots_bar"
+              android:orientation="horizontal"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+
+	<ImageButton
+		android:id="@+id/saved_snapshots_button"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_margin="8dp"
+		android:src="@drawable/saved_snapshots"
+		android:background="@drawable/saved_snapshots_button"
+		android:contentDescription="@string/load_a_saved_snapshot"/>
+
+	<ImageButton
+		android:id="@+id/save_snapshot"
+		android:layout_height="40dp"
+		android:layout_width="40dp"
+		android:layout_margin="8dp"
+		android:src="@drawable/snapshot"
+		android:background="@drawable/snapshot_button_seletor"
+		android:contentDescription="@string/make_a_snapshot"/>
+
+	<ImageView
+		android:id="@+id/move_snapshots_bar"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginStart="0dp"
+		android:layout_marginLeft="0dp"
+		android:src="@drawable/move_black"
+		android:contentDescription="@string/move_the_snapshots_bar"/>
+
+</LinearLayout>

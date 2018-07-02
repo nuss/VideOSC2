@@ -57,13 +57,14 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"CREATE TABLE " + SettingsContract.PixelSnapshotEntries.TABLE_NAME + " (" +
 					SettingsContract.PixelSnapshotEntries._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME + " TEXT," +
-					SettingsContract.PixelSnapshotEntries.SNAPSHOT_VALUES + " TEXT)";
+					SettingsContract.PixelSnapshotEntries.SNAPSHOT_VALUES + " TEXT, " +
+					SettingsContract.PixelSnapshotEntries.SNAPSHOT_MIX_VALUES + " TEXT)";
 
 	private static final  String SQL_PIXEL_SNAPSHOTS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 16;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

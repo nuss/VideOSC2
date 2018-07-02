@@ -100,5 +100,8 @@
 	<string name="quickly_select_pixels">quickly select pixels</string>
 	<string name="apply_current_pixel_selection">apply current pixel selection</string>
 	<string name="move_the_editor">move the editor</string>
+	<string name="load_a_saved_snapshot">load a saved snapshot</string>
+	<string name="make_a_snapshot">make a snapshot</string>
+	<string name="move_the_snapshots_bar">move the snapshots bar</string>
 
 </resources>

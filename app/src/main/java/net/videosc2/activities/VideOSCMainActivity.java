@@ -112,7 +112,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// the current color mode
 	// RGB or RGB inverted?
 	// set to true when isRGBPositive changes
-	private boolean rgbHasChanged = false;
+	private boolean mRGBHasChanged = false;
 	// the current gesture mode
 	public Enum gestureMode = GestureModes.SWAP;
 
@@ -127,9 +127,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private ViewGroup mModePanel;
 	// panel for displaying frame rate, calculation period
 	private ViewGroup mFrameRateCalculationPanel;
-	// the settings list
-	// multislider view
-//	private ViewGroup mMultiSliderView;
 
 	// drawer menu
 	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
@@ -383,7 +380,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 						VideOSCUIHelpers.setTransitionAnimation(mModePanel);
 						mApp.setIsColorModePanelOpen(VideOSCUIHelpers.addView(mModePanel, (FrameLayout) mCamView));
 
-						if (rgbHasChanged) {
+						if (mRGBHasChanged) {
 							ImageView red = (ImageView) findViewById(R.id.mode_r);
 							ImageView green = (ImageView) findViewById(R.id.mode_g);
 							ImageView blue = (ImageView) findViewById(R.id.mode_b);
@@ -407,7 +404,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 											mApp.setColorMode(RGBModes.RGB);
 											if (!mApp.getIsRGBPositive()) {
 												mApp.setIsRGBPositive(true);
-												rgbHasChanged = true;
+												mRGBHasChanged = true;
 											}
 											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
 											imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb));
@@ -418,7 +415,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 											mApp.setColorMode(RGBModes.RGB);
 											if (mApp.getIsRGBPositive()) {
 												mApp.setIsRGBPositive(false);
-												rgbHasChanged = true;
+												mRGBHasChanged = true;
 											}
 											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
 											imgView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.rgb_inv));

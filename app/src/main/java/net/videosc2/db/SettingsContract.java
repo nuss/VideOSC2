@@ -43,6 +43,7 @@ public class SettingsContract {
 		public static final String TABLE_NAME = "vosc_snapshots";
 		public static final String SNAPSHOT_NAME = "snapshot_name";
 		public static final String SNAPSHOT_VALUES = "snapshot_values";
+		public static final String SNAPSHOT_MIX_VALUES = "snapshot_mix_values";
 	}
 
 	// TODO
