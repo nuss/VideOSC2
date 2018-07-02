@@ -134,9 +134,8 @@ public class TileOverlayView extends View {
 		mPaint.setColor(0xff000000);
 		mPaint.setStyle(Paint.Style.FILL);
 		mPaint.setShader(mShaderSelected);
-		for (Rect rect : mSelectPixels) {
+		for (Rect rect : mSelectPixels)
 			canvas.drawRect(rect, mPaint);
-		}
 		mPaint.setShader(null);
 		mPaint.setColor(0xffffffff);
 		mPaint.setTextAlign(Paint.Align.LEFT);

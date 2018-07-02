@@ -85,6 +85,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		int numSliders = mSliderNums.size();
 		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
+		// FIXME - after switching camera numSliders may be 0 because mNumSliders is empty
 		int barWidth = (getMeasuredWidth() - marginsTotal)/numSliders;
 		int barHeight = getMeasuredHeight();
 		int x = 0;
@@ -103,7 +104,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		}
 	}
 
-	// TODO: get values of sliders (0.0-1.0) and make them available in CameraView
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		ViewGroup okButton = (ViewGroup) mContainer.findViewById(R.id.ok_button_layout);
