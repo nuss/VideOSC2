@@ -512,7 +512,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mSelectedPixels.clear();
 						mPixelEditor.setVisibility(View.INVISIBLE);
 						Log.d(TAG, "frame rate calc panel: " + fpsRateCalcPanel);
-						createMultiSliders(/*indicatorPanel, fpsRateCalcPanel, colorModePanel*/);
+						createMultiSliders();
 					}
 				}
 			});
@@ -674,7 +674,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
 					// colors keeps the integer color values of the pixels denoted in mPixelIds
 					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0) {
-						createMultiSliders(/*indicators, fpsRateCalcPanel, colorModePanel*/);
+						createMultiSliders();
 					}
 
 					if (!mApp.getIsMultiSliderActive()) {
@@ -729,6 +729,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						} else {
 							// only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
 							if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) && !mLockedPixels.get(currPixel)) {
+								mPixelIds.remove(Integer.valueOf(currPixel + 1));
 								removeRect(mSelectedPixels, currRect);
 								mLockedPixels.set(currPixel, true);
 							}
@@ -764,10 +765,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 		}
 
-		public void createMultiSliders(
-				/*ViewGroup indicators,
-				ViewGroup fpsRateCalcPanel,
-				ViewGroup modePanel*/) {
+		public void createMultiSliders() {
 			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
 			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
 			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
@@ -830,7 +828,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					multiSliderFragment.setArguments(msArgsBundle);
 					multiSliderFragment.setParentContainer(mPreviewContainer);
 					if (multiSliderFragment.getView() == null) {
-						multiSliderFragment.setCreateViewCallBack(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
+						multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
 							@Override
 							public void onCreateView() {
 								mPixelIds.clear();
@@ -845,7 +843,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					multiSliderFragment.setArguments(msArgsBundle);
 					multiSliderFragment.setParentContainer(mPreviewContainer);
 					if (multiSliderFragment.getView() == null) {
-						multiSliderFragment.setCreateViewCallBack(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
+						multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
 							@Override
 							public void onCreateView() {
 								mPixelIds.clear();

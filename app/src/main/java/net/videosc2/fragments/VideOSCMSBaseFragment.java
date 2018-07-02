@@ -54,8 +54,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 
 	protected OnCreateViewCallback createViewCallback = null;
 
-	public void setCreateViewCallBack(OnCreateViewCallback createViewCallBack) {
-		this.createViewCallback = createViewCallBack;
+	public void setCreateViewCallback(OnCreateViewCallback createViewCallback) {
+		this.createViewCallback = createViewCallback;
 	}
 
 	public interface OnCreateViewCallback {
