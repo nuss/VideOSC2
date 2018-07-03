@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
-		android:state_pressed="true">
+		android:state_activated="false"
+		android:state_enabled="true"
+		android:state_pressed="false">
 
 		<shape
 			android:shape="oval">
 			<padding
 				android:bottom="10dp"
-				android:right="10dp"
 				android:left="10dp"
+				android:right="10dp"
 				android:top="10dp"/>
 			<solid
-				android:color="#ffff0000"/>
+				android:color="#cc999999"/>
 			<stroke
-				android:width="3dp"
-				android:color="#ffff0000"/>
+				android:width="2dp"
+				android:color="#eecccccc"/>
 		</shape>
+
 	</item>
 	<item>
+
 		<shape
 			android:shape="oval">
 			<padding
@@ -26,10 +30,11 @@
 				android:right="10dp"
 				android:top="10dp"/>
 			<solid
-				android:color="#00000000"/>
+				android:color="#cc660000"/>
 			<stroke
-				android:width="3dp"
-				android:color="#00000000"/>
+				android:width="2dp"
+				android:color="#eeffffff"/>
 		</shape>
+
 	</item>
 </selector>

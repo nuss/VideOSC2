@@ -31,7 +31,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -143,6 +142,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private int mOldX;
 	private int mOldY;
 	private float mEditorBoxAlpha;
+	public ViewGroup mSnapshotsBar;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -255,9 +255,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mModePanel = (ViewGroup) inflater.inflate(R.layout.color_mode_panel, (FrameLayout) mCamView, false);
 		mFrameRateCalculationPanel = (ViewGroup) inflater.inflate(R.layout.framerate_calculation_indicator, (FrameLayout) mCamView, false);
 		mPixelEditor = (ViewGroup) inflater.inflate(R.layout.pixel_editor_toolbox, (FrameLayout) mCamView, false);
-		// TODO: editor should be movable - as of now touch events don't seem to get through
 		mPixelEditor.requestDisallowInterceptTouchEvent(true);
 		mPixelEditor.setOnTouchListener(this);
+
+		mSnapshotsBar = (ViewGroup) inflater.inflate(R.layout.snapshots_bar, (FrameLayout) mCamView, false);
+		VideOSCUIHelpers.addView(mSnapshotsBar, (FrameLayout) mCamView);
+		mSnapshotsBar.requestDisallowInterceptTouchEvent(true);
+		mSnapshotsBar.setOnTouchListener(this);
 
 		final ImageButton quickEditPixels = (ImageButton) mPixelEditor.findViewById(R.id.quick_edit_pixels);
 		quickEditPixels.setActivated(true);
@@ -265,6 +269,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final ImageButton editPixels = (ImageButton) mPixelEditor.findViewById(R.id.edit_pixels);
 		final ImageButton deleteEditsInPixels = (ImageButton) mPixelEditor.findViewById(R.id.delete_edits);
 		final ImageButton applyPixelSelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
+
+		final ImageButton loadSnapshotsButton = (ImageButton) mSnapshotsBar.findViewById(R.id.saved_snapshots_button);
+		final ImageButton saveSnapshotButton = (ImageButton) mSnapshotsBar.findViewById(R.id.save_snapshot);
 
 		quickEditPixels.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -305,6 +312,20 @@ public class VideOSCMainActivity extends AppCompatActivity
 				cameraFragment.getPixelNumbers().clear();
 				mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
 				Log.d(TAG, "delete edits");
+			}
+		});
+
+		loadSnapshotsButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "load snapshots button clicked");
+			}
+		});
+
+		saveSnapshotButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "save snapshot button clicked");
 			}
 		});
 

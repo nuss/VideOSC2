@@ -127,11 +127,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final private List<Integer> mPixelIds = new ArrayList<>();
 	// lock pixels on select or deselect in pixel edit mode EDIT_PIXELS
 	final private ArrayList<Boolean> mLockedPixels = new ArrayList<>();
+	final private ArrayList<Double> mPrevRedValues = new ArrayList<>();
+	final private ArrayList<Double> mPrevGreenValues = new ArrayList<>();
+	final private ArrayList<Double> mPrevBlueValues = new ArrayList<>();
 
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
 	private TileOverlayView mOverlayView;
 	private ViewGroup mPixelEditor;
+	private ViewGroup mSnapshotsBar;
 
 	/**
 	 * Default empty constructor.
@@ -422,6 +426,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (mBlueMixValues.size() < numPixels)
 					mBlueMixValues.add(null);
 
+				if (mPrevRedValues.size() < numPixels)
+					mPrevRedValues.add(null);
+				if (mPrevGreenValues.size() < numPixels)
+					mPrevGreenValues.add(null);
+				if (mPrevBlueValues.size() < numPixels)
+					mPrevBlueValues.add(null);
+
 				// mark deselected pixels
 				if (mLockedPixels.size() < numPixels)
 					mLockedPixels.add(false);
@@ -509,17 +520,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 			mPixelEditor = activity.mPixelEditor;
+			mSnapshotsBar = activity.mSnapshotsBar;
+			ViewGroup snapshotsBar = activity.mSnapshotsBar;
 			ImageButton applySelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
 			applySelection.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (mSelectedPixels.size() > 0) {
 						mSelectedPixels.clear();
+						mSnapshotsBar.setVisibility(View.INVISIBLE);
 						mPixelEditor.setVisibility(View.INVISIBLE);
 						createMultiSliders();
 					}
 				}
 			});
+			snapshotsBar.bringToFront();
 		}
 
 		/**
@@ -655,13 +670,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
 					indicators.setVisibility(View.INVISIBLE);
 					mPixelEditor.setVisibility(View.INVISIBLE);
+					mSnapshotsBar.setVisibility(View.INVISIBLE);
 				}
 			}
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)
-						&& mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS))
+						&& mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
 					mPixelEditor.setVisibility(View.VISIBLE);
+					mSnapshotsBar.setVisibility(View.VISIBLE);
+				}
 				// clear selected pixels on up
 				if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)) {
 					mSelectedPixels.clear();
@@ -669,6 +687,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					for (int i = 0; i < mLockedPixels.size(); i++)
 						mLockedPixels.set(i, false);
 					mPixelEditor.setVisibility(View.VISIBLE);
+					mSnapshotsBar.setVisibility(View.VISIBLE);
 				}
 				mOverlayView.setSelectedRects(mSelectedPixels);
 				mOverlayView.invalidate();
@@ -792,6 +811,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			Point res = mApp.getResolution();
 			for (int i = 0; i < numSelectedPixels; i++) {
 				int id = mPixelIds.get(i) - 1;
+				// FIXME: some bug lurking here: "y must be < bitmap.height()"
 				colors[i] = mBmp.getPixel(id % res.x, id / res.x);
 				// once a value has been set manually the value should not get reset
 				// when editing the same pixel again
@@ -954,7 +974,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					mRedMixValues.add(null);
 					mGreenMixValues.add(null);
 					mBlueMixValues.add(null);
+
 					mLockedPixels.add(false);
+
+					mPrevRedValues.add(null);
+					mPrevGreenValues.add(null);
+					mPrevBlueValues.add(null);
 				}
 			} else if (diff < 0) {
 				mRedValues.subList(mRedValues.size() - 1 + diff, mRedValues.size() - 1).clear();
@@ -963,7 +988,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				mRedMixValues.subList(mRedMixValues.size() - 1 + diff, mRedMixValues.size() - 1).clear();
 				mGreenMixValues.subList(mGreenMixValues.size() - 1 + diff, mGreenMixValues.size() - 1).clear();
 				mBlueMixValues.subList(mBlueMixValues.size() - 1 + diff, mBlueMixValues.size() - 1).clear();
+
 				mLockedPixels.subList(mLockedPixels.size() - 1 + diff, mLockedPixels.size() - 1).clear();
+
+				mPrevRedValues.subList(mPrevRedValues.size() - 1 + diff, mPrevRedValues.size() - 1).clear();
+				mPrevGreenValues.subList(mPrevGreenValues.size() - 1 + diff, mPrevGreenValues.size() - 1).clear();
+				mPrevBlueValues.subList(mPrevBlueValues.size() - 1 + diff, mPrevBlueValues.size() - 1).clear();
 			}
 		}
 
@@ -1134,44 +1164,53 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
-					synchronized (mRedOscRunnable.mOscLock) {
-						oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-						oscR.add(rValue);
-						if (VideOSCApplication.getDebugPixelOsc()) {
-							RedOscRunnable.setDebugPixelOsc(true);
-							oscR.add(++mCountR);
-						} else {
-							RedOscRunnable.setDebugPixelOsc(false);
+					if (mPrevRedValues.get(i) == null || rValue != mPrevRedValues.get(i)) {
+						synchronized (mRedOscRunnable.mOscLock) {
+							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
+							oscR.add(rValue);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								RedOscRunnable.setDebugPixelOsc(true);
+								oscR.add(++mCountR);
+							} else {
+								RedOscRunnable.setDebugPixelOsc(false);
+							}
+							mRedOscRunnable.mMsg = oscR;
+							mRedOscRunnable.mOscLock.notify();
 						}
-						mRedOscRunnable.mMsg = oscR;
-						mRedOscRunnable.mOscLock.notify();
 					}
+					mPrevRedValues.set(i, rValue);
 
-					synchronized (mGreenOscRunnable.mOscLock) {
-						oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-						oscG.add(gValue);
-						if (VideOSCApplication.getDebugPixelOsc()) {
-							GreenOscRunnable.setDebugPixelOsc(true);
-							oscG.add(++mCountG);
-						} else {
-							GreenOscRunnable.setDebugPixelOsc(false);
+					if (mPrevGreenValues.get(i) == null || gValue != mPrevGreenValues.get(i)) {
+						synchronized (mGreenOscRunnable.mOscLock) {
+							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
+							oscG.add(gValue);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								GreenOscRunnable.setDebugPixelOsc(true);
+								oscG.add(++mCountG);
+							} else {
+								GreenOscRunnable.setDebugPixelOsc(false);
+							}
+							mGreenOscRunnable.mMsg = oscG;
+							mGreenOscRunnable.mOscLock.notify();
 						}
-						mGreenOscRunnable.mMsg = oscG;
-						mGreenOscRunnable.mOscLock.notify();
 					}
+					mPrevGreenValues.set(i, gValue);
 
-					synchronized (mBlueOscRunnable.mOscLock) {
-						oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-						oscB.add(bValue);
-						if (VideOSCApplication.getDebugPixelOsc()) {
-							BlueOscRunnable.setDebugPixelOsc(true);
-							oscB.add(++mCountB);
-						} else {
-							BlueOscRunnable.setDebugPixelOsc(false);
+					if (mPrevBlueValues.get(i) == null || bValue != mPrevBlueValues.get(i)) {
+						synchronized (mBlueOscRunnable.mOscLock) {
+							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
+							oscB.add(bValue);
+							if (VideOSCApplication.getDebugPixelOsc()) {
+								BlueOscRunnable.setDebugPixelOsc(true);
+								oscB.add(++mCountB);
+							} else {
+								BlueOscRunnable.setDebugPixelOsc(false);
+							}
+							mBlueOscRunnable.mMsg = oscB;
+							mBlueOscRunnable.mOscLock.notify();
 						}
-						mBlueOscRunnable.mMsg = oscB;
-						mBlueOscRunnable.mOscLock.notify();
 					}
+					mPrevBlueValues.set(i, bValue);
 				}
 			}
 

@@ -9,9 +9,9 @@
 		android:top="10dp"/>
 
 	<solid
-		android:color="#cc000000"/>
+		android:color="#00000000"/>
 
 	<stroke
-		android:width="2dp"
-		android:color="#33ffffff"/>
+		android:width="3dp"
+		android:color="#00000000"/>
 </shape>

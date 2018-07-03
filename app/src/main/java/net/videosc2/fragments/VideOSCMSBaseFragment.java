@@ -30,6 +30,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		final ViewGroup fpsCalcPanel = (ViewGroup) mParentContainer.findViewById(R.id.fps_calc_period_indicator);
 		final ViewGroup indicatorPanel = (ViewGroup) mParentContainer.findViewById(R.id.indicator_panel);
 		final ViewGroup pixelEditorToolbox = (ViewGroup) mParentContainer.findViewById(R.id.pixel_editor_toolbox);
+		final ViewGroup snapshotsBar = (ViewGroup) mParentContainer.findViewById(R.id.snapshots_bar);
 
 		mOkButton.bringToFront();
 
@@ -41,6 +42,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				mContainer.removeView(mOkButton);
 				indicatorPanel.setVisibility(View.VISIBLE);
 				pixelEditorToolbox.setVisibility(View.VISIBLE);
+				snapshotsBar.setVisibility(View.VISIBLE);
 				if (app.getIsFPSCalcPanelOpen())
 					fpsCalcPanel.setVisibility(View.VISIBLE);
 				toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
