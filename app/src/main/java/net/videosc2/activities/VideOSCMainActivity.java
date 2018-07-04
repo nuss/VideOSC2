@@ -35,6 +35,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -67,6 +68,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
@@ -269,6 +271,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		mSnapshotsBar = (ViewGroup) inflater.inflate(R.layout.snapshots_bar, (FrameLayout) mCamView, false);
 		VideOSCUIHelpers.addView(mSnapshotsBar, (FrameLayout) mCamView);
+		long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+		if (numSnapshots > 0) {
+			TextView numSnapshotsIndicator = (TextView) mSnapshotsBar.findViewById(R.id.num_snapshots);
+			numSnapshotsIndicator.setActivated(true);
+			numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
+			numSnapshotsIndicator.setTextColor(0xffffffff);
+		}
+
 		mSnapshotsBar.requestDisallowInterceptTouchEvent(true);
 		mSnapshotsBar.setOnTouchListener(this);
 
@@ -355,6 +365,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 										final ContentValues values = new ContentValues();
 										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 										String valuesString;
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
 										// red values
 										valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
 										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
@@ -381,6 +392,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 												values
 										);
 										Log.d(TAG, "inserted into database, result: " + result);
+										if (result > 0) {
+											long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+											if (numSnapshots > 0) {
+												TextView numSnapshotsIndicator = (TextView) mSnapshotsBar.findViewById(R.id.num_snapshots);
+												numSnapshotsIndicator.setActivated(true);
+												numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
+												numSnapshotsIndicator.setTextColor(0xffffffff);
+											}
+										}
+//										mDb.close();
 										((FrameLayout) mCamView).removeView(dialogView);
 									}
 								})
@@ -839,6 +860,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mApp.setIsMultiSliderActive(false);
 		mApp.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
 		// close db
+		mDb.close();
 		mDbHelper.close();
 		super.onDestroy();
 	}
