@@ -24,8 +24,10 @@ package net.videosc2.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +40,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.icu.text.RelativeDateTimeFormatter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +51,7 @@ import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -57,6 +61,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -79,9 +84,13 @@ import net.videosc2.utilities.enums.PixelEditModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
@@ -144,6 +153,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private float mEditorBoxAlpha;
 	public ViewGroup mSnapshotsBar;
 
+	private SQLiteDatabase mDb;
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -171,13 +182,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		// keep db access open through the app's lifetime
 		mDbHelper = new SettingsDBHelper(this);
-		final SQLiteDatabase db = mDbHelper.getReadableDatabase();
+		mDb = mDbHelper.getReadableDatabase();
 		final String[] settingsFields = new String[]{
 				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
 				SettingsContract.AddressSettingsEntry.PORT
 		};
 
-		Cursor cursor = db.query(
+		Cursor cursor = mDb.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,
 				settingsFields,
 				null,
@@ -198,11 +209,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		cursor.close();
 
-		final LayoutInflater inflater = getLayoutInflater();
-
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		View mainLayout = inflater.inflate(R.layout.activity_main, null);
+		View mainLayout = View.inflate(this, R.layout.activity_main, null);
 		setContentView(mainLayout);
 
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
@@ -325,7 +334,66 @@ public class VideOSCMainActivity extends AppCompatActivity
 		saveSnapshotButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d(TAG, "save snapshot button clicked");
+				LayoutInflater inflater = LayoutInflater.from(context);
+				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.save_snapshot_dialog, (FrameLayout) mCamView, false);
+
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
+				dialogBuilder.setView(dialogView);
+				final EditText nameInput = (EditText) dialogView.findViewById(R.id.save_snapshot_name);
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+				Date now = new Date();
+				String nowString = df.format(now);
+				nameInput.setText(nowString);
+
+				AlertDialog.Builder builder = dialogBuilder
+						.setCancelable(true)
+						.setPositiveButton(R.string.save_snapshot,
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										// TODO save snapshot in database
+										final ContentValues values = new ContentValues();
+										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+										String valuesString;
+										// red values
+										valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
+										// red mix values
+										valuesString = convertPixelValuesToString(cameraFragment.getRedMixValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES, valuesString);
+										// green values
+										valuesString = convertPixelValuesToString(cameraFragment.getGreenValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES, valuesString);
+										// green mix values
+										valuesString = convertPixelValuesToString(cameraFragment.getGreenMixValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES, valuesString);
+										// blue values
+										valuesString = convertPixelValuesToString(cameraFragment.getBlueValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES, valuesString);
+										// blue mix values
+										valuesString = convertPixelValuesToString(cameraFragment.getBlueMixValues());
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES, valuesString);
+										Point resolution = mApp.getResolution();
+										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE, resolution.x * resolution.y);
+										long result = mDb.insert(
+												SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+												null,
+												values
+										);
+										Log.d(TAG, "inserted into database, result: " + result);
+										((FrameLayout) mCamView).removeView(dialogView);
+									}
+								})
+						.setNegativeButton(R.string.cancel,
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										((FrameLayout) mCamView).removeView(dialogView);
+									}
+								});
+
+				AlertDialog dialog = dialogBuilder.create();
+				dialog.show();
 			}
 		});
 
@@ -599,6 +667,20 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private void closeColorModePanel() {
 		if (mApp.getIsColorModePanelOpen())
 			mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView));
+	}
+
+	private String convertPixelValuesToString(ArrayList<Double> values) {
+		String result = "";
+		int size = values.size();
+		for (int i = 0; i < size; i++) {
+			Double value = values.get(i);
+			if (value != null)
+				result = result.concat(String.valueOf(value));
+			if ((i + 1) < size)
+				result = result.concat(",");
+		}
+
+		return result;
 	}
 
 	/**

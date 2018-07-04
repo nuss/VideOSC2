@@ -42,8 +42,13 @@ public class SettingsContract {
 	public static class PixelSnapshotEntries implements BaseColumns {
 		public static final String TABLE_NAME = "vosc_snapshots";
 		public static final String SNAPSHOT_NAME = "snapshot_name";
-		public static final String SNAPSHOT_VALUES = "snapshot_values";
-		public static final String SNAPSHOT_MIX_VALUES = "snapshot_mix_values";
+		public static final String SNAPSHOT_RED_VALUES = "snapshot_red_values";
+		public static final String SNAPSHOT_RED_MIX_VALUES = "snapshot_red_mix_values";
+		public static final String SNAPSHOT_GREEN_VALUES = "snapshot_green_values";
+		public static final String SNAPSHOT_GREEN_MIX_VALUES = "snapshot_green_mix_values";
+		public static final String SNAPSHOT_BLUE_VALUES = "snapshot_blue_values";
+		public static final String SNAPSHOT_BLUE_MIX_VALUES = "snapshot_blue_mix_values";
+		public static final String SNAPSHOT_SIZE = "snapshot_size";
 	}
 
 	// TODO

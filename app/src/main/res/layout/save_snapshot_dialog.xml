@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/save_snapshot_dialog"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center|center"
+              android:orientation="vertical"
+              tools:theme="@android:style/Theme.Holo.Light.Dialog">
+
+	<EditText
+		android:id="@+id/save_snapshot_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/name_this_snapshot"
+		android:inputType="text">
+
+		<requestFocus/>
+	</EditText>
+
+	<!-- <LinearLayout
+		android:id="@+id/snapshot_save_dialog_buttons"
+		style="?android:attr/buttonBarStyle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<Button
+			android:id="@+id/cancel_save_snapshot_button"
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/cancel"/>
+
+		<Button
+			android:id="@+id/save_snapshot_button"
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="0.5"
+			android:text="@string/save_snapshot"/>
+	</LinearLayout> -->
+
+</LinearLayout>

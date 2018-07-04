@@ -103,5 +103,7 @@
 	<string name="load_a_saved_snapshot">load a saved snapshot</string>
 	<string name="make_a_snapshot">make a snapshot</string>
 	<string name="move_the_snapshots_bar">move the snapshots bar</string>
+	<string name="name_this_snapshot">name this snapshot</string>
+	<string name="save_snapshot">save snapshot</string>
 
 </resources>

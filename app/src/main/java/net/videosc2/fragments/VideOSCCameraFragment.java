@@ -287,6 +287,30 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return this.mPixelIds;
 	}
 
+	public ArrayList<Double> getRedValues() {
+		return this.mRedValues;
+	}
+
+	public ArrayList<Double> getRedMixValues() {
+		return this.mRedMixValues;
+	}
+
+	public ArrayList<Double> getGreenValues() {
+		return this.mGreenValues;
+	}
+
+	public ArrayList<Double> getGreenMixValues() {
+		return this.mGreenMixValues;
+	}
+
+	public ArrayList<Double> getBlueValues() {
+		return this.mBlueValues;
+	}
+
+	public ArrayList<Double> getBlueMixValues() {
+		return this.mBlueMixValues;
+	}
+
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
 	 * excellent StackOverflow answer provided below.

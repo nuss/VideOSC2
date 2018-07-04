@@ -64,7 +64,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 //		Log.d(TAG, "container: " + container);
-		final Resources res = getResources();
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
