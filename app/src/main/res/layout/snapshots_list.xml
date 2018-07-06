@@ -8,7 +8,7 @@
               android:orientation="vertical">
 
 	<ListView
-		android:id="@+id/settings_selection_list"
+		android:id="@+id/snapshots_list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:paddingBottom="20dp"

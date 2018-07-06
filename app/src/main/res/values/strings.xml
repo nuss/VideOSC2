@@ -82,7 +82,7 @@
 	<string name="fix_exposure_temporary">Fix exposure temporarily (will be reset on restart)</string>
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
 	<string name="dont_fix_exposure">Don\'t fix exposure</string>
-	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit ok.</string>
+	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit OK.</string>
 	<string name="grant">grant</string>
 	<string name="deny">deny</string>
 	<string name="ask_for_settings_permission">Permissions to write settings not granted. Shall they be granted?</string>
@@ -93,6 +93,8 @@
 	<string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
 	<string name="camera_permissions_granted">Camera permissions granted. Starting preview.</string>
 	<string name="camera_permissions_denied">Camera Permission was denied.</string>
+
+	<!-- editing pixels -->
 	<string name="outline_for_a_multislider_bar">outline for a multislider bar</string>
 	<string name="multislider_bar_fill">multislider bar fill</string>
 	<string name="delete_edits_on_pixels">delete edits on pixels</string>
@@ -100,10 +102,14 @@
 	<string name="quickly_select_pixels">quickly select pixels</string>
 	<string name="apply_current_pixel_selection">apply current pixel selection</string>
 	<string name="move_the_editor">move the editor</string>
+
+	<!-- snapshots -->
 	<string name="load_a_saved_snapshot">load a saved snapshot</string>
 	<string name="make_a_snapshot">make a snapshot</string>
 	<string name="move_the_snapshots_bar">move the snapshots bar</string>
 	<string name="name_this_snapshot">name this snapshot</string>
 	<string name="save_snapshot">save snapshot</string>
+	<string name="save_snapshots_set">save snapshots set...</string>
+	<string name="load_snapshots_set">load snapshots set...</string>
 
 </resources>

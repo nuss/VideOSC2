@@ -70,7 +70,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// the background scrollview - dark transparent, no content
 		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		// the view holding the main selection of settings
-		View view = inflater.inflate(R.layout.settings_selection, bg, false);
+		final View view = inflater.inflate(R.layout.settings_selection, bg, false);
 		// the listview finally holding the links to different settings: network, resolution, sensors, about
 		final ListView settingsListView = (ListView) view.findViewById(R.id.settings_selection_list);
 		// the network settings form

@@ -36,12 +36,13 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.icu.text.RelativeDateTimeFormatter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +53,6 @@ import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -72,11 +72,13 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.adapters.SnapshotSelectAdapter;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.db.SettingsDBHelper;
 import net.videosc2.fragments.VideOSCBaseFragment;
 import net.videosc2.fragments.VideOSCCameraFragment;
+import net.videosc2.fragments.VideOSCSelectSnapshotFragment;
 import net.videosc2.fragments.VideOSCSettingsFragment;
 import net.videosc2.utilities.VideOSCDialogHelper;
 import net.videosc2.utilities.VideOSCUIHelpers;
@@ -86,7 +88,6 @@ import net.videosc2.utilities.enums.PixelEditModes;
 import net.videosc2.utilities.enums.RGBModes;
 import net.videosc2.utilities.enums.RGBToolbarStatus;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -338,6 +339,36 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "load snapshots button clicked");
+				final MatrixCursor extras = new MatrixCursor(new String[]{
+						SettingsContract.PixelSnapshotEntries._ID,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
+				});
+				extras.addRow(new String[]{"-1", "export snapshots set...", null});
+				extras.addRow(new String[]{"-2", "load snapshots set...", null});
+				final String[] settingsFields = new String[]{
+						SettingsContract.PixelSnapshotEntries._ID,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
+				};
+				final Cursor cursor = mDb.query(
+						SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+						settingsFields,
+						null, null, null, null, null
+				);
+				final Cursor[] cursors = {cursor, extras};
+				final MergeCursor mergedCursor = new MergeCursor(cursors);
+				Log.d(TAG, "num results: " + mergedCursor.getCount());
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+					mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+				}
+				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
+				snapshotSelect.setCursors(mergedCursor, cursor, extras);
+				fragmentManager
+						.beginTransaction()
+						.add(R.id.camera_preview, snapshotSelect, "snapshot select")
+						.commit();
+				mApp.setSettingsLevel(1);
 			}
 		});
 
@@ -355,7 +386,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				String nowString = df.format(now);
 				nameInput.setText(nowString);
 
-				AlertDialog.Builder builder = dialogBuilder
+				dialogBuilder
 						.setCancelable(true)
 						.setPositiveButton(R.string.save_snapshot,
 								new DialogInterface.OnClickListener() {
@@ -660,13 +691,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 				view.setBackgroundColor(0x00000000);
 			}
 		});
-		if (mApp.getSettingsLevel() < 1)
+		/*if (mApp.getSettingsLevel() < 1)
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 				Log.d(TAG, "KitKat or higher");
 				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 			} else
 				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-		mToolsDrawerLayout.openDrawer(Gravity.END);
+		mToolsDrawerLayout.openDrawer(Gravity.END);*/
 
 		mDimensions = getAbsoluteScreenSize();
 		mApp.setDimensions(mDimensions);
@@ -776,15 +807,25 @@ public class VideOSCMainActivity extends AppCompatActivity
 		View debugSettingsDialog = findViewById(R.id.debug_settings);
 		View about = findViewById(R.id.about);
 
+
+
 		switch (settingsLevel) {
 			case 1:
-				FragmentManager manager = getFragmentManager();
-				Fragment fragment = manager.findFragmentByTag("settings selection");
+				final FragmentManager manager = getFragmentManager();
+				final Fragment fragment = manager.findFragmentByTag("settings selection");
+				final Fragment snapshotsFragment = manager.findFragmentByTag("snapshot select");
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
 				if (fragment != null)
 					manager.beginTransaction().remove(fragment).commit();
+				if (snapshotsFragment != null)
+					manager.beginTransaction().remove(snapshotsFragment).commit();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+					Log.d(TAG, "KitKat or higher");
+					mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+				} else
+					mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 				mToolsDrawerLayout.closeDrawer(Gravity.END);
 				mApp.setSettingsLevel(0);
 				break;
@@ -867,6 +908,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	public Enum getColorModeToolsDrawer() {
 		return this.mColorModeToolsDrawer;
+	}
+
+	public SQLiteDatabase getDatabase() {
+		return this.mDb;
 	}
 
 	@Override
