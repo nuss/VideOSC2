@@ -868,7 +868,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	public void setFullScreen() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			Log.d(TAG, "mCamView: " + mCamView.hasFocus());
 			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 		} else {
 			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);

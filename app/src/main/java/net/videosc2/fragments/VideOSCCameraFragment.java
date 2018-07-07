@@ -617,7 +617,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}
 				}
 			});
-			snapshotsBar.bringToFront();
+			if (mApp.getSettingsLevel() == 0)
+				snapshotsBar.bringToFront();
 		}
 
 		/**
