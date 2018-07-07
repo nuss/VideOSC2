@@ -35,7 +35,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -291,24 +290,84 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return this.mRedValues;
 	}
 
+	public void setRedValues(ArrayList<Double> values, int size) {
+		if (size == mRedValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mRedValues.set(i, values.get(i));
+				else mRedValues.set(i, null);
+			}
+		}
+	}
+
 	public ArrayList<Double> getRedMixValues() {
 		return this.mRedMixValues;
+	}
+
+	public void setRedMixValues(ArrayList<Double> values, int size) {
+		if (size == mRedMixValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mRedMixValues.set(i, values.get(i));
+				else mRedMixValues.set(i, null);
+			}
+		}
 	}
 
 	public ArrayList<Double> getGreenValues() {
 		return this.mGreenValues;
 	}
 
+	public void setGreenValues(ArrayList<Double> values, int size) {
+		if (size == mGreenValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mGreenValues.set(i, values.get(i));
+				else mGreenValues.set(i, null);
+			}
+		}
+	}
+
 	public ArrayList<Double> getGreenMixValues() {
 		return this.mGreenMixValues;
+	}
+
+	public void setGreenMixValues(ArrayList<Double> values, int size) {
+		if (size == mGreenMixValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mGreenMixValues.set(i, values.get(i));
+				else mGreenMixValues.set(i, null);
+			}
+		}
 	}
 
 	public ArrayList<Double> getBlueValues() {
 		return this.mBlueValues;
 	}
 
+	public void setBlueValues(ArrayList<Double> values, int size) {
+		if (size == mBlueValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mBlueValues.set(i, values.get(i));
+				else mBlueValues.set(i, null);
+			}
+		}
+	}
+
 	public ArrayList<Double> getBlueMixValues() {
 		return this.mBlueMixValues;
+	}
+
+	public void setBlueMixValues(ArrayList<Double> values, int size) {
+		if (size == mBlueMixValues.size()) {
+			for (int i = 0; i < size; i++) {
+				if (i < values.size())
+					mBlueMixValues.set(i, values.get(i));
+				else mBlueMixValues.set(i, null);
+			}
+		}
 	}
 
 	/**
@@ -317,7 +376,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * <p>
 	 * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 	 */
-	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback{
+	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
 
 		// SurfaceHolder
 		private SurfaceHolder mHolder;
@@ -1244,7 +1303,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		// needed by the VideOSCMultiSliderFragmentRGB.OnCreateViewCallback
 		@Override
-		public void onCreateView() { }
+		public void onCreateView() {
+		}
 	}
 
 	// prevent memory leaks by declaring Runnable static

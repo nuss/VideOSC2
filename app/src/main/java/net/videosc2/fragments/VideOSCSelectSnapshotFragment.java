@@ -1,20 +1,25 @@
 package net.videosc2.fragments;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
 import net.videosc2.R;
 import net.videosc2.adapters.SnapshotSelectAdapter;
+import net.videosc2.utilities.VideOSCUIHelpers;
 
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	final static String TAG = "SelectSnapshotFragment";
@@ -22,6 +27,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	private Cursor mCursor;
 	private Cursor mDbCursor;
 	private MatrixCursor mExtraCursor;
+	private ViewGroup mView;
 
 	public VideOSCSelectSnapshotFragment() {
 		super();
@@ -48,14 +54,32 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d(TAG, "snapshots fragment, on create view");
-		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
-		final View view = inflater.inflate(R.layout.snapshots_list, bg, false);
-		final ListView snapshotsListView = (ListView) view.findViewById(R.id.snapshots_list);
+//		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
+		final FragmentManager manager = getFragmentManager();
+		mView = (ViewGroup) inflater.inflate(R.layout.snapshots_list, container, false);
+		final ListView snapshotsListView = (ListView) mView.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(getActivity(), R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		snapshotsListView.setAdapter(adapter);
-//		VideOSCUIHelpers.setTransitionAnimation(bg);
-//		bg.requestDisallowInterceptTouchEvent(true);
-		return view;
+		VideOSCUIHelpers.setTransitionAnimation(mView);
+		// prevent underlying view from receiving touch events
+		mView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				v.performClick();
+				return true;
+			}
+		});
+		final ImageButton close = (ImageButton) mView.findViewById(R.id.close);
+		close.bringToFront();
+		close.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				manager.beginTransaction()
+						.remove(VideOSCSelectSnapshotFragment.this)
+						.commit();
+			}
+		});
+		return mView;
 	}
 
 	/**

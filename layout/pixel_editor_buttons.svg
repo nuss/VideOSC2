@@ -72,7 +72,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.69991111"
-     inkscape:cx="1021.8369"
+     inkscape:cx="173.73634"
      inkscape:cy="680.65786"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
@@ -82,7 +82,7 @@
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true">
     <sodipodi:guide
        position="250,687.78932"
@@ -94,18 +94,6 @@
        position="51.107771,450"
        orientation="0,1"
        id="guide4178"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)" />
-    <sodipodi:guide
-       position="180,502.41537"
-       orientation="1,0"
-       id="guide4180"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)" />
-    <sodipodi:guide
-       position="320.00001,558.72054"
-       orientation="1,0"
-       id="guide4182"
        inkscape:label=""
        inkscape:color="rgb(0,0,255)" />
     <sodipodi:guide
@@ -126,10 +114,6 @@
        id="guide4190"
        inkscape:label=""
        inkscape:color="rgb(0,0,255)" />
-    <sodipodi:guide
-       position="199.92855,632.04307"
-       orientation="1,0"
-       id="guide4267" />
     <sodipodi:guide
        position="1530.48,408.05181"
        orientation="1,0"
@@ -156,6 +140,42 @@
        position="1569.9999,630"
        orientation="1,0"
        id="guide4451"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="49.999998,1000"
+       orientation="0,1"
+       id="guide4215"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="-160.01999,750.00002"
+       orientation="0,1"
+       id="guide4217"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="49.999998,1070.136"
+       orientation="1,0"
+       id="guide4219"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="299.99999,1183.0074"
+       orientation="1,0"
+       id="guide4221"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="149.99999,875.82603"
+       orientation="0,1"
+       id="guide4223"
+       inkscape:label=""
+       inkscape:color="rgb(0,0,255)" />
+    <sodipodi:guide
+       position="174.99999,1207.2962"
+       orientation="1,0"
+       id="guide4225"
        inkscape:label=""
        inkscape:color="rgb(0,0,255)" />
   </sodipodi:namedview>
@@ -575,6 +595,13 @@
          id="rect5206"
          style="fill:none;fill-opacity:1;stroke:none;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
+    <path
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:50;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 104.85799,-24.462473 70.33119,-71.088145 71.08814,70.331186 35.1656,-35.544072 -71.08815,-70.331186 70.33119,-71.08814 -35.54407,-35.1656 -70.33119,71.08815 -71.08814,-70.33119 -35.165596,35.54407 71.088146,70.33119 -70.331191,71.088143 35.544071,35.165594 z"
+       id="path4229"
+       inkscape:connector-curvature="0"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
   </g>
   <g
      inkscape:groupmode="layer"

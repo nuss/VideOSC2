@@ -341,13 +341,25 @@ public class VideOSCMainActivity extends AppCompatActivity
 				Log.d(TAG, "load snapshots button clicked");
 				final MatrixCursor extras = new MatrixCursor(new String[]{
 						SettingsContract.PixelSnapshotEntries._ID,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES,
 						SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
 						SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
 				});
-				extras.addRow(new String[]{"-1", "export snapshots set...", null});
-				extras.addRow(new String[]{"-2", "load snapshots set...", null});
+				extras.addRow(new String[]{"-1", null, null, null, null, null, null, "export snapshots set...", null});
+				extras.addRow(new String[]{"-2", null, null, null, null, null, null, "load snapshots set...", null});
 				final String[] settingsFields = new String[]{
 						SettingsContract.PixelSnapshotEntries._ID,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES,
 						SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
 						SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
 				};
@@ -359,16 +371,17 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final Cursor[] cursors = {cursor, extras};
 				final MergeCursor mergedCursor = new MergeCursor(cursors);
 				Log.d(TAG, "num results: " + mergedCursor.getCount());
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-				}
+//				showBackButton();
 				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
 				snapshotSelect.setCursors(mergedCursor, cursor, extras);
-				fragmentManager
-						.beginTransaction()
-						.add(R.id.camera_preview, snapshotSelect, "snapshot select")
-						.commit();
-				mApp.setSettingsLevel(1);
+				if (fragmentManager.findFragmentByTag("snapshot select") == null
+						&& fragmentManager.findFragmentByTag("settings selection") == null) {
+					fragmentManager
+							.beginTransaction()
+							.add(R.id.camera_preview, snapshotSelect, "snapshot select")
+							.commit();
+//					mApp.setSettingsLevel(1);
+				}
 			}
 		});
 
@@ -678,11 +691,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 //					Log.d(TAG, "settings");
 					closeColorModePanel();
 					mApp.setSettingsLevel(1);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-						mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-					}
+					showBackButton();
 					VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
-					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
+					if (fragmentManager.findFragmentByTag("settings selection") == null
+							&& fragmentManager.findFragmentByTag("snapshot selection") == null)
+						fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
 				} else if (i == QUIT) {
 					VideOSCDialogHelper.showQuitDialog(activity);
 				}
@@ -691,13 +704,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				view.setBackgroundColor(0x00000000);
 			}
 		});
-		/*if (mApp.getSettingsLevel() < 1)
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-				Log.d(TAG, "KitKat or higher");
-				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-			} else
-				mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-		mToolsDrawerLayout.openDrawer(Gravity.END);*/
+		mToolsDrawerLayout.openDrawer(Gravity.END);
 
 		mDimensions = getAbsoluteScreenSize();
 		mApp.setDimensions(mDimensions);
@@ -821,11 +828,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 					manager.beginTransaction().remove(fragment).commit();
 				if (snapshotsFragment != null)
 					manager.beginTransaction().remove(snapshotsFragment).commit();
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					Log.d(TAG, "KitKat or higher");
-					mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-				} else
-					mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+				setFullScreen();
 				mToolsDrawerLayout.closeDrawer(Gravity.END);
 				mApp.setSettingsLevel(0);
 				break;
@@ -860,6 +863,21 @@ public class VideOSCMainActivity extends AppCompatActivity
 				break;
 			default:
 				VideOSCDialogHelper.showQuitDialog(this);
+		}
+	}
+
+	public void setFullScreen() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			Log.d(TAG, "mCamView: " + mCamView.hasFocus());
+			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		} else {
+			mCamView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+		}
+	}
+
+	public void showBackButton() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 		}
 	}
 
