@@ -1184,37 +1184,31 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				gValue = gPixVal / 255.0;
 				bValue = bPixVal / 255.0;
 
-				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
-					if (mRedValues.get(i) != null) {
-						if (mRedMixValues.get(i) != null && mRedMixValues.get(i) < 1.0) {
-							mixCubed = Math.pow(mRedMixValues.get(i), 3);
-							mixReciprCubed = Math.pow(1.0 - mRedMixValues.get(i), 3);
-							mult = 1.0 / (mixCubed + mixReciprCubed);
-							rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues.get(i) * mixCubed) * mult;
-						} else rValue = mRedValues.get(i);
-					}
+				if (mRedValues.get(i) != null) {
+					if (mRedMixValues.get(i) != null && mRedMixValues.get(i) < 1.0) {
+						mixCubed = Math.pow(mRedMixValues.get(i), 3);
+						mixReciprCubed = Math.pow(1.0 - mRedMixValues.get(i), 3);
+						mult = 1.0 / (mixCubed + mixReciprCubed);
+						rValue = (rPixVal / 255.0 * mixReciprCubed + mRedValues.get(i) * mixCubed) * mult;
+					} else rValue = mRedValues.get(i);
 				}
 
-				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
-					if (mGreenValues.get(i) != null) {
-						if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) < 1.0) {
-							mixCubed = Math.pow(mGreenMixValues.get(i), 3);
-							mixReciprCubed = Math.pow(1.0 - mGreenMixValues.get(i), 3);
-							mult = 1.0 / (mixCubed + mixReciprCubed);
-							gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues.get(i) * mixCubed) * mult;
-						} else gValue = mGreenValues.get(i);
-					}
+				if (mGreenValues.get(i) != null) {
+					if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) < 1.0) {
+						mixCubed = Math.pow(mGreenMixValues.get(i), 3);
+						mixReciprCubed = Math.pow(1.0 - mGreenMixValues.get(i), 3);
+						mult = 1.0 / (mixCubed + mixReciprCubed);
+						gValue = (gPixVal / 255.0 * mixReciprCubed + mGreenValues.get(i) * mixCubed) * mult;
+					} else gValue = mGreenValues.get(i);
 				}
 
-				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
-					if (mBlueValues.get(i) != null) {
-						if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) < 1.0) {
-							mixCubed = Math.pow(mBlueMixValues.get(i), 3);
-							mixReciprCubed = Math.pow(1.0 - mBlueMixValues.get(i), 3);
-							mult = 1.0 / (mixCubed + mixReciprCubed);
-							bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues.get(i) * mixCubed) * mult;
-						} else bValue = mBlueValues.get(i);
-					}
+				if (mBlueValues.get(i) != null) {
+					if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) < 1.0) {
+						mixCubed = Math.pow(mBlueMixValues.get(i), 3);
+						mixReciprCubed = Math.pow(1.0 - mBlueMixValues.get(i), 3);
+						mult = 1.0 / (mixCubed + mixReciprCubed);
+						bValue = (bPixVal / 255.0 * mixReciprCubed + mBlueValues.get(i) * mixCubed) * mult;
+					} else bValue = mBlueValues.get(i);
 				}
 
 				// pixels can only be set to ints in a range from 0-255
