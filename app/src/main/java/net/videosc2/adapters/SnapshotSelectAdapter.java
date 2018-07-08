@@ -1,14 +1,21 @@
 package net.videosc2.adapters;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.EditText;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -17,6 +24,7 @@ import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.fragments.VideOSCCameraFragment;
+import net.videosc2.fragments.VideOSCSelectSnapshotFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +38,8 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	private VideOSCCameraFragment mCameraFragment;
 	private FragmentManager mManager;
 	private VideOSCMainActivity mActivity;
+	private ViewGroup mParent;
+	private VideOSCSelectSnapshotFragment mSnapshotListFragment;
 
 	/**
 	 * Standard constructor.
@@ -63,6 +73,8 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		mManager = mActivity.getFragmentManager();
 		mCameraFragment = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
+		mSnapshotListFragment = (VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
+		mParent = parent;
 		return LayoutInflater.from(context).inflate(mLayout, parent, false);
 	}
 
@@ -74,12 +86,15 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 * @param cursor  The cursor from which to get the data. The cursor is already
 	 */
 	@Override
-	public void bindView(View view, final Context context, Cursor cursor) {
+	public void bindView(View view, final Context context, final Cursor cursor) {
 		TextView row = (TextView) view.findViewById(R.id.snapshot_item);
+		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
 		final int numPixels = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE));
-		String text = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME));
+		String text;
+		final String name = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME));
 		if (numPixels > 0)
-			text = text.concat(" (" + String.valueOf(numPixels) + " pixels)");
+			text = name.concat(" (" + String.valueOf(numPixels) + " pixels)");
+		else text = name;
 		row.setText(text);
 
 		final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
@@ -151,7 +166,88 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 			row.setOnLongClickListener(new View.OnLongClickListener() {
 				@Override
 				public boolean onLongClick(View v) {
-					// TODO: rename, delete snapshot
+					LayoutInflater inflater = LayoutInflater.from(context);
+					final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, mParent, false);
+
+					AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+					dialogBuilder.setView(dialogView);
+					final EditText nameInput = (EditText) dialogView.findViewById(R.id.save_snapshot_name);
+					nameInput.setText(name);
+
+					final String[] fields = new String[]{
+							SettingsContract.PixelSnapshotEntries._ID,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
+							SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES
+					};
+
+
+					final SQLiteDatabase db = mSnapshotListFragment.getDatabase();
+					final MatrixCursor extrasCursor = mSnapshotListFragment.getExtrasCursor();
+
+					dialogBuilder
+							.setCancelable(true)
+							.setPositiveButton(R.string.rename_snapshot,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											final ContentValues values = new ContentValues();
+											values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
+											int result = db.update(
+													SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+													values,
+													SettingsContract.PixelSnapshotEntries._ID + " = " + id,
+													null
+											);
+											if (result > 0) {
+												final Cursor newCursor = db.query(
+														SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+														fields,
+														null, null, null, null,
+														SettingsContract.PixelSnapshotEntries._ID + " DESC"
+												);
+												final Cursor[] cursors = {newCursor, extrasCursor};
+												final MergeCursor mergedCursor = new MergeCursor(cursors);
+												changeCursor(newCursor);
+												notifyDataSetChanged();
+												dialog.dismiss();
+												mSnapshotListFragment.setDbCursor(newCursor);
+											}
+										}
+									})
+							.setNegativeButton(R.string.delete_snapshot,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											int result = db.delete(SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+													SettingsContract.PixelSnapshotEntries._ID + " = " + id,
+													null
+											);
+											if (result > 0) {
+												Cursor newCursor = db.query(
+														SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+														fields,
+														null, null, null, null,
+														SettingsContract.PixelSnapshotEntries._ID + " DESC"
+												);
+												final Cursor[] cursors = {newCursor, extrasCursor};
+												final MergeCursor mergedCursor = new MergeCursor(cursors);
+												changeCursor(newCursor);
+												notifyDataSetChanged();
+												dialog.dismiss();
+												mSnapshotListFragment.setDbCursor(newCursor);
+											}
+										}
+									});
+
+					final AlertDialog dialog = dialogBuilder.create();
+					dialog.show();
+
 					return true;
 				}
 			});

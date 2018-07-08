@@ -72,7 +72,6 @@ import android.widget.TextView;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
-import net.videosc2.adapters.SnapshotSelectAdapter;
 import net.videosc2.adapters.ToolsMenuAdapter;
 import net.videosc2.db.SettingsContract;
 import net.videosc2.db.SettingsDBHelper;
@@ -373,6 +372,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				Log.d(TAG, "num results: " + mergedCursor.getCount());
 //				showBackButton();
 				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
+				snapshotSelect.setDatabase(mDb);
 				snapshotSelect.setCursors(mergedCursor, cursor, extras);
 				if (fragmentManager.findFragmentByTag("snapshot select") == null
 						&& fragmentManager.findFragmentByTag("settings selection") == null) {
@@ -380,7 +380,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 							.beginTransaction()
 							.add(R.id.camera_preview, snapshotSelect, "snapshot select")
 							.commit();
-//					mApp.setSettingsLevel(1);
 				}
 			}
 		});
@@ -389,7 +388,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v) {
 				LayoutInflater inflater = LayoutInflater.from(context);
-				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.save_snapshot_dialog, (FrameLayout) mCamView, false);
+				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
 				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
 				dialogBuilder.setView(dialogView);
