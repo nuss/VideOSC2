@@ -366,7 +366,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				final Cursor cursor = mDb.query(
 						SettingsContract.PixelSnapshotEntries.TABLE_NAME,
 						settingsFields,
-						null, null, null, null, null
+						null, null, null, null, SettingsContract.PixelSnapshotEntries._ID + " DESC"
 				);
 				final Cursor[] cursors = {cursor, extras};
 				final MergeCursor mergedCursor = new MergeCursor(cursors);

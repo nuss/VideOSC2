@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Point;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,7 +152,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 				@Override
 				public boolean onLongClick(View v) {
 					// TODO: rename, delete snapshot
-					return false;
+					return true;
 				}
 			});
 		}
