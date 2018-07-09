@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -155,6 +156,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 					mCameraFragment.setGreenMixValues(fGreenMixValues, size);
 					mCameraFragment.setBlueValues(fBlueValues, size);
 					mCameraFragment.setBlueMixValues(fBlueMixValues, size);
+
 					mManager.beginTransaction()
 							.remove(mManager.findFragmentByTag("snapshot select"))
 							.commit();
@@ -188,7 +190,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 
 
 					final SQLiteDatabase db = mSnapshotListFragment.getDatabase();
-					final MatrixCursor extrasCursor = mSnapshotListFragment.getExtrasCursor();
+//					final MatrixCursor extrasCursor = mSnapshotListFragment.getExtrasCursor();
 
 					dialogBuilder
 							.setCancelable(true)
@@ -211,12 +213,13 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 														null, null, null, null,
 														SettingsContract.PixelSnapshotEntries._ID + " DESC"
 												);
-												final Cursor[] cursors = {newCursor, extrasCursor};
-												final MergeCursor mergedCursor = new MergeCursor(cursors);
+												// FIXME: we can't use a merged cursor. Hence, we lose the "export"/"import" entries
+//												final Cursor[] cursors = {newCursor, extrasCursor};
+//												final MergeCursor mergedCursor = new MergeCursor(cursors);
 												changeCursor(newCursor);
 												notifyDataSetChanged();
 												dialog.dismiss();
-												mSnapshotListFragment.setDbCursor(newCursor);
+//												mSnapshotListFragment.setDbCursor(newCursor);
 											}
 										}
 									})
@@ -235,12 +238,19 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 														null, null, null, null,
 														SettingsContract.PixelSnapshotEntries._ID + " DESC"
 												);
-												final Cursor[] cursors = {newCursor, extrasCursor};
-												final MergeCursor mergedCursor = new MergeCursor(cursors);
+//												final Cursor[] cursors = {newCursor, extrasCursor};
+//												final MergeCursor mergedCursor = new MergeCursor(cursors);
 												changeCursor(newCursor);
 												notifyDataSetChanged();
 												dialog.dismiss();
-												mSnapshotListFragment.setDbCursor(newCursor);
+
+												long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+												TextView numSnapshotsIndicator = (TextView) mActivity.mCamView.findViewById(R.id.num_snapshots);
+												if (numSnapshotsIndicator != null) {
+													numSnapshotsIndicator.setActivated(true);
+													numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
+													numSnapshotsIndicator.setTextColor(0xffffffff);
+												}
 											}
 										}
 									});

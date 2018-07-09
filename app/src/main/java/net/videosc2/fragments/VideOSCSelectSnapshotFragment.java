@@ -108,11 +108,11 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		return this.mDb;
 	}
 
-	public MatrixCursor getExtrasCursor() {
+	/*public MatrixCursor getExtrasCursor() {
 		return this.mExtraCursor;
 	}
 
 	public void setDbCursor(Cursor cursor) {
 		this.mDbCursor = cursor;
-	}
+	}*/
 }

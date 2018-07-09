@@ -1242,52 +1242,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
-					if (mPrevRedValues.get(i) == null || rValue != mPrevRedValues.get(i)) {
-						synchronized (mRedOscRunnable.mOscLock) {
-							oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (i + 1));
-							oscR.add(rValue);
-							if (VideOSCApplication.getDebugPixelOsc()) {
-								RedOscRunnable.setDebugPixelOsc(true);
-								oscR.add(++mCountR);
-							} else {
-								RedOscRunnable.setDebugPixelOsc(false);
-							}
-							mRedOscRunnable.mMsg = oscR;
-							mRedOscRunnable.mOscLock.notify();
-						}
-					}
+					if (mPrevRedValues.get(i) == null || rValue != mPrevRedValues.get(i))
+						doSendRedOSC(rValue, i);
 					mPrevRedValues.set(i, rValue);
 
-					if (mPrevGreenValues.get(i) == null || gValue != mPrevGreenValues.get(i)) {
-						synchronized (mGreenOscRunnable.mOscLock) {
-							oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (i + 1));
-							oscG.add(gValue);
-							if (VideOSCApplication.getDebugPixelOsc()) {
-								GreenOscRunnable.setDebugPixelOsc(true);
-								oscG.add(++mCountG);
-							} else {
-								GreenOscRunnable.setDebugPixelOsc(false);
-							}
-							mGreenOscRunnable.mMsg = oscG;
-							mGreenOscRunnable.mOscLock.notify();
-						}
-					}
+					if (mPrevGreenValues.get(i) == null || gValue != mPrevGreenValues.get(i))
+						doSendGreenOSC(gValue, i);
 					mPrevGreenValues.set(i, gValue);
 
-					if (mPrevBlueValues.get(i) == null || bValue != mPrevBlueValues.get(i)) {
-						synchronized (mBlueOscRunnable.mOscLock) {
-							oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (i + 1));
-							oscB.add(bValue);
-							if (VideOSCApplication.getDebugPixelOsc()) {
-								BlueOscRunnable.setDebugPixelOsc(true);
-								oscB.add(++mCountB);
-							} else {
-								BlueOscRunnable.setDebugPixelOsc(false);
-							}
-							mBlueOscRunnable.mMsg = oscB;
-							mBlueOscRunnable.mOscLock.notify();
-						}
-					}
+					if (mPrevBlueValues.get(i) == null || bValue != mPrevBlueValues.get(i))
+						doSendBlueOSC(bValue, i);
 					mPrevBlueValues.set(i, bValue);
 				}
 			}
@@ -1296,10 +1260,54 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			return bmp;
 		}
 
+		private void doSendRedOSC(double value, int count) {
+			synchronized (mRedOscRunnable.mOscLock) {
+				oscR = mApp.mOscHelper.makeMessage(oscR, mRed + (count + 1));
+				oscR.add(value);
+				if (VideOSCApplication.getDebugPixelOsc()) {
+					RedOscRunnable.setDebugPixelOsc(true);
+					oscR.add(++mCountR);
+				} else {
+					RedOscRunnable.setDebugPixelOsc(false);
+				}
+				mRedOscRunnable.mMsg = oscR;
+				mRedOscRunnable.mOscLock.notify();
+			}
+		}
+
+		private void doSendGreenOSC(double value, int count) {
+			synchronized (mGreenOscRunnable.mOscLock) {
+				oscG = mApp.mOscHelper.makeMessage(oscG, mGreen + (count + 1));
+				oscG.add(value);
+				if (VideOSCApplication.getDebugPixelOsc()) {
+					GreenOscRunnable.setDebugPixelOsc(true);
+					oscG.add(++mCountG);
+				} else {
+					GreenOscRunnable.setDebugPixelOsc(false);
+				}
+				mGreenOscRunnable.mMsg = oscG;
+				mGreenOscRunnable.mOscLock.notify();
+			}
+		}
+
+		private void doSendBlueOSC(double value, int count) {
+			synchronized (mBlueOscRunnable.mOscLock) {
+				oscB = mApp.mOscHelper.makeMessage(oscB, mBlue + (count + 1));
+				oscB.add(value);
+				if (VideOSCApplication.getDebugPixelOsc()) {
+					BlueOscRunnable.setDebugPixelOsc(true);
+					oscB.add(++mCountB);
+				} else {
+					BlueOscRunnable.setDebugPixelOsc(false);
+				}
+				mBlueOscRunnable.mMsg = oscB;
+				mBlueOscRunnable.mOscLock.notify();
+			}
+		}
+
 		// needed by the VideOSCMultiSliderFragmentRGB.OnCreateViewCallback
 		@Override
-		public void onCreateView() {
-		}
+		public void onCreateView() { }
 	}
 
 	// prevent memory leaks by declaring Runnable static
