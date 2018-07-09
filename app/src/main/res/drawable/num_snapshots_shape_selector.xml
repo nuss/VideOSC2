@@ -10,7 +10,8 @@
 		</shape>
 
 	</item>
-	<item>
+	<item
+		android:state_activated="false">
 
 		<shape
 			android:shape="oval">

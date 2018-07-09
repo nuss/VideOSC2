@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.MatrixCursor;
-import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.util.Log;
@@ -139,7 +137,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 
 			final ArrayList<Double> fRedValues = redValues;
 			final ArrayList<Double> fRedMixValues = redMixValues;
-			final ArrayList<Double> fGreenValues = blueValues;
+			final ArrayList<Double> fGreenValues = greenValues;
 			final ArrayList<Double> fGreenMixValues = greenMixValues;
 			final ArrayList<Double> fBlueValues = blueValues;
 			final ArrayList<Double> fBlueMixValues = blueMixValues;
@@ -247,9 +245,14 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 												long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 												TextView numSnapshotsIndicator = (TextView) mActivity.mCamView.findViewById(R.id.num_snapshots);
 												if (numSnapshotsIndicator != null) {
-													numSnapshotsIndicator.setActivated(true);
 													numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
-													numSnapshotsIndicator.setTextColor(0xffffffff);
+													if (numSnapshots > 0) {
+														numSnapshotsIndicator.setActivated(true);
+														numSnapshotsIndicator.setTextColor(0xffffffff);
+													} else {
+														numSnapshotsIndicator.setActivated(false);
+														numSnapshotsIndicator.setTextColor(0x00ffffff);
+													}
 												}
 											}
 										}
