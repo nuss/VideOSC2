@@ -764,6 +764,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			case MotionEvent.ACTION_DOWN:
 				mEditorBoxAlpha = v.getAlpha();
 				v.setAlpha(0.3f);
+				v.bringToFront();
 				mOldX = x;
 				mOldY = y;
 				break;

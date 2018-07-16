@@ -214,6 +214,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 												// FIXME: we can't use a merged cursor. Hence, we lose the "export"/"import" entries
 //												final Cursor[] cursors = {newCursor, extrasCursor};
 //												final MergeCursor mergedCursor = new MergeCursor(cursors);
+//												changeCursor(mergedCursor);
 												changeCursor(newCursor);
 												notifyDataSetChanged();
 												dialog.dismiss();
@@ -238,12 +239,13 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 												);
 //												final Cursor[] cursors = {newCursor, extrasCursor};
 //												final MergeCursor mergedCursor = new MergeCursor(cursors);
+//												changeCursor(mergedCursor);
 												changeCursor(newCursor);
 												notifyDataSetChanged();
 												dialog.dismiss();
 
-												long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
-												TextView numSnapshotsIndicator = (TextView) mActivity.mCamView.findViewById(R.id.num_snapshots);
+												final long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+												final TextView numSnapshotsIndicator = (TextView) mActivity.mCamView.findViewById(R.id.num_snapshots);
 												if (numSnapshotsIndicator != null) {
 													numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 													if (numSnapshots > 0) {
