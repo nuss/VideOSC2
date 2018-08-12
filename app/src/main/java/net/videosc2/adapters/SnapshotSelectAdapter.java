@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -280,7 +281,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 		super.changeCursor(cursor);
 	}
 
-	private ArrayList<Double> convertStringValuesToDouble(List<String> convertList, ArrayList<Double> resultList) {
+	private ArrayList<Double> convertStringValuesToDouble(@NonNull List<String> convertList, @NonNull ArrayList<Double> resultList) {
 		resultList.clear();
 		for (String string : convertList) {
 			if (string.length() == 0) resultList.add(null);
