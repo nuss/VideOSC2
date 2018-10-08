@@ -23,13 +23,7 @@
 package net.videosc2.fragments;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.net.Uri;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-
-import net.videosc2.R;
 
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.

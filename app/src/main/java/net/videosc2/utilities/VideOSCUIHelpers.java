@@ -1,21 +1,12 @@
 package net.videosc2.utilities;
 
 import android.animation.LayoutTransition;
-import android.app.Application;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.compat.BuildConfig;
-import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import net.videosc2.VideOSCApplication;
 import net.videosc2.activities.VideOSCMainActivity;
 
 import java.util.List;
