@@ -124,7 +124,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// set to true when isRGBPositive changes
 	private boolean mRGBHasChanged = false;
 	// the current gesture mode
-	public Enum gestureMode = GestureModes.SWAP;
+	public Enum mGestureMode = GestureModes.SWAP;
 
 	// ListView for the tools drawer
 	private List<BitmapDrawable> mToolsList = new ArrayList<>();
@@ -251,10 +251,10 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		TypedArray tools = getResources().obtainTypedArray(drawerIconsIds);
 //		Log.d(TAG, "tools: " + tools.getClass());
-		mToolsDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mToolsDrawerLayout = findViewById(R.id.drawer_layout);
 		mToolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
 
-		mToolsDrawerList = (ListView) findViewById(R.id.drawer);
+		mToolsDrawerList = findViewById(R.id.drawer);
 
 		for (int i = 0; i < tools.length(); i++) {
 			mToolsList.add((BitmapDrawable) tools.getDrawable(i));
@@ -273,7 +273,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		VideOSCUIHelpers.addView(mSnapshotsBar, (FrameLayout) mCamView);
 		long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 		if (numSnapshots > 0) {
-			TextView numSnapshotsIndicator = (TextView) mSnapshotsBar.findViewById(R.id.num_snapshots);
+			TextView numSnapshotsIndicator = mSnapshotsBar.findViewById(R.id.num_snapshots);
 			numSnapshotsIndicator.setActivated(true);
 			numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 			numSnapshotsIndicator.setTextColor(0xffffffff);
@@ -282,15 +282,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mSnapshotsBar.requestDisallowInterceptTouchEvent(true);
 		mSnapshotsBar.setOnTouchListener(this);
 
-		final ImageButton quickEditPixels = (ImageButton) mPixelEditor.findViewById(R.id.quick_edit_pixels);
+		final ImageButton quickEditPixels = mPixelEditor.findViewById(R.id.quick_edit_pixels);
 		quickEditPixels.setActivated(true);
 		mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
-		final ImageButton editPixels = (ImageButton) mPixelEditor.findViewById(R.id.edit_pixels);
-		final ImageButton deleteEditsInPixels = (ImageButton) mPixelEditor.findViewById(R.id.delete_edits);
-		final ImageButton applyPixelSelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
+		final ImageButton editPixels = mPixelEditor.findViewById(R.id.edit_pixels);
+		final ImageButton deleteEditsInPixels = mPixelEditor.findViewById(R.id.delete_edits);
+		final ImageButton applyPixelSelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
 
-		final ImageButton loadSnapshotsButton = (ImageButton) mSnapshotsBar.findViewById(R.id.saved_snapshots_button);
-		final ImageButton saveSnapshotButton = (ImageButton) mSnapshotsBar.findViewById(R.id.save_snapshot);
+		final ImageButton loadSnapshotsButton = mSnapshotsBar.findViewById(R.id.saved_snapshots_button);
+		final ImageButton saveSnapshotButton = mSnapshotsBar.findViewById(R.id.save_snapshot);
 
 		quickEditPixels.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -390,9 +390,15 @@ public class VideOSCMainActivity extends AppCompatActivity
 				LayoutInflater inflater = LayoutInflater.from(context);
 				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
+				// FIXME: Alert Dialogs should have a white backround lie other dialogs
+				/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+						new ContextThemeWrapper(
+								VideOSCMainActivity.this, R.style.AlertDialogCustom
+						)
+				);*/
 				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
 				dialogBuilder.setView(dialogView);
-				final EditText nameInput = (EditText) dialogView.findViewById(R.id.save_snapshot_name);
+				final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 				Date now = new Date();
 				String nowString = df.format(now);
@@ -438,7 +444,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 										if (result > 0) {
 											long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 											if (numSnapshots > 0) {
-												TextView numSnapshotsIndicator = (TextView) mSnapshotsBar.findViewById(R.id.num_snapshots);
+												TextView numSnapshotsIndicator = mSnapshotsBar.findViewById(R.id.num_snapshots);
 												numSnapshotsIndicator.setActivated(true);
 												numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 												numSnapshotsIndicator.setTextColor(0xffffffff);
@@ -478,12 +484,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
 				BitmapDrawable img;
-				final ImageView oscIndicatorView = (ImageView) findViewById(R.id.indicator_osc);
-				final ImageView rgbModeIndicator = (ImageView) findViewById(R.id.indicator_color);
-				final ImageView interactionModeIndicator = (ImageView) findViewById(R.id.indicator_interaction);
-				final ImageView cameraIndicator = (ImageView) findViewById(R.id.indicator_camera);
-				final ImageView torchIndicatorView = (ImageView) findViewById(R.id.torch_status_indicator);
-				final ImageView imgView = (ImageView) view.findViewById(R.id.tool);
+				final ImageView oscIndicatorView = findViewById(R.id.indicator_osc);
+				final ImageView rgbModeIndicator = findViewById(R.id.indicator_color);
+				final ImageView interactionModeIndicator = findViewById(R.id.indicator_interaction);
+				final ImageView cameraIndicator = findViewById(R.id.indicator_camera);
+				final ImageView torchIndicatorView = findViewById(R.id.torch_status_indicator);
+				final ImageView imgView = view.findViewById(R.id.tool);
 				// cameraFragment provides all instance methods of the camera preview
 				// no reflections needed
 				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
@@ -534,9 +540,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 						mApp.setIsColorModePanelOpen(VideOSCUIHelpers.addView(mModePanel, (FrameLayout) mCamView));
 
 						if (mRGBHasChanged) {
-							ImageView red = (ImageView) findViewById(R.id.mode_r);
-							ImageView green = (ImageView) findViewById(R.id.mode_g);
-							ImageView blue = (ImageView) findViewById(R.id.mode_b);
+							ImageView red = findViewById(R.id.mode_r);
+							ImageView green = findViewById(R.id.mode_g);
+							ImageView blue = findViewById(R.id.mode_b);
 							int redRes = mApp.getIsRGBPositive() ? R.drawable.r : R.drawable.r_inv;
 							int greenRes = mApp.getIsRGBPositive() ? R.drawable.g : R.drawable.g_inv;
 							int blueRes = mApp.getIsRGBPositive() ? R.drawable.b : R.drawable.b_inv;
@@ -708,7 +714,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mDimensions = getAbsoluteScreenSize();
 		mApp.setDimensions(mDimensions);
 
-		ImageButton menuButton = (ImageButton) findViewById(R.id.show_menu);
+		ImageButton menuButton = findViewById(R.id.show_menu);
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -727,7 +733,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(mModePanel, (FrameLayout) mCamView));
 	}
 
-	private String convertPixelValuesToString(ArrayList<Double> values) {
+	private String convertPixelValuesToString(@NonNull ArrayList<Double> values) {
 		String result = "";
 		int size = values.size();
 		for (int i = 0; i < size; i++) {
@@ -815,7 +821,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		View about = findViewById(R.id.about);
 
 
-
 		switch (settingsLevel) {
 			case 1:
 				final FragmentManager manager = getFragmentManager();
@@ -849,7 +854,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				break;
 			case 3:
 				View exposureSetters = findViewById(R.id.ok_cancel_buttons);
-				Switch exposureSwitch = (Switch) findViewById(R.id.fix_exposure_checkbox);
+				Switch exposureSwitch = findViewById(R.id.fix_exposure_checkbox);
 				// temporarily disable checked-change listener
 				mApp.setBackPressed(true);
 				exposureSwitch.setChecked(mApp.getExposureIsFixed());
@@ -974,7 +979,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		if(requestCode == PERMISSION_REQUEST_CAMERA) {
+		if (requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Log.d(TAG, "onRequestPermissionsResult()");
 				Snackbar.make(
@@ -1011,7 +1016,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		try {
 			camera = Camera.open();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

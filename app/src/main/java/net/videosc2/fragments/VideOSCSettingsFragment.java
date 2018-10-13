@@ -49,7 +49,8 @@ import ketai.net.KetaiNet;
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
 
-	public VideOSCSettingsFragment() {}
+	public VideOSCSettingsFragment() {
+	}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -72,7 +73,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// the view holding the main selection of settings
 		final View view = inflater.inflate(R.layout.settings_selection, bg, false);
 		// the listview finally holding the links to different settings: network, resolution, sensors, about
-		final ListView settingsListView = (ListView) view.findViewById(R.id.settings_selection_list);
+		final ListView settingsListView = view.findViewById(R.id.settings_selection_list);
 		// the network settings form
 		final View networkSettingsView = inflater.inflate(R.layout.network_settings, bg, false);
 		// the resolution settings form
@@ -83,7 +84,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View debugSettingsView = inflater.inflate(R.layout.debug_settings, bg, false);
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
-		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
+		final WebView webView = aboutView.findViewById(R.id.html_about);
 
 		// get application methods and avoid reflection
 		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplicationContext();
@@ -177,9 +178,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						cursor.close();
 
-						final EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
+						final EditText remoteIPField = networkSettingsView.findViewById(R.id.remote_ip_field);
 						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-						final EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
+						final EditText remotePortField = networkSettingsView.findViewById(R.id.remote_port_field);
 						remotePortField.setText(
 								String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
 								TextView.BufferType.EDITABLE
@@ -213,14 +214,14 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						cursor.close();
 
-						final EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
+						final EditText udpReceivePortField = networkSettingsView.findViewById(R.id.device_port_field);
 						udpReceivePortField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
 								TextView.BufferType.EDITABLE
 						);
-						final EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
+						final EditText rootCmdField = networkSettingsView.findViewById(R.id.root_cmd_name_field);
 						rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
-						final TextView deviceIP = (TextView) networkSettingsView.findViewById(R.id.device_ip_address);
+						final TextView deviceIP = networkSettingsView.findViewById(R.id.device_ip_address);
 						deviceIP.setText(KetaiNet.getIP());
 
 						remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -366,26 +367,26 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						cursor.close();
 
 						final EditText resHField =
-								(EditText) resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
+								resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
 						resHField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText resVField =
-								(EditText) resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
+								resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
 						resVField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText calcPeriodField =
-								(EditText) resolutionSettingsView.findViewById(R.id.calulation_period_field);
+								resolutionSettingsView.findViewById(R.id.calulation_period_field);
 						calcPeriodField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()),
 								TextView.BufferType.EDITABLE
 						);
 
 						final Spinner selectFramerate =
-								(Spinner) resolutionSettingsView.findViewById(R.id.framerate_selection);
+								resolutionSettingsView.findViewById(R.id.framerate_selection);
 						List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
 						String[] items = new String[supportedPreviewFpsRange.size()];
 						for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
@@ -397,15 +398,15 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						selectFramerate.setSelection(settings.get(0).getFramerateRange());
 
 						final Switch normalizedCB =
-								(Switch) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
+								resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
 						normalizedCB.setChecked(settings.get(0).getNormalized());
 						final Switch rememberPixelStatesCB =
-								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
+								resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 						if (isAutoExposureLockSupported) {
 //							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
 							final Switch fixExposureCB =
-									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
+									resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
 							fixExposureCB.setChecked(app.getExposureIsFixed());
 							fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 								@Override
@@ -428,7 +429,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										toast.show();
 
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
-										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.ok);
+										final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
@@ -442,7 +443,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												app.setSettingsLevel(2);
 											}
 										});
-										final ImageButton cancelExposureFixed = (ImageButton) fixExposureButtonLayout.findViewById(R.id.cancel);
+										final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
 										cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
@@ -716,17 +717,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							}
 						}
 
-						final Switch oriCB = (Switch) sensorSettingsView.findViewById(R.id.orientation_sensor);
-						final Switch accCB = (Switch) sensorSettingsView.findViewById(R.id.accelerometer);
-						final Switch linAccCB = (Switch) sensorSettingsView.findViewById(R.id.linear_acceleration);
-						final Switch magCB = (Switch) sensorSettingsView.findViewById(R.id.magnetic_field);
-						final Switch gravCB = (Switch) sensorSettingsView.findViewById(R.id.gravity_sensor);
-						final Switch proxCB = (Switch) sensorSettingsView.findViewById(R.id.proximity_sensor);
-						final Switch lightCB = (Switch) sensorSettingsView.findViewById(R.id.light_sensor);
-						final Switch pressCB = (Switch) sensorSettingsView.findViewById(R.id.air_pressure_sensor);
-						final Switch tempCB = (Switch) sensorSettingsView.findViewById(R.id.temperature_sensor);
-						final Switch humCB = (Switch) sensorSettingsView.findViewById(R.id.humidity_sensor);
-						final Switch locCB = (Switch) sensorSettingsView.findViewById(R.id.geo_loc_sensor);
+						final Switch oriCB = sensorSettingsView.findViewById(R.id.orientation_sensor);
+						final Switch accCB = sensorSettingsView.findViewById(R.id.accelerometer);
+						final Switch linAccCB = sensorSettingsView.findViewById(R.id.linear_acceleration);
+						final Switch magCB = sensorSettingsView.findViewById(R.id.magnetic_field);
+						final Switch gravCB = sensorSettingsView.findViewById(R.id.gravity_sensor);
+						final Switch proxCB = sensorSettingsView.findViewById(R.id.proximity_sensor);
+						final Switch lightCB = sensorSettingsView.findViewById(R.id.light_sensor);
+						final Switch pressCB = sensorSettingsView.findViewById(R.id.air_pressure_sensor);
+						final Switch tempCB = sensorSettingsView.findViewById(R.id.temperature_sensor);
+						final Switch humCB = sensorSettingsView.findViewById(R.id.humidity_sensor);
+						final Switch locCB = sensorSettingsView.findViewById(R.id.geo_loc_sensor);
 
 						oriCB.setChecked(sensors.getOrientationSensorActivated());
 						accCB.setChecked(sensors.getAccelerationSensorActivated());
@@ -909,8 +910,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						break;
 					case 3:
 						VideOSCUIHelpers.addView(debugSettingsView, bg);
-						final Switch hidePixelImageCB = (Switch) debugSettingsView.findViewById(R.id.hide_pixel_image);
-						final Switch debugPixelOscSendingCB = (Switch) debugSettingsView.findViewById(R.id.add_packet_drops);
+						final Switch hidePixelImageCB = debugSettingsView.findViewById(R.id.hide_pixel_image);
+						final Switch debugPixelOscSendingCB = debugSettingsView.findViewById(R.id.add_packet_drops);
 						hidePixelImageCB.setChecked(app.getPixelImageHidden());
 						debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
@@ -981,7 +982,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 
 		for (int i = 0; i < idsAndStrings.size(); i++) {
-			TextView tv = (TextView) container.findViewById(idsAndStrings.keyAt(i));
+			TextView tv = container.findViewById(idsAndStrings.keyAt(i));
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
@@ -1011,7 +1012,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private int mReceivePort;
 		private String mProtocol;
 
-		Address() {}
+		Address() {
+		}
 
 		void setRowId(long id) {
 			this.mRowId = id;
@@ -1066,7 +1068,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private int mUdpReceivePort;
 		private int mTcpReceivePort;
 
-		Settings() {}
+		Settings() {
+		}
 
 		void setRowId(long id) {
 			this.mRowId = id;
@@ -1163,7 +1166,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		private boolean mHumiditySensorActivated;
 		private boolean mLocationSensorActivated;
 
-		Sensors() {}
+		Sensors() {
+		}
 
 		void setRowId(long rowId) {
 			this.mRowId = rowId;

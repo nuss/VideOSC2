@@ -46,7 +46,7 @@ public class VideOSCUIHelpersTest {
 	}
 
 	@Test
-	@Config(manifest=Config.NONE)
+	@Config(manifest = Config.NONE)
 	public void hasTorch() {
 		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch(camera));
 	}

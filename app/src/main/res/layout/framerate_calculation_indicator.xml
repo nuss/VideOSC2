@@ -18,12 +18,12 @@
 	<TextView
 		android:id="@+id/fps_pre"
 		android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textColor="#ffffff"
-	    android:layout_marginEnd="3dp"
-	    android:layout_marginRight="3dp"
-	    android:text="@string/frame_rate_pre"
-	    android:textSize="13sp"
+		android:layout_height="wrap_content"
+		android:textColor="#ffffff"
+		android:layout_marginEnd="3dp"
+		android:layout_marginRight="3dp"
+		android:text="@string/frame_rate_pre"
+		android:textSize="13sp"
 		/>
 
 	<TextView
@@ -31,7 +31,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textColor="#ffffff"
-	    android:text="0.0"
+		android:text="0.0"
 		android:textSize="13sp"
 		/>
 
@@ -42,7 +42,7 @@
 		android:textColor="#ffffff"
 		android:layout_marginRight="3dp"
 		android:layout_marginEnd="3dp"
-	    android:text="@string/calc_period_pre"
+		android:text="@string/calc_period_pre"
 		android:textSize="13sp"
 		/>
 
@@ -51,19 +51,21 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textColor="#ffffff"
-	    android:text="1"
+		android:text="1"
 		android:textSize="13sp"
 		/>
+
 	<TextView
 		android:id="@+id/zoom_pre"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-	    android:layout_marginEnd="3dp"
-	    android:layout_marginRight="3dp"
-	    android:textColor="#ffffff"
-	    android:text="@string/zoom_info"
-	    android:textSize="13sp"
+		android:layout_marginEnd="3dp"
+		android:layout_marginRight="3dp"
+		android:textColor="#ffffff"
+		android:text="@string/zoom_info"
+		android:textSize="13sp"
 		/>
+
 	<TextView
 		android:id="@+id/zoom"
 		android:layout_width="wrap_content"

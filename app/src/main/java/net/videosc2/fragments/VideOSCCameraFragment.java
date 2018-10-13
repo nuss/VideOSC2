@@ -163,7 +163,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		// store the container for later re-use
 		mPreviewContainer = container;
-		mImage = (ImageView) view.findViewById(R.id.camera_downscaled);
+		mImage = view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
@@ -189,7 +189,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			if (mPreview == null) {
 				mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
 				if (view.findViewById(R.id.camera_preview) != null) {
-					preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+					preview = view.findViewById(R.id.camera_preview);
 					preview.addView(mPreview);
 					Log.d(TAG, "view found and set");
 				} else Log.d(TAG, "FrameLayout is null");
@@ -579,7 +579,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		@Override
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + mViewCamera);
-			final ViewGroup indicatorPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
 
 			try {
 				mViewCamera.setPreviewDisplay(holder);
@@ -597,7 +597,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mOverlayView == null) {
 				ViewGroup overlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
-				mOverlayView = (TileOverlayView) overlay.findViewById(R.id.tile_draw_view);
+				mOverlayView = overlay.findViewById(R.id.tile_draw_view);
 				VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
 			}
 
@@ -605,7 +605,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			mPixelEditor = activity.mPixelEditor;
 			mSnapshotsBar = activity.mSnapshotsBar;
 			ViewGroup snapshotsBar = activity.mSnapshotsBar;
-			ImageButton applySelection = (ImageButton) mPixelEditor.findViewById(R.id.apply_pixel_selection);
+			ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
 			applySelection.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -654,9 +654,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
-			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup colorModePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
 
 			// memorize current pixel size
 			setPixelSize(holder);
@@ -688,10 +688,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mNow = System.currentTimeMillis();
 						mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
 						mPrev = mNow;
-						TextView frameRateText = (TextView) mPreviewContainer.findViewById(R.id.fps);
+						TextView frameRateText = mPreviewContainer.findViewById(R.id.fps);
 						if (frameRateText != null)
 							frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
-						TextView zoomText = (TextView) mPreviewContainer.findViewById(R.id.zoom);
+						TextView zoomText = mPreviewContainer.findViewById(R.id.zoom);
 						if (zoomText != null)
 							zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -743,9 +743,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			performClick();
 			final Camera.Parameters params = mViewCamera.getParameters();
-			final ViewGroup colorModePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup colorModePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 				VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
@@ -881,9 +881,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		public void createMultiSliders() {
-			final ViewGroup indicators = (ViewGroup) mPreviewContainer.findViewById(R.id.indicator_panel);
-			final ViewGroup fpsRateCalcPanel = (ViewGroup) mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup modePanel = (ViewGroup) mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup modePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
 			short numSelectedPixels = (short) mPixelIds.size();
 			int[] colors = new int[numSelectedPixels];
 			double[] redVals = new double[numSelectedPixels];
@@ -1092,15 +1092,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
 			// color mode RGB (or RGB inverted)
-			VideOSCMultiSliderView msRedLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_left);
-			VideOSCMultiSliderView msRedRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_r_right);
-			VideOSCMultiSliderView msGreenLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_left);
-			VideOSCMultiSliderView msGreenRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_g_right);
-			VideOSCMultiSliderView msBlueLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_left);
-			VideOSCMultiSliderView msBlueRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_b_right);
+			VideOSCMultiSliderView msRedLeft = mPreviewContainer.findViewById(R.id.multislider_view_r_left);
+			VideOSCMultiSliderView msRedRight = mPreviewContainer.findViewById(R.id.multislider_view_r_right);
+			VideOSCMultiSliderView msGreenLeft = mPreviewContainer.findViewById(R.id.multislider_view_g_left);
+			VideOSCMultiSliderView msGreenRight = mPreviewContainer.findViewById(R.id.multislider_view_g_right);
+			VideOSCMultiSliderView msBlueLeft = mPreviewContainer.findViewById(R.id.multislider_view_b_left);
+			VideOSCMultiSliderView msBlueRight = mPreviewContainer.findViewById(R.id.multislider_view_b_right);
 			// color mode R, G or B
-			VideOSCMultiSliderView msLeft = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_left);
-			VideOSCMultiSliderView msRight = (VideOSCMultiSliderView) mPreviewContainer.findViewById(R.id.multislider_view_right);
+			VideOSCMultiSliderView msLeft = mPreviewContainer.findViewById(R.id.multislider_view_left);
+			VideOSCMultiSliderView msRight = mPreviewContainer.findViewById(R.id.multislider_view_right);
 
 			for (int i = 0; i < dimensions; i++) {
 				Double mixVal;
@@ -1307,7 +1307,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		// needed by the VideOSCMultiSliderFragmentRGB.OnCreateViewCallback
 		@Override
-		public void onCreateView() { }
+		public void onCreateView() {
+		}
 	}
 
 	// prevent memory leaks by declaring Runnable static

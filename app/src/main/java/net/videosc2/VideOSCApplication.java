@@ -1,11 +1,7 @@
 package net.videosc2;
 
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Point;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.squareup.leakcanary.LeakCanary;
 
@@ -14,8 +10,6 @@ import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.PixelEditModes;
 import net.videosc2.utilities.enums.RGBModes;
-
-import oscP5.OscMessage;
 
 /**
  * Created by stefan on 05.07.17, package net.videosc2, project VideOSC22.

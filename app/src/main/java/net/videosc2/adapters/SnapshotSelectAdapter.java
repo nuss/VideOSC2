@@ -87,7 +87,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, final Context context, final Cursor cursor) {
-		TextView row = (TextView) view.findViewById(R.id.snapshot_item);
+		TextView row = view.findViewById(R.id.snapshot_item);
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
 		final int numPixels = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE));
 		String text;
@@ -170,9 +170,13 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 					LayoutInflater inflater = LayoutInflater.from(context);
 					final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, mParent, false);
 
+					// FIXME: AlertDialogs should look like other dialogs (white background, black text)
+					/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+							new ContextThemeWrapper(context, R.style.AlertDialogCustom)
+					);*/
 					AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 					dialogBuilder.setView(dialogView);
-					final EditText nameInput = (EditText) dialogView.findViewById(R.id.save_snapshot_name);
+					final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
 					nameInput.setText(name);
 
 					final String[] fields = new String[]{
@@ -246,7 +250,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 												dialog.dismiss();
 
 												final long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
-												final TextView numSnapshotsIndicator = (TextView) mActivity.mCamView.findViewById(R.id.num_snapshots);
+												final TextView numSnapshotsIndicator = mActivity.mCamView.findViewById(R.id.num_snapshots);
 												if (numSnapshotsIndicator != null) {
 													numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 													if (numSnapshots > 0) {

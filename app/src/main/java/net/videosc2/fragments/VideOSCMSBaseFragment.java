@@ -18,7 +18,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	protected FragmentManager mManager;
 	protected VideOSCBaseFragment mFragment;
 
-	public VideOSCMSBaseFragment() {}
+	public VideOSCMSBaseFragment() {
+	}
 
 	@Override
 	public void onStart() {
@@ -26,11 +27,11 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 		final DrawerLayout toolsDrawer = activity.mToolsDrawerLayout;
-		ImageButton ok = (ImageButton) mOkButton.findViewById(R.id.ok_button);
-		final ViewGroup fpsCalcPanel = (ViewGroup) mParentContainer.findViewById(R.id.fps_calc_period_indicator);
-		final ViewGroup indicatorPanel = (ViewGroup) mParentContainer.findViewById(R.id.indicator_panel);
-		final ViewGroup pixelEditorToolbox = (ViewGroup) mParentContainer.findViewById(R.id.pixel_editor_toolbox);
-		final ViewGroup snapshotsBar = (ViewGroup) mParentContainer.findViewById(R.id.snapshots_bar);
+		ImageButton ok = mOkButton.findViewById(R.id.ok_button);
+		final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
+		final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
+		final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
+		final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
 
 		mOkButton.bringToFront();
 

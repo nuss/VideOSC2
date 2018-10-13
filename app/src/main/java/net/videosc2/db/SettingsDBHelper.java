@@ -1,13 +1,10 @@
 package net.videosc2.db;
 
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import net.videosc2.fragments.VideOSCCameraFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +62,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES + " TEXT NOT NULL, " +
 					SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE + " INTEGER NOT NULL)";
 
-	private static final  String SQL_PIXEL_SNAPSHOTS_DELETE =
+	private static final String SQL_PIXEL_SNAPSHOTS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
@@ -75,6 +72,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	public SettingsDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
+
 	/**
 	 * Called when the database is created for the first time. This is where the
 	 * creation of tables and the initial population of the tables should happen.
@@ -179,9 +177,10 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Called when the database needs to get downgraded
-	 * @param db            The database
-	 * @param oldVersion    The old database version
-	 * @param newVersion    The new database version
+	 *
+	 * @param db         The database
+	 * @param oldVersion The old database version
+	 * @param newVersion The new database version
 	 */
 	@Override
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

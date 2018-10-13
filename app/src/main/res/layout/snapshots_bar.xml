@@ -29,6 +29,7 @@
 			android:contentDescription="@string/load_a_saved_snapshot"
 			android:focusable="true"
 			android:src="@drawable/saved_snapshots"/>
+
 		<TextView
 			android:id="@+id/num_snapshots"
 			android:layout_height="24dp"

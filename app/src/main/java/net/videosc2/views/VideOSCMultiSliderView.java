@@ -1,21 +1,14 @@
 package net.videosc2.views;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import net.videosc2.R;
-import net.videosc2.fragments.VideOSCMultiSliderFragment;
-import net.videosc2.fragments.VideOSCMultiSliderFragmentRGB;
-import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
 
@@ -86,7 +79,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		int numSliders = mSliderNums.size();
 		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
 		// FIXME - after switching camera numSliders may be 0 because mNumSliders is empty
-		int barWidth = (getMeasuredWidth() - marginsTotal)/numSliders;
+		int barWidth = (getMeasuredWidth() - marginsTotal) / numSliders;
 		int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
@@ -106,7 +99,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		ViewGroup okButton = (ViewGroup) mContainer.findViewById(R.id.ok_button_layout);
+		ViewGroup okButton = mContainer.findViewById(R.id.ok_button_layout);
 
 		if (event.getAction() == MotionEvent.ACTION_UP)
 			okButton.setVisibility(View.VISIBLE);

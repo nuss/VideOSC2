@@ -11,6 +11,7 @@ import net.videosc2.VideOSCApplication;
 import net.videosc2.utilities.VideOSCUIHelpers;
 import net.videosc2.views.SliderBar;
 import net.videosc2.views.VideOSCMultiSliderView;
+
 import java.util.ArrayList;
 
 /**
@@ -56,13 +57,13 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		}
 
 		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
-		mMSViewLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_left);
+		mMSViewLeft = msContainer.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
 		mMSViewLeft.setContainerView(container);
 
 		mOkButton = (ViewGroup) inflater.inflate(R.layout.ok_button, container, false);
 
-		mMSViewRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_right);
+		mMSViewRight = msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
 		mMSViewRight.setContainerView(container);
 

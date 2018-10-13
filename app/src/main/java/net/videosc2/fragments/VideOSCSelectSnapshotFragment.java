@@ -7,7 +7,6 @@ import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -56,7 +55,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 //		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		final FragmentManager manager = getFragmentManager();
 		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.snapshots_list, container, false);
-		final ListView snapshotsListView = (ListView) view.findViewById(R.id.snapshots_list);
+		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(getActivity(), R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		snapshotsListView.setAdapter(adapter);
 		VideOSCUIHelpers.setTransitionAnimation(view);
@@ -68,7 +67,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 				return true;
 			}
 		});
-		final ImageButton close = (ImageButton) view.findViewById(R.id.close);
+		final ImageButton close = view.findViewById(R.id.close);
 		close.bringToFront();
 		close.setOnClickListener(new View.OnClickListener() {
 			@Override

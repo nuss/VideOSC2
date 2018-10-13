@@ -2,8 +2,6 @@ package net.videosc2.views;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class VideOSCMultiSliderViewTest {
 
 	@Test

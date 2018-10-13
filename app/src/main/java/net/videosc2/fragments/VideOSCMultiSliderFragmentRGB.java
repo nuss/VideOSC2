@@ -2,7 +2,6 @@ package net.videosc2.fragments;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,22 +51,22 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
 
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
-		mMSViewRedLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_left);
+		mMSViewRedLeft = msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
 		mMSViewRedLeft.setContainerView(container);
-		mMSViewRedRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_r_right);
+		mMSViewRedRight = msContainer.findViewById(R.id.multislider_view_r_right);
 		mMSViewRedRight.setValuesArray(numTotalPixels);
 		mMSViewRedRight.setContainerView(container);
-		mMSViewGreenLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_left);
+		mMSViewGreenLeft = msContainer.findViewById(R.id.multislider_view_g_left);
 		mMSViewGreenLeft.setValuesArray(numTotalPixels);
 		mMSViewGreenLeft.setContainerView(container);
-		mMSViewGreenRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_g_right);
+		mMSViewGreenRight = msContainer.findViewById(R.id.multislider_view_g_right);
 		mMSViewGreenRight.setValuesArray(numTotalPixels);
 		mMSViewGreenRight.setContainerView(container);
-		mMSViewBlueLeft = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_left);
+		mMSViewBlueLeft = msContainer.findViewById(R.id.multislider_view_b_left);
 		mMSViewBlueLeft.setValuesArray(numTotalPixels);
 		mMSViewBlueLeft.setContainerView(container);
-		mMSViewBlueRight = (VideOSCMultiSliderView) msContainer.findViewById(R.id.multislider_view_b_right);
+		mMSViewBlueRight = msContainer.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
 		mMSViewBlueRight.setContainerView(container);
 
@@ -78,7 +77,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueLeft.setValues(blueVals);
 		mMSViewBlueRight.setValues(blueMixVals);
 
-		ViewGroup column = (ViewGroup) msContainer.findViewById(R.id.multislider_rgb_left_column);
+		ViewGroup column = msContainer.findViewById(R.id.multislider_rgb_left_column);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
 		int topMargin = lp.topMargin;
 		float density = app.getScreenDensity();

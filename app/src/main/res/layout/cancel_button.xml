@@ -5,4 +5,4 @@
              android:layout_height="50dp"
              android:background="@drawable/cancel_button_shape"
              android:contentDescription="@string/cancel"
-             android:src="@drawable/cancel" />
+             android:src="@drawable/cancel"/>

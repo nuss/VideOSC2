@@ -36,7 +36,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 			camera.release();
 			List<String> supportedFlashModes = parameters.getSupportedFlashModes();
 			return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
-		} catch(RuntimeException e) {
+		} catch (RuntimeException e) {
 //			e.printStackTrace();
 			return false;
 		}
@@ -53,7 +53,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * @param r an integer denoting the right margin
 	 * @param b an integer denoting the bottom margin
 	 */
-	public static void setMargins (View v, int l, int t, int r, int b) {
+	public static void setMargins(View v, int l, int t, int r, int b) {
 		if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 			ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 			p.setMargins(l, t, r, b);
@@ -65,7 +65,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * Add a child view to a FrameLayout
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return true
 	 */
@@ -80,7 +80,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * Remove a view from a FrameLayout
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return false
 	 */
@@ -93,7 +93,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * Add a child view to a ViewGroup
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return true
 	 */
@@ -108,7 +108,7 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 	 * Remove a view from a ViewGroup
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a ViewGroup
 	 * @return false
 	 */
@@ -157,11 +157,12 @@ public class VideOSCUIHelpers extends VideOSCMainActivity {
 
 	/**
 	 * Check if a frontside camera exists
+	 *
 	 * @return boolean indicating whether a frontside camera exists
 	 */
 	public static boolean hasFrontsideCamera() {
 		Camera.CameraInfo ci = new Camera.CameraInfo();
-		for (int i = 0 ; i < Camera.getNumberOfCameras(); i++) {
+		for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
 			Camera.getCameraInfo(i, ci);
 			if (ci.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return true;
 		}

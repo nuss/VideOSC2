@@ -30,26 +30,28 @@ import android.net.Uri;
  */
 public class VideOSCBaseFragment extends Fragment {
 
-    /**
-     * Default empty constructor
-     */
-    public VideOSCBaseFragment() {
-        //
-    }
+	/**
+	 * Default empty constructor
+	 */
+	public VideOSCBaseFragment() {
+		//
+	}
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * mFragment to allow an interaction in this mFragment to be communicated
-     * to the mActivity and potentially other fragments contained in that
-     * mActivity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-        void onFragmentInteraction(String id);
-        void onFragmentInteraction(int actionId);
-    }
+	/**
+	 * This interface must be implemented by activities that contain this
+	 * mFragment to allow an interaction in this mFragment to be communicated
+	 * to the mActivity and potentially other fragments contained in that
+	 * mActivity.
+	 * <p>
+	 * See the Android Training lesson <a href=
+	 * "http://developer.android.com/training/basics/fragments/communicating.html"
+	 * >Communicating with Other Fragments</a> for more information.
+	 */
+	public interface OnFragmentInteractionListener {
+		void onFragmentInteraction(Uri uri);
+
+		void onFragmentInteraction(String id);
+
+		void onFragmentInteraction(int actionId);
+	}
 }
