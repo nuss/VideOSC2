@@ -9,7 +9,8 @@ public class SettingsContract {
 	final private static String TAG = "SettingsContract";
 
 	// prevent accidential instantiation
-	private SettingsContract() {}
+	private SettingsContract() {
+	}
 
 	/* Inner class that defines the table contents */
 	public static class AddressSettingsEntry implements BaseColumns {
@@ -23,7 +24,7 @@ public class SettingsContract {
 		public static final String TABLE_NAME = "vosc_settings";
 		public static final String RES_H = "resolution_horizontal";
 		public static final String RES_V = "resolution_vertical";
-//		public static final String FRAMERATE_FIXED = "framerate_fixed";
+		//		public static final String FRAMERATE_FIXED = "framerate_fixed";
 		public static final String FRAMERATE_RANGE = "framerate_range";
 		public static final String NORMALIZE = "normalized";
 		public static final String REMEMBER_PIXEL_STATES = "remember_pixel_states";
@@ -42,7 +43,13 @@ public class SettingsContract {
 	public static class PixelSnapshotEntries implements BaseColumns {
 		public static final String TABLE_NAME = "vosc_snapshots";
 		public static final String SNAPSHOT_NAME = "snapshot_name";
-		public static final String SNAPSHOT_VALUES = "snapshot_values";
+		public static final String SNAPSHOT_RED_VALUES = "snapshot_red_values";
+		public static final String SNAPSHOT_RED_MIX_VALUES = "snapshot_red_mix_values";
+		public static final String SNAPSHOT_GREEN_VALUES = "snapshot_green_values";
+		public static final String SNAPSHOT_GREEN_MIX_VALUES = "snapshot_green_mix_values";
+		public static final String SNAPSHOT_BLUE_VALUES = "snapshot_blue_values";
+		public static final String SNAPSHOT_BLUE_MIX_VALUES = "snapshot_blue_mix_values";
+		public static final String SNAPSHOT_SIZE = "snapshot_size";
 	}
 
 	// TODO

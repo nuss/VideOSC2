@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/snapshots_bar"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:layout_marginEnd="50dp"
+              android:layout_marginRight="50dp"
+              android:layout_marginTop="0dp"
+              android:orientation="horizontal">
+
+	<RelativeLayout
+		android:id="@+id/saved_snapshots_wrapper"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+
+		<ImageButton
+			android:id="@+id/saved_snapshots_button"
+			android:layout_width="50dp"
+			android:layout_height="50dp"
+			android:layout_marginBottom="8dp"
+			android:layout_marginEnd="0dp"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="0dp"
+			android:layout_marginStart="8dp"
+			android:layout_marginTop="8dp"
+			android:background="@drawable/saved_snapshots_button"
+			android:clickable="true"
+			android:contentDescription="@string/load_a_saved_snapshot"
+			android:focusable="true"
+			android:src="@drawable/saved_snapshots"/>
+
+		<TextView
+			android:id="@+id/num_snapshots"
+			android:layout_height="24dp"
+			android:layout_width="24dp"
+			android:layout_alignEnd="@+id/saved_snapshots_button"
+			android:layout_alignRight="@+id/saved_snapshots_button"
+			android:layout_marginEnd="0dp"
+			android:layout_marginRight="0dp"
+			android:layout_marginTop="10dp"
+			android:gravity="center"
+			android:textSize="14sp"
+			android:textColor="#00ffffff"
+			android:background="@drawable/num_snapshots_shape_selector"
+			android:text="0"/>
+
+	</RelativeLayout>
+
+	<ImageButton
+		android:id="@+id/save_snapshot"
+		android:layout_width="50dp"
+		android:layout_height="50dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginTop="8dp"
+		android:background="@drawable/snapshot_button_seletor"
+		android:clickable="true"
+		android:contentDescription="@string/make_a_snapshot"
+		android:focusable="true"
+		android:src="@drawable/snapshot"/>
+
+	<ImageView
+		android:id="@+id/move_snapshots_bar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginLeft="0dp"
+		android:layout_marginRight="8dp"
+		android:layout_marginStart="0dp"
+		android:layout_marginTop="20dp"
+		android:contentDescription="@string/move_the_snapshots_bar"
+		android:src="@drawable/move_black"/>
+
+</LinearLayout>

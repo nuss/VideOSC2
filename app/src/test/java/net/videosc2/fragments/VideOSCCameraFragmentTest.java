@@ -1,51 +1,29 @@
 package net.videosc2.fragments;
 
-import android.graphics.Point;
-import android.view.View;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by stefan on 14.07.17, package net.videosc2.fragments, project VideOSC22.
  */
 public class VideOSCCameraFragmentTest {
-	final private VideOSCCameraFragment fragment = new VideOSCCameraFragment();
+	private VideOSCCameraFragment fragment;
+
+	@Before
+	public void setUp() {
+		fragment = new VideOSCCameraFragment();
+	}
 
 	@Test
-	public void onCreateView() throws Exception {
+	public void onCreateView() {
 		assertNotNull(fragment);
 	}
 
-	@Test
-	public void safeCameraOpenInView() throws Exception {
-
+	@After
+	public void tearDown() {
+		fragment = null;
 	}
-
-	@Test
-	public void onDestroy() throws Exception {
-
-	}
-
-	@Test
-	public void setResolution() throws Exception {
-
-	}
-
-	@Test
-	public void getResolution() throws Exception {
-
-	}
-
-	@Test
-	public void setFramerateRange() throws Exception {
-
-	}
-
-	@Test
-	public void getFramerateRange() throws Exception {
-
-	}
-
 }

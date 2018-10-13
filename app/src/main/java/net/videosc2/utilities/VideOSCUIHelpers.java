@@ -3,11 +3,11 @@ package net.videosc2.utilities;
 import android.animation.LayoutTransition;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.compat.BuildConfig;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import net.videosc2.activities.VideOSCMainActivity;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * Created by stefan on 18.03.17.
  */
 
-public class VideOSCUIHelpers {
+public class VideOSCUIHelpers extends VideOSCMainActivity {
 	final static String TAG = "VideOSCUIHelpers";
 
 //	private LayoutTransition transition = new LayoutTransition();
@@ -25,6 +25,7 @@ public class VideOSCUIHelpers {
 	 *
 	 * @return a boolean indicating whether the device has an inbuilt flashlight
 	 */
+
 	public static boolean hasTorch(Camera camera) {
 		if (camera == null) {
 			return false;
@@ -35,7 +36,7 @@ public class VideOSCUIHelpers {
 			camera.release();
 			List<String> supportedFlashModes = parameters.getSupportedFlashModes();
 			return !(supportedFlashModes == null || supportedFlashModes.isEmpty()) && supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_TORCH);
-		} catch(RuntimeException e) {
+		} catch (RuntimeException e) {
 //			e.printStackTrace();
 			return false;
 		}
@@ -52,7 +53,7 @@ public class VideOSCUIHelpers {
 	 * @param r an integer denoting the right margin
 	 * @param b an integer denoting the bottom margin
 	 */
-	public static void setMargins (View v, int l, int t, int r, int b) {
+	public static void setMargins(View v, int l, int t, int r, int b) {
 		if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
 			ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
 			p.setMargins(l, t, r, b);
@@ -64,11 +65,13 @@ public class VideOSCUIHelpers {
 	 * Add a child view to a FrameLayout
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return true
 	 */
 	public static boolean addView(View view, FrameLayout parent) {
+		if (view.getParent() != null)
+			((ViewGroup) view.getParent()).removeView(view);
 		parent.addView(view);
 		return true;
 	}
@@ -77,7 +80,7 @@ public class VideOSCUIHelpers {
 	 * Remove a view from a FrameLayout
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return false
 	 */
@@ -90,11 +93,13 @@ public class VideOSCUIHelpers {
 	 * Add a child view to a ViewGroup
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a FrameLayout
 	 * @return true
 	 */
 	public static boolean addView(View view, ViewGroup parent) {
+		if (view.getParent() != null)
+			((ViewGroup) view.getParent()).removeView(view);
 		parent.addView(view);
 		return true;
 	}
@@ -103,7 +108,7 @@ public class VideOSCUIHelpers {
 	 * Remove a view from a ViewGroup
 	 * Use the return value to set a status variable
 	 *
-	 * @param view a View
+	 * @param view   a View
 	 * @param parent a ViewGroup
 	 * @return false
 	 */
@@ -152,11 +157,12 @@ public class VideOSCUIHelpers {
 
 	/**
 	 * Check if a frontside camera exists
+	 *
 	 * @return boolean indicating whether a frontside camera exists
 	 */
 	public static boolean hasFrontsideCamera() {
 		Camera.CameraInfo ci = new Camera.CameraInfo();
-		for (int i = 0 ; i < Camera.getNumberOfCameras(); i++) {
+		for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
 			Camera.getCameraInfo(i, ci);
 			if (ci.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return true;
 		}

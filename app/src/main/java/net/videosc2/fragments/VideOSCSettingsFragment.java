@@ -2,15 +2,13 @@ package net.videosc2.fragments;
 
 import android.app.FragmentManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Gravity;
@@ -20,7 +18,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -35,16 +32,15 @@ import android.widget.Toast;
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
 import net.videosc2.db.SettingsContract;
-import net.videosc2.utilities.VideOSCDialogHelper;
-import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
-//import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import ketai.net.KetaiNet;
+
+//import java.lang.reflect.Method;
 
 /**
  * Created by stefan on 12.03.17.
@@ -52,7 +48,9 @@ import ketai.net.KetaiNet;
 
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
-	public VideOSCSettingsFragment() {}
+
+	public VideOSCSettingsFragment() {
+	}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -66,16 +64,16 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
-		Log.d(TAG, "container: " + container);
+		Log.d(TAG, "settingsfragment created");
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
 		// the background scrollview - dark transparent, no content
 		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		// the view holding the main selection of settings
-		View view = inflater.inflate(R.layout.settings_selection, bg, false);
+		final View view = inflater.inflate(R.layout.settings_selection, bg, false);
 		// the listview finally holding the links to different settings: network, resolution, sensors, about
-		final ListView settingsListView = (ListView) view.findViewById(R.id.settings_selection_list);
+		final ListView settingsListView = view.findViewById(R.id.settings_selection_list);
 		// the network settings form
 		final View networkSettingsView = inflater.inflate(R.layout.network_settings, bg, false);
 		// the resolution settings form
@@ -86,7 +84,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View debugSettingsView = inflater.inflate(R.layout.debug_settings, bg, false);
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
-		final WebView webView = (WebView) aboutView.findViewById(R.id.html_about);
+		final WebView webView = aboutView.findViewById(R.id.html_about);
 
 		// get application methods and avoid reflection
 		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplicationContext();
@@ -110,7 +108,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		// add the scroll view background to the container (camView)
 		container.addView(bg);
 		final View mCamView = container.findViewById(R.id.camera_preview);
-		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.fix_exposure_button, (FrameLayout) mCamView, false);
+		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, (FrameLayout) mCamView, false);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -180,9 +178,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						cursor.close();
 
-						final EditText remoteIPField = (EditText) networkSettingsView.findViewById(R.id.remote_ip_field);
+						final EditText remoteIPField = networkSettingsView.findViewById(R.id.remote_ip_field);
 						remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-						final EditText remotePortField = (EditText) networkSettingsView.findViewById(R.id.remote_port_field);
+						final EditText remotePortField = networkSettingsView.findViewById(R.id.remote_port_field);
 						remotePortField.setText(
 								String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
 								TextView.BufferType.EDITABLE
@@ -216,14 +214,14 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 						cursor.close();
 
-						final EditText udpReceivePortField = (EditText) networkSettingsView.findViewById(R.id.device_port_field);
+						final EditText udpReceivePortField = networkSettingsView.findViewById(R.id.device_port_field);
 						udpReceivePortField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
 								TextView.BufferType.EDITABLE
 						);
-						final EditText rootCmdField = (EditText) networkSettingsView.findViewById(R.id.root_cmd_name_field);
+						final EditText rootCmdField = networkSettingsView.findViewById(R.id.root_cmd_name_field);
 						rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
-						final TextView deviceIP = (TextView) networkSettingsView.findViewById(R.id.device_ip_address);
+						final TextView deviceIP = networkSettingsView.findViewById(R.id.device_ip_address);
 						deviceIP.setText(KetaiNet.getIP());
 
 						remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -369,46 +367,46 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						cursor.close();
 
 						final EditText resHField =
-								(EditText) resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
+								resolutionSettingsView.findViewById(R.id.resolution_horizontal_field);
 						resHField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText resVField =
-								(EditText) resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
+								resolutionSettingsView.findViewById(R.id.resolution_vertical_field);
 						resVField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()),
 								TextView.BufferType.EDITABLE
 						);
 						final EditText calcPeriodField =
-								(EditText) resolutionSettingsView.findViewById(R.id.calulation_period_field);
+								resolutionSettingsView.findViewById(R.id.calulation_period_field);
 						calcPeriodField.setText(
 								String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()),
 								TextView.BufferType.EDITABLE
 						);
 
 						final Spinner selectFramerate =
-								(Spinner) resolutionSettingsView.findViewById(R.id.framerate_selection);
+								resolutionSettingsView.findViewById(R.id.framerate_selection);
 						List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
 						String[] items = new String[supportedPreviewFpsRange.size()];
 						for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
 							int[] item = supportedPreviewFpsRange.get(j);
-							items[j] = (item[0]/1000) + " / " + (item[1]/1000);
+							items[j] = (item[0] / 1000) + " / " + (item[1] / 1000);
 						}
 						ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(getActivity(), R.layout.framerate_selection_item, items);
 						selectFramerate.setAdapter(fpsAdapter);
 						selectFramerate.setSelection(settings.get(0).getFramerateRange());
 
 						final Switch normalizedCB =
-								(Switch) resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
+								resolutionSettingsView.findViewById(R.id.normalize_output_checkbox);
 						normalizedCB.setChecked(settings.get(0).getNormalized());
 						final Switch rememberPixelStatesCB =
-								(Switch) resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
+								resolutionSettingsView.findViewById(R.id.remember_activated_checkbox);
 						rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 						if (isAutoExposureLockSupported) {
-							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
+//							Log.d(TAG, "auto exposure locked? " + cameraView.mCamera.getParameters().getAutoExposureLock());
 							final Switch fixExposureCB =
-									(Switch) resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
+									resolutionSettingsView.findViewById(R.id.fix_exposure_checkbox);
 							fixExposureCB.setChecked(app.getExposureIsFixed());
 							fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 								@Override
@@ -431,7 +429,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										toast.show();
 
 										((FrameLayout) mCamView).addView(fixExposureButtonLayout);
-										final ImageButton fixExposureButton = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_button);
+										final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
 										fixExposureButton.setOnClickListener(new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
@@ -439,12 +437,13 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 												camera.setParameters(params);
 												app.setExposureIsFixed(true);
 												VideOSCUIHelpers.removeView(fixExposureButtonLayout, (FrameLayout) mCamView);
-												bg.setVisibility(View.VISIBLE);new Toast(getActivity());
+												bg.setVisibility(View.VISIBLE);
+												new Toast(getActivity());
 												resolutionSettingsView.setVisibility(View.VISIBLE);
 												app.setSettingsLevel(2);
 											}
 										});
-										final ImageButton cancelExposureFixed = (ImageButton) fixExposureButtonLayout.findViewById(R.id.fix_exposure_cancel);
+										final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
 										cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
 											@Override
 											public void onClick(View v) {
@@ -465,7 +464,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 										params.setAutoExposureLock(false);
 										camera.setParameters(params);
 										app.setExposureIsFixed(false);
-										app.setHasExposureSettingBeenCancelled(false);									}
+										app.setHasExposureSettingBeenCancelled(false);
+									}
 								}
 							});
 						}
@@ -489,9 +489,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setResolutionHorizontal(Short.parseShort(resH));
 									// update camera preview immediately
-									cameraView.setResolution(
-											Integer.parseInt(resH),
-											cameraView.getResolution().y
+									app.setResolution(
+											new Point(
+													Integer.parseInt(resH),
+													app.getResolution().y
+											)
 									);
 								}
 							}
@@ -516,9 +518,11 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									values.clear();
 									settings.get(0).setResolutionVertical(Short.parseShort(resV));
 									// update camera preview immediately
-									cameraView.setResolution(
-											cameraView.getResolution().x,
-											Integer.parseInt(resV)
+									app.setResolution(
+											new Point(
+													app.getResolution().x,
+													Integer.parseInt(resV)
+											)
 									);
 								}
 							}
@@ -713,17 +717,17 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							}
 						}
 
-						final Switch oriCB = (Switch) sensorSettingsView.findViewById(R.id.orientation_sensor);
-						final Switch accCB = (Switch) sensorSettingsView.findViewById(R.id.accelerometer);
-						final Switch linAccCB = (Switch) sensorSettingsView.findViewById(R.id.linear_acceleration);
-						final Switch magCB = (Switch) sensorSettingsView.findViewById(R.id.magnetic_field);
-						final Switch gravCB = (Switch) sensorSettingsView.findViewById(R.id.gravity_sensor);
-						final Switch proxCB = (Switch) sensorSettingsView.findViewById(R.id.proximity_sensor);
-						final Switch lightCB = (Switch) sensorSettingsView.findViewById(R.id.light_sensor);
-						final Switch pressCB = (Switch) sensorSettingsView.findViewById(R.id.air_pressure_sensor);
-						final Switch tempCB = (Switch) sensorSettingsView.findViewById(R.id.temperature_sensor);
-						final Switch humCB = (Switch) sensorSettingsView.findViewById(R.id.humidity_sensor);
-						final Switch locCB = (Switch) sensorSettingsView.findViewById(R.id.geo_loc_sensor);
+						final Switch oriCB = sensorSettingsView.findViewById(R.id.orientation_sensor);
+						final Switch accCB = sensorSettingsView.findViewById(R.id.accelerometer);
+						final Switch linAccCB = sensorSettingsView.findViewById(R.id.linear_acceleration);
+						final Switch magCB = sensorSettingsView.findViewById(R.id.magnetic_field);
+						final Switch gravCB = sensorSettingsView.findViewById(R.id.gravity_sensor);
+						final Switch proxCB = sensorSettingsView.findViewById(R.id.proximity_sensor);
+						final Switch lightCB = sensorSettingsView.findViewById(R.id.light_sensor);
+						final Switch pressCB = sensorSettingsView.findViewById(R.id.air_pressure_sensor);
+						final Switch tempCB = sensorSettingsView.findViewById(R.id.temperature_sensor);
+						final Switch humCB = sensorSettingsView.findViewById(R.id.humidity_sensor);
+						final Switch locCB = sensorSettingsView.findViewById(R.id.geo_loc_sensor);
 
 						oriCB.setChecked(sensors.getOrientationSensorActivated());
 						accCB.setChecked(sensors.getAccelerationSensorActivated());
@@ -906,8 +910,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						break;
 					case 3:
 						VideOSCUIHelpers.addView(debugSettingsView, bg);
-						final Switch hidePixelImageCB = (Switch) debugSettingsView.findViewById(R.id.hide_pixel_image);
-						final Switch debugPixelOscSendingCB = (Switch) debugSettingsView.findViewById(R.id.add_packet_drops);
+						final Switch hidePixelImageCB = debugSettingsView.findViewById(R.id.hide_pixel_image);
+						final Switch debugPixelOscSendingCB = debugSettingsView.findViewById(R.id.add_packet_drops);
 						hidePixelImageCB.setChecked(app.getPixelImageHidden());
 						debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
@@ -978,267 +982,287 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 
 
 		for (int i = 0; i < idsAndStrings.size(); i++) {
-			TextView tv = (TextView) container.findViewById(idsAndStrings.keyAt(i));
+			TextView tv = container.findViewById(idsAndStrings.keyAt(i));
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
 	}
 
-	private class Address {
-		private long rowId;
-		private String ip;
-		private int port;
-		private int receivePort;
-		private String protocol;
+	/* @Override
+	public void onDetach() {
+		Log.d(TAG, "settings fragment on detach");
+	} */
 
-		Address() {};
+	/* @Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "settings fragment on destroy");
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.d(TAG, "settings fragment on destroy view");
+	} */
+
+	private class Address {
+		private long mRowId;
+		private String mIp;
+		private int mPort;
+		private int mReceivePort;
+		private String mProtocol;
+
+		Address() {
+		}
 
 		void setRowId(long id) {
-			this.rowId = id;
+			this.mRowId = id;
 		}
 
 		void setIP(String ip) {
-			this.ip = ip;
+			this.mIp = ip;
 		}
 
 		void setPort(int port) {
-			this.port = port;
+			this.mPort = port;
 		}
 
 		void setReceivePort(int port) {
-			this.receivePort = port;
+			this.mReceivePort = port;
 		}
 
 		void setProtocol(String protocol) {
-			this.protocol = protocol;
+			this.mProtocol = protocol;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		String getIP() {
-			return this.ip;
+			return this.mIp;
 		}
 
 		int getPort() {
-			return this.port;
+			return this.mPort;
 		}
 
 		int getReceivePort() {
-			return this.receivePort;
+			return this.mReceivePort;
 		}
 
 		String getProtocol() {
-			return this.protocol;
+			return this.mProtocol;
 		}
 	}
 
 	private class Settings {
-		private long rowId;
-		private short resolutionHorizontal;
-		private short resolutionVertical;
-		private short framerateRange;
-		private boolean normalized;
-		private boolean rememberPixelStates;
-		private short calculationPeriod;
-		private String rootCmd;
-		private int udpReceivePort;
-		private int tcpReceivePort;
+		private long mRowId;
+		private short mResolutionHorizontal;
+		private short mResolutionVertical;
+		private short mFramerateRange;
+		private boolean mNormalized;
+		private boolean mRememberPixelStates;
+		private short mCalculationPeriod;
+		private String mRootCmd;
+		private int mUdpReceivePort;
+		private int mTcpReceivePort;
 
-		Settings() {}
+		Settings() {
+		}
 
 		void setRowId(long id) {
-			this.rowId = id;
+			this.mRowId = id;
 		}
 
 		void setResolutionHorizontal(short resolutionH) {
-			this.resolutionHorizontal = resolutionH;
+			this.mResolutionHorizontal = resolutionH;
 		}
 
 		void setResolutionVertical(short resolutionV) {
-			this.resolutionVertical = resolutionV;
+			this.mResolutionVertical = resolutionV;
 		}
 
 		void setFramerateRange(short index) {
-			this.framerateRange = index;
+			this.mFramerateRange = index;
 		}
 
 		void setNormalized(short boolVal) {
-			this.normalized = boolVal > 0;
+			this.mNormalized = boolVal > 0;
 		}
 
 		void setRememberPixelStates(short boolVal) {
-			this.rememberPixelStates = boolVal > 0;
+			this.mRememberPixelStates = boolVal > 0;
 		}
 
 		void setCalculationPeriod(short calcPeriod) {
-			this.calculationPeriod = calcPeriod;
+			this.mCalculationPeriod = calcPeriod;
 		}
 
 		void setRootCmd(String cmdName) {
-			this.rootCmd = cmdName;
+			this.mRootCmd = cmdName;
 		}
 
 		void setUdpReceivePort(int port) {
-			this.udpReceivePort = port;
+			this.mUdpReceivePort = port;
 		}
 
 		void setTcpReceivePort(int port) {
-			this.tcpReceivePort = port;
+			this.mTcpReceivePort = port;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		short getResolutionHorizontal() {
-			return this.resolutionHorizontal;
+			return this.mResolutionHorizontal;
 		}
 
 		short getResolutionVertical() {
-			return this.resolutionVertical;
+			return this.mResolutionVertical;
 		}
 
 		short getFramerateRange() {
-			return this.framerateRange;
+			return this.mFramerateRange;
 		}
 
 		boolean getNormalized() {
-			return this.normalized;
+			return this.mNormalized;
 		}
 
 		boolean getRememberPixelStates() {
-			return this.rememberPixelStates;
+			return this.mRememberPixelStates;
 		}
 
 		short getCalculationPeriod() {
-			return this.calculationPeriod;
+			return this.mCalculationPeriod;
 		}
 
 		String getRootCmd() {
-			return this.rootCmd;
+			return this.mRootCmd;
 		}
 
 		int getUdpReceivePort() {
-			return this.udpReceivePort;
+			return this.mUdpReceivePort;
 		}
 
 		int getTcpReceivePort() {
-			return this.tcpReceivePort;
+			return this.mTcpReceivePort;
 		}
 	}
 
 	private class Sensors {
-		private long rowId;
-		private boolean orientationSensorActivated;
-		private boolean accelerationSensorActivated;
-		private boolean linAccelerationSensorActivated;
-		private boolean magneticSensorActivated;
-		private boolean gravitySensorActivated;
-		private boolean proximitySensorActivated;
-		private boolean lightSensorActivated;
-		private boolean pressureSensorActivated;
-		private boolean temperatureSensorActivated;
-		private boolean humiditySensorActivated;
-		private boolean locationSensorActivated;
+		private long mRowId;
+		private boolean mOrientationSensorActivated;
+		private boolean mAccelerationSensorActivated;
+		private boolean mLinAccelerationSensorActivated;
+		private boolean mMagneticSensorActivated;
+		private boolean mGravitySensorActivated;
+		private boolean mProximitySensorActivated;
+		private boolean mLightSensorActivated;
+		private boolean mPressureSensorActivated;
+		private boolean mTemperatureSensorActivated;
+		private boolean mHumiditySensorActivated;
+		private boolean mLocationSensorActivated;
 
-		Sensors() {}
+		Sensors() {
+		}
 
 		void setRowId(long rowId) {
-			this.rowId = rowId;
+			this.mRowId = rowId;
 		}
 
 		void setOrientationSensorActivated(short boolVal) {
-			this.orientationSensorActivated = boolVal > 0;
+			this.mOrientationSensorActivated = boolVal > 0;
 		}
 
 		void setAccelerationSensorActivated(short boolVal) {
-			this.accelerationSensorActivated = boolVal > 0;
+			this.mAccelerationSensorActivated = boolVal > 0;
 		}
 
 		void setLinAccelerationSensorActivated(short boolVal) {
-			this.linAccelerationSensorActivated = boolVal > 0;
+			this.mLinAccelerationSensorActivated = boolVal > 0;
 		}
 
 		void setMagneticSensorActivated(short boolVal) {
-			this.magneticSensorActivated = boolVal > 0;
+			this.mMagneticSensorActivated = boolVal > 0;
 		}
 
 		void setGravitySensorActivated(short boolVal) {
-			this.gravitySensorActivated = boolVal > 0;
+			this.mGravitySensorActivated = boolVal > 0;
 		}
 
 		void setProximitySensorActivated(short boolVal) {
-			this.proximitySensorActivated = boolVal > 0;
+			this.mProximitySensorActivated = boolVal > 0;
 		}
 
 		void setLightSensorActivated(short boolVal) {
-			this.lightSensorActivated = boolVal > 0;
+			this.mLightSensorActivated = boolVal > 0;
 		}
 
 		void setPressureSensorActivated(short boolVal) {
-			this.pressureSensorActivated = boolVal > 0;
+			this.mPressureSensorActivated = boolVal > 0;
 		}
 
 		void setTemperatureSensorActivated(short boolVal) {
-			this.temperatureSensorActivated = boolVal > 0;
+			this.mTemperatureSensorActivated = boolVal > 0;
 		}
 
 		void setHumiditySensorActivated(short boolVal) {
-			this.humiditySensorActivated = boolVal > 0;
+			this.mHumiditySensorActivated = boolVal > 0;
 		}
 
 		void setLocationSensorActivated(short boolVal) {
-			this.locationSensorActivated = boolVal > 0;
+			this.mLocationSensorActivated = boolVal > 0;
 		}
 
 		long getRowId() {
-			return this.rowId;
+			return this.mRowId;
 		}
 
 		boolean getOrientationSensorActivated() {
-			return this.orientationSensorActivated;
+			return this.mOrientationSensorActivated;
 		}
 
 		boolean getAccelerationSensorActivated() {
-			return this.accelerationSensorActivated;
+			return this.mAccelerationSensorActivated;
 		}
 
 		boolean getLinAccelerationSensorActivated() {
-			return this.linAccelerationSensorActivated;
+			return this.mLinAccelerationSensorActivated;
 		}
 
 		boolean getMagneticSensorActivated() {
-			return this.magneticSensorActivated;
+			return this.mMagneticSensorActivated;
 		}
 
 		boolean getGravitySensorActivated() {
-			return this.gravitySensorActivated;
+			return this.mGravitySensorActivated;
 		}
 
 		boolean getProximitySensorActivated() {
-			return this.proximitySensorActivated;
+			return this.mProximitySensorActivated;
 		}
 
 		boolean getLightSensorActivated() {
-			return this.lightSensorActivated;
+			return this.mLightSensorActivated;
 		}
 
 		boolean getPressureSensorActivated() {
-			return this.pressureSensorActivated;
+			return this.mPressureSensorActivated;
 		}
 
 		boolean getTemperatureSensorActivated() {
-			return this.temperatureSensorActivated;
+			return this.mTemperatureSensorActivated;
 		}
 
 		boolean getHumiditySensorActivated() {
-			return this.humiditySensorActivated;
+			return this.mHumiditySensorActivated;
 		}
 
 		boolean getLocationSensorActivated() {
-			return this.locationSensorActivated;
+			return this.mLocationSensorActivated;
 		}
 	}
 }

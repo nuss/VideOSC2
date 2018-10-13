@@ -23,4 +23,13 @@
 		<item name="android:background">?android:attr/listDivider</item>
 	</style>
 
+	<style name="AlertDialogCustom" parent="@android:style/Theme.Dialog">
+		<item name="android:textColor">@color/colorPrimaryDark</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:headerDividersEnabled">true</item>
+		<item name="android:typeface">normal</item>
+		<item name="android:background">@color/colorPrimaryLight</item>
+		<item name="android:borderlessButtonStyle">@style/Base.AlertDialog.AppCompat.Light</item>
+	</style>
+
 </resources>
