@@ -16,6 +16,7 @@ import net.videosc2.utilities.enums.RGBModes;
  */
 public class VideOSCApplication extends Application {
 	private boolean mIsRGBPositive = true; // always init to true
+	private boolean mRGBHasChanged = false; // when switching RGB mode from negative to positive and vice versa
 	private RGBModes mColorMode = RGBModes.RGB;
 	private SettingsDBHelper mSettingsHelper;
 	private boolean mNormalized = false;
@@ -249,5 +250,13 @@ public class VideOSCApplication extends Application {
 
 	public PixelEditModes getPixelEditMode() {
 		return this.mPixelEditMode;
+	}
+
+	public void setRGBHasChanged(boolean changed) {
+		this.mRGBHasChanged = changed;
+	}
+
+	public boolean getRGBHasChanged() {
+		return mRGBHasChanged;
 	}
 }

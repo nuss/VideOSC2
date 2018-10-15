@@ -2,7 +2,6 @@ package net.videosc2.views;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +17,6 @@ public class SliderBarTest {
 
 	@Mock
 	private Context mMockContext;
-	private Typeface mTypeFace;
 
 	@Before
 	public void setUp() {

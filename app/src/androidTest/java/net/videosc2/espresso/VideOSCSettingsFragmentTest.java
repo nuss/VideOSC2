@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc2.espresso;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.allOf;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class VideOSCSettingsFragmentTest1 {
+public class VideOSCSettingsFragmentTest {
 
 	@Rule
 	public ActivityTestRule<VideOSCMainActivity> mActivityTestRule = new ActivityTestRule<>(VideOSCMainActivity.class);

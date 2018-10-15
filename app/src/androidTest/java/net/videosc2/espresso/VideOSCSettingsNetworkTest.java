@@ -1,4 +1,4 @@
-package net.videosc2.activities;
+package net.videosc2.espresso;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import net.videosc2.R;
+import net.videosc2.activities.VideOSCMainActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -37,6 +38,8 @@ public class VideOSCSettingsNetworkTest {
 
 	@Test
 	public void videOSCSettingsNetworkTest() throws InterruptedException {
+		Thread.sleep(5000);
+
 		ViewInteraction appCompatImageView = onView(
 				allOf(withId(R.id.tool), withContentDescription("a tools menu item"),
 						childAtPosition(
