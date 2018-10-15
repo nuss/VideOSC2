@@ -116,10 +116,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// the global application, used to exchange various temporary data
 	private VideOSCApplication mApp;
 
-	// the current color mode
-	// RGB or RGB inverted?
-	// set to true when isRGBPositive changes
-	private boolean mRGBHasChanged = false;
 	// the current gesture mode
 	public Enum mGestureMode = GestureModes.SWAP;
 
@@ -134,9 +130,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public ViewGroup mModePanel;
 	// panel for displaying frame rate, calculation period
 	public ViewGroup mFrameRateCalculationPanel;
-
-	// drawer menu
-	private int START_STOP, TORCH, COLOR_MODE, INTERACTION, SELECT_CAM, INFO, SETTINGS, QUIT;
 
 	// settings, retrieved from sqlite db
 	public SettingsDBHelper mDbHelper;
