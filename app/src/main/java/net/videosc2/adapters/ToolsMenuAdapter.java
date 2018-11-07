@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 	final private static String TAG = "ToolsMenuAdapter";
-	final private HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
+	final private SparseIntArray mToolsDrawerListState = new SparseIntArray();
 
 	public ToolsMenuAdapter(Context context, int resource, int bitmapResourceId, List<BitmapDrawable> tools) {
 		super(context, resource, bitmapResourceId, tools);
@@ -306,7 +307,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		return convertView;
 	}
 
-	public HashMap<Integer, Integer> getToolsDrawerListState() {
+	public SparseIntArray getToolsDrawerListState() {
 		return this.mToolsDrawerListState;
 	}
 }

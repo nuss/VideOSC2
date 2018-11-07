@@ -9,16 +9,22 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import netP5.NetAddress;
+import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class VideOSCOscHandlerTest {
 	private VideOSCOscHandler mHandler;
 
 	@Mock
 	private Context mMockContext;
+
+	@Mock
+	private OscEventListener mListener;
 
 	@Before
 	public void setUp() {
@@ -64,5 +70,33 @@ public class VideOSCOscHandlerTest {
 	public void getBroadcastPort() {
 		mHandler.setBroadcastPort(54321);
 		assertEquals(54321, mHandler.getBroadcastPort());
+	}
+
+
+	@Test
+	public void addOscEventListener() {
+		mListener = mHandler.addOscEventListener();
+		assertNotNull(mListener);
+	}
+
+	@Test
+	public void removeOscEventListener() {
+		mHandler.removeOscEventListener(mListener);
+		assertNull(mListener);
+	}
+
+	@Test
+	public void getRedFeedbackStrings() {
+		assertEquals(0, mHandler.getRedFeedbackStrings().size());
+	}
+
+	@Test
+	public void getGreenFeedbackStrings() {
+		assertEquals(0, mHandler.getGreenFeedbackStrings().size());
+	}
+
+	@Test
+	public void getBlueFeedbackStrings() {
+		assertEquals(0, mHandler.getBlueFeedbackStrings().size());
 	}
 }

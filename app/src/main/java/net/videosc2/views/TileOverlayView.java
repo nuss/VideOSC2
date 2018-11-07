@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 
 import net.videosc2.R;
@@ -35,6 +36,9 @@ public class TileOverlayView extends View {
 	private Bitmap mRCorner, mGCorner, mBCorner, mRGCorner, mGBCorner, mRBCorner, mRGBCorner;
 	private Point mCornerDimensions;
 	private VideOSCApplication mApp;
+	private SparseArray mRedStrings;
+	private SparseArray mGreenStrings;
+	private SparseArray mBlueStrings;
 
 	/**
 	 * Simple constructor to use when creating a view from code.
@@ -145,6 +149,7 @@ public class TileOverlayView extends View {
 		int numPixels = resolution.x * resolution.y;
 		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
 			for (int i = 0; i < numPixels; i++) {
+				Log.d(TAG, "index: " + i + ", red fb: " + mRedStrings.get(i) + ", green fb: " + mGreenStrings.get(i) + ", blue fb: " + mBlueStrings.get(i));
 				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 					mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 					canvas.drawText(
@@ -291,5 +296,17 @@ public class TileOverlayView extends View {
 
 	public void setBlueMixValues(ArrayList<Double> values) {
 		this.mBlueMixValues = values;
+	}
+
+	public void setOSCRedFeedbackStrings(SparseArray redStrings) {
+		this.mRedStrings = redStrings;
+	}
+
+	public void setOSCGreenFeedbackStrings(SparseArray greenStrings) {
+		this.mGreenStrings = greenStrings;
+	}
+
+	public void setOSCBlueFeedbackStrings(SparseArray blueStrings) {
+		this.mBlueStrings = blueStrings;
 	}
 }

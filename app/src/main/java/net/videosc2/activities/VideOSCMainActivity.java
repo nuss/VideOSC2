@@ -54,6 +54,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -259,7 +260,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mPixelEditor.requestDisallowInterceptTouchEvent(true);
 		mPixelEditor.setOnTouchListener(this);
 
-		mSnapshotsBar = (ViewGroup) inflater.inflate(R.layout.snapshots_bar, (FrameLayout) mCamView, false);
+		mSnapshotsBar = (ViewGroup) inflater.inflate(R.layout.basic_tools_bar, (FrameLayout) mCamView, false);
 		VideOSCUIHelpers.addView(mSnapshotsBar, (FrameLayout) mCamView);
 		long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 		if (numSnapshots > 0) {
@@ -694,12 +695,12 @@ public class VideOSCMainActivity extends AppCompatActivity
 		super.onResume();
 		Log.d(TAG, "onResume called: " + mToolsDrawerList);
 		if (mToolsDrawerList != null) {
-			mToolsDrawerList.getAdapter();
 			ToolsMenuAdapter adapter = (ToolsMenuAdapter) mToolsDrawerList.getAdapter();
-			HashMap<Integer, Integer> toolsDrawerListState = adapter.getToolsDrawerListState();
+			SparseIntArray toolsDrawerListState = adapter.getToolsDrawerListState();
 			// update tools drawer if some item's state has changed
-			for (Integer key : toolsDrawerListState.keySet()) {
-				mToolsList.set(key, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), toolsDrawerListState.get(key)));
+//			for (Integer key : toolsDrawerListState.keySet()) {
+			for (int i = 0; i < toolsDrawerListState.size(); i++) {
+				mToolsList.set(i, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), toolsDrawerListState.valueAt(i)));
 			}
 			mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 		}
