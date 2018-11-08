@@ -40,7 +40,7 @@ public class VideOSCMainActivityTest {
 	@Test
 	public void onCreateTest() {
 		assertNotNull(mActivity.mCamView);
-		assertNotNull(mActivity.mSnapshotsBar);
+		assertNotNull(mActivity.mBasicToolbar);
 		assertNotNull(mActivity.mDbHelper);
 		assertEquals(mActivity.mColorModeToolsDrawer, RGBToolbarStatus.RGB);
 		assertNotNull(mActivity.mPixelEditor);

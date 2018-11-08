@@ -92,6 +92,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import oscP5.OscEventListener;
+
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
@@ -144,7 +146,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private int mOldX;
 	private int mOldY;
 	private float mEditorBoxAlpha;
-	public ViewGroup mSnapshotsBar;
+	public ViewGroup mBasicToolbar;
 
 	private SQLiteDatabase mDb;
 
@@ -233,6 +235,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final FragmentManager fragmentManager = getFragmentManager();
 		final Activity activity = this;
 		final Context context = getApplicationContext();
+		OscEventListener listener;
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -260,18 +263,18 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mPixelEditor.requestDisallowInterceptTouchEvent(true);
 		mPixelEditor.setOnTouchListener(this);
 
-		mSnapshotsBar = (ViewGroup) inflater.inflate(R.layout.basic_tools_bar, (FrameLayout) mCamView, false);
-		VideOSCUIHelpers.addView(mSnapshotsBar, (FrameLayout) mCamView);
+		mBasicToolbar = (ViewGroup) inflater.inflate(R.layout.basic_tools_bar, (FrameLayout) mCamView, false);
+		VideOSCUIHelpers.addView(mBasicToolbar, (FrameLayout) mCamView);
 		long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 		if (numSnapshots > 0) {
-			TextView numSnapshotsIndicator = mSnapshotsBar.findViewById(R.id.num_snapshots);
+			TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
 			numSnapshotsIndicator.setActivated(true);
 			numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 			numSnapshotsIndicator.setTextColor(0xffffffff);
 		}
 
-		mSnapshotsBar.requestDisallowInterceptTouchEvent(true);
-		mSnapshotsBar.setOnTouchListener(this);
+		mBasicToolbar.requestDisallowInterceptTouchEvent(true);
+		mBasicToolbar.setOnTouchListener(this);
 
 		final ImageButton quickEditPixels = mPixelEditor.findViewById(R.id.quick_edit_pixels);
 		quickEditPixels.setActivated(true);
@@ -280,8 +283,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final ImageButton deleteEditsInPixels = mPixelEditor.findViewById(R.id.delete_edits);
 		final ImageButton applyPixelSelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
 
-		final ImageButton loadSnapshotsButton = mSnapshotsBar.findViewById(R.id.saved_snapshots_button);
-		final ImageButton saveSnapshotButton = mSnapshotsBar.findViewById(R.id.save_snapshot);
+		final ImageButton oscFeedbackButton = mBasicToolbar.findViewById(R.id.osc_feedback_button);
+		final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
+		final ImageButton saveSnapshotButton = mBasicToolbar.findViewById(R.id.save_snapshot);
 
 		quickEditPixels.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -435,7 +439,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 										if (result > 0) {
 											long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 											if (numSnapshots > 0) {
-												TextView numSnapshotsIndicator = mSnapshotsBar.findViewById(R.id.num_snapshots);
+												TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
 												numSnapshotsIndicator.setActivated(true);
 												numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
 												numSnapshotsIndicator.setTextColor(0xffffffff);
@@ -455,6 +459,16 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 				AlertDialog dialog = dialogBuilder.create();
 				dialog.show();
+			}
+		});
+
+		oscFeedbackButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
+				if (mApp.getOSCFeedbackActivated())
+					mApp.mOscHelper.addOscEventListener();
+				else mApp.mOscHelper.removeOscEventListener();
 			}
 		});
 

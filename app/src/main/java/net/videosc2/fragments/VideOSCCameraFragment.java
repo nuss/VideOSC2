@@ -603,8 +603,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 			mPixelEditor = activity.mPixelEditor;
-			mSnapshotsBar = activity.mSnapshotsBar;
-			ViewGroup snapshotsBar = activity.mSnapshotsBar;
+			mSnapshotsBar = activity.mBasicToolbar;
+			ViewGroup snapshotsBar = activity.mBasicToolbar;
 			ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
 			applySelection.setOnClickListener(new OnClickListener() {
 				@Override

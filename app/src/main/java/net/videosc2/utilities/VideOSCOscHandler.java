@@ -34,7 +34,6 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	public VideOSCOscHandler(Context context) {
 		mOscP5 = new OscP5(context, mListeningPort);
 		// intermediate - should be invoked through user interaction
-		mOscEventListener = this.addOscEventListener();
 		mBroadcastAddr = new NetAddress(mBroadcastIP, mBroadcastPort);
 	}
 
@@ -59,8 +58,8 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mBroadcastAddr = new NetAddress(ip, port);
 	}
 
-	public OscEventListener addOscEventListener() {
-		OscEventListener listener = new OscEventListener() {
+	public void addOscEventListener() {
+		mOscEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc message: " + oscMessage);
@@ -72,15 +71,11 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 
 			}
 		};
-		mOscP5.addListener(listener);
-
-		return listener;
+		mOscP5.addListener(mOscEventListener);
 	}
 
-	public OscEventListener removeOscEventListener(OscEventListener listener) {
-		mOscP5.removeListener(listener);
-
-		return null;
+	public void removeOscEventListener() {
+		mOscP5.removeListener(mOscEventListener);
 	}
 
 	public NetAddress getBroadcastAddr() {
