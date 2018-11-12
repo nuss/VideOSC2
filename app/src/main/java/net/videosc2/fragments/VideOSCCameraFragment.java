@@ -713,15 +713,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mOverlayView.setGreenMixValues(mGreenMixValues);
 						mOverlayView.setBlueMixValues(mBlueMixValues);
 
-						mOverlayView.setOSCRedFeedbackStrings(
-								mApp.mOscHelper.getRedFeedbackStrings()
-						);
-						mOverlayView.setOSCGreenFeedbackStrings(
-								mApp.mOscHelper.getGreenFeedbackStrings()
-						);
-						mOverlayView.setOSCBlueFeedbackStrings(
-								mApp.mOscHelper.getBlueFeedbackStrings()
-						);
+//						mOverlayView.setOSCRedFeedbackStrings(
+//								mApp.mOscHelper.getRedFeedbackStrings()
+//						);
+//						mOverlayView.setOSCGreenFeedbackStrings(
+//								mApp.mOscHelper.getGreenFeedbackStrings()
+//						);
+//						mOverlayView.setOSCBlueFeedbackStrings(
+//								mApp.mOscHelper.getBlueFeedbackStrings()
+//						);
 
 						mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
 						mOverlayView.invalidate();

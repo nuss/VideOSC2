@@ -145,17 +145,20 @@ public class TileOverlayView extends View {
 		mPaint.setColor(0xffffffff);
 		mPaint.setTextAlign(Paint.Align.LEFT);
 		mPaint.setTypeface(mTypeFace);
-		mPaint.setTextSize((float) 30);
+		mPaint.setTextSize(12f * mApp.getScreenDensity());
 		int numPixels = resolution.x * resolution.y;
+		boolean oscFeedbackActivated = mApp.getOSCFeedbackActivated();
+
 		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
 			for (int i = 0; i < numPixels; i++) {
-				Log.d(TAG, "index: " + i + ", red fb: " + mRedStrings.get(i) + ", green fb: " + mGreenStrings.get(i) + ", blue fb: " + mBlueStrings.get(i));
+//				if (oscFeedbackActivated)
+//					Log.d(TAG, "index: " + i + ", red fb: " + mRedStrings.get(i) + ", green fb: " + mGreenStrings.get(i) + ", blue fb: " + mBlueStrings.get(i));
 				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 					mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 					canvas.drawText(
 							String.valueOf(i + 1),
-							i % resolution.x * pixelSize.x + 10,
-							i / resolution.x * pixelSize.y + pixelSize.y - 10,
+							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+							i / resolution.x * pixelSize.y + pixelSize.y - 3.5f * mApp.getScreenDensity(),
 							mPaint
 					);
 				}
@@ -271,6 +274,61 @@ public class TileOverlayView extends View {
 				}
 			}
 		}
+
+		if (oscFeedbackActivated) {
+			String text = null;
+			float nextY = 0;
+			int numRedFBStrings, numGreenFBStrings, numBlueFBStrings;
+			SparseArray<ArrayList<String>> redFeedbackStrings = mApp.mOscHelper.getRedFeedbackStrings();
+			SparseArray<ArrayList<String>> greenFeedbackStrings = mApp.mOscHelper.getGreenFeedbackStrings();
+			SparseArray<ArrayList<String>> blueFeedbackStrings = mApp.mOscHelper.getBlueFeedbackStrings();
+//			Log.d(TAG, "line spacing: " + mPaint.getFontMetricsInt(null) + ", " + mPaint.getFontSpacing());
+			for (int i = 0; i < numPixels; i++) {
+//				Log.d(TAG, "mBlueStrings at index " + i + " is " + mBlueStrings.get(i)/* + "/" + mBlueStrings.valueAt(i)*/);
+				if (redFeedbackStrings.get(i) != null) {
+					numRedFBStrings = redFeedbackStrings.get(i).size();
+					for (String redFBString : redFeedbackStrings.get(i)) {
+						text = redFBString.concat("\n");
+					}
+					mPaint.setColor(0xffff0000);
+					canvas.drawText(
+							text,
+							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+							mPaint
+					);
+					text = null;
+					nextY = nextY + mPaint.getFontSpacing() * numRedFBStrings;
+				}
+				if (greenFeedbackStrings.get(i) != null) {
+					numGreenFBStrings = greenFeedbackStrings.get(i).size();
+					for (String greenFBString : greenFeedbackStrings.get(i)) {
+						text = greenFBString.concat("\n");
+					}
+					mPaint.setColor(0xff00ff00);
+					canvas.drawText(
+							text,
+							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+							mPaint
+					);
+					text = null;
+					nextY = nextY + mPaint.getFontSpacing() * numGreenFBStrings;
+				}
+				if (blueFeedbackStrings.get(i) != null) {
+					for (String blueFBStrings : blueFeedbackStrings.get(i)) {
+						text = blueFBStrings.concat("\n");
+					}
+					mPaint.setColor(0xff0000ff);
+					canvas.drawText(
+							text,
+							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+							mPaint
+					);
+				}
+			}
+		}
 	}
 
 	private void drawCornerBitmap(Canvas canvas, int pixIndex, Bitmap bitmap, Point resolution, Point pixelSize) {
@@ -296,17 +354,5 @@ public class TileOverlayView extends View {
 
 	public void setBlueMixValues(ArrayList<Double> values) {
 		this.mBlueMixValues = values;
-	}
-
-	public void setOSCRedFeedbackStrings(SparseArray redStrings) {
-		this.mRedStrings = redStrings;
-	}
-
-	public void setOSCGreenFeedbackStrings(SparseArray greenStrings) {
-		this.mGreenStrings = greenStrings;
-	}
-
-	public void setOSCBlueFeedbackStrings(SparseArray blueStrings) {
-		this.mBlueStrings = blueStrings;
 	}
 }

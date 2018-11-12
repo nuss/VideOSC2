@@ -16,7 +16,7 @@
 		android:layout_width="30dp"
 		android:layout_margin="8dp"
 		android:src="@drawable/osc_feedback_button"
-		android:background="@drawable/editor_button_shape"
+		android:background="@drawable/osc_feedback_button_shape"
 		android:contentDescription="@string/activate_or_deactivate_osc_feedback"/>
 
 	<RelativeLayout
@@ -65,7 +65,7 @@
 		android:layout_marginLeft="8dp"
 		android:layout_marginEnd="8dp"
 		android:layout_marginRight="8dp"
-		android:background="@drawable/snapshot_button_seletor"
+		android:background="@drawable/snapshot_button_selector"
 		android:clickable="true"
 		android:contentDescription="@string/make_a_snapshot"
 		android:focusable="true"

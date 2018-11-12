@@ -466,9 +466,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View view) {
 				mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
-				if (mApp.getOSCFeedbackActivated())
+				if (mApp.getOSCFeedbackActivated()) {
+					view.setActivated(true);
 					mApp.mOscHelper.addOscEventListener();
-				else mApp.mOscHelper.removeOscEventListener();
+				} else {
+					view.setActivated(false);
+					mApp.mOscHelper.removeOscEventListener();
+				}
 			}
 		});
 

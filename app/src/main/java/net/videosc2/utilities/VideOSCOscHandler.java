@@ -2,7 +2,6 @@ package net.videosc2.utilities;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mOscEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc message: " + oscMessage);
+//				Log.d(TAG, "osc message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
 			}
 
@@ -98,15 +97,15 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		return mBroadcastPort;
 	}
 
-	public SparseArray getRedFeedbackStrings() {
+	public SparseArray<ArrayList<String>> getRedFeedbackStrings() {
 		return mFbStringsR;
 	}
 
-	public SparseArray getGreenFeedbackStrings() {
+	public SparseArray<ArrayList<String>> getGreenFeedbackStrings() {
 		return mFbStringsG;
 	}
 
-	public SparseArray getBlueFeedbackStrings() {
+	public SparseArray<ArrayList<String>> getBlueFeedbackStrings() {
 		return mFbStringsB;
 	}
 
