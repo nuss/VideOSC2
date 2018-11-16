@@ -276,58 +276,76 @@ public class TileOverlayView extends View {
 		}
 
 		if (oscFeedbackActivated) {
+			mPaint.setTextSize(15f * mApp.getScreenDensity());
 			String text = null;
-			float nextY = 0;
-			int numRedFBStrings, numGreenFBStrings, numBlueFBStrings;
+			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
+			int numRedFBStrings, numGreenFBStrings;
 			SparseArray<ArrayList<String>> redFeedbackStrings = mApp.mOscHelper.getRedFeedbackStrings();
+			Log.d(TAG, "red feedback strings: " + redFeedbackStrings);
 			SparseArray<ArrayList<String>> greenFeedbackStrings = mApp.mOscHelper.getGreenFeedbackStrings();
 			SparseArray<ArrayList<String>> blueFeedbackStrings = mApp.mOscHelper.getBlueFeedbackStrings();
-//			Log.d(TAG, "line spacing: " + mPaint.getFontMetricsInt(null) + ", " + mPaint.getFontSpacing());
+			if (mApp.getColorMode().equals(RGBModes.RGB))
+				mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 			for (int i = 0; i < numPixels; i++) {
-//				Log.d(TAG, "mBlueStrings at index " + i + " is " + mBlueStrings.get(i)/* + "/" + mBlueStrings.valueAt(i)*/);
 				if (redFeedbackStrings.get(i) != null) {
 					numRedFBStrings = redFeedbackStrings.get(i).size();
+					// concat strings beforehand - probably a bit cheaper than drawing text multiple times
 					for (String redFBString : redFeedbackStrings.get(i)) {
 						text = redFBString.concat("\n");
 					}
-					mPaint.setColor(0xffff0000);
-					canvas.drawText(
-							text,
-							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-							mPaint
-					);
-					text = null;
-					nextY = nextY + mPaint.getFontSpacing() * numRedFBStrings;
+					// if we're in RGB mode set textcolor to the corresponding colorchannel
+					// otherwise text should be white
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xffff0000);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+						canvas.drawText(
+								text,
+								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+								mPaint
+						);
+						// reset text for the next color
+						text = null;
+						// increment Y position by the number of lines already written
+						nextY = nextY + mPaint.getTextSize() * numRedFBStrings;
+					}
 				}
 				if (greenFeedbackStrings.get(i) != null) {
 					numGreenFBStrings = greenFeedbackStrings.get(i).size();
 					for (String greenFBString : greenFeedbackStrings.get(i)) {
 						text = greenFBString.concat("\n");
 					}
-					mPaint.setColor(0xff00ff00);
-					canvas.drawText(
-							text,
-							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-							mPaint
-					);
-					text = null;
-					nextY = nextY + mPaint.getFontSpacing() * numGreenFBStrings;
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xff00ff00);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+						canvas.drawText(
+								text,
+								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+								mPaint
+						);
+						text = null;
+						nextY = nextY + mPaint.getTextSize() * numGreenFBStrings;
+					}
 				}
 				if (blueFeedbackStrings.get(i) != null) {
 					for (String blueFBStrings : blueFeedbackStrings.get(i)) {
 						text = blueFBStrings.concat("\n");
 					}
-					mPaint.setColor(0xff0000ff);
-					canvas.drawText(
-							text,
-							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-							i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-							mPaint
-					);
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xff0000ff);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+						canvas.drawText(
+								text,
+								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+								mPaint
+						);
+					}
 				}
+				nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
 			}
+			mPaint.clearShadowLayer();
 		}
 	}
 

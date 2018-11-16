@@ -110,30 +110,33 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	}
 
 	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage) {
-		if (fbMessage.get(0) != null) {
+		if (fbMessage.addrPattern().matches(
+				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
+		) && fbMessage.get(0) != null) {
 			String sender = fbMessage.get(0).stringValue();
-			if (fbMessage.addrPattern().matches(
-					"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
-			)) {
-				String pixel = fbMessage.addrPattern().split("/")[2];
-				int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
+			String pixel = fbMessage.addrPattern().split("/")[2];
+			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
-				if (pixel.matches("^red[0-9]+")) {
-					if (mFbStringsR.get(index) == null)
-						mFbStringsR.put(index, new ArrayList<String>());
-					if (mFbStringsR.get(index).indexOf(sender) < 0)
-						mFbStringsR.get(index).add(sender);
-				} else if (pixel.matches("^green[0-9]+")) {
-					if (mFbStringsG.get(index) == null)
-						mFbStringsG.put(index, new ArrayList<String>());
-					if (mFbStringsG.get(index).indexOf(sender) < 0)
-						mFbStringsG.get(index).add(sender);
-				} else if (pixel.matches("^blue[0-9]+")) {
-					if (mFbStringsB.get(index) == null)
-						mFbStringsB.put(index, new ArrayList<String>());
-					if (mFbStringsB.get(index).indexOf(sender) < 0)
-						mFbStringsB.get(index).add(sender);
-				}
+			if (pixel.matches("^red[0-9]+")) {
+				if (mFbStringsR.get(index) == null)
+					mFbStringsR.put(index, new ArrayList<String>());
+					// reset feedback strings, otherwise received
+					// messages will stay in memory forever
+				else mFbStringsR.get(index).clear();
+				if (mFbStringsR.get(index).indexOf(sender) < 0)
+					mFbStringsR.get(index).add(sender);
+			} else if (pixel.matches("^green[0-9]+")) {
+				if (mFbStringsG.get(index) == null)
+					mFbStringsG.put(index, new ArrayList<String>());
+				else mFbStringsG.get(index).clear();
+				if (mFbStringsG.get(index).indexOf(sender) < 0)
+					mFbStringsG.get(index).add(sender);
+			} else if (pixel.matches("^blue[0-9]+")) {
+				if (mFbStringsB.get(index) == null)
+					mFbStringsB.put(index, new ArrayList<String>());
+				else mFbStringsB.get(index).clear();
+				if (mFbStringsB.get(index).indexOf(sender) < 0)
+					mFbStringsB.get(index).add(sender);
 			}
 		}
 	}
