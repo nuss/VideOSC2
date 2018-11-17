@@ -20,6 +20,7 @@ import android.view.View;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
@@ -276,14 +277,15 @@ public class TileOverlayView extends View {
 		}
 
 		if (oscFeedbackActivated) {
+			VideOSCOscHandler oscHelper = mApp.mOscHelper;
 			mPaint.setTextSize(15f * mApp.getScreenDensity());
-			String text = null;
+			String text = "";
 			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
 			int numRedFBStrings, numGreenFBStrings;
-			SparseArray<ArrayList<String>> redFeedbackStrings = mApp.mOscHelper.getRedFeedbackStrings();
+			SparseArray<ArrayList<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
 			Log.d(TAG, "red feedback strings: " + redFeedbackStrings);
-			SparseArray<ArrayList<String>> greenFeedbackStrings = mApp.mOscHelper.getGreenFeedbackStrings();
-			SparseArray<ArrayList<String>> blueFeedbackStrings = mApp.mOscHelper.getBlueFeedbackStrings();
+			SparseArray<ArrayList<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
+			SparseArray<ArrayList<String>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
 			if (mApp.getColorMode().equals(RGBModes.RGB))
 				mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 			for (int i = 0; i < numPixels; i++) {
@@ -298,14 +300,9 @@ public class TileOverlayView extends View {
 					if (mApp.getColorMode().equals(RGBModes.RGB))
 						mPaint.setColor(0xffff0000);
 					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
-						canvas.drawText(
-								text,
-								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-								mPaint
-						);
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
 						// reset text for the next color
-						text = null;
+						text = "";
 						// increment Y position by the number of lines already written
 						nextY = nextY + mPaint.getTextSize() * numRedFBStrings;
 					}
@@ -318,13 +315,8 @@ public class TileOverlayView extends View {
 					if (mApp.getColorMode().equals(RGBModes.RGB))
 						mPaint.setColor(0xff00ff00);
 					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
-						canvas.drawText(
-								text,
-								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-								mPaint
-						);
-						text = null;
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
+						text = "";
 						nextY = nextY + mPaint.getTextSize() * numGreenFBStrings;
 					}
 				}
@@ -335,16 +327,14 @@ public class TileOverlayView extends View {
 					if (mApp.getColorMode().equals(RGBModes.RGB))
 						mPaint.setColor(0xff0000ff);
 					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
-						canvas.drawText(
-								text,
-								i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-								i / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-								mPaint
-						);
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
 					}
 				}
 				nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
 			}
+			// reset feedback strings, otherwise feedback names will
+			// be displayed even though no feedback is sent anymore
+			oscHelper.resetFeedbackStrings();
 			mPaint.clearShadowLayer();
 		}
 	}
@@ -354,6 +344,15 @@ public class TileOverlayView extends View {
 				bitmap,
 				(float) (pixIndex % resolution.x * pixelSize.x + pixelSize.x - mCornerDimensions.x),
 				(float) (pixIndex / resolution.x * pixelSize.y + pixelSize.y - mCornerDimensions.y),
+				mPaint
+		);
+	}
+
+	private void drawFeedbackStrings(Canvas canvas, int pixIndex, String text, Point resolution, Point pixelSize, float nextY) {
+		canvas.drawText(
+				text,
+				pixIndex % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+				pixIndex / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
 				mPaint
 		);
 	}
