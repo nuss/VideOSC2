@@ -9,13 +9,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import netP5.NetAddress;
-import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class VideOSCOscHandlerTest {
 	private VideOSCOscHandler mHandler;
@@ -23,17 +20,16 @@ public class VideOSCOscHandlerTest {
 	@Mock
 	private Context mMockContext;
 
-	@Mock
-	private OscEventListener mListener;
-
 	@Before
 	public void setUp() {
 		mMockContext = new ContextThemeWrapper();
 		mHandler = new VideOSCOscHandler(mMockContext);
+		mHandler.addOscEventListener();
 	}
 
 	@After
 	public void tearDown() {
+		mHandler.removeOscEventListener();
 		mHandler = null;
 	}
 
@@ -72,19 +68,6 @@ public class VideOSCOscHandlerTest {
 		assertEquals(54321, mHandler.getBroadcastPort());
 	}
 
-
-	@Test
-	public void addOscEventListener() {
-		mListener = mHandler.addOscEventListener();
-		assertNotNull(mListener);
-	}
-
-	@Test
-	public void removeOscEventListener() {
-		mHandler.removeOscEventListener(mListener);
-		assertNull(mListener);
-	}
-
 	@Test
 	public void getRedFeedbackStrings() {
 		assertEquals(0, mHandler.getRedFeedbackStrings().size());
@@ -97,6 +80,13 @@ public class VideOSCOscHandlerTest {
 
 	@Test
 	public void getBlueFeedbackStrings() {
+		assertEquals(0, mHandler.getBlueFeedbackStrings().size());
+	}
+
+	@Test
+	public void resetFeedbackStrings() {
+		assertEquals(0, mHandler.getRedFeedbackStrings().size());
+		assertEquals(0, mHandler.getGreenFeedbackStrings().size());
 		assertEquals(0, mHandler.getBlueFeedbackStrings().size());
 	}
 }
