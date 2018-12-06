@@ -1,4 +1,10 @@
 /*
+ * Display the down-scaled preview, calculated
+ * from the smallest possible preview size
+ * Created by Stefan Nussbaumer
+ * after a piece of code by
+ * Rex St. John (on behalf of AirPair.com) on 3/4/14.
+ *
  * Copyright (c) 2014 Rex St. John on behalf of AirPair.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -72,13 +78,6 @@ import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 import oscP5.OscMessage;
 import oscP5.OscP5;
 
-/**
- * Display the down-scaled preview, calculated
- * from the smallest possible preview size
- * Created by Stefan Nussbaumer
- * after a piece of code by
- * Rex St. John (on behalf of AirPair.com) on 3/4/14.
- */
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCCameraFragment";
 

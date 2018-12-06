@@ -76,7 +76,6 @@ public class TileOverlayView extends View {
 	}
 
 	private void init(Context context) {
-		Log.d(TAG, "new tile overlay");
 		Resources res = context.getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
@@ -152,8 +151,6 @@ public class TileOverlayView extends View {
 
 		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
 			for (int i = 0; i < numPixels; i++) {
-//				if (oscFeedbackActivated)
-//					Log.d(TAG, "index: " + i + ", red fb: " + mRedStrings.get(i) + ", green fb: " + mGreenStrings.get(i) + ", blue fb: " + mBlueStrings.get(i));
 				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 					mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 					canvas.drawText(
@@ -283,7 +280,6 @@ public class TileOverlayView extends View {
 			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
 			int numRedFBStrings, numGreenFBStrings;
 			SparseArray<ArrayList<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
-			Log.d(TAG, "red feedback strings: " + redFeedbackStrings);
 			SparseArray<ArrayList<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
 			SparseArray<ArrayList<String>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
 			if (mApp.getColorMode().equals(RGBModes.RGB))

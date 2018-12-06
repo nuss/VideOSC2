@@ -92,8 +92,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import oscP5.OscEventListener;
-
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
@@ -235,7 +233,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		final FragmentManager fragmentManager = getFragmentManager();
 		final Activity activity = this;
 		final Context context = getApplicationContext();
-		OscEventListener listener;
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -715,10 +712,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (mToolsDrawerList != null) {
 			ToolsMenuAdapter adapter = (ToolsMenuAdapter) mToolsDrawerList.getAdapter();
 			SparseIntArray toolsDrawerListState = adapter.getToolsDrawerListState();
+			Log.d(TAG, "toolsDrawerListState: " + toolsDrawerListState);
 			// update tools drawer if some item's state has changed
 //			for (Integer key : toolsDrawerListState.keySet()) {
 			for (int i = 0; i < toolsDrawerListState.size(); i++) {
-				mToolsList.set(i, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), toolsDrawerListState.valueAt(i)));
+				int tool = toolsDrawerListState.get(i);
+				if (tool != 0) {
+					mToolsList.set(i, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), tool));
+				}
 			}
 			mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
 		}

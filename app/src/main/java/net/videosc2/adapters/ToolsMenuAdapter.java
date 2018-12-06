@@ -68,9 +68,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		final int SETTINGS = toolsDrawerKeys.get("prefs");
 		final int QUIT = toolsDrawerKeys.get("quit");
 
-		BitmapDrawable tool;
-
-		tool = getItem(position);
+		BitmapDrawable tool = getItem(position);
 		// Check if an existing view is being reused, otherwise inflate the view
 
 		if (convertView == null) {
@@ -226,14 +224,14 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 						app.setInteractionMode(InteractionModes.SINGLE_PIXEL);
 						VideOSCUIHelpers.addView(activity.mPixelEditor, (FrameLayout) activity.mCamView);
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interactionplus);
-						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.interactionplus);
+						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.interaction);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_plus_indicator);
 					} else if (app.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 						app.setInteractionMode(InteractionModes.BASIC);
 						cameraFragment.getSelectedPixels().clear();
 						mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 						VideOSCUIHelpers.removeView(activity.mPixelEditor, (FrameLayout) activity.mCamView);
-						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.interaction);
+						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.interactionplus);
 						interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 						if (activity.mMultiSliderView != null)
 							fragmentManager.beginTransaction().remove(activity.mMultiSliderView).commit();
@@ -248,12 +246,12 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				} else if (SELECT_CAM != null && position == SELECT_CAM) {
 					activity.closeColorModePanel();
 					BitmapDrawable noTorch = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.no_torch);
-					Log.d(TAG, "current camera id: " + app.getCurrentCameraId() + ", backside camera: " + VideOSCMainActivity.backsideCameraId + ", frontside camera: " + VideOSCMainActivity.frontsideCameraId);
 					if (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) {
+						Log.d(TAG, "current: backside camera");
 						app.setCurrentCameraId(VideOSCMainActivity.frontsideCameraId);
 						app.setIsTorchOn(false);
-						mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
-						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.front_camera);
+						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
+						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.back_camera);
 						if (app.getHasTorch()/* && cameraParameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)*/) {
 							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 							torchIndicator.setImageResource(R.drawable.light_off_indicator);
@@ -264,9 +262,11 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 						}
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
 					} else {
+						Log.d(TAG, "current: frontside camera");
 						app.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
-						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
-						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.back_camera);
+						mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
+//						Log.d(TAG, "new CameraId is back? " + (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) + ", R.drawable.back_camera: " + R.drawable.back_camera);
+						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.front_camera);
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
 						if (app.getHasTorch() && TORCH != null) {
 							ImageView torchSwitch = (ImageView) ((ViewGroup) adapterView).getChildAt(TORCH);
@@ -300,7 +300,8 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				activity.mToolsDrawerLayout.closeDrawer(Gravity.END);
 				// reset menu item background immediatly
 				view.setBackgroundColor(0x00000000);
-				Log.d(TAG, "position: " + position + ", view: " + view);
+//				Log.d(TAG, "position: " + position + ", view: " + view);
+//				Log.d(TAG, "mToolsDrawerListState: " + mToolsDrawerListState);
 			}
 		});
 		// Return the completed view to render on screen
