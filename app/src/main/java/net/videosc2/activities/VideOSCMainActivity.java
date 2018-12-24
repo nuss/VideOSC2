@@ -459,6 +459,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
+//		saveSnapshotButton.setOnLongClickListener(new View.OnLongClickListener() {
+//			@Override
+//			public boolean onLongClick(View view) {
+//				view.setOnTouchListener(VideOSCMainActivity.this);
+//				return true;
+//			}
+//		});
+
 		oscFeedbackButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -712,7 +720,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (mToolsDrawerList != null) {
 			ToolsMenuAdapter adapter = (ToolsMenuAdapter) mToolsDrawerList.getAdapter();
 			SparseIntArray toolsDrawerListState = adapter.getToolsDrawerListState();
-			Log.d(TAG, "toolsDrawerListState: " + toolsDrawerListState);
+//			Log.d(TAG, "toolsDrawerListState: " + toolsDrawerListState);
 			// update tools drawer if some item's state has changed
 //			for (Integer key : toolsDrawerListState.keySet()) {
 			for (int i = 0; i < toolsDrawerListState.size(); i++) {

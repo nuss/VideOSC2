@@ -5,7 +5,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -247,10 +246,12 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 					activity.closeColorModePanel();
 					BitmapDrawable noTorch = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.no_torch);
 					if (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) {
-						Log.d(TAG, "current: backside camera");
+//						Log.d(TAG, "current: backside camera");
 						app.setCurrentCameraId(VideOSCMainActivity.frontsideCameraId);
 						app.setIsTorchOn(false);
 						mToolsDrawerListState.put(SELECT_CAM, R.drawable.back_camera);
+						if (TORCH != null)
+							mToolsDrawerListState.put(TORCH, R.drawable.no_torch);
 						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.back_camera);
 						if (app.getHasTorch()/* && cameraParameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)*/) {
 							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
@@ -262,9 +263,11 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 						}
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_front);
 					} else {
-						Log.d(TAG, "current: frontside camera");
+//						Log.d(TAG, "current: frontside camera");
 						app.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
 						mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
+						if (TORCH != null)
+							mToolsDrawerListState.put(TORCH, R.drawable.light_on);
 //						Log.d(TAG, "new CameraId is back? " + (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) + ", R.drawable.back_camera: " + R.drawable.back_camera);
 						img = (BitmapDrawable) ContextCompat.getDrawable(activity, R.drawable.front_camera);
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);

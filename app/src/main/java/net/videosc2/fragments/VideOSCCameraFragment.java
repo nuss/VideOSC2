@@ -1221,6 +1221,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					} else bValue = mBlueValues.get(i);
 				}
 
+				// invert all colors depending on RGB is negative
+				if (!mApp.getIsRGBPositive()) {
+					rValue = 1.0 - rValue;
+					gValue = 1.0 - gValue;
+					bValue = 1.0 - bValue;
+				}
+
 				// pixels can only be set to ints in a range from 0-255
 				if (mRedValues.get(i) != null) rPixVal = (int) Math.round(rValue * 255);
 				if (mGreenValues.get(i) != null) gPixVal = (int) Math.round(gValue * 255);
