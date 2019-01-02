@@ -23,7 +23,6 @@
 package net.videosc2.activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -231,7 +230,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	private void buildUI() {
 		final LayoutInflater inflater = getLayoutInflater();
 		final FragmentManager fragmentManager = getFragmentManager();
-		final Activity activity = this;
 		final Context context = getApplicationContext();
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera

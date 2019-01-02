@@ -43,7 +43,8 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 	@NonNull
 	@Override
 	public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getContext();
+/*
+		final VideOSCMainActivity activity = (VideOSCMainActivity) parent.getContext();
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 		final android.app.FragmentManager fragmentManager = activity.getFragmentManager();
 		final ViewGroup indicators = activity.mCamView.findViewById(R.id.indicator_panel);
@@ -55,8 +56,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		// cameraFragment provides all instance methods of the camera preview
 		// no reflections needed
 		final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-//		final Camera camera = cameraFragment.mCamera;
-
 		HashMap<String, Integer> toolsDrawerKeys = activity.toolsDrawerKeys();
 		final int START_STOP = toolsDrawerKeys.get("startStop");
 		final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
@@ -66,6 +65,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		final int INFO = toolsDrawerKeys.get("info");
 		final int SETTINGS = toolsDrawerKeys.get("prefs");
 		final int QUIT = toolsDrawerKeys.get("quit");
+*/
 
 		BitmapDrawable tool = getItem(position);
 		// Check if an existing view is being reused, otherwise inflate the view
@@ -81,9 +81,31 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		toolView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				VideOSCMainActivity activity = (VideOSCMainActivity) getContext();
+				final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+				final android.app.FragmentManager fragmentManager = activity.getFragmentManager();
+				final ViewGroup indicators = activity.mCamView.findViewById(R.id.indicator_panel);
+				final ImageView oscIndicator = indicators.findViewById(R.id.indicator_osc);
+				final ImageView rgbModeIndicator = indicators.findViewById(R.id.indicator_color);
+				final ImageView interactionModeIndicator = indicators.findViewById(R.id.indicator_interaction);
+				final ImageView cameraIndicator = indicators.findViewById(R.id.indicator_camera);
+				final ImageView torchIndicator = indicators.findViewById(R.id.torch_status_indicator);
+				// cameraFragment provides all instance methods of the camera preview
+				// no reflections needed
+				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				HashMap<String, Integer> toolsDrawerKeys = activity.toolsDrawerKeys();
+				final int START_STOP = toolsDrawerKeys.get("startStop");
+				final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
+				final int COLOR_MODE = toolsDrawerKeys.get("modeSelect");
+				final int INTERACTION = toolsDrawerKeys.get("mInteractionMode");
+				final Integer SELECT_CAM = toolsDrawerKeys.containsKey("camSelect") ? toolsDrawerKeys.get("camSelect") : null;
+				final int INFO = toolsDrawerKeys.get("info");
+				final int SETTINGS = toolsDrawerKeys.get("prefs");
+				final int QUIT = toolsDrawerKeys.get("quit");
 				BitmapDrawable img;
 				Camera camera = cameraFragment.mCamera;
 				Camera.Parameters cameraParameters = camera.getParameters();
+
 
 				if (position == START_STOP) {
 					activity.closeColorModePanel();
@@ -144,6 +166,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 							button.setOnClickListener(new View.OnClickListener() {
 								@Override
 								public void onClick(View v) {
+									VideOSCMainActivity innerActivity = (VideOSCMainActivity) getContext();
 									switch (v.getId()) {
 										case R.id.mode_rgb:
 											app.setColorMode(RGBModes.RGB);
@@ -152,9 +175,9 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 												app.setRGBHasChanged(true);
 											}
 											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-											toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.rgb));
+											toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.rgb));
 											rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
-											activity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
+											innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 											break;
 										case R.id.mode_rgb_inv:
 											app.setColorMode(RGBModes.RGB);
@@ -163,20 +186,20 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 												app.setRGBHasChanged(true);
 											}
 											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
-											toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.rgb_inv));
+											toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.rgb_inv));
 											rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
-											activity.mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
+											innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
 											break;
 										case R.id.mode_r:
 											app.setColorMode(RGBModes.R);
 											if (app.getIsRGBPositive()) {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.r));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.R;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.r));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.R;
 											} else {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.r_inv);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.r_inv));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.r_inv));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
 											}
 											break;
 										case R.id.mode_g:
@@ -184,12 +207,12 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 											app.setColorMode(RGBModes.G);
 											if (app.getIsRGBPositive()) {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.g));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.G;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.g));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.G;
 											} else {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.g_inv);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.g_inv));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.g_inv));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
 											}
 											break;
 										case R.id.mode_b:
@@ -197,22 +220,26 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 											app.setColorMode(RGBModes.B);
 											if (app.getIsRGBPositive()) {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.b));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.B;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.b));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.B;
 											} else {
 												mToolsDrawerListState.put(COLOR_MODE, R.drawable.b_inv);
-												toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.b_inv));
-												activity.mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
+												toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.b_inv));
+												innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
 											}
 											break;
 										default:
 											app.setColorMode(RGBModes.RGB);
 											mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-											toolView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.rgb));
-											activity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
+											toolView.setImageDrawable(ContextCompat.getDrawable(innerActivity, R.drawable.rgb));
+											innerActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 									}
 //									v.clearFocus();
-									app.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(activity.mModePanel, (FrameLayout) activity.mCamView));
+									app.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(
+											innerActivity.mModePanel, (FrameLayout) innerActivity.mCamView
+									));
+									// make innerApplication accessible for garbage collection
+									innerActivity = null;
 								}
 							});
 						}
@@ -303,8 +330,8 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				activity.mToolsDrawerLayout.closeDrawer(Gravity.END);
 				// reset menu item background immediatly
 				view.setBackgroundColor(0x00000000);
-//				Log.d(TAG, "position: " + position + ", view: " + view);
-//				Log.d(TAG, "mToolsDrawerListState: " + mToolsDrawerListState);
+				// make activity accessible for garbage collection
+				activity = null;
 			}
 		});
 		// Return the completed view to render on screen
