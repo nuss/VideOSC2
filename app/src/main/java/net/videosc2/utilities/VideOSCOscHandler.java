@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import netP5.NetAddress;
@@ -31,7 +32,8 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
 
 	public VideOSCOscHandler(Context context) {
-		mOscP5 = new OscP5(context, mListeningPort);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		mOscP5 = new OscP5(contextRef.get(), mListeningPort);
 		// intermediate - should be invoked through user interaction
 		mBroadcastAddr = new NetAddress(mBroadcastIP, mBroadcastPort);
 	}

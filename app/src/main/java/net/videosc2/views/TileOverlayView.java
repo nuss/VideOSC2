@@ -20,10 +20,12 @@ import android.view.View;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.activities.VideOSCMainActivity;
 import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class TileOverlayView extends View {
@@ -37,9 +39,6 @@ public class TileOverlayView extends View {
 	private Bitmap mRCorner, mGCorner, mBCorner, mRGCorner, mGBCorner, mRBCorner, mRGBCorner;
 	private Point mCornerDimensions;
 	private VideOSCApplication mApp;
-	private SparseArray mRedStrings;
-	private SparseArray mGreenStrings;
-	private SparseArray mBlueStrings;
 
 	/**
 	 * Simple constructor to use when creating a view from code.
@@ -49,7 +48,8 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context) {
 		super(context);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
 	/**
@@ -59,7 +59,8 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
 	/**
@@ -72,11 +73,12 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
-	private void init(Context context) {
-		Resources res = context.getResources();
+	private void init(WeakReference contextRef) {
+		Resources res = ((VideOSCMainActivity) contextRef.get()).getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
 		Bitmap patSrc = BitmapFactory.decodeResource(res, R.drawable.hover_rect_tile, options);
@@ -89,7 +91,7 @@ public class TileOverlayView extends View {
 		mGBCorner = BitmapFactory.decodeResource(res, R.drawable.gb_corner);
 		mRGBCorner = BitmapFactory.decodeResource(res, R.drawable.rgb_corner);
 		mCornerDimensions = new Point(mRGBCorner.getWidth(), mRGBCorner.getHeight());
-		mApp = (VideOSCApplication) ((Activity) context).getApplication();
+		mApp = (VideOSCApplication) ((Activity) contextRef.get()).getApplication();
 	}
 
 	@Override
