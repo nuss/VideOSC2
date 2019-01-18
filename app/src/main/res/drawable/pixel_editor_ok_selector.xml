@@ -28,7 +28,7 @@
 				android:right="10dp"
 				android:top="10dp"/>
 			<solid
-				android:color="#cc999999"/>
+				android:color="#cc666666"/>
 			<stroke
 				android:width="2dp"
 				android:color="#eecccccc"/>

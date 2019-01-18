@@ -114,5 +114,6 @@
 	<string name="close">close</string>
 	<string name="rename_snapshot">rename snapshot</string>
 	<string name="delete_snapshot">delete snapshot</string>
+	<string name="activate_or_deactivate_osc_feedback">activate or deactivate OSC feedback</string>
 
 </resources>

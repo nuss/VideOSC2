@@ -11,11 +11,11 @@
 	<uses-feature android:name="android.hardware.camera.autofocus"/>
 
 	<application
-		android:allowBackup="true"
+		android:allowBackup="false"
 		android:name="net.videosc2.VideOSCApplication"
-		android:icon="@mipmap/ic_launcher"
+		android:icon="@mipmap/videosc_launcher"
 		android:label="@string/app_name"
-		android:roundIcon="@mipmap/ic_launcher_round"
+		android:roundIcon="@mipmap/videosc_launcher_round"
 		android:theme="@style/AppTheme">
 		<activity
 			android:name=".activities.VideOSCMainActivity"

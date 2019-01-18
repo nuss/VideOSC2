@@ -24,10 +24,12 @@ public class VideOSCOscHandlerTest {
 	public void setUp() {
 		mMockContext = new ContextThemeWrapper();
 		mHandler = new VideOSCOscHandler(mMockContext);
+		mHandler.addOscEventListener();
 	}
 
 	@After
 	public void tearDown() {
+		mHandler.removeOscEventListener();
 		mHandler = null;
 	}
 
@@ -64,5 +66,27 @@ public class VideOSCOscHandlerTest {
 	public void getBroadcastPort() {
 		mHandler.setBroadcastPort(54321);
 		assertEquals(54321, mHandler.getBroadcastPort());
+	}
+
+	@Test
+	public void getRedFeedbackStrings() {
+		assertEquals(0, mHandler.getRedFeedbackStrings().size());
+	}
+
+	@Test
+	public void getGreenFeedbackStrings() {
+		assertEquals(0, mHandler.getGreenFeedbackStrings().size());
+	}
+
+	@Test
+	public void getBlueFeedbackStrings() {
+		assertEquals(0, mHandler.getBlueFeedbackStrings().size());
+	}
+
+	@Test
+	public void resetFeedbackStrings() {
+		assertEquals(0, mHandler.getRedFeedbackStrings().size());
+		assertEquals(0, mHandler.getGreenFeedbackStrings().size());
+		assertEquals(0, mHandler.getBlueFeedbackStrings().size());
 	}
 }

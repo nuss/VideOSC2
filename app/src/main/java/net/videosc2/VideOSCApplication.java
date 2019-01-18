@@ -48,6 +48,7 @@ public class VideOSCApplication extends Application {
 	private boolean mIndicatorPanelOpen;
 	private Point mPixelSize;
 	private PixelEditModes mPixelEditMode;
+	private boolean mOSCFeedbackActivated = false;
 
 	@Override
 	public void onCreate() {
@@ -258,5 +259,13 @@ public class VideOSCApplication extends Application {
 
 	public boolean getRGBHasChanged() {
 		return mRGBHasChanged;
+	}
+
+	public void setOSCFeedbackActivated(boolean activated) {
+		this.mOSCFeedbackActivated = activated;
+	}
+
+	public boolean getOSCFeedbackActivated() {
+		return this.mOSCFeedbackActivated;
 	}
 }

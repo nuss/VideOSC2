@@ -150,7 +150,7 @@ public class VideOSCLayoutBasicTest {
 		view2.check(matches(isDisplayed()));
 
 		ViewInteraction linearLayout3 = onView(
-				allOf(withId(R.id.snapshots_bar),
+				allOf(withId(R.id.basic_tools_bar),
 						childAtPosition(
 								allOf(withId(R.id.camera_preview),
 										childAtPosition(
@@ -163,7 +163,7 @@ public class VideOSCLayoutBasicTest {
 		ViewInteraction relativeLayout = onView(
 				allOf(withId(R.id.saved_snapshots_wrapper),
 						childAtPosition(
-								allOf(withId(R.id.snapshots_bar),
+								allOf(withId(R.id.basic_tools_bar),
 										childAtPosition(
 												withId(R.id.camera_preview),
 												2)),
@@ -196,7 +196,7 @@ public class VideOSCLayoutBasicTest {
 		/*ViewInteraction imageButton2 = onView(
 				allOf(withId(R.id.save_snapshot), withContentDescription("make a snapshot"),
 						childAtPosition(
-								allOf(withId(R.id.snapshots_bar),
+								allOf(withId(R.id.basic_tools_bar),
 										childAtPosition(
 												withId(R.id.camera_preview),
 												2)),
@@ -207,7 +207,7 @@ public class VideOSCLayoutBasicTest {
 		ViewInteraction imageView2 = onView(
 				allOf(withId(R.id.move_snapshots_bar), withContentDescription("move the snapshots bar"),
 						childAtPosition(
-								allOf(withId(R.id.snapshots_bar),
+								allOf(withId(R.id.basic_tools_bar),
 										childAtPosition(
 												withId(R.id.camera_preview),
 												2)),
@@ -538,7 +538,7 @@ public class VideOSCLayoutBasicTest {
 						childAtPosition(
 								allOf(withId(R.id.saved_snapshots_wrapper),
 										childAtPosition(
-												withId(R.id.snapshots_bar),
+												withId(R.id.basic_tools_bar),
 												0)),
 								1),
 						isDisplayed()));

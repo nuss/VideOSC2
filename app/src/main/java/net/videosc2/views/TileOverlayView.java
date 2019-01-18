@@ -15,13 +15,17 @@ import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 
 import net.videosc2.R;
 import net.videosc2.VideOSCApplication;
+import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc2.utilities.VideOSCOscHandler;
 import net.videosc2.utilities.enums.InteractionModes;
 import net.videosc2.utilities.enums.RGBModes;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class TileOverlayView extends View {
@@ -44,7 +48,8 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context) {
 		super(context);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
 	/**
@@ -54,7 +59,8 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
 	/**
@@ -67,12 +73,12 @@ public class TileOverlayView extends View {
 	 */
 	public TileOverlayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context);
+		final WeakReference<Context> contextRef = new WeakReference<>(context);
+		init(contextRef);
 	}
 
-	private void init(Context context) {
-		Log.d(TAG, "new tile overlay");
-		Resources res = context.getResources();
+	private void init(WeakReference contextRef) {
+		Resources res = ((VideOSCMainActivity) contextRef.get()).getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
 		Bitmap patSrc = BitmapFactory.decodeResource(res, R.drawable.hover_rect_tile, options);
@@ -85,7 +91,7 @@ public class TileOverlayView extends View {
 		mGBCorner = BitmapFactory.decodeResource(res, R.drawable.gb_corner);
 		mRGBCorner = BitmapFactory.decodeResource(res, R.drawable.rgb_corner);
 		mCornerDimensions = new Point(mRGBCorner.getWidth(), mRGBCorner.getHeight());
-		mApp = (VideOSCApplication) ((Activity) context).getApplication();
+		mApp = (VideOSCApplication) ((Activity) contextRef.get()).getApplication();
 	}
 
 	@Override
@@ -141,16 +147,18 @@ public class TileOverlayView extends View {
 		mPaint.setColor(0xffffffff);
 		mPaint.setTextAlign(Paint.Align.LEFT);
 		mPaint.setTypeface(mTypeFace);
-		mPaint.setTextSize((float) 30);
+		mPaint.setTextSize(12f * mApp.getScreenDensity());
 		int numPixels = resolution.x * resolution.y;
+		boolean oscFeedbackActivated = mApp.getOSCFeedbackActivated();
+
 		if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
 			for (int i = 0; i < numPixels; i++) {
 				if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {
 					mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 					canvas.drawText(
 							String.valueOf(i + 1),
-							i % resolution.x * pixelSize.x + 10,
-							i / resolution.x * pixelSize.y + pixelSize.y - 10,
+							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+							i / resolution.x * pixelSize.y + pixelSize.y - 3.5f * mApp.getScreenDensity(),
 							mPaint
 					);
 				}
@@ -266,6 +274,67 @@ public class TileOverlayView extends View {
 				}
 			}
 		}
+
+		if (oscFeedbackActivated) {
+			VideOSCOscHandler oscHelper = mApp.mOscHelper;
+			mPaint.setTextSize(15f * mApp.getScreenDensity());
+			String text = "";
+			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
+			int numRedFBStrings, numGreenFBStrings;
+			SparseArray<ArrayList<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
+			SparseArray<ArrayList<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
+			SparseArray<ArrayList<String>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
+			if (mApp.getColorMode().equals(RGBModes.RGB))
+				mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
+			for (int i = 0; i < numPixels; i++) {
+				if (redFeedbackStrings.get(i) != null) {
+					numRedFBStrings = redFeedbackStrings.get(i).size();
+					// concat strings beforehand - probably a bit cheaper than drawing text multiple times
+					for (String redFBString : redFeedbackStrings.get(i)) {
+						text = redFBString.concat("\n");
+					}
+					// if we're in RGB mode set textcolor to the corresponding colorchannel
+					// otherwise text should be white
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xffff0000);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
+						// reset text for the next color
+						text = "";
+						// increment Y position by the number of lines already written
+						nextY = nextY + mPaint.getTextSize() * numRedFBStrings;
+					}
+				}
+				if (greenFeedbackStrings.get(i) != null) {
+					numGreenFBStrings = greenFeedbackStrings.get(i).size();
+					for (String greenFBString : greenFeedbackStrings.get(i)) {
+						text = greenFBString.concat("\n");
+					}
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xff00ff00);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
+						text = "";
+						nextY = nextY + mPaint.getTextSize() * numGreenFBStrings;
+					}
+				}
+				if (blueFeedbackStrings.get(i) != null) {
+					for (String blueFBStrings : blueFeedbackStrings.get(i)) {
+						text = blueFBStrings.concat("\n");
+					}
+					if (mApp.getColorMode().equals(RGBModes.RGB))
+						mPaint.setColor(0xff0000ff);
+					if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+						drawFeedbackStrings(canvas, i, text, resolution, pixelSize, nextY);
+					}
+				}
+				nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
+			}
+			// reset feedback strings, otherwise feedback names will
+			// be displayed even though no feedback is sent anymore
+			oscHelper.resetFeedbackStrings();
+			mPaint.clearShadowLayer();
+		}
 	}
 
 	private void drawCornerBitmap(Canvas canvas, int pixIndex, Bitmap bitmap, Point resolution, Point pixelSize) {
@@ -273,6 +342,15 @@ public class TileOverlayView extends View {
 				bitmap,
 				(float) (pixIndex % resolution.x * pixelSize.x + pixelSize.x - mCornerDimensions.x),
 				(float) (pixIndex / resolution.x * pixelSize.y + pixelSize.y - mCornerDimensions.y),
+				mPaint
+		);
+	}
+
+	private void drawFeedbackStrings(Canvas canvas, int pixIndex, String text, Point resolution, Point pixelSize, float nextY) {
+		canvas.drawText(
+				text,
+				pixIndex % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
+				pixIndex / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
 				mPaint
 		);
 	}
