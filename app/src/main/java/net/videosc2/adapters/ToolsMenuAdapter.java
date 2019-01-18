@@ -79,6 +79,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		final ImageView toolView = convertView.findViewById(R.id.tool);
 		// Populate the data into the template view using the data object
 		toolView.setImageDrawable(tool);
+		// TODO: should go into its own OnClickListener?
 		toolView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -168,6 +169,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 
 						VideOSCUIHelpers.setMargins(activityRef.get().mModePanel, 0, y, 60, 0);
 
+						// TODO: ... should probable be implemented in its own OnClickListener
 						for (int k = 0; k < activityRef.get().mModePanel.getChildCount(); k++) {
 							View button = activityRef.get().mModePanel.getChildAt(k);
 							button.setOnClickListener(new View.OnClickListener() {
