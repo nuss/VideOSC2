@@ -74,7 +74,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_item, parent, false);
 		}
-		final View adapterView = parent;
+		final ViewGroup adapterView = parent;
 		// Lookup view for data population
 		final ImageView toolView = convertView.findViewById(R.id.tool);
 		// Populate the data into the template view using the data object
@@ -95,13 +95,19 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				// no reflections needed
 				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 				HashMap<String, Integer> toolsDrawerKeys = activityRef.get().toolsDrawerKeys();
+				//noinspection ConstantConditions
 				final int START_STOP = toolsDrawerKeys.get("startStop");
 				final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
+				//noinspection ConstantConditions
 				final int COLOR_MODE = toolsDrawerKeys.get("modeSelect");
+				//noinspection ConstantConditions
 				final int INTERACTION = toolsDrawerKeys.get("mInteractionMode");
 				final Integer SELECT_CAM = toolsDrawerKeys.containsKey("camSelect") ? toolsDrawerKeys.get("camSelect") : null;
+				//noinspection ConstantConditions
 				final int INFO = toolsDrawerKeys.get("info");
+				//noinspection ConstantConditions
 				final int SETTINGS = toolsDrawerKeys.get("prefs");
+				//noinspection ConstantConditions
 				final int QUIT = toolsDrawerKeys.get("quit");
 				BitmapDrawable img;
 				Camera camera = cameraFragment.mCamera;
@@ -282,7 +288,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 							cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 							torchIndicator.setImageResource(R.drawable.light_off_indicator);
 							if (TORCH != null) {
-								ImageView torchSwitch = (ImageView) ((ViewGroup) adapterView).getChildAt(TORCH);
+								ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
 								torchSwitch.setImageDrawable(noTorch);
 							}
 						}
@@ -297,7 +303,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 						img = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.front_camera);
 						cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
 						if (app.getHasTorch() && TORCH != null) {
-							ImageView torchSwitch = (ImageView) ((ViewGroup) adapterView).getChildAt(TORCH);
+							ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
 							BitmapDrawable torchOn = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.light_on);
 							torchSwitch.setImageDrawable(torchOn);
 						}
