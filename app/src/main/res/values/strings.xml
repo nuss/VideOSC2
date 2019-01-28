@@ -109,11 +109,28 @@
 	<string name="move_the_snapshots_bar">move the snapshots bar</string>
 	<string name="name_this_snapshot">name this snapshot</string>
 	<string name="save_snapshot">save snapshot</string>
-	<string name="save_snapshots_set">save snapshots set...</string>
-	<string name="load_snapshots_set">load snapshots set...</string>
+	<string name="save_snapshots_set">save snapshots set&#8230;</string>
+	<string name="load_snapshots_set">load snapshots set&#8230;</string>
 	<string name="close">close</string>
 	<string name="rename_snapshot">rename snapshot</string>
 	<string name="delete_snapshot">delete snapshot</string>
 	<string name="activate_or_deactivate_osc_feedback">activate or deactivate OSC feedback</string>
+
+	<!-- about videosc -->
+	<string name="videosc_icon">VideOSC icon</string>
+	<string name="about_videosc">VideOSC is an experimental OSC controller, using the color information retrieved from (one of) the camera(s) of your Android phone.</string>
+	<string name="videosc_license">VideOSC is licensed under the Apache License Version 2.0, January 2004</string>
+	<string name="show_license">SHOW LICENSE</string>
+	<string name="head_other_libs">VideOSC has been created using the following freely available libraries:</string>
+	<string name="oscp5_netp5_head">oscP5 / netP5</string>
+	<string name="netp5_oscp5_desc">netP5 is a utility that helps with network communication. oscP5 is an implementation of the OSC protocol (Open Sound Control) that allows sending control messages between IP/based devices over the network (cable or wireless). Both, netP5 and oscP5 are licensed under the GNU Lesser General Public License [LGPLv3]. http://www.sojamo.de/code/
+	</string>
+	<string name="ketai_lib_head">Ketai Library</string>
+	<string name="ketai_lib_desc">A kind of Swiss army knife. Licensed under the GNU Lesser General Public License v2.1. http://ketai.org/</string>
+	<string name="gpuimage_head">GPUImage For Android Library</string>
+	<string name="gpuimage_desc">Image filters for Android with OpenGL (based on GPUImage for iOS). Homepage: https://github.com/cats-oss/android-gpuimage. Licensed under the Apache License Version 2.0, January 2004</string>
+	<string name="more_info_videosc">More information about VideOSC can be fount at http://videosc.net</string>
+	<string name="videosc_github_info">The full application source code can be downloaded from http://github.com/nuss/VideOSC2</string>
+	<string name="videosc_copyright">© Stefan Nussbaumer 2014-%1$s</string>
 
 </resources>
