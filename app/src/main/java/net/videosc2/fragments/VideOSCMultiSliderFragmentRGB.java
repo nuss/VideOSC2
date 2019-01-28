@@ -133,7 +133,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			mMSViewGreenRight.addView(barGreenRight);
 
 			SliderBar barBlueLeft = new SliderBar(getActivity());
-			// sensitive area for touch events should extent to
+			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
 			barBlueLeft.setColor(0x990000ff);

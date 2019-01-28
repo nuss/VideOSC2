@@ -15,7 +15,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -35,6 +34,7 @@ import net.videosc2.db.SettingsContract;
 import net.videosc2.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,7 +60,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		return s;
 	}
 */
-
+	// TODO: Split this all up into separate Fragments
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		final View debugSettingsView = inflater.inflate(R.layout.debug_settings, bg, false);
 		// about
 		final View aboutView = inflater.inflate(R.layout.about, bg, false);
-		final WebView webView = aboutView.findViewById(R.id.html_about);
+//		final WebView webView = aboutView.findViewById(R.id.html_about);
 
 		// get application methods and avoid reflection
 		final VideOSCApplication app = (VideOSCApplication) getActivity().getApplicationContext();
@@ -717,6 +717,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							}
 						}
 
+						cursor.close();
+
 						final Switch oriCB = sensorSettingsView.findViewById(R.id.orientation_sensor);
 						final Switch accCB = sensorSettingsView.findViewById(R.id.accelerometer);
 						final Switch linAccCB = sensorSettingsView.findViewById(R.id.linear_acceleration);
@@ -931,8 +933,9 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 						break;
 					case 4:
 						// about
-						webView.loadUrl("http://pustota.basislager.org/coding/videosc/");
+//						webView.loadUrl("http://pustota.basislager.org/coding/videosc/");
 						VideOSCUIHelpers.addView(aboutView, bg);
+						setYear(aboutView);
 						break;
 					default:
 				}
@@ -980,12 +983,23 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 		idsAndStrings.append(R.id.humidity_sensor, R.string.humidity_sensor);
 		idsAndStrings.append(R.id.geo_loc_sensor, R.string.geo_location_sensor);
 
-
 		for (int i = 0; i < idsAndStrings.size(); i++) {
+			// FIXME: keyAt seems wrong
 			TextView tv = container.findViewById(idsAndStrings.keyAt(i));
+			// FIXME: valueAt ...
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
+	}
+
+	private void setYear(View container) {
+		Resources res = getResources();
+		String dateString = res.getString(R.string.videosc_copyright);
+		TextView tv = container.findViewById(R.id.videosc_copyright);
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+		String formatted = String.format(dateString, String.valueOf(currentYear));
+		tv.setText(formatted);
 	}
 
 	/* @Override

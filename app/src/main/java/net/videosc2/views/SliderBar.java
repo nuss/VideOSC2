@@ -81,7 +81,7 @@ public class SliderBar extends View {
 		mPaint.setTypeface(mTypeFace);
 		mPaint.setTextSize((float) 12 * mApp.getScreenDensity());
 		mPaint.setColor(0xffffffff);
-		canvas.drawText(mPixelNum, (mRight - mLeft) / 2, mBottom - 7 * mApp.getScreenDensity(), mPaint);
+		canvas.drawText(mPixelNum, (mRight - mLeft) / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
 	}
 
 	@Override
