@@ -1,14 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/about"
-              android:orientation="vertical"
-              android:animateLayoutChanges="true"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:animateLayoutChanges="true"
+              android:orientation="vertical">
 
-	<WebView
-		android:id="@+id/html_about"
+	<!--<WebView-->
+	<!--android:id="@+id/html_about"-->
+	<!--android:layout_width="match_parent"-->
+	<!--android:layout_height="wrap_content"/>-->
+
+	<ImageView
+		android:id="@+id/videosc_icon"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/videosc_icon"
+		android:src="@mipmap/videosc_icon_big"
+		android:layout_marginBottom="30dp"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:id="@+id/about_videosc"
+		android:layout_width="wrap_content"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:layout_height="wrap_content"
+		android:text="@string/about_videosc"
+		android:textStyle="bold"
+		android:gravity="center"
+		android:layout_gravity="center"
+		android:maxWidth="500dp"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:id="@+id/videosc_license"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/videosc_license"
+		android:gravity="center"
+		android:layout_gravity="center"
+		android:maxWidth="500dp"
+		/>
+
+	<!--<Button-->
+		<!--android:layout_marginTop="15dp"-->
+		<!--android:layout_marginBottom="15dp"-->
+		<!--android:id="@+id/show_videosc_license"-->
+		<!--android:layout_width="wrap_content"-->
+		<!--android:layout_height="wrap_content"-->
+		<!--android:text="@string/show_license"-->
+		<!--android:layout_gravity="center"-->
+		<!--android:maxWidth="500dp"-->
+		<!--/>-->
+
+	<View
+		android:layout_width="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_height="1dip"
+		android:background="#22ffffff"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/head_other_libs"
+		android:text="@string/head_other_libs"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:gravity="center"
+		android:layout_gravity="center"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:textStyle="bold"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:id="@+id/oscp5_netp5_head"
+		android:text="@string/oscp5_netp5_head"/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:id="@+id/oscp5_netp5_desc"
+		android:text="@string/netp5_oscp5_desc"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		/>
+
+	<!--<Button-->
+		<!--android:layout_marginTop="15dp"-->
+		<!--android:layout_marginBottom="15dp"-->
+		<!--android:layout_width="wrap_content"-->
+		<!--android:layout_height="wrap_content"-->
+		<!--android:layout_gravity="center"-->
+		<!--android:maxWidth="500dp"-->
+		<!--android:id="@+id/show_netp5_oscp5_license"-->
+		<!--android:text="@string/show_license"-->
+		<!--/>-->
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:textStyle="bold"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:gravity="center"
+		android:id="@+id/gpuimage_head"
+		android:text="@string/gpuimage_head"/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:id="@+id/gpuimage_desc"
+		android:text="@string/gpuimage_desc"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		/>
+
+	<!--<Button-->
+		<!--android:layout_marginTop="15dp"-->
+		<!--android:layout_marginBottom="15dp"-->
+		<!--android:layout_width="wrap_content"-->
+		<!--android:layout_height="wrap_content"-->
+		<!--android:layout_gravity="center"-->
+		<!--android:maxWidth="500dp"-->
+		<!--android:id="@+id/show_gpuimage_license"-->
+		<!--android:text="@string/show_license"-->
+		<!--/>-->
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:textStyle="bold"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		android:id="@+id/ketai_head"
+		android:text="@string/ketai_lib_head"/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:id="@+id/ketai_desc"
+		android:text="@string/ketai_lib_desc"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		/>
+
+	<!--<Button-->
+		<!--android:layout_marginTop="15dp"-->
+		<!--android:layout_marginBottom="15dp"-->
+		<!--android:layout_width="wrap_content"-->
+		<!--android:layout_height="wrap_content"-->
+		<!--android:layout_gravity="center"-->
+		<!--android:maxWidth="500dp"-->
+		<!--android:id="@+id/show_ketai_lib_license"-->
+		<!--android:text="@string/show_license"-->
+		<!--/>-->
+
+	<View
+		android:layout_width="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_height="1dip"
+		android:background="#22ffffff"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:id="@+id/about_more_info_videosc"
+		android:text="@string/more_info_videosc"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:id="@+id/videosc_github_info"
+		android:text="@string/videosc_github_info"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		/>
+
+	<TextView
+		android:layout_marginTop="15dp"
+		android:layout_marginBottom="15dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:maxWidth="500dp"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:id="@+id/videosc_copyright"
+		android:text="@string/videosc_copyright"
+		android:textSize="14sp"
+		android:lineSpacingExtra="4dp"
+		/>
 
 </LinearLayout>

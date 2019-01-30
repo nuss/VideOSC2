@@ -9,12 +9,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -34,7 +32,6 @@ import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
@@ -52,10 +49,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import jp.co.cyberagent.android.gpuimage.PixelBuffer;
 
 /**
  * Created by stefan on 27.03.17, package net.videosc2.fragments, project VideOSC22.
@@ -119,8 +115,9 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 			long now = System.currentTimeMillis();
 			float frameRate = Math.round(1000.0f / (now - mPrev) * 10.0f) / 10.0f;
 			mPrev = now;
-			TextView frameRateText = (TextView) mContainer.findViewById(R.id.fps);
-			if (frameRateText != null) frameRateText.setText(String.format("%.1f", frameRate));
+			TextView frameRateText = mContainer.findViewById(R.id.fps);
+			if (frameRateText != null)
+				frameRateText.setText(String.format(Locale.getDefault(), "%.1f", frameRate));
 		}
 
 	};
@@ -181,7 +178,7 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		startBackgroundThread();
 //		CameraManager manager = setUpCameraOutputs();
 		mTextureView = new AutoFitTextureView(getActivity());
-		preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+		preview = view.findViewById(R.id.camera_preview);
 		preview.addView(mTextureView);
 		Log.d(TAG, "onViewCreated, CameraPreview (mTextureView), width: " + mTextureView.getWidth() + ", height:" + mTextureView.getHeight() + ", transform: " + mTextureView.getTransform(null));
 	}
@@ -239,8 +236,10 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 				throw new RuntimeException("Time out waiting to lock camera opening.");
 			}
 			Log.d(TAG, "opening camera, camera id: " + mCameraId + ", callback: " + mStateCallback + ", handler: " + mBackgroundHandler);
-			manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
-			Log.d(TAG, "camera opened");
+			if (manager != null) {
+				manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+				Log.d(TAG, "camera opened");
+			}
 		} catch (CameraAccessException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -406,35 +405,37 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		ArrayList<Integer> productList = new ArrayList<>();
 
 		try {
-			for (String cameraId : manager.getCameraIdList()) {
-				CameraCharacteristics characteristics
-						= manager.getCameraCharacteristics(cameraId);
+			if (manager != null) {
+				for (String cameraId : manager.getCameraIdList()) {
+					CameraCharacteristics characteristics
+							= manager.getCameraCharacteristics(cameraId);
 
-				// We don't use a front facing camera in this sample.
-				Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-				if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
+					// We don't use a front facing camera in this sample.
+					Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+					if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
 
-					StreamConfigurationMap map = characteristics.get(
-							CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-					if (map == null) {
-						continue;
+						StreamConfigurationMap map = characteristics.get(
+								CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+						if (map == null) {
+							continue;
+						}
+
+						int[] outputFormats = map.getOutputFormats();
+						for (int format : outputFormats) {
+							Log.d(TAG, "format: " + format);
+						}
+						Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
+
+						for (Size tmpSize : previewSizes) {
+							productList.add(tmpSize.getWidth() * tmpSize.getHeight());
+						}
+
+						int minIndex = productList.indexOf(Collections.min(productList));
+						mPreviewSize = previewSizes[minIndex];
+						mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+						mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
+						mCameraId = cameraId;
 					}
-
-					int[] outputFormats = map.getOutputFormats();
-					for(int format : outputFormats) {
-						Log.d(TAG, "format: " + format);
-					}
-					Size[] previewSizes = map.getOutputSizes(ImageFormat.YUV_420_888);
-
-					for (Size tmpSize : previewSizes) {
-						productList.add(tmpSize.getWidth() * tmpSize.getHeight());
-					}
-
-					int minIndex = productList.indexOf(Collections.min(productList));
-					mPreviewSize = previewSizes[minIndex];
-					mImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
-					mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
-					mCameraId = cameraId;
 				}
 			}
 		} catch (CameraAccessException e) {
@@ -472,7 +473,6 @@ public class VideOSCCamera2Fragment extends VideOSCBaseFragment {
 		 * The JPEG image
 		 */
 		private final Image mImage;
-
 
 		ImageSaver(Image image) {
 			mImage = image;

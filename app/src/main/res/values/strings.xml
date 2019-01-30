@@ -82,6 +82,55 @@
 	<string name="fix_exposure_temporary">Fix exposure temporarily (will be reset on restart)</string>
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
 	<string name="dont_fix_exposure">Don\'t fix exposure</string>
-	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit ok.</string>
+	<string name="exposure_toast_text">Point your device at the lighting situation you want the camera exposure to be set to and hit OK.</string>
+	<string name="grant">grant</string>
+	<string name="deny">deny</string>
+	<string name="ask_for_settings_permission">Permissions to write settings not granted. Shall they be granted?</string>
+	<string name="settings_request_permissions">VideOSC needs to be able to save settings.</string>
+	<string name="write_settings_permission_granted">Permissions to write settings granted.</string>
+	<string name="write_settings_permission_denied">Permissions to write settings were denied</string>
+	<string name="camera_permission_required">Camera permission is required to display the camera preview.</string>
+	<string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
+	<string name="camera_permissions_granted">Camera permissions granted. Starting preview.</string>
+	<string name="camera_permissions_denied">Camera Permission was denied.</string>
+
+	<!-- editing pixels -->
+	<string name="outline_for_a_multislider_bar">outline for a multislider bar</string>
+	<string name="multislider_bar_fill">multislider bar fill</string>
+	<string name="delete_edits_on_pixels">delete edits on pixels</string>
+	<string name="select_pixels_stepwise">select pixels stepwise</string>
+	<string name="quickly_select_pixels">quickly select pixels</string>
+	<string name="apply_current_pixel_selection">apply current pixel selection</string>
+	<string name="move_the_editor">move the editor</string>
+
+	<!-- snapshots -->
+	<string name="load_a_saved_snapshot">load a saved snapshot</string>
+	<string name="make_a_snapshot">make a snapshot</string>
+	<string name="move_the_snapshots_bar">move the snapshots bar</string>
+	<string name="name_this_snapshot">name this snapshot</string>
+	<string name="save_snapshot">save snapshot</string>
+	<string name="save_snapshots_set">save snapshots set&#8230;</string>
+	<string name="load_snapshots_set">load snapshots set&#8230;</string>
+	<string name="close">close</string>
+	<string name="rename_snapshot">rename snapshot</string>
+	<string name="delete_snapshot">delete snapshot</string>
+	<string name="activate_or_deactivate_osc_feedback">activate or deactivate OSC feedback</string>
+
+	<!-- about videosc -->
+	<string name="videosc_icon">VideOSC icon</string>
+	<string name="about_videosc">VideOSC is an experimental OSC controller, using the color information retrieved from (one of) the camera(s) of your Android phone.</string>
+	<string name="videosc_license">VideOSC is licensed under the Apache License Version 2.0, January 2004</string>
+	<string name="show_license">SHOW LICENSE</string>
+	<string name="head_other_libs">VideOSC has been created using the following freely available libraries:</string>
+	<string name="oscp5_netp5_head">oscP5 / netP5</string>
+	<string name="netp5_oscp5_desc">netP5 is a utility that helps with network communication. oscP5 is an implementation of the OSC protocol (Open Sound Control) that allows sending control messages between IP/based devices over the network (cable or wireless). Both, netP5 and oscP5 are licensed under the GNU Lesser General Public License [LGPLv3]. http://www.sojamo.de/code/
+	</string>
+	<string name="ketai_lib_head">Ketai Library</string>
+	<string name="ketai_lib_desc">A kind of Swiss army knife. Licensed under the GNU Lesser General Public License v2.1. http://ketai.org/</string>
+	<string name="gpuimage_head">GPUImage For Android Library</string>
+	<string name="gpuimage_desc">Image filters for Android with OpenGL (based on GPUImage for iOS). Homepage: https://github.com/cats-oss/android-gpuimage. Licensed under the Apache License Version 2.0, January 2004</string>
+	<string name="more_info_videosc">More information about VideOSC can be fount at http://videosc.net</string>
+	<string name="videosc_github_info">The full application source code can be downloaded from http://github.com/nuss/VideOSC2</string>
+	<string name="videosc_copyright">© Stefan Nussbaumer 2014-%1$s</string>
 
 </resources>

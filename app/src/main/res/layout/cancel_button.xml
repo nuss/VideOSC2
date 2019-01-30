@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+             style="?android:attr/buttonBarButtonStyle"
+             android:layout_width="50dp"
+             android:layout_height="50dp"
+             android:background="@drawable/cancel_button_shape"
+             android:contentDescription="@string/cancel"
+             android:src="@drawable/cancel"/>

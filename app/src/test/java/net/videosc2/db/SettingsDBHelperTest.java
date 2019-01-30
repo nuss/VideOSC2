@@ -2,24 +2,22 @@ package net.videosc2.db;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by stefan on 10.07.17, package net.videosc2.db, project VideOSC22.
  */
 public class SettingsDBHelperTest {
 	@Test
-	public void onCreate() throws Exception {
+	public void onCreate() {
 
 	}
 
 	@Test
-	public void onUpgrade() throws Exception {
+	public void onUpgrade() {
 
 	}
 
 	@Test
-	public void onDowngrade() throws Exception {
+	public void onDowngrade() {
 
 	}
 

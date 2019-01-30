@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/snapshots_selection"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorDarkTransparentBackground"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+	<ImageButton
+		android:id="@+id/close"
+		android:layout_width="50dp"
+		android:layout_height="50dp"
+		android:background="@drawable/close_button_shape"
+		android:contentDescription="@string/close"
+		android:layout_alignRight="@id/snapshots_list"
+		android:layout_alignEnd="@id/snapshots_list"
+		android:layout_alignTop="@id/snapshots_list"
+		android:src="@drawable/close"/>
+
+	<ListView
+		android:id="@+id/snapshots_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="20dp"
+		android:paddingEnd="20dp"
+		android:paddingLeft="20dp"
+		android:paddingRight="20dp"
+		android:paddingStart="20dp"
+		android:paddingTop="5dp"/>
+
+</RelativeLayout>

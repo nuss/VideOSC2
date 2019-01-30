@@ -2,39 +2,37 @@ package net.videosc2.fragments;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by stefan on 25.06.17, package net.videosc2.fragments, project VideOSC22.
  */
 public class VideOSCCamera2FragmentTest {
 	@Test
-	public void onCreateView() throws Exception {
+	public void onCreateView() {
 
 	}
 
 	@Test
-	public void onViewCreated() throws Exception {
+	public void onViewCreated() {
 
 	}
 
 	@Test
-	public void onResume() throws Exception {
+	public void onResume() {
 
 	}
 
 	@Test
-	public void onPause() throws Exception {
+	public void onPause() {
 
 	}
 
 	@Test
-	public void onDestroy() throws Exception {
+	public void onDestroy() {
 
 	}
 
 	@Test
-	public void onRequestPermissionsResult() throws Exception {
+	public void onRequestPermissionsResult() {
 
 	}
 

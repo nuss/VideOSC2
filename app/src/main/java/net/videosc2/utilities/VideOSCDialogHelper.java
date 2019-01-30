@@ -3,6 +3,7 @@ package net.videosc2.utilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.support.v13.app.ActivityCompat;
 import android.view.ContextThemeWrapper;
 
 import net.videosc2.R;
@@ -30,6 +31,21 @@ public class VideOSCDialogHelper {
 
 				})
 				.setNegativeButton(R.string.no, null)
+				.show();
+	}
+
+	public static void showPermissionDialog(final Activity activity, String message, final String[] permissions, final int requestCode) {
+		new AlertDialog.Builder(
+				new ContextThemeWrapper(activity, android.R.style.Theme_Holo_Light_Dialog)
+		)
+				.setMessage(message)
+				.setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						ActivityCompat.requestPermissions(activity, permissions, requestCode);
+					}
+				})
+				.setNegativeButton(R.string.deny, null)
 				.show();
 	}
 

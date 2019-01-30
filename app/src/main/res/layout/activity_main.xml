@@ -32,7 +32,7 @@
 		android:id="@+id/drawer"
 		android:layout_width="50dp"
 		android:layout_height="match_parent"
-		android:layout_gravity="center_vertical|end"
+		android:layout_gravity="end"
 		android:background="@color/colorDarkTransparentBackground"
 		android:choiceMode="singleChoice"
 		android:divider="@android:color/transparent"
