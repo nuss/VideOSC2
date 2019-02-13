@@ -16,6 +16,7 @@ android:
     - android-28
     - extra
     # Additional components
+    - addon
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
@@ -24,7 +25,8 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-22
-    - sys-img-x86-android-26
+    # - sys-img-x86-android-26
+    - sys-img-x86-google_apis_playstore-26
   before_install:
     - yes | sdkmanager "platforms;android-28"
     - mkdir "$ANDROID_HOME/licenses" || true
@@ -43,7 +45,7 @@ android:
 
   # Emulator Management: Create, Start and Wait
   before_script:
-    - echo yes | android create avd --force -n test -t android-26 --abi x86 -no-accel
+    - echo no | android create avd --force -n test -t android-26 --abi x86 -no-accel
     - emulator -avd test -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb shell input keyevent 82 &
