@@ -1,5 +1,12 @@
 language: android
 jdk: oraclejdk8
+env:
+  global:
+    # install timeout in minutes (2 minutes by default)
+    - ADB_INSTALL_TIMEOUT=16
+    - ANDROID_ABI=armeabi-v7a
+    - ANDROID_TAG=google_apis
+    -
 android:
   components:
     # Uncomment the lines below if you want to
@@ -16,7 +23,6 @@ android:
     - android-28
     - extra
     # Additional components
-    - addon
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
@@ -26,8 +32,8 @@ android:
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-22
     # - sys-img-x86-android-26
-    - sys-img-x86-google_apis_playstore-26
-    # - sys-img-armeabi-v7a-google_apis-25
+    # - sys-img-x86-google_apis_playstore-26
+    - sys-img-armeabi-v7a-google_apis-25
   before_install:
     - yes | sdkmanager "platforms;android-28"
     - mkdir "$ANDROID_HOME/licenses" || true
@@ -39,15 +45,11 @@ android:
     - 'google-gdk-license-.+'
 git:
   depth: 3
-env:
-  global:
-    # install timeout in minutes (2 minutes by default)
-    - ADB_INSTALL_TIMEOUT=16
 
 # Emulator Management: Create, Start and Wait
 before_script:
   # - android list targets
-  - echo no | android create avd --force -n test -t android-28 --abi x86-google_apis_playstore-26
+  - echo no | android create avd --force -n test -t android-25 --abi $ANDROID_ABI --tag $ANDROID_TAG
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
