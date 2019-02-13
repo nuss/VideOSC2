@@ -41,7 +41,7 @@ android:
 
   # Emulator Management: Create, Start and Wait
   before_script:
-    - echo no | android create avd --force -n test -t android-28 --abi x86-android-28
+    - echo no | android create avd --force -n test -t android-28 --abi x86 -no-accel
     - emulator -avd test -no-skin -no-audio -no-window &
     - android-wait-for-emulator
     - adb devices
