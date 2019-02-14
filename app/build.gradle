@@ -2,11 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'maven'
 //apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
+//sourceCompatibility = '1.7'
+//targetCompatibility = '1.7'
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
-    sourceCompatibility = '1.7'
-    targetCompatibility = '1.7'
     defaultConfig {
         applicationId "net.videosc2"
         minSdkVersion 16
