@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'maven'
 //apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
 
 android {
     compileSdkVersion 28
