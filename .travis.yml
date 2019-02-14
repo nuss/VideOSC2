@@ -46,7 +46,7 @@ android:
 git:
   depth: 3
 
-install: travis_wait mvn install
+# install: travis_wait mvn install
 
 # Emulator Management: Create, Start and Wait
 before_script:
