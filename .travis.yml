@@ -58,5 +58,5 @@ before_script:
 
 script:
   - android list targets
-  - ./gradlew --stacktrace connectedAndroidTest
+  - ./gradlew clean build -PdisablePreDex connectedAndroidTest --stacktrace
 
