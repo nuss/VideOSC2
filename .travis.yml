@@ -56,5 +56,7 @@ before_script:
 
 script:
   - android list targets
-  - ./gradlew clean build -PdisablePreDex connectedAndroidTest --stacktrace
+  # - ./gradlew clean build -PdisablePreDex connectedAndroidTest --stacktrace
+  # don't execute instrumented tests
+  - ./gradlew clean test assembleDebug -x library:signArchives -PdisablePreDex --stacktrace
 
