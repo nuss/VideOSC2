@@ -4,9 +4,8 @@ env:
   global:
     # install timeout in minutes (2 minutes by default)
     - ADB_INSTALL_TIMEOUT=16
-    - ANDROID_ABI=armeabi-v7a
-    - ANDROID_TAG=google_apis
-    -
+    # - ANDROID_ABI=armeabi-v7a
+    # - ANDROID_TAG=google_apis
 android:
   components:
     # Uncomment the lines below if you want to
@@ -33,7 +32,7 @@ android:
     #- sys-img-armeabi-v7a-android-22
     # - sys-img-x86-android-26
     # - sys-img-x86-google_apis_playstore-26
-    - sys-img-armeabi-v7a-google_apis-25
+    # - sys-img-armeabi-v7a-google_apis-25
   before_install:
     - yes | sdkmanager "platforms;android-28;default;armeabi-v7a"
     - mkdir "$ANDROID_HOME/licenses" || true
@@ -47,15 +46,15 @@ git:
   depth: 3
 
 # Emulator Management: Create, Start and Wait
-before_script:
-  - android list targets
-  - echo no | android create avd --force -n test -t android-25 --abi $ANDROID_ABI --tag $ANDROID_TAG
-  - emulator -avd test -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+# before_script:
+#  - android list targets
+#  - echo no | android create avd --force -n test -t android-25 --abi $ANDROID_ABI --tag $ANDROID_TAG
+#  - emulator -avd test -no-window &
+#  - android-wait-for-emulator
+#  - adb shell input keyevent 82 &
 
 script:
-  - android list targets
+  # - android list targets
   # - ./gradlew clean build -PdisablePreDex connectedAndroidTest --stacktrace
   # don't execute instrumented tests
   - ./gradlew clean test assembleDebug -x library:signArchives -PdisablePreDex --stacktrace
