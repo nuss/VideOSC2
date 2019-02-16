@@ -1,6 +1,6 @@
 package net.videosc2.views;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Rect;
 
 import org.junit.Before;
@@ -16,7 +16,7 @@ public class SliderBarTest {
 	private SliderBar bar;
 
 	@Mock
-	private Context mMockContext;
+	private Activity mMockContext;
 
 	@Before
 	public void setUp() {

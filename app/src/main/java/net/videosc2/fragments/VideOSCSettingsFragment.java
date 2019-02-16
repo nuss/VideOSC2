@@ -546,7 +546,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 									);
 									values.clear();
 									settings.get(0).setCalculationPeriod(Short.parseShort(calcPeriod, 10));
-									// FIXME: framerate doesn't always seem get set correctly
+									// FIXME: framerate doesn't always seem to get set correctly
 								}
 							}
 						});
