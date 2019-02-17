@@ -30,9 +30,9 @@ android:
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-22
-    - sys-img-x86-android-26
-    - sys-img-x86-google_apis_playstore-26
-    - sys-img-armeabi-v7a-google_apis-26
+    # - sys-img-x86-android-26
+    # - sys-img-x86-google_apis_playstore-26
+    # - sys-img-armeabi-v7a-google_apis-26
   before_install:
     - yes | sdkmanager "platforms;android-28;default;armeabi-v7a"
     - mkdir "$ANDROID_HOME/licenses" || true
@@ -46,8 +46,8 @@ git:
   depth: 3
 
 # Emulator Management: Create, Start and Wait
-before_script:
-  - android list targets
+#before_script:
+#  - android list targets
 #  - echo no | android create avd --force -n test -t android-25 --abi $ANDROID_ABI --tag $ANDROID_TAG
 #  - emulator -avd test -no-window &
 #  - android-wait-for-emulator
