@@ -1,9 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'maven'
-//apply plugin: 'com.google.android.gms.oss-licenses-plugin'
-
-//sourceCompatibility = '1.7'
-//targetCompatibility = '1.7'
 
 android {
     compileSdkVersion 28
@@ -52,23 +47,4 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:3.4.2'
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
-}
-
-task createPom << {
-    pom {
-        project {
-            groupId 'net.videosc2'
-            artifactId 'test'
-            version '1.0.0'
-
-            inceptionYear '2018'
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-        }
-    }.writeTo("pom.xml")
 }
