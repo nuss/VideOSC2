@@ -26,7 +26,7 @@
  * THE SOFTWARE.
  */
 
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -54,18 +54,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.db.SettingsContract;
-import net.videosc2.utilities.VideOSCDialogHelper;
-import net.videosc2.utilities.VideOSCOscHandler;
-import net.videosc2.utilities.VideOSCUIHelpers;
-import net.videosc2.utilities.enums.InteractionModes;
-import net.videosc2.utilities.enums.PixelEditModes;
-import net.videosc2.utilities.enums.RGBModes;
-import net.videosc2.views.TileOverlayView;
-import net.videosc2.views.VideOSCMultiSliderView;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.db.SettingsContract;
+import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
+import net.videosc.utilities.VideOSCUIHelpers;
+import net.videosc.utilities.enums.InteractionModes;
+import net.videosc.utilities.enums.PixelEditModes;
+import net.videosc.utilities.enums.RGBModes;
+import net.videosc.views.TileOverlayView;
+import net.videosc.views.VideOSCMultiSliderView;
 
 import java.io.IOException;
 import java.nio.IntBuffer;

@@ -1,4 +1,4 @@
-package net.videosc2.utilities;
+package net.videosc.utilities;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.utilities, project VideOSC22.
+ * Created by stefan on 25.06.17, package net.videosc.utilities, project VideOSC22.
  */
 @RunWith(RobolectricTestRunner.class)
 public class VideOSCUIHelpersTest {

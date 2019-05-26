@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -16,9 +16,9 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import net.videosc2.R;
-import net.videosc2.adapters.SnapshotSelectAdapter;
-import net.videosc2.utilities.VideOSCUIHelpers;
+import net.videosc.R;
+import net.videosc.adapters.SnapshotSelectAdapter;
+import net.videosc.utilities.VideOSCUIHelpers;
 
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	final static String TAG = "SelectSnapshotFragment";

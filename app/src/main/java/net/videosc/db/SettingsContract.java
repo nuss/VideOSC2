@@ -1,9 +1,9 @@
-package net.videosc2.db;
+package net.videosc.db;
 
 import android.provider.BaseColumns;
 
 /**
- * Created by stefan on 22.06.17, package net.videosc2, project VideOSC22.
+ * Created by stefan on 22.06.17, package net.videosc, project VideOSC22.
  */
 public class SettingsContract {
 	final private static String TAG = "SettingsContract";

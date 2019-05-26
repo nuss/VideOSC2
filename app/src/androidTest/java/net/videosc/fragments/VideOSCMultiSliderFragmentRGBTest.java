@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package net.videosc2.db;
+package net.videosc.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by stefan on 22.06.17, package net.videosc2.db, project VideOSC22.
+ * Created by stefan on 22.06.17, package net.videosc.db, project VideOSC22.
  */
 public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String TAG = "SettingsDBHelper";

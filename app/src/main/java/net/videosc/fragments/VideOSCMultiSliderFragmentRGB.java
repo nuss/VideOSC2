@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -6,16 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.utilities.VideOSCUIHelpers;
-import net.videosc2.views.SliderBar;
-import net.videosc2.views.VideOSCMultiSliderView;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.utilities.VideOSCUIHelpers;
+import net.videosc.views.SliderBar;
+import net.videosc.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
 
 /**
- * Created by stefan on 19.05.18, package net.videosc2.views, project VideOSC22.
+ * Created by stefan on 19.05.18, package net.videosc.views, project VideOSC22.
  */
 public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragmentRGB";

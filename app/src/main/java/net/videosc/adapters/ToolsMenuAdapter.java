@@ -1,4 +1,4 @@
-package net.videosc2.adapters;
+package net.videosc.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,16 +14,16 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.fragments.VideOSCCameraFragment;
-import net.videosc2.fragments.VideOSCSettingsFragment;
-import net.videosc2.utilities.VideOSCDialogHelper;
-import net.videosc2.utilities.VideOSCUIHelpers;
-import net.videosc2.utilities.enums.InteractionModes;
-import net.videosc2.utilities.enums.RGBModes;
-import net.videosc2.utilities.enums.RGBToolbarStatus;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.fragments.VideOSCSettingsFragment;
+import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCUIHelpers;
+import net.videosc.utilities.enums.InteractionModes;
+import net.videosc.utilities.enums.RGBModes;
+import net.videosc.utilities.enums.RGBToolbarStatus;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

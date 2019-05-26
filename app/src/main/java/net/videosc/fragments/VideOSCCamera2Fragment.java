@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.Manifest;
 import android.app.Activity;
@@ -41,8 +41,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.videosc2.R;
-import net.videosc2.views.AutoFitTextureView;
+import net.videosc.R;
+import net.videosc.views.AutoFitTextureView;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -54,7 +54,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by stefan on 27.03.17, package net.videosc2.fragments, project VideOSC22.
+ * Created by stefan on 27.03.17, package net.videosc.fragments, project VideOSC22.
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 public class VideOSCCamera2Fragment extends VideOSCBaseFragment {

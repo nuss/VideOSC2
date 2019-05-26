@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.videosc2.activities;
+package net.videosc.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -68,21 +68,21 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.adapters.ToolsMenuAdapter;
-import net.videosc2.db.SettingsContract;
-import net.videosc2.db.SettingsDBHelper;
-import net.videosc2.fragments.VideOSCBaseFragment;
-import net.videosc2.fragments.VideOSCCameraFragment;
-import net.videosc2.fragments.VideOSCSelectSnapshotFragment;
-import net.videosc2.utilities.VideOSCDialogHelper;
-import net.videosc2.utilities.VideOSCUIHelpers;
-import net.videosc2.utilities.enums.GestureModes;
-import net.videosc2.utilities.enums.InteractionModes;
-import net.videosc2.utilities.enums.PixelEditModes;
-import net.videosc2.utilities.enums.RGBModes;
-import net.videosc2.utilities.enums.RGBToolbarStatus;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.adapters.ToolsMenuAdapter;
+import net.videosc.db.SettingsContract;
+import net.videosc.db.SettingsDBHelper;
+import net.videosc.fragments.VideOSCBaseFragment;
+import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.fragments.VideOSCSelectSnapshotFragment;
+import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCUIHelpers;
+import net.videosc.utilities.enums.GestureModes;
+import net.videosc.utilities.enums.InteractionModes;
+import net.videosc.utilities.enums.PixelEditModes;
+import net.videosc.utilities.enums.RGBModes;
+import net.videosc.utilities.enums.RGBToolbarStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

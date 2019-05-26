@@ -1,4 +1,4 @@
-package net.videosc2.views;
+package net.videosc.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import net.videosc2.R;
+import net.videosc.R;
 
 import java.util.ArrayList;
 

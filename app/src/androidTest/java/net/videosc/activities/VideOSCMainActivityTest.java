@@ -1,12 +1,12 @@
-package net.videosc2.activities;
+package net.videosc.activities;
 
 
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import net.videosc2.VideOSCApplication;
-import net.videosc2.utilities.enums.RGBToolbarStatus;
+import net.videosc.VideOSCApplication;
+import net.videosc.utilities.enums.RGBToolbarStatus;
 
 import org.junit.After;
 import org.junit.Before;

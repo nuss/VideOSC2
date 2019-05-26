@@ -1,4 +1,4 @@
-package net.videosc2.espresso;
+package net.videosc.espresso;
 
 
 import android.support.test.espresso.ViewInteraction;
@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import net.videosc2.R;
-import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc.R;
+import net.videosc.activities.VideOSCMainActivity;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

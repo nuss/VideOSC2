@@ -1,4 +1,4 @@
-package net.videosc2.utilities;
+package net.videosc.utilities;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;

@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-	<net.videosc2.views.TileOverlayView
+	<net.videosc.views.TileOverlayView
 		android:id="@+id/tile_draw_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>

@@ -9,7 +9,7 @@
               android:focusable="true"
               android:orientation="horizontal">
 
-	<net.videosc2.views.VideOSCMultiSliderView
+	<net.videosc.views.VideOSCMultiSliderView
 		android:id="@+id/multislider_view_left"
 		android:layout_width="0dp"
 		android:layout_height="match_parent"
@@ -22,7 +22,7 @@
 		android:layout_weight="0.5"
 		android:orientation="horizontal"/>
 
-	<net.videosc2.views.VideOSCMultiSliderView
+	<net.videosc.views.VideOSCMultiSliderView
 		android:id="@+id/multislider_view_right"
 		android:layout_width="0dp"
 		android:layout_height="match_parent"

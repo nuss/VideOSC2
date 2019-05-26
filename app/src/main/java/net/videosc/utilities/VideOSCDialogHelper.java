@@ -1,4 +1,4 @@
-package net.videosc2.utilities;
+package net.videosc.utilities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.support.v13.app.ActivityCompat;
 import android.view.ContextThemeWrapper;
 
-import net.videosc2.R;
+import net.videosc.R;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-24

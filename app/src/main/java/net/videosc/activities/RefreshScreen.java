@@ -1,10 +1,10 @@
-package net.videosc2.activities;
+package net.videosc.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 /**
- * Created by stefan on 20.04.17, package net.videosc2.activities, project VideOSC22.
+ * Created by stefan on 20.04.17, package net.videosc.activities, project VideOSC22.
  */
 public class RefreshScreen extends AppCompatActivity {
 

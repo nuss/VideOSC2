@@ -1,4 +1,4 @@
-package net.videosc2.views;
+package net.videosc.views;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,10 +11,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import net.videosc2.VideOSCApplication;
+import net.videosc.VideOSCApplication;
 
 /**
- * Created by stefan on 17.05.18, package net.videosc2.views, project VideOSC2.
+ * Created by stefan on 17.05.18, package net.videosc.views, project VideOSC2.
  */
 public class SliderBar extends View {
 

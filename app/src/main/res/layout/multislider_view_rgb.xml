@@ -30,7 +30,7 @@
 		android:layout_toStartOf="@+id/center_shim"
 		android:orientation="vertical">
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_r_left"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -38,7 +38,7 @@
 			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_g_left"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -46,7 +46,7 @@
 			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_b_left"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -69,7 +69,7 @@
 		android:layout_toRightOf="@+id/center_shim"
 		android:orientation="vertical">
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_r_right"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -77,7 +77,7 @@
 			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_g_right"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -85,7 +85,7 @@
 			android:layout_weight="0.333333"
 			android:orientation="horizontal"/>
 
-		<net.videosc2.views.VideOSCMultiSliderView
+		<net.videosc.views.VideOSCMultiSliderView
 			android:id="@+id/multislider_view_b_right"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"

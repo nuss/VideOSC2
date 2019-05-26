@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import org.junit.After;
 import org.junit.Before;
@@ -7,7 +7,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertNotNull;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.fragments, project VideOSC22.
+ * Created by stefan on 25.06.17, package net.videosc.fragments, project VideOSC22.
  */
 public class VideOSCSettingsFragmentTest {
 	private VideOSCSettingsFragment fragment;

@@ -6,7 +6,7 @@
 	android:id="@+id/drawer_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="net.videosc2.activities.VideOSCMainActivity">
+	tools:context="net.videosc.activities.VideOSCMainActivity">
 
 	<FrameLayout
 		xmlns:android="http://schemas.android.com/apk/res/android"

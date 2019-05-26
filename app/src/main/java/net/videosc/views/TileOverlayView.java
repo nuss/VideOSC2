@@ -1,4 +1,4 @@
-package net.videosc2.views;
+package net.videosc.views;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,12 +18,12 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.utilities.VideOSCOscHandler;
-import net.videosc2.utilities.enums.InteractionModes;
-import net.videosc2.utilities.enums.RGBModes;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.utilities.VideOSCOscHandler;
+import net.videosc.utilities.enums.InteractionModes;
+import net.videosc.utilities.enums.RGBModes;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

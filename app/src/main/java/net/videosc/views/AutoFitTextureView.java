@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.videosc2.views;
+package net.videosc.views;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,4 +1,4 @@
-package net.videosc2.adapters;
+package net.videosc.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,7 +14,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.adapters, project VideOSC22.
+ * Created by stefan on 25.06.17, package net.videosc.adapters, project VideOSC22.
  */
 public class ToolsMenuAdapterTest {
 	private ToolsMenuAdapter adapter;

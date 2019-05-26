@@ -1,18 +1,18 @@
-package net.videosc2;
+package net.videosc;
 
 import android.app.Application;
 import android.graphics.Point;
 
 import com.squareup.leakcanary.LeakCanary;
 
-import net.videosc2.db.SettingsDBHelper;
-import net.videosc2.utilities.VideOSCOscHandler;
-import net.videosc2.utilities.enums.InteractionModes;
-import net.videosc2.utilities.enums.PixelEditModes;
-import net.videosc2.utilities.enums.RGBModes;
+import net.videosc.db.SettingsDBHelper;
+import net.videosc.utilities.VideOSCOscHandler;
+import net.videosc.utilities.enums.InteractionModes;
+import net.videosc.utilities.enums.PixelEditModes;
+import net.videosc.utilities.enums.RGBModes;
 
 /**
- * Created by stefan on 05.07.17, package net.videosc2, project VideOSC22.
+ * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.
  */
 public class VideOSCApplication extends Application {
 	private boolean mIsRGBPositive = true; // always init to true

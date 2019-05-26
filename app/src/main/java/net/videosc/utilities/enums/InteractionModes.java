@@ -1,3 +1,3 @@
-package net.videosc2.utilities.enums;
+package net.videosc.utilities.enums;
 
 public enum InteractionModes {BASIC, SINGLE_PIXEL}

@@ -1,5 +1,5 @@
 #pragma version(1)
-#pragma rs java_package_name(net.videosc2.fragments);
+#pragma rs java_package_name(videosc.fragments);
 #pragma rs_fp_relaxed
 
 int32_t width;

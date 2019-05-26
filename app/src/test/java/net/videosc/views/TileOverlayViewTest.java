@@ -1,4 +1,4 @@
-package net.videosc2.views;
+package net.videosc.views;
 
 import org.junit.Test;
 

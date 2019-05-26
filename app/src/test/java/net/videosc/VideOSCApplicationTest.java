@@ -1,9 +1,9 @@
-package net.videosc2;
+package net.videosc;
 
 import junit.framework.TestCase;
 
 /**
- * Created by stefan on 11.07.17, package net.videosc2, project VideOSC22.
+ * Created by stefan on 11.07.17, package net.videosc, project VideOSC22.
  */
 public class VideOSCApplicationTest extends TestCase {
 	private VideOSCApplication mApp = new VideOSCApplication();

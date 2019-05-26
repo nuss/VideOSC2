@@ -1,4 +1,4 @@
-package net.videosc2;
+package net.videosc;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
 		// Context of the app under test.
 		Context appContext = InstrumentationRegistry.getTargetContext();
 
-		assertEquals("net.videosc2", appContext.getPackageName());
+		assertEquals("net.videosc", appContext.getPackageName());
 	}
 }

@@ -1,4 +1,4 @@
-package net.videosc2.utilities.enums;
+package net.videosc.utilities.enums;
 
 public enum PixelEditModes {
 	EDIT_PIXELS,

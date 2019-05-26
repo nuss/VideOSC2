@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -6,9 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";

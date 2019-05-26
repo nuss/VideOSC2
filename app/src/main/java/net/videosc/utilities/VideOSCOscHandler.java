@@ -1,4 +1,4 @@
-package net.videosc2.utilities;
+package net.videosc.utilities;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -14,7 +14,7 @@ import oscP5.OscP5;
 import oscP5.OscStatus;
 
 /**
- * Created by stefan on 15.07.17, package net.videosc2.utilities, project VideOSC22.
+ * Created by stefan on 15.07.17, package net.videosc.utilities, project VideOSC22.
  */
 public class VideOSCOscHandler/* implements OscEventListener*/ {
 	final private static String TAG = "VideOSCOscHandler";

@@ -1,4 +1,4 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import android.app.FragmentManager;
 import android.content.ContentValues;
@@ -28,10 +28,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.db.SettingsContract;
-import net.videosc2.utilities.VideOSCUIHelpers;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.db.SettingsContract;
+import net.videosc.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,4 +1,4 @@
-package net.videosc2.adapters;
+package net.videosc.adapters;
 
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -19,12 +19,12 @@ import android.widget.EditText;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-import net.videosc2.R;
-import net.videosc2.VideOSCApplication;
-import net.videosc2.activities.VideOSCMainActivity;
-import net.videosc2.db.SettingsContract;
-import net.videosc2.fragments.VideOSCCameraFragment;
-import net.videosc2.fragments.VideOSCSelectSnapshotFragment;
+import net.videosc.R;
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.db.SettingsContract;
+import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;

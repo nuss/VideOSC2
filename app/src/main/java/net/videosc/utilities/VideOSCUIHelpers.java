@@ -1,4 +1,4 @@
-package net.videosc2.utilities;
+package net.videosc.utilities;
 
 import android.animation.LayoutTransition;
 import android.hardware.Camera;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import net.videosc2.activities.VideOSCMainActivity;
+import net.videosc.activities.VideOSCMainActivity;
 
 import java.util.List;
 

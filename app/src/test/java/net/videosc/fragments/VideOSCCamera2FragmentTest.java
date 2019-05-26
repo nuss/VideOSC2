@@ -1,9 +1,9 @@
-package net.videosc2.fragments;
+package net.videosc.fragments;
 
 import org.junit.Test;
 
 /**
- * Created by stefan on 25.06.17, package net.videosc2.fragments, project VideOSC22.
+ * Created by stefan on 25.06.17, package net.videosc.fragments, project VideOSC22.
  */
 public class VideOSCCamera2FragmentTest {
 	@Test
