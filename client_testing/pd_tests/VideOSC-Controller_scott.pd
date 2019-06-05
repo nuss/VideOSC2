@@ -1,0 +1,112 @@
+#N canvas 1 78 1425 818 10;
+#X obj 115 106 oscparse;
+#X obj 115 78 netreceive -u -b;
+#X obj 115 20 loadbang;
+#X msg 115 47 listen 57120;
+#X obj 115 137 list trim;
+#X obj 115 167 route vosc;
+#X obj 115 199 route red1 green1 blue1 red2 green2 blue2 red3 green3
+blue3 red4 green4 blue4, f 84;
+#X obj 113 334 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 113 391 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 171 334 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 171 391 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 335 333 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 334 390 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 391 334 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 391 390 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 553 335 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 553 390 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 609 336 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 609 390 tgl 50 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 552 258 >> 7;
+#X obj 334 260 >> 7;
+#X obj 237 261 >> 7;
+#X obj 157 259 >> 7;
+#X obj 196 260 >> 7;
+#X obj 373 260 >> 7;
+#X obj 413 260 >> 7;
+#X obj 455 259 >> 7;
+#X obj 594 257 >> 7;
+#X obj 635 258 >> 7;
+#X obj 676 257 >> 7;
+#X obj 115 259 >> 7;
+#X text 213 167 capture raw OSC message: commandname \, value;
+#X text 724 191 route values according to their commandnames;
+#X obj 114 285 > 0;
+#X obj 156 285 > 0;
+#X obj 195 285 > 0;
+#X obj 237 285 > 0;
+#X obj 333 284 > 0;
+#X obj 374 284 > 0;
+#X obj 414 284 > 0;
+#X obj 455 284 > 0;
+#X obj 552 284 > 0;
+#X obj 594 284 > 0;
+#X obj 634 284 > 0;
+#X obj 675 284 > 0;
+#X text 724 237 a 7 bit right shift reduces an integer range of 0-255
+to an integer range of 0-1 (a switch);
+#X text 724 284 if the resulting value is > 0 trigger the event (resulting
+value will either be 0 or 1);
+#X text 112 450 red channel of the 2x2 grid;
+#X text 330 448 green channel of the 2x2 grid;
+#X text 550 449 blue channel of the 2x2 grid;
+#X obj 376 25 A simple patch that routes a 2 x 2 pixel matrix to 12
+distinct triggers. The full output range is simple reduced to 0/1 by
+applying a 7 bit right shift on each value. Thanks \, Scott Vanya!
+cc by-sa;
+#X connect 0 0 4 0;
+#X connect 1 0 0 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 30 0;
+#X connect 6 1 20 0;
+#X connect 6 2 19 0;
+#X connect 6 3 22 0;
+#X connect 6 4 24 0;
+#X connect 6 5 27 0;
+#X connect 6 6 23 0;
+#X connect 6 7 25 0;
+#X connect 6 8 28 0;
+#X connect 6 9 21 0;
+#X connect 6 10 26 0;
+#X connect 6 11 29 0;
+#X connect 19 0 41 0;
+#X connect 20 0 37 0;
+#X connect 21 0 36 0;
+#X connect 22 0 34 0;
+#X connect 23 0 35 0;
+#X connect 24 0 38 0;
+#X connect 25 0 39 0;
+#X connect 26 0 40 0;
+#X connect 27 0 42 0;
+#X connect 28 0 43 0;
+#X connect 29 0 44 0;
+#X connect 30 0 33 0;
+#X connect 33 0 7 0;
+#X connect 34 0 9 0;
+#X connect 35 0 8 0;
+#X connect 36 0 10 0;
+#X connect 37 0 11 0;
+#X connect 38 0 13 0;
+#X connect 39 0 12 0;
+#X connect 40 0 14 0;
+#X connect 41 0 15 0;
+#X connect 42 0 17 0;
+#X connect 43 0 16 0;
+#X connect 44 0 18 0;
