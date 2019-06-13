@@ -3,7 +3,7 @@ package net.videosc.utilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v13.app.ActivityCompat;
+import androidx.legacy.app.ActivityCompat;
 import android.view.ContextThemeWrapper;
 
 import net.videosc.R;

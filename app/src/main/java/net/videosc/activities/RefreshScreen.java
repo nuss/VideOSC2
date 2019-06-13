@@ -1,7 +1,7 @@
 package net.videosc.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by stefan on 20.04.17, package net.videosc.activities, project VideOSC22.
