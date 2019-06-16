@@ -9,7 +9,6 @@
 	tools:context="net.videosc.activities.VideOSCMainActivity">
 
 	<FrameLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/camera_preview"
 		android:layout_width="fill_parent"
 		android:animateLayoutChanges="true"
