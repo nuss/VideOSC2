@@ -48,6 +48,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.core.view.GravityCompat;
 import androidx.legacy.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -479,7 +481,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			}
 		});
 
-		mToolsDrawerLayout.openDrawer(Gravity.END);
+		mToolsDrawerLayout.openDrawer(GravityCompat.END);
 
 		mDimensions = getAbsoluteScreenSize();
 		mApp.setDimensions(mDimensions);
@@ -488,8 +490,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (!mToolsDrawerLayout.isDrawerOpen(Gravity.END))
-					mToolsDrawerLayout.openDrawer(Gravity.END);
+				if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END))
+					mToolsDrawerLayout.openDrawer(GravityCompat.END);
 				closeColorModePanel();
 			}
 		});
@@ -604,7 +606,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				if (snapshotsFragment != null)
 					manager.beginTransaction().remove(snapshotsFragment).commit();
 				setFullScreen();
-				mToolsDrawerLayout.closeDrawer(Gravity.END);
+				mToolsDrawerLayout.closeDrawer(GravityCompat.END);
 				mApp.setSettingsLevel(0);
 				break;
 			case 2:

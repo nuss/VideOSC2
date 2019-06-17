@@ -3,10 +3,7 @@ package net.videosc.adapters;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import android.util.SparseIntArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +25,10 @@ import net.videosc.utilities.enums.RGBToolbarStatus;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 
 /**
  * Created by stefan on 14.03.17.
@@ -339,7 +340,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				} else if (position == QUIT) {
 					VideOSCDialogHelper.showQuitDialog(activityRef.get());
 				}
-				activityRef.get().mToolsDrawerLayout.closeDrawer(Gravity.END);
+				activityRef.get().mToolsDrawerLayout.closeDrawer(GravityCompat.END);
 				// reset menu item background immediatly
 				view.setBackgroundColor(0x00000000);
 			}
