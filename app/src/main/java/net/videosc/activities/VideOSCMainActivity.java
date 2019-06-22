@@ -46,18 +46,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.view.GravityCompat;
-import androidx.legacy.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,6 +60,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -92,6 +85,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.legacy.app.ActivityCompat;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
@@ -726,7 +726,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 			for (int i = 0; i < toolsDrawerListState.size(); i++) {
 				int tool = toolsDrawerListState.get(i);
 				if (tool != 0) {
-					mToolsList.set(i, (BitmapDrawable) ContextCompat.getDrawable(getApplicationContext(), tool));
+					mToolsList.set(i, (BitmapDrawable) ContextCompat.getDrawable(this, tool));
 				}
 			}
 			mToolsDrawerList.setAdapter(new ToolsMenuAdapter(this, R.layout.drawer_item, R.id.tool, mToolsList));
