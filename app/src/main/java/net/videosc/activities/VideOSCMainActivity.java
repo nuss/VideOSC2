@@ -91,7 +91,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.legacy.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
