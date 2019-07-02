@@ -720,9 +720,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (mToolsDrawerList != null) {
 			ToolsMenuAdapter adapter = (ToolsMenuAdapter) mToolsDrawerList.getAdapter();
 			SparseIntArray toolsDrawerListState = adapter.getToolsDrawerListState();
-//			Log.d(TAG, "toolsDrawerListState: " + toolsDrawerListState);
 			// update tools drawer if some item's state has changed
-//			for (Integer key : toolsDrawerListState.keySet()) {
 			for (int i = 0; i < toolsDrawerListState.size(); i++) {
 				int tool = toolsDrawerListState.get(i);
 				if (tool != 0) {
