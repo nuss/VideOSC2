@@ -71,14 +71,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.69200093"
-     inkscape:cx="880.00002"
-     inkscape:cy="847.22146"
+     inkscape:zoom="0.32286222"
+     inkscape:cx="885.82677"
+     inkscape:cy="885.82677"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1031"
+     inkscape:window-width="1280"
+     inkscape:window-height="751"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1"
@@ -349,8 +349,8 @@
     <g
        id="g4542"
        transform="matrix(1.3630406,0,0,1.3630406,480.44982,94.248364)"
-       inkscape:export-xdpi="7.9012771"
-       inkscape:export-ydpi="7.9012771"
+       inkscape:export-xdpi="39.506386"
+       inkscape:export-ydpi="39.506386"
        inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/osc_feedback_button.png">
       <path
          sodipodi:nodetypes="ccccc"
@@ -393,13 +393,13 @@
     <rect
        style="fill:none;fill-opacity:1;stroke:none;stroke-width:3.87985826;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect5269"
-       width="296.12012"
-       height="296.12015"
-       x="1400"
-       y="-284.02567"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/saved_snapshots.png"
-       inkscape:export-xdpi="12.16"
-       inkscape:export-ydpi="12.16" />
+       width="252.75797"
+       height="252.758"
+       x="1421.681"
+       y="-262.3446"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/saved_snapshots.png"
+       inkscape:export-xdpi="45.610001"
+       inkscape:export-ydpi="45.610001" />
     <rect
        style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4155"
@@ -572,9 +572,9 @@
     <g
        id="g5271"
        transform="matrix(0.98666654,0,0,0.98666654,18.666838,-25.530682)"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/saved_snapshots.png"
-       inkscape:export-xdpi="12.16"
-       inkscape:export-ydpi="12.16">
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/saved_snapshots.png"
+       inkscape:export-xdpi="45.610001"
+       inkscape:export-ydpi="45.610001">
       <g
          transform="matrix(5.2207251,0,0,5.2207251,-3150.8245,-1486.2886)"
          id="g5187"

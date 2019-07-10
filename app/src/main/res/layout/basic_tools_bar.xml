@@ -7,14 +7,13 @@
               android:layout_marginEnd="50dp"
               android:layout_marginRight="50dp"
               android:layout_marginTop="0dp"
-              android:background="@drawable/black_rounded_rect"
               android:orientation="horizontal">
 
 	<ImageButton
 		android:id="@+id/osc_feedback_button"
-		android:layout_height="30dp"
-		android:layout_width="30dp"
-		android:layout_margin="8dp"
+		android:layout_height="45dp"
+		android:layout_width="45dp"
+		android:layout_margin="4dp"
 		android:src="@drawable/osc_feedback_button"
 		android:background="@drawable/osc_feedback_button_shape"
 		android:contentDescription="@string/activate_or_deactivate_osc_feedback"/>
@@ -26,14 +25,10 @@
 
 		<ImageButton
 			android:id="@+id/saved_snapshots_button"
-			android:layout_width="50dp"
-			android:layout_height="40dp"
-			android:layout_marginBottom="3dp"
-			android:layout_marginEnd="3dp"
-			android:layout_marginLeft="3dp"
-			android:layout_marginRight="3dp"
-			android:layout_marginStart="3dp"
+			android:layout_width="60dp"
+			android:layout_height="50dp"
 			android:layout_marginTop="3dp"
+			android:layout_marginBottom="3dp"
 			android:background="@drawable/saved_snapshots_button"
 			android:clickable="true"
 			android:contentDescription="@string/load_a_saved_snapshot"
@@ -59,12 +54,8 @@
 
 	<ImageButton
 		android:id="@+id/save_snapshot"
-		android:layout_width="46dp"
-		android:layout_height="46dp"
-		android:layout_marginStart="8dp"
-		android:layout_marginLeft="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginRight="8dp"
+		android:layout_width="60dp"
+		android:layout_height="57dp"
 		android:background="@drawable/snapshot_button_selector"
 		android:clickable="true"
 		android:contentDescription="@string/make_a_snapshot"
@@ -73,15 +64,10 @@
 
 	<ImageView
 		android:id="@+id/move_snapshots_bar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginLeft="0dp"
-		android:layout_marginRight="8dp"
-		android:layout_marginStart="0dp"
-		android:layout_marginTop="8dp"
+		android:layout_width="45dp"
+		android:layout_height="match_parent"
 		android:contentDescription="@string/move_the_snapshots_bar"
+		android:padding="8dp"
 		android:src="@drawable/move"/>
 
 </LinearLayout>
