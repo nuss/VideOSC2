@@ -12,7 +12,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -27,6 +26,8 @@ import net.videosc.utilities.enums.RGBModes;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
 
 public class TileOverlayView extends View {
 	final private static String TAG = "TileOverlayView";
@@ -207,7 +208,7 @@ public class TileOverlayView extends View {
 								// draw green corner bitmap
 								bitmap = mGCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0) {
+							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0) {
 								// draw red corner bitmap
 								bitmap = mRCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
