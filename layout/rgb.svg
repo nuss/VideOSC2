@@ -24,15 +24,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.75574375"
-     inkscape:cx="310.84065"
-     inkscape:cy="784.99367"
+     inkscape:zoom="0.75397386"
+     inkscape:cx="735.5"
+     inkscape:cy="254.72396"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      showgrid="true"
      inkscape:snap-global="true"
-     inkscape:window-width="1280"
-     inkscape:window-height="751"
+     inkscape:window-width="1920"
+     inkscape:window-height="1031"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="1"
@@ -71,7 +71,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -110,13 +110,16 @@
        width="300"
        height="300"
        x="110"
-       y="220.36218" />
+       y="220.36218"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/rgb.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004" />
     <g
        id="g4318"
        transform="matrix(0.86666665,0,0,0.86666665,34.66667,48.314967)"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/rgb.png"
-       inkscape:export-xdpi="41.540001"
-       inkscape:export-ydpi="41.540001">
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/rgb.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004">
       <ellipse
          ry="281.42856"
          rx="258.57144"
@@ -172,9 +175,9 @@
     </g>
     <g
        id="g4345"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/g.png"
-       inkscape:export-xdpi="28.799999"
-       inkscape:export-ydpi="28.799999">
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/g.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004">
       <rect
          y="532.36218"
          x="110"
@@ -192,9 +195,9 @@
          ry="130.92267" />
     </g>
     <g
-       inkscape:export-ydpi="28.799999"
-       inkscape:export-xdpi="28.799999"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/r.png"
+       inkscape:export-ydpi="9.6000004"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/r.png"
        id="g4349"
        transform="translate(320,0)">
       <rect
@@ -219,45 +222,51 @@
        width="300"
        height="300"
        x="430"
-       y="220.36218" />
+       y="220.36218"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/b.png"
+       inkscape:export-xdpi="28.799999"
+       inkscape:export-ydpi="28.799999" />
     <circle
        cy="370.36218"
        cx="580"
        style="fill:#0000ff;fill-opacity:1;stroke:none"
        id="path4359"
-       r="120" />
+       r="120"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-xxhdpi/b.png"
+       inkscape:export-xdpi="28.799999"
+       inkscape:export-ydpi="28.799999" />
     <path
        style="fill:#00ff00;stroke:none"
        d="m 776,532.375 0,300 300,0 0,-300 -300,0 z m 150,30 c 66.27417,0 120,53.72583 120,120 0,66.27417 -53.72583,120 -120,120 -66.27417,0 -120,-53.72583 -120,-120 0,-66.27417 53.72583,-120 120,-120 z"
        transform="translate(0,-2.988066e-5)"
        id="rect3307"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/g_inv.png"
-       inkscape:export-xdpi="28.799999"
-       inkscape:export-ydpi="28.799999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/g_inv.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004"
        inkscape:connector-curvature="0" />
     <path
        style="fill:#ff0000;stroke:none"
        d="m 1096,532.375 0,300 300,0 0,-300 -300,0 z m 150,30 c 66.2742,0 120,53.72583 120,120 0,66.27417 -53.7258,120 -120,120 -66.2742,0 -120,-53.72583 -120,-120 0,-66.27417 53.7258,-120 120,-120 z"
        transform="translate(0,-2.988066e-5)"
        id="rect3313"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/r_inv.png"
-       inkscape:export-xdpi="28.799999"
-       inkscape:export-ydpi="28.799999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/r_inv.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004"
        inkscape:connector-curvature="0" />
     <path
        style="fill:#0000ff;stroke:none"
        d="m 1096,220.375 0,300 300,0 0,-300 -300,0 z m 150,30 c 66.2742,0 120,53.72583 120,120 0,66.27417 -53.7258,120 -120,120 -66.2742,0 -120,-53.72583 -120,-120 0,-66.27417 53.7258,-120 120,-120 z"
        transform="translate(0,-2.988066e-5)"
        id="rect3319"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/b_inv.png"
-       inkscape:export-xdpi="28.799999"
-       inkscape:export-ydpi="28.799999"
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-mdpi/b_inv.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004"
        inkscape:connector-curvature="0" />
     <g
        id="g8258"
-       inkscape:export-filename="/home/stefan/android_workspace/VideOSC22/app/src/main/res/drawable-xxhdpi/rgb_inv_indicator.png"
-       inkscape:export-xdpi="18"
-       inkscape:export-ydpi="18">
+       inkscape:export-filename="/home/stefan/android_workspace/VideOSC2/app/src/main/res/drawable-hdpi/rgb_inv.png"
+       inkscape:export-xdpi="9.6000004"
+       inkscape:export-ydpi="9.6000004">
       <rect
          style="display:inline;fill:none;stroke:none"
          id="rect8220"

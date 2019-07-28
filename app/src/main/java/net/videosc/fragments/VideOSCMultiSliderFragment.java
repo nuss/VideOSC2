@@ -109,7 +109,6 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(sliderNums.get(i)));
 			barRight.setColor(color);
-			// TODO: mix value must have been stored internally somewhere, otherwise it should just be 1.0
 			mMSViewRight.mBars.add(barRight);
 			mMSViewRight.addView(barRight);
 		}

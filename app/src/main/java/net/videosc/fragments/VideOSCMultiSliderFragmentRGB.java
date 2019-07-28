@@ -176,14 +176,4 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueLeft.setSliderNums(sliderNums);
 		mMSViewBlueRight.setSliderNums(sliderNums);
 	}
-
-//	protected OnCreateViewCallback createViewCallback = null;
-//
-//	public void setCreateViewCallBack(OnCreateViewCallback createViewCallBack) {
-//		this.createViewCallback = createViewCallBack;
-//	}
-//
-//	public interface OnCreateViewCallback {
-//		void onCreateView();
-//	}
 }

@@ -38,7 +38,7 @@ public class VideOSCApplication extends Application {
 	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'debug settings', 'about'
 	// 2: editor setting details
 	// 3: beyond details - e.g. setting exposure lock
-	private short settingsLevel = 0;
+	private short mSettingsLevel = 0;
 	private boolean mIsTorchOn = false;
 	private boolean mIsFPSCalcPanelOpen = false;
 	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
@@ -82,11 +82,11 @@ public class VideOSCApplication extends Application {
 	}
 
 	public short getSettingsLevel() {
-		return this.settingsLevel;
+		return this.mSettingsLevel;
 	}
 
 	public void setSettingsLevel(int level) {
-		this.settingsLevel = (short) level;
+		this.mSettingsLevel = (short) level;
 	}
 
 	public SettingsDBHelper getSettingsHelper() {

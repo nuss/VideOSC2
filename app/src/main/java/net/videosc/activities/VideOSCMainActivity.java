@@ -273,12 +273,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 		mBasicToolbar.requestDisallowInterceptTouchEvent(true);
 		mBasicToolbar.setOnTouchListener(this);
 
-		final ImageButton quickEditPixels = mPixelEditor.findViewById(R.id.quick_edit_pixels);
-		quickEditPixels.setActivated(true);
-		mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
 		final ImageButton editPixels = mPixelEditor.findViewById(R.id.edit_pixels);
-		final ImageButton deleteEditsInPixels = mPixelEditor.findViewById(R.id.delete_edits);
 		final ImageButton applyPixelSelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
+		editPixels.setActivated(true);
+		applyPixelSelection.setActivated(true);
+		applyPixelSelection.setEnabled(true);
+		mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
+		final ImageButton quickEditPixels = mPixelEditor.findViewById(R.id.quick_edit_pixels);
+		final ImageButton deleteEditsInPixels = mPixelEditor.findViewById(R.id.delete_edits);
 
 		final ImageButton oscFeedbackButton = mBasicToolbar.findViewById(R.id.osc_feedback_button);
 		final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
@@ -402,7 +404,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 								new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
-										// TODO save snapshot in database
 										final ContentValues values = new ContentValues();
 										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 										String valuesString;
