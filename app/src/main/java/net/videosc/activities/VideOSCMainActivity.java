@@ -523,6 +523,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	/**
 	 * Called when a touch event is dispatched to a view. This allows listeners to
 	 * get a chance to respond before the target view.
+	 * can be used by any moveable element if the activity is present:
+	 * element.setOnTouchListener(activity)
 	 *
 	 * @param v     The view the touch event has been dispatched to.
 	 * @param event The MotionEvent object containing full information about

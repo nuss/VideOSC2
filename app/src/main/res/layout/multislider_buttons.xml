@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/multislider_buttons"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:layout_marginEnd="50dp"
+              android:layout_marginTop="100dp"
+              android:layout_marginRight="50dp"
+              android:orientation="horizontal">
+
+	<ImageButton
+		android:id="@+id/ok"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginRight="4dp"
+		android:src="@drawable/cancel"
+		android:background="@drawable/cancel_button_shape"
+		android:focusable="true"
+		android:contentDescription="@string/apply_current_slider_settings"/>
+
+	<ImageButton
+		android:id="@+id/cancel"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginRight="4dp"
+		android:src="@drawable/ok"
+		android:background="@drawable/ok_button_shape"
+		android:clickable="true"
+		android:focusable="true"
+		android:contentDescription="@string/cancel_editing_pixel_values"/>
+
+	<ImageView
+		android:id="@+id/move_editor"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:contentDescription="@string/move_the_editor"
+		android:padding="8dp"
+		android:src="@drawable/move"/>
+
+</LinearLayout>

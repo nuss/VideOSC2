@@ -41,7 +41,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import androidx.drawerlayout.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -74,6 +73,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -712,16 +712,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mOverlayView.setGreenMixValues(mGreenMixValues);
 						mOverlayView.setBlueMixValues(mBlueMixValues);
 
-//						mOverlayView.setOSCRedFeedbackStrings(
-//								mApp.mOscHelper.getRedFeedbackStrings()
-//						);
-//						mOverlayView.setOSCGreenFeedbackStrings(
-//								mApp.mOscHelper.getGreenFeedbackStrings()
-//						);
-//						mOverlayView.setOSCBlueFeedbackStrings(
-//								mApp.mOscHelper.getBlueFeedbackStrings()
-//						);
-
 						mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
 						mOverlayView.invalidate();
 					}
@@ -788,7 +778,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
-					// colors keeps the integer color values of the pixels denoted in mPixelIds
+					// colors in createMultiSliders() keeps the integer color values of the pixels denoted in mPixelIds
 					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0)
 						createMultiSliders();
 
@@ -913,6 +903,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					if (mRedValues.get(id) == null)
 						mRedValues.set(id, ((colors[i] >> 16) & 0xFF) / 255.0);
 					redVals[i] = mRedValues.get(id);
+					// gotcha: infer the previous state of the pixel HERE!
 					redMixVals[i] = mRedMixValues.get(id) == null ? 1.0 : mRedMixValues.get(id);
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {

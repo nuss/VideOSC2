@@ -96,7 +96,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
 
-		mOkButton = (ViewGroup) inflater.inflate(R.layout.ok_button, container, false);
+		mMSButtons = (ViewGroup) inflater.inflate(R.layout.multislider_buttons, container, false);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
@@ -151,7 +151,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		setSliderProps(sliderNums);
 
-		VideOSCUIHelpers.addView(mOkButton, container);
+		VideOSCUIHelpers.addView(mMSButtons, container);
 
 		mContainer = container;
 		mFragment = this;
