@@ -1,6 +1,8 @@
 package net.videosc.fragments;
 
 import android.app.FragmentManager;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -16,12 +18,10 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	protected ViewGroup mParentContainer;
 	protected ViewGroup mContainer;
 	protected ViewGroup mMSButtons;
-//	protected ViewGroup mOkButton;
 	protected FragmentManager mManager;
 	protected VideOSCBaseFragment mFragment;
 
-	public VideOSCMSBaseFragment() {
-	}
+	public VideOSCMSBaseFragment() { }
 
 	@Override
 	public void onStart() {
@@ -35,6 +35,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
 		final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
 		final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
+		final VideOSCCameraFragment cameraPreview = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
 
 		mMSButtons.bringToFront();
 		// move behaviour defined in VideOSCMainActivity > onTouch()
@@ -59,6 +60,26 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 			@Override
 			public void onClick(View v) {
 				app.setIsMultiSliderActive(false);
+				SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
+				SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
+				Log.d(TAG, "redResetMixVals: " + redResetMixVals);
+				for (int i = 0; i < redResetVals.size(); i++) {
+					cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.get(i));
+					cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.get(i));
+				}
+				SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
+				SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
+				for (int i = 0; i < greenResetVals.size(); i++) {
+					cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.get(i));
+					cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.get(i));
+				}
+				SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
+				SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
+				for (int i = 0; i < blueResetVals.size(); i++) {
+					cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.get(i));
+					cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.get(i));
+				}
+
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mMSButtons);
 				indicatorPanel.setVisibility(View.VISIBLE);

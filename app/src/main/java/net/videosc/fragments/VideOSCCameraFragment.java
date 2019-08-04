@@ -42,6 +42,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -128,6 +129,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final private ArrayList<Double> mPrevRedValues = new ArrayList<>();
 	final private ArrayList<Double> mPrevGreenValues = new ArrayList<>();
 	final private ArrayList<Double> mPrevBlueValues = new ArrayList<>();
+
+	private SparseArray<Double> mResetRedVals, mResetRedMixVals, mResetGreenVals,
+			mResetGreenMixVals, mResetBlueVals, mResetBlueMixVals;
 
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
@@ -299,6 +303,30 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 	}
 
+	public void setRedValue(int index, double value) {
+		mRedValues.set(index, value);
+	}
+
+	public void setRedMixValue(int index, double value) {
+		mRedMixValues.set(index, value);
+	}
+
+	public void setGreenValue(int index, double value) {
+		mGreenValues.set(index, value);
+	}
+
+	public void setGreenMixValue(int index, double value) {
+		mGreenMixValues.set(index, value);
+	}
+
+	public void setBlueValue(int index, double value) {
+		mBlueValues.set(index, value);
+	}
+
+	public void setBlueMixValue(int index, double value) {
+		mBlueMixValues.set(index, value);
+	}
+
 	public ArrayList<Double> getRedMixValues() {
 		return this.mRedMixValues;
 	}
@@ -325,6 +353,30 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				else mGreenValues.set(i, null);
 			}
 		}
+	}
+
+	public SparseArray<Double> getRedResetValues() {
+		return this.mResetRedVals;
+	}
+
+	public SparseArray<Double> getRedMixResetValues() {
+		return this.mResetRedMixVals;
+	}
+
+	public SparseArray<Double> getGreenResetValues() {
+		return this.mResetGreenVals;
+	}
+
+	public SparseArray<Double> getGreenMixResetValues() {
+		return this.mResetGreenMixVals;
+	}
+
+	public SparseArray<Double> getBlueResetValues() {
+		return this.mResetBlueVals;
+	}
+
+	public SparseArray<Double> getBlueMixResetValues() {
+		return this.mResetBlueMixVals;
 	}
 
 	public ArrayList<Double> getGreenMixValues() {
@@ -893,6 +945,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			double[] blueVals = new double[numSelectedPixels];
 			double[] blueMixVals = new double[numSelectedPixels];
 			Point res = mApp.getResolution();
+
+			mResetRedVals = new SparseArray<>();
+			mResetRedMixVals = new SparseArray<>();
+			mResetGreenVals = new SparseArray<>();
+			mResetGreenMixVals = new SparseArray<>();
+			mResetBlueVals = new SparseArray<>();
+			mResetBlueMixVals = new SparseArray<>();
+
 			for (int i = 0; i < numSelectedPixels; i++) {
 				int id = mPixelIds.get(i) - 1;
 				// FIXME: some bug lurking here: "y must be < bitmap.height()"
@@ -900,6 +960,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// once a value has been set manually the value should not get reset
 				// when editing the same pixel again
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+					// in case editing gets canceled, store current values
+					mResetRedVals.put(id, mRedValues.get(id));
+					mResetRedMixVals.put(id, mRedMixValues.get(id));
 					if (mRedValues.get(id) == null)
 						mRedValues.set(id, ((colors[i] >> 16) & 0xFF) / 255.0);
 					redVals[i] = mRedValues.get(id);
@@ -907,12 +970,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					redMixVals[i] = mRedMixValues.get(id) == null ? 1.0 : mRedMixValues.get(id);
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+					mResetGreenVals.put(id, mGreenValues.get(id));
+					mResetGreenMixVals.put(id, mGreenMixValues.get(id));
 					if (mGreenValues.get(id) == null)
 						mGreenValues.set(id, ((colors[i] >> 8) & 0xFF) / 255.0);
 					greenVals[i] = mGreenValues.get(id);
 					greenMixVals[i] = mGreenMixValues.get(id) == null ? 1.0 : mGreenMixValues.get(id);
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+					mResetBlueVals.put(id, mBlueValues.get(id));
+					mResetBlueMixVals.put(id, mBlueMixValues.get(id));
 					if (mBlueValues.get(id) == null)
 						mBlueValues.set(id, (colors[i] & 0xFF) / 255.0);
 					blueVals[i] = mBlueValues.get(id);
