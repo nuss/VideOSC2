@@ -1,7 +1,6 @@
 package net.videosc.fragments;
 
 import android.app.FragmentManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,22 +61,21 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				app.setIsMultiSliderActive(false);
 				SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
 				SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
-				Log.d(TAG, "redResetMixVals: " + redResetMixVals);
 				for (int i = 0; i < redResetVals.size(); i++) {
-					cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.get(i));
-					cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.get(i));
+					cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.valueAt(i));
+					cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.valueAt(i));
 				}
 				SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
 				SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
 				for (int i = 0; i < greenResetVals.size(); i++) {
-					cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.get(i));
-					cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.get(i));
+					cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.valueAt(i));
+					cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.valueAt(i));
 				}
 				SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
 				SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
 				for (int i = 0; i < blueResetVals.size(); i++) {
-					cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.get(i));
-					cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.get(i));
+					cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.valueAt(i));
+					cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
 				}
 
 				mManager.beginTransaction().remove(mFragment).commit();

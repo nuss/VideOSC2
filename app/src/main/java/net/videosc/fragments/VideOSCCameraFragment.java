@@ -303,27 +303,28 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 	}
 
-	public void setRedValue(int index, double value) {
+	// value may be null, hence, it needs to be of type 'Double' rather than 'double'
+	public void setRedValue(int index, Double value) {
 		mRedValues.set(index, value);
 	}
 
-	public void setRedMixValue(int index, double value) {
+	public void setRedMixValue(int index, Double value) {
 		mRedMixValues.set(index, value);
 	}
 
-	public void setGreenValue(int index, double value) {
+	public void setGreenValue(int index, Double value) {
 		mGreenValues.set(index, value);
 	}
 
-	public void setGreenMixValue(int index, double value) {
+	public void setGreenMixValue(int index, Double value) {
 		mGreenMixValues.set(index, value);
 	}
 
-	public void setBlueValue(int index, double value) {
+	public void setBlueValue(int index, Double value) {
 		mBlueValues.set(index, value);
 	}
 
-	public void setBlueMixValue(int index, double value) {
+	public void setBlueMixValue(int index, Double value) {
 		mBlueMixValues.set(index, value);
 	}
 
@@ -961,29 +962,29 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// when editing the same pixel again
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
 					// in case editing gets canceled, store current values
-					mResetRedVals.put(id, mRedValues.get(id));
-					mResetRedMixVals.put(id, mRedMixValues.get(id));
 					if (mRedValues.get(id) == null)
 						mRedValues.set(id, ((colors[i] >> 16) & 0xFF) / 255.0);
 					redVals[i] = mRedValues.get(id);
 					// gotcha: infer the previous state of the pixel HERE!
 					redMixVals[i] = mRedMixValues.get(id) == null ? 1.0 : mRedMixValues.get(id);
+					mResetRedVals.put(id, mRedValues.get(id));
+					mResetRedMixVals.put(id, mRedMixValues.get(id));
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
-					mResetGreenVals.put(id, mGreenValues.get(id));
-					mResetGreenMixVals.put(id, mGreenMixValues.get(id));
 					if (mGreenValues.get(id) == null)
 						mGreenValues.set(id, ((colors[i] >> 8) & 0xFF) / 255.0);
 					greenVals[i] = mGreenValues.get(id);
 					greenMixVals[i] = mGreenMixValues.get(id) == null ? 1.0 : mGreenMixValues.get(id);
+					mResetGreenVals.put(id, mGreenValues.get(id));
+					mResetGreenMixVals.put(id, mGreenMixValues.get(id));
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
-					mResetBlueVals.put(id, mBlueValues.get(id));
-					mResetBlueMixVals.put(id, mBlueMixValues.get(id));
 					if (mBlueValues.get(id) == null)
 						mBlueValues.set(id, (colors[i] & 0xFF) / 255.0);
 					blueVals[i] = mBlueValues.get(id);
 					blueMixVals[i] = mBlueMixValues.get(id) == null ? 1.0 : mBlueMixValues.get(id);
+					mResetBlueVals.put(id, mBlueValues.get(id));
+					mResetBlueMixVals.put(id, mBlueMixValues.get(id));
 				}
 			}
 
