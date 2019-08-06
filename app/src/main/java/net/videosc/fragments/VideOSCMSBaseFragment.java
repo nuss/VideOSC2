@@ -59,24 +59,31 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 			@Override
 			public void onClick(View v) {
 				app.setIsMultiSliderActive(false);
-				SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
-				SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
-				for (int i = 0; i < redResetVals.size(); i++) {
-					cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.valueAt(i));
-					cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.valueAt(i));
-				}
-				SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
-				SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
-				for (int i = 0; i < greenResetVals.size(); i++) {
-					cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.valueAt(i));
-					cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.valueAt(i));
-				}
-				SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
-				SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
-				for (int i = 0; i < blueResetVals.size(); i++) {
-					cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.valueAt(i));
-					cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
-				}
+
+//				if (app.getColorMode().equals(RGBModes.RGB) || app.getColorMode().equals(RGBModes.R)) {
+					SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
+					SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
+					for (int i = 0; i < redResetVals.size(); i++) {
+						cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.valueAt(i));
+						cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.valueAt(i));
+					}
+//				}
+//				if (app.getColorMode().equals(RGBModes.RGB) || app.getColorMode().equals(RGBModes.G)) {
+					SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
+					SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
+					for (int i = 0; i < greenResetVals.size(); i++) {
+						cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.valueAt(i));
+						cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.valueAt(i));
+					}
+//				}
+//				if (app.getColorMode().equals(RGBModes.RGB) || app.getColorMode().equals(RGBModes.B)) {
+					SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
+					SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
+					for (int i = 0; i < blueResetVals.size(); i++) {
+						cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.valueAt(i));
+						cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
+					}
+//				}
 
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mMSButtons);
