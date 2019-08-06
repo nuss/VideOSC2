@@ -61,7 +61,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		mMSViewLeft.setValuesArray(numTotalPixels);
 		mMSViewLeft.setContainerView(container);
 
-		mOkButton = (ViewGroup) inflater.inflate(R.layout.ok_button, container, false);
+		mMSButtons = (ViewGroup) inflater.inflate(R.layout.multislider_buttons, container, false);
 
 		mMSViewRight = msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
@@ -109,14 +109,13 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(sliderNums.get(i)));
 			barRight.setColor(color);
-			// TODO: mix value must have been stored internally somewhere, otherwise it should just be 1.0
 			mMSViewRight.mBars.add(barRight);
 			mMSViewRight.addView(barRight);
 		}
 
 		setSliderProps(sliderNums);
 
-		VideOSCUIHelpers.addView(mOkButton, container);
+		VideOSCUIHelpers.addView(mMSButtons, container);
 
 		mContainer = container;
 		mFragment = this;
