@@ -1,12 +1,13 @@
 package net.videosc.utilities;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
+import android.util.Log;
 import android.util.SparseArray;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import netP5.NetAddress;
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
@@ -63,7 +64,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mOscEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-//				Log.d(TAG, "osc message: " + oscMessage);
+				Log.d(TAG, "osc message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
 			}
 
@@ -128,9 +129,6 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			if (pixel.matches("^red[0-9]+")) {
 				if (mFbStringsR.get(index) == null)
 					mFbStringsR.put(index, new ArrayList<String>());
-				// reset feedback strings, otherwise received
-				// messages will stay in memory forever
-				// FIXME: stop displaying message if no feedback is received anymore
 				if (mFbStringsR.get(index).indexOf(sender) < 0)
 					mFbStringsR.get(index).add(sender);
 			} else if (pixel.matches("^green[0-9]+")) {

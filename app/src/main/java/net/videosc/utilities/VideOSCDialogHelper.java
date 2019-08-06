@@ -3,10 +3,11 @@ package net.videosc.utilities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import androidx.legacy.app.ActivityCompat;
 import android.view.ContextThemeWrapper;
 
 import net.videosc.R;
+
+import androidx.legacy.app.ActivityCompat;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-24

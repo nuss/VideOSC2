@@ -41,8 +41,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.os.Bundle;
-import androidx.drawerlayout.widget.DrawerLayout;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -74,6 +74,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.drawerlayout.widget.DrawerLayout;
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -128,6 +129,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	final private ArrayList<Double> mPrevRedValues = new ArrayList<>();
 	final private ArrayList<Double> mPrevGreenValues = new ArrayList<>();
 	final private ArrayList<Double> mPrevBlueValues = new ArrayList<>();
+
+	private SparseArray<Double> mResetRedVals, mResetRedMixVals, mResetGreenVals,
+			mResetGreenMixVals, mResetBlueVals, mResetBlueMixVals;
 
 	// must be owned by the fragment - no idea why
 	private Bitmap mBmp;
@@ -285,6 +289,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		return this.mPixelIds;
 	}
 
+	/* color values */
+
 	public ArrayList<Double> getRedValues() {
 		return this.mRedValues;
 	}
@@ -368,6 +374,57 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 		}
 	}
+
+	public void setRedValue(int index, Double value) {
+		mRedValues.set(index, value);
+	}
+
+	public void setRedMixValue(int index, Double value) {
+		mRedMixValues.set(index, value);
+	}
+
+	public void setGreenValue(int index, Double value) {
+		mGreenValues.set(index, value);
+	}
+
+	public void setGreenMixValue(int index, Double value) {
+		mGreenMixValues.set(index, value);
+	}
+
+	public void setBlueValue(int index, Double value) {
+		mBlueValues.set(index, value);
+	}
+
+	public void setBlueMixValue(int index, Double value) {
+		mBlueMixValues.set(index, value);
+	}
+
+	/* reset values, needed to restore a setup if a pixel edit gets canceled by the user */
+
+	public SparseArray<Double> getRedResetValues() {
+		return this.mResetRedVals;
+	}
+
+	public SparseArray<Double> getRedMixResetValues() {
+		return this.mResetRedMixVals;
+	}
+
+	public SparseArray<Double> getGreenResetValues() {
+		return this.mResetGreenVals;
+	}
+
+	public SparseArray<Double> getGreenMixResetValues() {
+		return this.mResetGreenMixVals;
+	}
+
+	public SparseArray<Double> getBlueResetValues() {
+		return this.mResetBlueVals;
+	}
+
+	public SparseArray<Double> getBlueMixResetValues() {
+		return this.mResetBlueMixVals;
+	}
+
 
 	/**
 	 * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
@@ -712,16 +769,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mOverlayView.setGreenMixValues(mGreenMixValues);
 						mOverlayView.setBlueMixValues(mBlueMixValues);
 
-//						mOverlayView.setOSCRedFeedbackStrings(
-//								mApp.mOscHelper.getRedFeedbackStrings()
-//						);
-//						mOverlayView.setOSCGreenFeedbackStrings(
-//								mApp.mOscHelper.getGreenFeedbackStrings()
-//						);
-//						mOverlayView.setOSCBlueFeedbackStrings(
-//								mApp.mOscHelper.getBlueFeedbackStrings()
-//						);
-
 						mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
 						mOverlayView.invalidate();
 					}
@@ -788,7 +835,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					// mPixelIds holds the indices of the selected pixels (resp. index + 1, as we display pixel at index 0 as "1")
-					// colors keeps the integer color values of the pixels denoted in mPixelIds
+					// colors in createMultiSliders() keeps the integer color values of the pixels denoted in mPixelIds
 					if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS) && mPixelIds.size() > 0)
 						createMultiSliders();
 
@@ -903,6 +950,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			double[] blueVals = new double[numSelectedPixels];
 			double[] blueMixVals = new double[numSelectedPixels];
 			Point res = mApp.getResolution();
+
+			mResetRedVals = new SparseArray<>();
+			mResetRedMixVals = new SparseArray<>();
+			mResetGreenVals = new SparseArray<>();
+			mResetGreenMixVals = new SparseArray<>();
+			mResetBlueVals = new SparseArray<>();
+			mResetBlueMixVals = new SparseArray<>();
+
 			for (int i = 0; i < numSelectedPixels; i++) {
 				int id = mPixelIds.get(i) - 1;
 				// FIXME: some bug lurking here: "y must be < bitmap.height()"
@@ -910,22 +965,30 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				// once a value has been set manually the value should not get reset
 				// when editing the same pixel again
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
+					// in case editing gets canceled, store current values
+					mResetRedVals.put(id, mRedValues.get(id));
 					if (mRedValues.get(id) == null)
 						mRedValues.set(id, ((colors[i] >> 16) & 0xFF) / 255.0);
 					redVals[i] = mRedValues.get(id);
 					redMixVals[i] = mRedMixValues.get(id) == null ? 1.0 : mRedMixValues.get(id);
+					// in case editing gets canceled, store current mix values
+					mResetRedMixVals.put(id, mRedMixValues.get(id));
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.G)) {
+					mResetGreenVals.put(id, mGreenValues.get(id));
 					if (mGreenValues.get(id) == null)
 						mGreenValues.set(id, ((colors[i] >> 8) & 0xFF) / 255.0);
 					greenVals[i] = mGreenValues.get(id);
 					greenMixVals[i] = mGreenMixValues.get(id) == null ? 1.0 : mGreenMixValues.get(id);
+					mResetGreenMixVals.put(id, mGreenMixValues.get(id));
 				}
 				if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.B)) {
+					mResetBlueVals.put(id, mBlueValues.get(id));
 					if (mBlueValues.get(id) == null)
 						mBlueValues.set(id, (colors[i] & 0xFF) / 255.0);
 					blueVals[i] = mBlueValues.get(id);
 					blueMixVals[i] = mBlueMixValues.get(id) == null ? 1.0 : mBlueMixValues.get(id);
+					mResetBlueMixVals.put(id, mBlueMixValues.get(id));
 				}
 			}
 
@@ -1229,6 +1292,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 
 				// pixels can only be set to ints in a range from 0-255
+//				Log.d(TAG, "mRedValues[0]: " + mRedValues.get(0));
 				if (mRedValues.get(i) != null) rPixVal = (int) Math.round(rValue * 255);
 				if (mGreenValues.get(i) != null) gPixVal = (int) Math.round(gValue * 255);
 				if (mBlueValues.get(i) != null) bPixVal = (int) Math.round(bValue * 255);

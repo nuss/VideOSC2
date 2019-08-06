@@ -39,11 +39,11 @@ dependencies {
     implementation files('libs/android-core.jar')
     implementation files('libs/Ketai.jar')
     implementation files('libs/oscP5.jar')
-    implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+    implementation 'jp.co.cyberagent.android:gpuimage:2.0.3'
     implementation 'com.google.android.material:material:1.0.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
     testImplementation 'org.robolectric:robolectric:3.4.2'
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
     androidTestImplementation 'androidx.test:rules:1.2.0'
