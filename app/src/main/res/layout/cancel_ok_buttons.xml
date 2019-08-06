@@ -12,23 +12,22 @@
               android:descendantFocusability="blocksDescendants"
               android:orientation="horizontal">
 
-	<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+	<ImageButton
 	             android:id="@+id/cancel"
 	             style="?android:attr/buttonBarButtonStyle"
 	             android:layout_width="40dp"
 	             android:layout_height="40dp"
-	             android:layout_margin="5dp"
+	             android:layout_marginEnd="8dp"
+	             android:layout_marginRight="8dp"
 	             android:background="@drawable/cancel_button_shape"
 	             android:contentDescription="@string/cancel"
 	             android:src="@drawable/cancel"/>
 
-	<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+	<ImageButton
 	             android:id="@+id/ok"
 	             style="?android:attr/buttonBarButtonStyle"
 	             android:layout_width="40dp"
 	             android:layout_height="40dp"
-	             android:layout_margin="5dp"
-	             android:layout_marginBottom="10dp"
 	             android:background="@drawable/ok_button_shape"
 	             android:contentDescription="@string/OK"
 	             android:src="@drawable/ok"/>
