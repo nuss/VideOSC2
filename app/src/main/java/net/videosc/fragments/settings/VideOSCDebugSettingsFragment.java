@@ -10,7 +10,7 @@ import net.videosc.R;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 
-public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
+public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	/**
 	 * @param savedInstanceState
 	 * @deprecated
@@ -31,7 +31,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 
-		final View view = inflater.inflate(R.layout.network_settings, container, false);
+		final View view = inflater.inflate(R.layout.debug_settings, container, false);
 
 //		return super.onCreateView(inflater, container, savedInstanceState);
 		return view;

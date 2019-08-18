@@ -41,6 +41,10 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
+		final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
+		final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
+		final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
+		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
 		// the background scrollview - dark transparent, no content
@@ -63,26 +67,33 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				int container;
-				if (app.getIsTablet())
-					container = R.id.settings_container;
-				else container = R.id.settings_list;
-
+				if (!app.getIsTablet())
+					settingsListView.setVisibility(View.INVISIBLE);
 				switch (i) {
 					case 0:
 						fragmentManager.beginTransaction()
-								.replace(container, networkSettingsFragment)
+								.replace(R.id.settings_container, networkSettingsFragment)
 								.commit();
 						break;
 					case 1:
+						fragmentManager.beginTransaction()
+								.replace(R.id.settings_container, resolutionSettingsFragment)
+								.commit();
 						break;
 					case 2:
+						fragmentManager.beginTransaction()
+								.replace(R.id.settings_container, sensorSettingsFragment)
+								.commit();
 						break;
 					case 3:
+						fragmentManager.beginTransaction()
+								.replace(R.id.settings_container, debugSettingsFragment)
+								.commit();
 						break;
 					case 4:
-						break;
-					case 5:
+						fragmentManager.beginTransaction()
+								.replace(R.id.settings_container, aboutFragment)
+								.commit();
 						break;
 					default:
 				}
