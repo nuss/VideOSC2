@@ -20,11 +20,12 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	protected FragmentManager mManager;
 	protected VideOSCBaseFragment mFragment;
 
-	public VideOSCMSBaseFragment() { }
+	public VideOSCMSBaseFragment() {}
 
 	@Override
 	public void onStart() {
 		super.onStart();
+
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 		final DrawerLayout toolsDrawer = activity.mToolsDrawerLayout;

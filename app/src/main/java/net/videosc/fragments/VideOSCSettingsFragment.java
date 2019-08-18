@@ -49,8 +49,7 @@ import ketai.net.KetaiNet;
 public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsFragment";
 
-	public VideOSCSettingsFragment() {
-	}
+	public VideOSCSettingsFragment() {}
 
 /*
 	public static VideOSCSettingsFragment newInstance() {
@@ -64,7 +63,6 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
-		Log.d(TAG, "settingsfragment created");
 		final FragmentManager fragmentManager = getFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final Camera.Parameters params = cameraView.mCamera.getParameters();

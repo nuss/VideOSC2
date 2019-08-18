@@ -1,0 +1,49 @@
+package net.videosc.fragments.settings;
+
+import android.app.FragmentManager;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import net.videosc.R;
+import net.videosc.fragments.VideOSCBaseFragment;
+import net.videosc.fragments.VideOSCCameraFragment;
+
+public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
+
+	public VideOSCNetworkSettingsFragment() {}
+
+	/**
+	 * @param savedInstanceState
+	 * @deprecated
+	 */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
+	/**
+	 * @param inflater
+	 * @param container
+	 * @param savedInstanceState
+	 * @deprecated
+	 */
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		final FragmentManager fragmentManager = getFragmentManager();
+		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+
+		final View view = inflater.inflate(R.layout.network_settings, container, false);
+
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	@Override
+	public void onPause() {
+		super.onPause();
+	}
+}

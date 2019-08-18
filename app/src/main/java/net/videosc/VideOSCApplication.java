@@ -28,6 +28,7 @@ public class VideOSCApplication extends Application {
 	private float mDensity;
 	private boolean mIsColorModePanelOpen = false;
 	private boolean mHasTorch;
+	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
@@ -267,5 +268,13 @@ public class VideOSCApplication extends Application {
 
 	public boolean getOSCFeedbackActivated() {
 		return this.mOSCFeedbackActivated;
+	}
+
+	public void setIsTablet(boolean isTablet) {
+		this.mIsTablet = isTablet;
+	}
+
+	public boolean getIsTablet() {
+		return this.mIsTablet;
 	}
 }

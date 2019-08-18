@@ -23,6 +23,7 @@
 package net.videosc.fragments;
 
 import android.app.Fragment;
+
 import android.net.Uri;
 
 /**
@@ -34,7 +35,7 @@ public class VideOSCBaseFragment extends Fragment {
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {
-		//
+		super();
 	}
 
 	/**

@@ -88,10 +88,10 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.core.app.ActivityCompat;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
@@ -210,8 +210,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
 
-		// maybe needed on devices other than Google Nexus?
-		// startActivity(new Intent(this, RefreshScreen.class));
+		// check if device is tablet and set app member variable accordingly
+		mApp.setIsTablet(getResources().getBoolean(R.bool.isTablet));
 
 		final FragmentManager fragmentManager = getFragmentManager();
 

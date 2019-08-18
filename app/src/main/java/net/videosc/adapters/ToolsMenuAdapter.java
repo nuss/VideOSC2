@@ -15,7 +15,7 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.fragments.VideOSCCameraFragment;
-import net.videosc.fragments.VideOSCSettingsFragment;
+import net.videosc.fragments.settings.VideOSCSettingsListFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.InteractionModes;
@@ -340,7 +340,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				activityRef.get().closeColorModePanel();
 				app.setSettingsLevel(1);
 				activityRef.get().showBackButton();
-				VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
+				VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment();
 				if (fragmentManager.findFragmentByTag("settings selection") == null
 						&& fragmentManager.findFragmentByTag("snapshot selection") == null)
 					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
