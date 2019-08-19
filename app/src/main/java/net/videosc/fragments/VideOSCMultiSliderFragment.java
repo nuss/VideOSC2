@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.views.SliderBar;
 import net.videosc.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by stefan on 19.05.18, package net.videosc.views, project VideOSC22.
@@ -28,19 +31,22 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		int color = 0x66ffffff;
 		double[] vals = new double[]{};
 		double[] mixVals = new double[]{};
-		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
-		Point resolution = app.getResolution();
-		int numTotalPixels = resolution.x * resolution.y;
+		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		assert activity != null;
+		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final Point resolution = app.getResolution();
+		final int numTotalPixels = resolution.x * resolution.y;
 
 		mManager = getFragmentManager();
 
-		Bundle argsBundle = this.getArguments();
-		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		final Bundle argsBundle = this.getArguments();
+		assert argsBundle != null;
+		final ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
 		switch (app.getColorMode()) {
 			case R:
 				vals = argsBundle.getDoubleArray("redVals");

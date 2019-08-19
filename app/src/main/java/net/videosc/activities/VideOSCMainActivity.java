@@ -87,19 +87,21 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
-public class VideOSCMainActivity extends AppCompatActivity
+public class VideOSCMainActivity extends FragmentActivity
 		implements VideOSCBaseFragment.OnFragmentInteractionListener, View.OnTouchListener {
 
 	static final String TAG = "VideOSCMainActivity";
+
+	private androidx.fragment.app.FragmentManager mFragmentManager;
 
 	public View mCamView;
 	private Point mDimensions;
@@ -108,8 +110,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// is the multisliderview currently visible?
 	private boolean isMultiSliderVisible = false;
 
-	private Fragment mCameraPreview;
-	public Fragment mMultiSliderView;
+	private VideOSCCameraFragment mCameraPreview;
+	public androidx.fragment.app.Fragment mMultiSliderView;
 	// ID of currently opened camera
 	public static int backsideCameraId;
 	public static int frontsideCameraId;
@@ -213,14 +215,14 @@ public class VideOSCMainActivity extends AppCompatActivity
 		// check if device is tablet and set app member variable accordingly
 		mApp.setIsTablet(getResources().getBoolean(R.bool.isTablet));
 
-		final FragmentManager fragmentManager = getFragmentManager();
+		mFragmentManager = getSupportFragmentManager();
 
 		if (savedInstanceState != null) return;
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 			checkCamera();
 			mCameraPreview = new VideOSCCameraFragment();
-			fragmentManager.beginTransaction()
+			mFragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
 			buildUI();
@@ -231,7 +233,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	private void buildUI() {
 		final LayoutInflater inflater = getLayoutInflater();
-		final FragmentManager fragmentManager = getFragmentManager();
 		final Context context = getApplicationContext();
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
@@ -320,7 +321,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				editPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
-				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
+				assert cameraFragment != null;
 				cameraFragment.getSelectedPixels().clear();
 				cameraFragment.getPixelNumbers().clear();
 				mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
@@ -368,9 +370,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
 				snapshotSelect.setDatabase(mDb);
 				snapshotSelect.setCursors(mergedCursor, cursor, extras);
-				if (fragmentManager.findFragmentByTag("snapshot select") == null
-						&& fragmentManager.findFragmentByTag("settings selection") == null) {
-					fragmentManager
+				if (mFragmentManager.findFragmentByTag("snapshot select") == null
+						&& mFragmentManager.findFragmentByTag("settings selection") == null) {
+					mFragmentManager
 							.beginTransaction()
 							.add(R.id.camera_preview, snapshotSelect, "snapshot select")
 							.commit();
@@ -405,10 +407,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
 										final ContentValues values = new ContentValues();
-										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
 										String valuesString;
 										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
 										// red values
+										assert cameraFragment != null;
 										valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
 										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
 										// red mix values
@@ -604,10 +607,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
-				if (fragment != null)
-					manager.beginTransaction().remove(fragment).commit();
-				if (snapshotsFragment != null)
-					manager.beginTransaction().remove(snapshotsFragment).commit();
+				manager.beginTransaction().remove(fragment).commit();
+				manager.beginTransaction().remove(snapshotsFragment).commit();
 				setFullScreen();
 				mToolsDrawerLayout.closeDrawer(GravityCompat.END);
 				mApp.setSettingsLevel(0);
@@ -773,8 +774,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
 				mCameraPreview = new VideOSCCameraFragment();
-				FragmentManager fragmentManager = getFragmentManager();
-				fragmentManager.beginTransaction()
+				mFragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();
 				buildUI();

@@ -29,6 +29,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by stefan on 14.03.17.
@@ -171,7 +172,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		public void onClick(View view) {
 			final WeakReference<VideOSCMainActivity> activityRef = new WeakReference<>((VideOSCMainActivity) getContext());
 			final VideOSCApplication app = (VideOSCApplication) activityRef.get().getApplication();
-			final android.app.FragmentManager fragmentManager = activityRef.get().getFragmentManager();
+			final FragmentManager fragmentManager = activityRef.get().getSupportFragmentManager();
 			final ViewGroup indicators = activityRef.get().mCamView.findViewById(R.id.indicator_panel);
 			final ImageView oscIndicator = indicators.findViewById(R.id.indicator_osc);
 			final ImageView rgbModeIndicator = indicators.findViewById(R.id.indicator_color);
@@ -197,6 +198,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 			//noinspection ConstantConditions
 			final int QUIT = toolsDrawerKeys.get("quit");
 			BitmapDrawable img;
+			assert cameraFragment != null;
 			Camera camera = cameraFragment.mCamera;
 			Camera.Parameters cameraParameters = camera.getParameters();
 
@@ -276,7 +278,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 					interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 					if (activityRef.get().mMultiSliderView != null)
 						fragmentManager.beginTransaction().remove(activityRef.get().mMultiSliderView).commit();
-//						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 				} else {
 					mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 					img = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.interaction);

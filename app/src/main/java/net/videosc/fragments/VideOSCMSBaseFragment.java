@@ -1,6 +1,5 @@
 package net.videosc.fragments;
 
-import android.app.FragmentManager;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";

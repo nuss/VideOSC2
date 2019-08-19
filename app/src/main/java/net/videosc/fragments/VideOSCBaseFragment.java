@@ -22,9 +22,11 @@
 
 package net.videosc.fragments;
 
-import android.app.Fragment;
+//import android.app.Fragment;
 
 import android.net.Uri;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.

@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.views.SliderBar;
 import net.videosc.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by stefan on 19.05.18, package net.videosc.views, project VideOSC22.
@@ -32,23 +35,26 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		VideOSCApplication app = (VideOSCApplication) getActivity().getApplication();
-		Point resolution = app.getResolution();
-		int numTotalPixels = resolution.x * resolution.y;
+		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		assert activity != null;
+		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final Point resolution = app.getResolution();
+		final int numTotalPixels = resolution.x * resolution.y;
 
 		mManager = getFragmentManager();
 
-		Bundle argsBundle = this.getArguments();
-		ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		final Bundle argsBundle = this.getArguments();
+		assert argsBundle != null;
+		final ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
 
-		double[] redVals = argsBundle.getDoubleArray("redVals");
-		double[] redMixVals = argsBundle.getDoubleArray("redMixVals");
-		double[] greenVals = argsBundle.getDoubleArray("greenVals");
-		double[] greenMixVals = argsBundle.getDoubleArray("greenMixVals");
-		double[] blueVals = argsBundle.getDoubleArray("blueVals");
-		double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
+		final double[] redVals = argsBundle.getDoubleArray("redVals");
+		final double[] redMixVals = argsBundle.getDoubleArray("redMixVals");
+		final double[] greenVals = argsBundle.getDoubleArray("greenVals");
+		final double[] greenMixVals = argsBundle.getDoubleArray("greenMixVals");
+		final double[] blueVals = argsBundle.getDoubleArray("blueVals");
+		final double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
 
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = msContainer.findViewById(R.id.multislider_view_r_left);

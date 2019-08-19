@@ -1,6 +1,5 @@
 package net.videosc.fragments;
 
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -38,6 +37,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
 //import java.lang.reflect.Method;
@@ -61,10 +62,12 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 */
 	// TODO: Split this all up into separate Fragments
 	@Override
-	public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+	public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
 	                         Bundle savedInstanceState) {
 		final FragmentManager fragmentManager = getFragmentManager();
+		assert fragmentManager != null;
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+		assert cameraView != null;
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
 		// the background scrollview - dark transparent, no content
 		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
