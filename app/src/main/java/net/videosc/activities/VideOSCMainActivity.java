@@ -24,8 +24,6 @@ package net.videosc.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -106,9 +104,6 @@ public class VideOSCMainActivity extends FragmentActivity
 	public View mCamView;
 	private Point mDimensions;
 	public DrawerLayout mToolsDrawerLayout;
-
-	// is the multisliderview currently visible?
-	private boolean isMultiSliderVisible = false;
 
 	private VideOSCCameraFragment mCameraPreview;
 	public androidx.fragment.app.Fragment mMultiSliderView;
@@ -601,14 +596,15 @@ public class VideOSCMainActivity extends FragmentActivity
 
 		switch (settingsLevel) {
 			case 1:
-				final FragmentManager manager = getFragmentManager();
-				final Fragment fragment = manager.findFragmentByTag("settings selection");
-				final Fragment snapshotsFragment = manager.findFragmentByTag("snapshot select");
+				final androidx.fragment.app.Fragment fragment = mFragmentManager.findFragmentByTag("settings selection");
+				final androidx.fragment.app.Fragment snapshotsFragment = mFragmentManager.findFragmentByTag("snapshot select");
 				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
 				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
-				manager.beginTransaction().remove(fragment).commit();
-				manager.beginTransaction().remove(snapshotsFragment).commit();
+				assert fragment != null;
+				mFragmentManager.beginTransaction().remove(fragment).commit();
+				assert snapshotsFragment != null;
+				mFragmentManager.beginTransaction().remove(snapshotsFragment).commit();
 				setFullScreen();
 				mToolsDrawerLayout.closeDrawer(GravityCompat.END);
 				mApp.setSettingsLevel(0);

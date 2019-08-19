@@ -116,5 +116,264 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		super.onPause();
 	}
 
+	static class Address {
+		private long mRowId;
+		private String mIp;
+		private int mPort;
+		private int mReceivePort;
+		private String mProtocol;
 
+		Address() {
+		}
+
+		void setRowId(long id) {
+			this.mRowId = id;
+		}
+
+		void setIP(String ip) {
+			this.mIp = ip;
+		}
+
+		void setPort(int port) {
+			this.mPort = port;
+		}
+
+		void setReceivePort(int port) {
+			this.mReceivePort = port;
+		}
+
+		void setProtocol(String protocol) {
+			this.mProtocol = protocol;
+		}
+
+		long getRowId() {
+			return this.mRowId;
+		}
+
+		String getIP() {
+			return this.mIp;
+		}
+
+		int getPort() {
+			return this.mPort;
+		}
+
+		int getReceivePort() {
+			return this.mReceivePort;
+		}
+
+		String getProtocol() {
+			return this.mProtocol;
+		}
+	}
+
+	static class Settings {
+		private long mRowId;
+		private short mResolutionHorizontal;
+		private short mResolutionVertical;
+		private short mFramerateRange;
+		private boolean mNormalized;
+		private boolean mRememberPixelStates;
+		private short mCalculationPeriod;
+		private String mRootCmd;
+		private int mUdpReceivePort;
+		private int mTcpReceivePort;
+
+		Settings() {
+		}
+
+		void setRowId(long id) {
+			this.mRowId = id;
+		}
+
+		void setResolutionHorizontal(short resolutionH) {
+			this.mResolutionHorizontal = resolutionH;
+		}
+
+		void setResolutionVertical(short resolutionV) {
+			this.mResolutionVertical = resolutionV;
+		}
+
+		void setFramerateRange(short index) {
+			this.mFramerateRange = index;
+		}
+
+		void setNormalized(short boolVal) {
+			this.mNormalized = boolVal > 0;
+		}
+
+		void setRememberPixelStates(short boolVal) {
+			this.mRememberPixelStates = boolVal > 0;
+		}
+
+		void setCalculationPeriod(short calcPeriod) {
+			this.mCalculationPeriod = calcPeriod;
+		}
+
+		void setRootCmd(String cmdName) {
+			this.mRootCmd = cmdName;
+		}
+
+		void setUdpReceivePort(int port) {
+			this.mUdpReceivePort = port;
+		}
+
+		void setTcpReceivePort(int port) {
+			this.mTcpReceivePort = port;
+		}
+
+		long getRowId() {
+			return this.mRowId;
+		}
+
+		short getResolutionHorizontal() {
+			return this.mResolutionHorizontal;
+		}
+
+		short getResolutionVertical() {
+			return this.mResolutionVertical;
+		}
+
+		short getFramerateRange() {
+			return this.mFramerateRange;
+		}
+
+		boolean getNormalized() {
+			return this.mNormalized;
+		}
+
+		boolean getRememberPixelStates() {
+			return this.mRememberPixelStates;
+		}
+
+		short getCalculationPeriod() {
+			return this.mCalculationPeriod;
+		}
+
+		String getRootCmd() {
+			return this.mRootCmd;
+		}
+
+		int getUdpReceivePort() {
+			return this.mUdpReceivePort;
+		}
+
+		int getTcpReceivePort() {
+			return this.mTcpReceivePort;
+		}
+	}
+
+	static class Sensors {
+		private long mRowId;
+		private boolean mOrientationSensorActivated;
+		private boolean mAccelerationSensorActivated;
+		private boolean mLinAccelerationSensorActivated;
+		private boolean mMagneticSensorActivated;
+		private boolean mGravitySensorActivated;
+		private boolean mProximitySensorActivated;
+		private boolean mLightSensorActivated;
+		private boolean mPressureSensorActivated;
+		private boolean mTemperatureSensorActivated;
+		private boolean mHumiditySensorActivated;
+		private boolean mLocationSensorActivated;
+
+		Sensors() {
+		}
+
+		void setRowId(long rowId) {
+			this.mRowId = rowId;
+		}
+
+		void setOrientationSensorActivated(short boolVal) {
+			this.mOrientationSensorActivated = boolVal > 0;
+		}
+
+		void setAccelerationSensorActivated(short boolVal) {
+			this.mAccelerationSensorActivated = boolVal > 0;
+		}
+
+		void setLinAccelerationSensorActivated(short boolVal) {
+			this.mLinAccelerationSensorActivated = boolVal > 0;
+		}
+
+		void setMagneticSensorActivated(short boolVal) {
+			this.mMagneticSensorActivated = boolVal > 0;
+		}
+
+		void setGravitySensorActivated(short boolVal) {
+			this.mGravitySensorActivated = boolVal > 0;
+		}
+
+		void setProximitySensorActivated(short boolVal) {
+			this.mProximitySensorActivated = boolVal > 0;
+		}
+
+		void setLightSensorActivated(short boolVal) {
+			this.mLightSensorActivated = boolVal > 0;
+		}
+
+		void setPressureSensorActivated(short boolVal) {
+			this.mPressureSensorActivated = boolVal > 0;
+		}
+
+		void setTemperatureSensorActivated(short boolVal) {
+			this.mTemperatureSensorActivated = boolVal > 0;
+		}
+
+		void setHumiditySensorActivated(short boolVal) {
+			this.mHumiditySensorActivated = boolVal > 0;
+		}
+
+		void setLocationSensorActivated(short boolVal) {
+			this.mLocationSensorActivated = boolVal > 0;
+		}
+
+		long getRowId() {
+			return this.mRowId;
+		}
+
+		boolean getOrientationSensorActivated() {
+			return this.mOrientationSensorActivated;
+		}
+
+		boolean getAccelerationSensorActivated() {
+			return this.mAccelerationSensorActivated;
+		}
+
+		boolean getLinAccelerationSensorActivated() {
+			return this.mLinAccelerationSensorActivated;
+		}
+
+		boolean getMagneticSensorActivated() {
+			return this.mMagneticSensorActivated;
+		}
+
+		boolean getGravitySensorActivated() {
+			return this.mGravitySensorActivated;
+		}
+
+		boolean getProximitySensorActivated() {
+			return this.mProximitySensorActivated;
+		}
+
+		boolean getLightSensorActivated() {
+			return this.mLightSensorActivated;
+		}
+
+		boolean getPressureSensorActivated() {
+			return this.mPressureSensorActivated;
+		}
+
+		boolean getTemperatureSensorActivated() {
+			return this.mTemperatureSensorActivated;
+		}
+
+		boolean getHumiditySensorActivated() {
+			return this.mHumiditySensorActivated;
+		}
+
+		boolean getLocationSensorActivated() {
+			return this.mLocationSensorActivated;
+		}
+	}
 }
