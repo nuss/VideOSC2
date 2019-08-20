@@ -22,10 +22,7 @@
 
 package net.videosc.fragments;
 
-//import android.app.Fragment;
-
 import android.net.Uri;
-
 import androidx.fragment.app.Fragment;
 
 /**

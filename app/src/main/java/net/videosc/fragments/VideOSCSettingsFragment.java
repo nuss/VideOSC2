@@ -322,7 +322,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 								SettingsContract.SettingsEntries._ID,
 								SettingsContract.SettingsEntries.RES_H,
 								SettingsContract.SettingsEntries.RES_V,
-								SettingsContract.SettingsEntries.CALC_PERIOD,
+//								SettingsContract.SettingsEntries.CALC_PERIOD,
 								SettingsContract.SettingsEntries.FRAMERATE_RANGE,
 								SettingsContract.SettingsEntries.NORMALIZE,
 								SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
@@ -346,8 +346,8 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
 							short resH = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_H));
 							short resV = cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.RES_V));
-							short calcPeriod =
-									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.CALC_PERIOD));
+//							short calcPeriod =
+//									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.CALC_PERIOD));
 							short framerateRange =
 									cursor.getShort(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE));
 							short normalized =
@@ -358,7 +358,7 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							setting.setRowId(rowId);
 							setting.setResolutionHorizontal(resH);
 							setting.setResolutionVertical(resV);
-							setting.setCalculationPeriod(calcPeriod);
+//							setting.setCalculationPeriod(calcPeriod);
 							setting.setFramerateRange(framerateRange);
 							setting.setNormalized(normalized);
 							setting.setRememberPixelStates(rememberPixelStates);
@@ -529,28 +529,28 @@ public class VideOSCSettingsFragment extends VideOSCBaseFragment {
 							}
 						});
 
-						calcPeriodField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-							@Override
-							public void onFocusChange(View v, boolean hasFocus) {
-								if (!hasFocus && !calcPeriodField.getText().toString().equals(
-										String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()))) {
-									String calcPeriod = calcPeriodField.getText().toString();
-									values.put(
-											SettingsContract.SettingsEntries.CALC_PERIOD,
-											calcPeriod
-									);
-									db.update(
-											SettingsContract.SettingsEntries.TABLE_NAME,
-											values,
-											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-											null
-									);
-									values.clear();
-									settings.get(0).setCalculationPeriod(Short.parseShort(calcPeriod, 10));
-									// FIXME: framerate doesn't always seem to get set correctly
-								}
-							}
-						});
+//						calcPeriodField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//							@Override
+//							public void onFocusChange(View v, boolean hasFocus) {
+//								if (!hasFocus && !calcPeriodField.getText().toString().equals(
+//										String.format(Locale.getDefault(), "%d", settings.get(0).getCalculationPeriod()))) {
+//									String calcPeriod = calcPeriodField.getText().toString();
+//									values.put(
+//											SettingsContract.SettingsEntries.CALC_PERIOD,
+//											calcPeriod
+//									);
+//									db.update(
+//											SettingsContract.SettingsEntries.TABLE_NAME,
+//											values,
+//											SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+//											null
+//									);
+//									values.clear();
+//									settings.get(0).setCalculationPeriod(Short.parseShort(calcPeriod, 10));
+//									// FIXME: framerate doesn't always seem to get set correctly
+//								}
+//							}
+//						});
 
 						selectFramerate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 							@Override

@@ -433,7 +433,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * <p>
 	 * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 	 */
-	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
+	public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
 
 		// SurfaceHolder
 		private SurfaceHolder mHolder;

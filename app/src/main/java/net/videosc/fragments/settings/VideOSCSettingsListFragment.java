@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -25,7 +24,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 
 	/**
 	 * @param savedInstanceState
-	 * @deprecated
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +34,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	 * @param inflater
 	 * @param container
 	 * @param savedInstanceState
-	 * @deprecated
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,9 +48,10 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		assert cameraView != null;
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
 		// the background scrollview - dark transparent, no content
-		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
+//		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		// the view holding the main selection of settings
-		final View view = inflater.inflate(R.layout.settings_container, bg, false);
+//		final View view = inflater.inflate(R.layout.settings_container, bg, false);
+		final View view = inflater.inflate(R.layout.settings_container, container, false);
 		final ListView settingsListView = view.findViewById(R.id.settings_list);
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
@@ -64,9 +62,10 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(activity, R.layout.settings_selection_item, items);
 		settingsListView.setAdapter(itemsAdapter);
 		// does the fade-in animation really work?...
-		VideOSCUIHelpers.setTransitionAnimation(bg);
+//		VideOSCUIHelpers.setTransitionAnimation(bg);
+		VideOSCUIHelpers.setTransitionAnimation(container);
 		// add the scroll view background to the container (camView)
-		container.addView(bg);
+//		container.addView(bg);
 		view.setVisibility(View.VISIBLE);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,9 +107,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		return view;
 	}
 
-	/**
-	 * @deprecated
-	 */
 	@Override
 	public void onPause() {
 		super.onPause();
