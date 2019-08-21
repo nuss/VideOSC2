@@ -9,12 +9,10 @@ import android.widget.TextView;
 
 import net.videosc.R;
 import net.videosc.fragments.VideOSCBaseFragment;
-import net.videosc.fragments.VideOSCCameraFragment;
 
 import java.util.Calendar;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 
 public class VideOSCAboutFragment extends VideOSCBaseFragment {
 	/**
@@ -32,10 +30,6 @@ public class VideOSCAboutFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
-		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-
 		final View view = inflater.inflate(R.layout.about, container, false);
 		setYear(view);
 

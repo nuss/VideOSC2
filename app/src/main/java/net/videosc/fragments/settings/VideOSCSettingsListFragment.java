@@ -2,6 +2,7 @@ package net.videosc.fragments.settings;
 
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 
 public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsList";
+	private VideOSCApplication mApp;
 
 	/**
 	 * @param savedInstanceState
@@ -52,7 +54,8 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		final ListView settingsListView = view.findViewById(R.id.settings_list);
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplicationContext();
+		mApp = (VideOSCApplication) activity.getApplicationContext();
+		mApp.setSettingsContainerID(this.getId());
 
 		// get the setting items for the main selection list and parse them into the layout
 		final String[] items = getResources().getStringArray(R.array.settings_select_items);
@@ -65,7 +68,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				if (!app.getIsTablet())
+				if (!mApp.getIsTablet())
 					settingsListView.setVisibility(View.INVISIBLE);
 				settingsView.setBackgroundResource(R.color.colorDarkTransparentBackground);
 				switch (i) {
@@ -104,7 +107,55 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 
 	@Override
 	public void onPause() {
+		Log.d(TAG, "'onPause()' called");
 		super.onPause();
+	}
+
+	/**
+	 * Called when the Fragment is no longer started.  This is generally
+	 * tied to 'onStop()' of the containing
+	 * Activity's lifecycle.
+	 */
+	@Override
+	public void onStop() {
+		Log.d(TAG, "'onStop()' called");
+		super.onStop();
+	}
+
+	/**
+	 * Called when the view previously created by {@link #onCreateView} has
+	 * been detached from the fragment.  The next time the fragment needs
+	 * to be displayed, a new view will be created.  This is called
+	 * after {@link #onStop()} and before {@link #onDestroy()}.  It is called
+	 * <em>regardless</em> of whether {@link #onCreateView} returned a
+	 * non-null view.  Internally it is called after the view's state has
+	 * been saved but before it has been removed from its parent.
+	 */
+	@Override
+	public void onDestroyView() {
+		Log.d(TAG, "'onDestroyView()' called");
+		mApp.setSettingsContainerID(null);
+		super.onDestroyView();
+	}
+
+	/**
+	 * Called when the fragment is no longer in use.  This is called
+	 * after {@link #onStop()} and before {@link #onDetach()}.
+	 */
+	@Override
+	public void onDestroy() {
+		Log.d(TAG, "'onDestroy()' called");
+		super.onDestroy();
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		Log.d(TAG, "'onDetach()' called");
+		super.onDetach();
 	}
 
 	static class Address {

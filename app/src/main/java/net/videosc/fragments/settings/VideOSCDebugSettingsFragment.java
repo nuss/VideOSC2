@@ -11,10 +11,8 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.fragments.VideOSCBaseFragment;
-import net.videosc.fragments.VideOSCCameraFragment;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	/**
@@ -34,9 +32,6 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
-		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();

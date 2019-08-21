@@ -51,6 +51,13 @@ public class VideOSCApplication extends Application {
 	private PixelEditModes mPixelEditMode;
 	private boolean mOSCFeedbackActivated = false;
 
+	private Integer mSettingsContainerID = null;
+	private Integer mNetworkSettingsID = null;
+	private Integer mResolutionSettingsID = null;
+	private Integer mSensorSettingsID = null;
+	private Integer mDebugSettingsID = null;
+	private Integer mAboutSettingsID = null;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -276,5 +283,53 @@ public class VideOSCApplication extends Application {
 
 	public boolean getIsTablet() {
 		return this.mIsTablet;
+	}
+
+	public void setSettingsContainerID(Integer id) {
+		this.mSettingsContainerID = id;
+	}
+
+	public Integer getSettingsContainerID() {
+		return this.mSettingsContainerID;
+	}
+
+	public void setNetworkSettingsID(Integer id) {
+		this.mNetworkSettingsID = id;
+	}
+
+	public Integer getNetworkSettingsID() {
+		return this.mNetworkSettingsID;
+	}
+
+	public void setResolutionSettingsID(Integer id) {
+		this.mResolutionSettingsID = id;
+	}
+
+	public Integer getResolutionSettingsID() {
+		return this.mResolutionSettingsID;
+	}
+
+	public void setSensorSettingsID(Integer id) {
+		this.mSensorSettingsID = id;
+	}
+
+	public Integer getSensorSettingsID() {
+		return this.mSensorSettingsID;
+	}
+
+	public void setDebugSettingsID(Integer id) {
+		this.mDebugSettingsID = id;
+	}
+
+	public Integer getDebugSettingsID() {
+		return this.mDebugSettingsID;
+	}
+
+	public void setAboutSettingsID(Integer id) {
+		this.mAboutSettingsID = id;
+	}
+
+	public Integer getAboutSettingsID() {
+		return this.mAboutSettingsID;
 	}
 }

@@ -19,7 +19,6 @@ import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	/**
@@ -37,10 +36,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
-//		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-
 		final View view = inflater.inflate(R.layout.sensor_settings, container, false);
 
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();

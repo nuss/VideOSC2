@@ -56,7 +56,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -89,6 +88,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -121,7 +121,7 @@ public class VideOSCMainActivity extends FragmentActivity
 	// ListView for the tools drawer
 	private List<BitmapDrawable> mToolsList = new ArrayList<>();
 	private ListView mToolsDrawerList;
-//	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
+	//	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
 	// toolbar status
 	public Enum mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 
@@ -585,61 +585,42 @@ public class VideOSCMainActivity extends FragmentActivity
 
 	@Override
 	public void onBackPressed() {
-		View bg = findViewById(R.id.settings_background);
-		short settingsLevel = mApp.getSettingsLevel();
-		View networkSettingsDialog = findViewById(R.id.network_settings);
-		View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
-		View sensorSettingsDialog = findViewById(R.id.sensor_settings);
-		View debugSettingsDialog = findViewById(R.id.debug_settings);
-		View about = findViewById(R.id.about);
-
-
-		switch (settingsLevel) {
-			case 1:
-				final androidx.fragment.app.Fragment fragment = mFragmentManager.findFragmentByTag("settings selection");
-				final androidx.fragment.app.Fragment snapshotsFragment = mFragmentManager.findFragmentByTag("snapshot select");
-				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
-				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
-				VideOSCUIHelpers.resetSystemUIState(mDecorView);
-				assert fragment != null;
-				mFragmentManager.beginTransaction().remove(fragment).commit();
-				assert snapshotsFragment != null;
-				mFragmentManager.beginTransaction().remove(snapshotsFragment).commit();
-				setFullScreen();
-				mToolsDrawerLayout.closeDrawer(GravityCompat.END);
-				mApp.setSettingsLevel(0);
-				break;
-			case 2:
-				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
-				if (networkSettingsDialog != null)
-					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
-				if (resolutionSettingsDialog != null)
-					VideOSCUIHelpers.removeView(resolutionSettingsDialog, (ViewGroup) bg);
-				if (sensorSettingsDialog != null)
-					VideOSCUIHelpers.removeView(sensorSettingsDialog, (ViewGroup) bg);
-				if (debugSettingsDialog != null)
-					VideOSCUIHelpers.removeView(debugSettingsDialog, (ViewGroup) bg);
-				if (about != null)
-					VideOSCUIHelpers.removeView(about, (ViewGroup) bg);
-				bg.setVisibility(View.VISIBLE);
-				mApp.setSettingsLevel(1);
-				break;
-			case 3:
-				View exposureSetters = findViewById(R.id.ok_cancel_buttons);
-				Switch exposureSwitch = findViewById(R.id.fix_exposure_checkbox);
-				// temporarily disable checked-change listener
-				mApp.setBackPressed(true);
-				exposureSwitch.setChecked(mApp.getExposureIsFixed());
-				mApp.setBackPressed(false);
-				if (exposureSetters != null)
-					VideOSCUIHelpers.removeView(exposureSetters, (FrameLayout) mCamView);
-				bg.setVisibility(View.VISIBLE);
-				resolutionSettingsDialog.setVisibility(View.VISIBLE);
-				mApp.setExposureIsFixed(false);
-				mApp.setSettingsLevel(2);
-				break;
-			default:
-				VideOSCDialogHelper.showQuitDialog(this);
+//		View bg = findViewById(R.id.settings_background);
+//		short settingsLevel = mApp.getSettingsLevel();
+		Fragment
+				settingsContainer, networkSettingsDialog, resolutionSettingsDialog,
+				sensorSettingsDialog, debugSettingsDialog, about;
+		final boolean isTablet = mApp.getIsTablet();
+		final Integer settingsContainerID = mApp.getSettingsContainerID();
+		final Integer networkSettingsID = mApp.getNetworkSettingsID();
+		final Integer resolutionSettingsID = mApp.getResolutionSettingsID();
+		final Integer sensorSettingsID = mApp.getSensorSettingsID();
+		final Integer debugSettingsID = mApp.getDebugSettingsID();
+		final Integer aboutID = mApp.getAboutSettingsID();
+		if (settingsContainerID != null) {
+			settingsContainer = mFragmentManager.findFragmentById(settingsContainerID);
+			assert settingsContainer != null;
+			if (isTablet || (networkSettingsID == null &&
+					resolutionSettingsID == null &&
+					sensorSettingsID == null &&
+					debugSettingsID == null &&
+					aboutID == null)
+			)
+				mFragmentManager.beginTransaction().remove(settingsContainer).commit();
+			else {
+				if (networkSettingsID != null)
+					networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);
+				if (resolutionSettingsID != null)
+					resolutionSettingsDialog = mFragmentManager.findFragmentById(resolutionSettingsID);
+				if (sensorSettingsID != null)
+					sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
+				if (debugSettingsID != null)
+					debugSettingsDialog = mFragmentManager.findFragmentById(debugSettingsID);
+				if (aboutID != null)
+					about = mFragmentManager.findFragmentById(aboutID);
+			}
+		} else {
+			VideOSCDialogHelper.showQuitDialog(this);
 		}
 	}
 
