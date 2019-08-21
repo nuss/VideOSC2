@@ -47,11 +47,8 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert cameraView != null;
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
-		// the background scrollview - dark transparent, no content
-//		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
-		// the view holding the main selection of settings
-//		final View view = inflater.inflate(R.layout.settings_container, bg, false);
 		final View view = inflater.inflate(R.layout.settings_container, container, false);
+		final View settingsView = view.findViewById(R.id.settings_container);
 		final ListView settingsListView = view.findViewById(R.id.settings_list);
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
@@ -62,10 +59,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(activity, R.layout.settings_selection_item, items);
 		settingsListView.setAdapter(itemsAdapter);
 		// does the fade-in animation really work?...
-//		VideOSCUIHelpers.setTransitionAnimation(bg);
 		VideOSCUIHelpers.setTransitionAnimation(container);
-		// add the scroll view background to the container (camView)
-//		container.addView(bg);
 		view.setVisibility(View.VISIBLE);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -73,6 +67,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				if (!app.getIsTablet())
 					settingsListView.setVisibility(View.INVISIBLE);
+				settingsView.setBackgroundResource(R.color.colorDarkTransparentBackground);
 				switch (i) {
 					case 0:
 						fragmentManager.beginTransaction()

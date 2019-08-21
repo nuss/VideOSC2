@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/resolution_settings"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+	android:id="@+id/resolution_settings"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
 
 	<LinearLayout
 		android:id="@+id/resolution"
@@ -22,7 +22,7 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/horizontal_resolution"/>
+				android:text="@string/horizontal_resolution" />
 
 			<EditText
 				android:id="@+id/resolution_horizontal_field"
@@ -31,7 +31,8 @@
 				android:layout_height="wrap_content"
 				android:digits="1234567890"
 				android:inputType="number"
-				android:nextFocusDown="@+id/resolution_vertical_field"/>
+				android:nextFocusDown="@+id/resolution_vertical_field" />
+
 		</LinearLayout>
 
 		<LinearLayout
@@ -44,7 +45,7 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/vertical_resolution"/>
+				android:text="@string/vertical_resolution" />
 
 			<EditText
 				android:id="@+id/resolution_vertical_field"
@@ -53,7 +54,8 @@
 				android:layout_height="wrap_content"
 				android:digits="1234567890"
 				android:inputType="number"
-				android:nextFocusDown="@+id/calulation_period_field"/>
+				android:nextFocusDown="@+id/calulation_period_field" />
+
 		</LinearLayout>
 	</LinearLayout>
 
@@ -69,7 +71,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:labelFor="@+id/framerate_selection"
-			android:text="@string/select_framerate_min_max"/>
+			android:text="@string/select_framerate_min_max" />
 
 		<Spinner
 			android:id="@+id/framerate_selection"
@@ -77,7 +79,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="10dp"
 			android:dropDownWidth="match_parent"
-			android:popupBackground="#ee000000"/>
+			android:popupBackground="#ee000000" />
 
 	</LinearLayout>
 
@@ -93,9 +95,9 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"
-			android:text="@string/fix_exposure_temporary"/>
+			android:text="@string/fix_exposure_temporary" />
 
-		<View style="@style/Divider"/>
+		<View style="@style/Divider" />
 
 		<Switch
 			android:id="@+id/normalize_output_checkbox"
@@ -103,9 +105,9 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"
-			android:text="@string/normalize_output_text"/>
+			android:text="@string/normalize_output_text" />
 
-		<View style="@style/Divider"/>
+		<View style="@style/Divider" />
 
 		<Switch
 			android:id="@+id/remember_activated_checkbox"
@@ -113,8 +115,7 @@
 			android:layout_height="wrap_content"
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"
-			android:text="@string/remember_activated_text"/>
-
+			android:text="@string/remember_activated_text" />
 
 	</LinearLayout>
 

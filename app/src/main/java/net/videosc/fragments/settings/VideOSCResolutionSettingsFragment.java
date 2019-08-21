@@ -162,8 +162,10 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
 						toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 						toast.show();
-
-						((ViewGroup) container.getParent()).addView(fixExposureButtonLayout);
+						final View bg = container.findViewById(R.id.settings_container);
+						bg.setBackgroundResource(0);
+						final ViewGroup containerParent = (ViewGroup) container.getParent();
+						containerParent.addView(fixExposureButtonLayout);
 
 						final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
 						fixExposureButton.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +174,8 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 								params.setAutoExposureLock(true);
 								camera.setParameters(params);
 								app.setExposureIsFixed(true);
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, container);
+								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
+								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
 								new Toast(getActivity());
 								view.setVisibility(View.VISIBLE);
 							}
@@ -181,13 +184,14 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, container);
+								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
 								view.setVisibility(View.VISIBLE);
 								// setting exposure is only possible if exposure
 								// isn't already fixed. As a consequence cancelling
 								// setting exposure can only result in *not* fixing
 								// exposure
 								app.setHasExposureSettingBeenCancelled(true);
+								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
 								fixExposureCB.setChecked(false);
 							}
 						}));
