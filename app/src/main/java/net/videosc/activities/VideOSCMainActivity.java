@@ -588,36 +588,70 @@ public class VideOSCMainActivity extends FragmentActivity
 //		View bg = findViewById(R.id.settings_background);
 //		short settingsLevel = mApp.getSettingsLevel();
 		Fragment
-				settingsContainer, networkSettingsDialog, resolutionSettingsDialog,
+				settingsContainerFragment, networkSettingsDialog, resolutionSettingsDialog,
 				sensorSettingsDialog, debugSettingsDialog, about;
 		final boolean isTablet = mApp.getIsTablet();
-		final Integer settingsContainerID = mApp.getSettingsContainerID();
-		final Integer networkSettingsID = mApp.getNetworkSettingsID();
-		final Integer resolutionSettingsID = mApp.getResolutionSettingsID();
-		final Integer sensorSettingsID = mApp.getSensorSettingsID();
-		final Integer debugSettingsID = mApp.getDebugSettingsID();
-		final Integer aboutID = mApp.getAboutSettingsID();
-		if (settingsContainerID != null) {
-			settingsContainer = mFragmentManager.findFragmentById(settingsContainerID);
-			assert settingsContainer != null;
-			if (isTablet || (networkSettingsID == null &&
-					resolutionSettingsID == null &&
-					sensorSettingsID == null &&
-					debugSettingsID == null &&
-					aboutID == null)
-			)
-				mFragmentManager.beginTransaction().remove(settingsContainer).commit();
-			else {
-				if (networkSettingsID != null)
-					networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);
-				if (resolutionSettingsID != null)
-					resolutionSettingsDialog = mFragmentManager.findFragmentById(resolutionSettingsID);
-				if (sensorSettingsID != null)
-					sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
-				if (debugSettingsID != null)
-					debugSettingsDialog = mFragmentManager.findFragmentById(debugSettingsID);
-				if (aboutID != null)
-					about = mFragmentManager.findFragmentById(aboutID);
+		final int settingsContainerID = mApp.getSettingsContainerID();
+		final int networkSettingsID = mApp.getNetworkSettingsID();
+		final int resolutionSettingsID = mApp.getResolutionSettingsID();
+		final int sensorSettingsID = mApp.getSensorSettingsID();
+		final int debugSettingsID = mApp.getDebugSettingsID();
+		final int aboutID = mApp.getAboutSettingsID();
+		if (settingsContainerID > 0) {
+			settingsContainerFragment = mFragmentManager.findFragmentById(settingsContainerID);
+			assert settingsContainerFragment != null;
+			final View settingsView = settingsContainerFragment.getView();
+			assert settingsView != null;
+			final View settingsList = settingsView.findViewById(R.id.settings_list);
+			final View settingsContainer = settingsView.findViewById(R.id.settings_container);
+			if (isTablet) {
+				mFragmentManager.beginTransaction().remove(settingsContainerFragment).commit();
+				mApp.setSettingsContainerID(-1);
+				VideOSCUIHelpers.resetSystemUIState(mDecorView);
+			} else {
+				if (networkSettingsID < 0 &&
+						resolutionSettingsID < 0 &&
+						sensorSettingsID < 0 &&
+						debugSettingsID < 0 &&
+						aboutID < 0) {
+					mFragmentManager.beginTransaction().remove(settingsContainerFragment).commit();
+					mApp.setSettingsContainerID(-1);
+					VideOSCUIHelpers.resetSystemUIState(mDecorView);
+				} else {
+					if (networkSettingsID > 0) {
+						networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);
+						assert networkSettingsDialog != null;
+						mFragmentManager.beginTransaction().remove(networkSettingsDialog).commit();
+						mApp.setNetworkSettingsID(-1);
+					}
+					if (resolutionSettingsID > 0) {
+						resolutionSettingsDialog = mFragmentManager.findFragmentById(resolutionSettingsID);
+						assert resolutionSettingsDialog != null;
+						mFragmentManager.beginTransaction().remove(resolutionSettingsDialog).commit();
+						mApp.setResolutionSettingsID(-1);
+					}
+					if (sensorSettingsID > 0) {
+						sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
+						assert sensorSettingsDialog != null;
+						mFragmentManager.beginTransaction().remove(sensorSettingsDialog).commit();
+						mApp.setSensorSettingsID(-1);
+					}
+					if (debugSettingsID > 0) {
+						debugSettingsDialog = mFragmentManager.findFragmentById(debugSettingsID);
+						assert debugSettingsDialog != null;
+						mFragmentManager.beginTransaction().remove(debugSettingsDialog).commit();
+						mApp.setDebugSettingsID(-1);
+					}
+					if (aboutID > 0) {
+						about = mFragmentManager.findFragmentById(aboutID);
+						assert about != null;
+						mFragmentManager.beginTransaction().remove(about).commit();
+						mApp.setAboutSettingsID(-1);
+					}
+					assert settingsList != null;
+					settingsList.setVisibility(View.VISIBLE);
+					settingsContainer.setBackgroundResource(0);
+				}
 			}
 		} else {
 			VideOSCDialogHelper.showQuitDialog(this);

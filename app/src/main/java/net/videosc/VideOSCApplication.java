@@ -51,12 +51,12 @@ public class VideOSCApplication extends Application {
 	private PixelEditModes mPixelEditMode;
 	private boolean mOSCFeedbackActivated = false;
 
-	private Integer mSettingsContainerID = null;
-	private Integer mNetworkSettingsID = null;
-	private Integer mResolutionSettingsID = null;
-	private Integer mSensorSettingsID = null;
-	private Integer mDebugSettingsID = null;
-	private Integer mAboutSettingsID = null;
+	private int mSettingsContainerID = -1;
+	private int mNetworkSettingsID = -1;
+	private int mResolutionSettingsID = -1;
+	private int mSensorSettingsID = -1;
+	private int mDebugSettingsID = -1;
+	private int mAboutSettingsID = -1;
 
 	@Override
 	public void onCreate() {
@@ -285,51 +285,51 @@ public class VideOSCApplication extends Application {
 		return this.mIsTablet;
 	}
 
-	public void setSettingsContainerID(Integer id) {
+	public void setSettingsContainerID(int id) {
 		this.mSettingsContainerID = id;
 	}
 
-	public Integer getSettingsContainerID() {
+	public int getSettingsContainerID() {
 		return this.mSettingsContainerID;
 	}
 
-	public void setNetworkSettingsID(Integer id) {
+	public void setNetworkSettingsID(int id) {
 		this.mNetworkSettingsID = id;
 	}
 
-	public Integer getNetworkSettingsID() {
+	public int getNetworkSettingsID() {
 		return this.mNetworkSettingsID;
 	}
 
-	public void setResolutionSettingsID(Integer id) {
+	public void setResolutionSettingsID(int id) {
 		this.mResolutionSettingsID = id;
 	}
 
-	public Integer getResolutionSettingsID() {
+	public int getResolutionSettingsID() {
 		return this.mResolutionSettingsID;
 	}
 
-	public void setSensorSettingsID(Integer id) {
+	public void setSensorSettingsID(int id) {
 		this.mSensorSettingsID = id;
 	}
 
-	public Integer getSensorSettingsID() {
+	public int getSensorSettingsID() {
 		return this.mSensorSettingsID;
 	}
 
-	public void setDebugSettingsID(Integer id) {
+	public void setDebugSettingsID(int id) {
 		this.mDebugSettingsID = id;
 	}
 
-	public Integer getDebugSettingsID() {
+	public int getDebugSettingsID() {
 		return this.mDebugSettingsID;
 	}
 
-	public void setAboutSettingsID(Integer id) {
+	public void setAboutSettingsID(int id) {
 		this.mAboutSettingsID = id;
 	}
 
-	public Integer getAboutSettingsID() {
+	public int getAboutSettingsID() {
 		return this.mAboutSettingsID;
 	}
 }

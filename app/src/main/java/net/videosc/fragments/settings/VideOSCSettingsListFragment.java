@@ -76,26 +76,31 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 						fragmentManager.beginTransaction()
 								.replace(R.id.settings_container, networkSettingsFragment)
 								.commit();
+						mApp.setNetworkSettingsID(networkSettingsFragment.getId());
 						break;
 					case 1:
 						fragmentManager.beginTransaction()
 								.replace(R.id.settings_container, resolutionSettingsFragment)
 								.commit();
+						mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
 						break;
 					case 2:
 						fragmentManager.beginTransaction()
 								.replace(R.id.settings_container, sensorSettingsFragment)
 								.commit();
+						mApp.setSensorSettingsID(sensorSettingsFragment.getId());
 						break;
 					case 3:
 						fragmentManager.beginTransaction()
 								.replace(R.id.settings_container, debugSettingsFragment)
 								.commit();
+						mApp.setDebugSettingsID(debugSettingsFragment.getId());
 						break;
 					case 4:
 						fragmentManager.beginTransaction()
 								.replace(R.id.settings_container, aboutFragment)
 								.commit();
+						mApp.setAboutSettingsID(aboutFragment.getId());
 						break;
 					default:
 				}
@@ -134,7 +139,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDestroyView() {
 		Log.d(TAG, "'onDestroyView()' called");
-		mApp.setSettingsContainerID(null);
+		mApp.setSettingsContainerID(-1);
 		super.onDestroyView();
 	}
 

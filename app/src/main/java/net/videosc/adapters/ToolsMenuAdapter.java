@@ -339,7 +339,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				}
 			} else if (position == SETTINGS) {
 				activityRef.get().closeColorModePanel();
-				app.setSettingsLevel(1);
+//				app.setSettingsLevel(1);
 				activityRef.get().showBackButton();
 				VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment();
 				if (fragmentManager.findFragmentByTag("settings selection") == null
