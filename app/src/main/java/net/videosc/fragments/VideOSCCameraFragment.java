@@ -641,13 +641,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				mViewCamera.setPreviewDisplay(holder);
 				mViewCamera.startPreview();
-//				mCanvas = holder.lockCanvas();
-//				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
-				menuButton.bringToFront();
-				if (indicatorPanel != null)
-					indicatorPanel.bringToFront();
-//				Log.d(TAG, "holder: " + holder.lockCanvas());
+				if (mApp.getSettingsContainerID() < 0) {
+					menuButton.bringToFront();
+					if (indicatorPanel != null)
+						indicatorPanel.bringToFront();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -675,7 +674,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}
 				}
 			});
-			if (mApp.getSettingsLevel() == 0)
+
+			if (mApp.getSettingsContainerID() < 0)
 				snapshotsBar.bringToFront();
 		}
 

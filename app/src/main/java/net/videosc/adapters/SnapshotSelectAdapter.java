@@ -161,7 +161,6 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 							.remove(snapShotSelectFragment)
 							.commit();
 					mActivity.setFullScreen();
-					mApp.setSettingsLevel(0);
 				}
 			});
 

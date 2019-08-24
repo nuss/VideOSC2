@@ -489,8 +489,10 @@ public class VideOSCMainActivity extends FragmentActivity
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END))
+				Log.d(TAG, "tools drawer state: " + mToolsDrawerLayout.isDrawerOpen(GravityCompat.END));
+				if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END)) {
 					mToolsDrawerLayout.openDrawer(GravityCompat.END);
+				}
 				closeColorModePanel();
 			}
 		});
@@ -585,8 +587,6 @@ public class VideOSCMainActivity extends FragmentActivity
 
 	@Override
 	public void onBackPressed() {
-//		View bg = findViewById(R.id.settings_background);
-//		short settingsLevel = mApp.getSettingsLevel();
 		Fragment
 				settingsContainerFragment, networkSettingsDialog, resolutionSettingsDialog,
 				sensorSettingsDialog, debugSettingsDialog, about;
@@ -617,6 +617,9 @@ public class VideOSCMainActivity extends FragmentActivity
 					mFragmentManager.beginTransaction().remove(settingsContainerFragment).commit();
 					mApp.setSettingsContainerID(-1);
 					VideOSCUIHelpers.resetSystemUIState(mDecorView);
+					// hack - otherwise mToolsDrawerLayout.isDrawerOpen(GravityCompat.END) returns true
+					// though the drawer appears to be closed (???)
+					mToolsDrawerLayout.closeDrawer(GravityCompat.END);
 				} else {
 					if (networkSettingsID > 0) {
 						networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);

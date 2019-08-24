@@ -33,13 +33,6 @@ public class VideOSCApplication extends Application {
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
 
-	// setting dialogs
-	// levels within settings dialog
-	// 0: no dialog, normal mode
-	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'debug settings', 'about'
-	// 2: editor setting details
-	// 3: beyond details - e.g. setting exposure lock
-	private short mSettingsLevel = 0;
 	private boolean mIsTorchOn = false;
 	private boolean mIsFPSCalcPanelOpen = false;
 	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
@@ -87,14 +80,6 @@ public class VideOSCApplication extends Application {
 
 	public RGBModes getColorMode() {
 		return this.mColorMode;
-	}
-
-	public short getSettingsLevel() {
-		return this.mSettingsLevel;
-	}
-
-	public void setSettingsLevel(int level) {
-		this.mSettingsLevel = (short) level;
 	}
 
 	public SettingsDBHelper getSettingsHelper() {

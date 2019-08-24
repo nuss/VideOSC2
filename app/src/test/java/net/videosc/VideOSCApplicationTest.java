@@ -28,14 +28,6 @@ public class VideOSCApplicationTest extends TestCase {
 
 	}
 
-	public void testGetSettingsLevel() {
-
-	}
-
-	public void testSetSettingsLevel() {
-
-	}
-
 	public void testGetSettingsHelper() {
 
 	}
