@@ -50,6 +50,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				app.setIsMultiSliderActive(false);
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mMSButtons);
+				mContainer.removeView(mLabelsView);
 				indicatorPanel.setVisibility(View.VISIBLE);
 				pixelEditorToolbox.setVisibility(View.VISIBLE);
 				snapshotsBar.setVisibility(View.VISIBLE);
@@ -86,6 +87,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 
 				mManager.beginTransaction().remove(mFragment).commit();
 				mContainer.removeView(mMSButtons);
+				mContainer.removeView(mLabelsView);
 				indicatorPanel.setVisibility(View.VISIBLE);
 				pixelEditorToolbox.setVisibility(View.VISIBLE);
 				snapshotsBar.setVisibility(View.VISIBLE);
