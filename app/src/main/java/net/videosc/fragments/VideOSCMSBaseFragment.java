@@ -16,12 +16,12 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
 	private ViewGroup mParentContainer;
 	ViewGroup mContainer;
-	ViewGroup mMSButtons;
+	View mMSButtons;
+	View mLabelsView;
 	FragmentManager mManager;
 	VideOSCBaseFragment mFragment;
 
-	public VideOSCMSBaseFragment() {
-	}
+	public VideOSCMSBaseFragment() { }
 
 	@Override
 	public void onStart() {
@@ -40,6 +40,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		final VideOSCCameraFragment cameraPreview = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
 
 		mMSButtons.bringToFront();
+		mLabelsView.bringToFront();
 		// move behaviour defined in VideOSCMainActivity > onTouch()
 		mMSButtons.setOnTouchListener(activity);
 

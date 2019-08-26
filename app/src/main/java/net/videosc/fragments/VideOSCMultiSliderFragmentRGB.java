@@ -56,6 +56,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		final double[] blueVals = argsBundle.getDoubleArray("blueVals");
 		final double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
 
+		mLabelsView = inflater.inflate(R.layout.multislider_labels, container, false);
 		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
 		mMSViewRedLeft = msContainer.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
@@ -102,7 +103,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
 
-		mMSButtons = (ViewGroup) inflater.inflate(R.layout.multislider_buttons, container, false);
+		mMSButtons = inflater.inflate(R.layout.multislider_buttons, container, false);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
@@ -158,6 +159,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		setSliderProps(sliderNums);
 
 		VideOSCUIHelpers.addView(mMSButtons, container);
+		VideOSCUIHelpers.addView(mLabelsView, container);
 
 		mContainer = container;
 		mFragment = this;

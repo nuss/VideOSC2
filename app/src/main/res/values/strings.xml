@@ -134,5 +134,7 @@
 	<string name="videosc_copyright">© Stefan Nussbaumer 2014-%1$s</string>
 	<string name="apply_current_slider_settings">apply current slider settings</string>
 	<string name="cancel_editing_pixel_values">cancel editing pixel values</string>
+	<string name="values">values</string>
+	<string name="mix">mix</string>
 
 </resources>

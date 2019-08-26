@@ -24,6 +24,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
+	public View mLabelsView;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragment() {
@@ -67,7 +68,8 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		mMSViewLeft.setValuesArray(numTotalPixels);
 		mMSViewLeft.setContainerView(container);
 
-		mMSButtons = (ViewGroup) inflater.inflate(R.layout.multislider_buttons, container, false);
+		mMSButtons = inflater.inflate(R.layout.multislider_buttons, container, false);
+		mLabelsView = inflater.inflate(R.layout.multislider_labels, container, false);
 
 		mMSViewRight = msContainer.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
@@ -122,6 +124,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		setSliderProps(sliderNums);
 
 		VideOSCUIHelpers.addView(mMSButtons, container);
+		VideOSCUIHelpers.addView(mLabelsView, container);
 
 		mContainer = container;
 		mFragment = this;
