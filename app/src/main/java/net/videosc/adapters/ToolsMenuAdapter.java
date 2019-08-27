@@ -343,7 +343,10 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment();
 				if (fragmentManager.findFragmentByTag("settings selection") == null
 						&& fragmentManager.findFragmentByTag("snapshot selection") == null)
-					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
+					fragmentManager.beginTransaction()
+							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.add(R.id.camera_preview, settings, "settings selection")
+							.commit();
 			} else if (position == QUIT) {
 				VideOSCDialogHelper.showQuitDialog(activityRef.get());
 			}

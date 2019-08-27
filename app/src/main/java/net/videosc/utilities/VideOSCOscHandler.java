@@ -44,7 +44,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			msg = new OscMessage(cmd);
 		} else {
 			msg.clear();
-			msg.setAddrPattern(cmd);
+			msg.setAddress(cmd);
 		}
 
 		return msg;

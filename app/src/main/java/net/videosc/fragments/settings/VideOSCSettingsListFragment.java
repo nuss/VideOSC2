@@ -73,31 +73,41 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 				settingsView.setBackgroundResource(R.color.colorDarkTransparentBackground);
 				switch (i) {
 					case 0:
-						fragmentManager.beginTransaction()
+						fragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 								.replace(R.id.settings_container, networkSettingsFragment)
 								.commit();
 						mApp.setNetworkSettingsID(networkSettingsFragment.getId());
 						break;
 					case 1:
-						fragmentManager.beginTransaction()
+						fragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 								.replace(R.id.settings_container, resolutionSettingsFragment)
 								.commit();
 						mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
 						break;
 					case 2:
-						fragmentManager.beginTransaction()
+						fragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 								.replace(R.id.settings_container, sensorSettingsFragment)
 								.commit();
 						mApp.setSensorSettingsID(sensorSettingsFragment.getId());
 						break;
 					case 3:
-						fragmentManager.beginTransaction()
+						fragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 								.replace(R.id.settings_container, debugSettingsFragment)
 								.commit();
 						mApp.setDebugSettingsID(debugSettingsFragment.getId());
 						break;
 					case 4:
-						fragmentManager.beginTransaction()
+						fragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 								.replace(R.id.settings_container, aboutFragment)
 								.commit();
 						mApp.setAboutSettingsID(aboutFragment.getId());

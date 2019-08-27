@@ -605,7 +605,11 @@ public class VideOSCMainActivity extends FragmentActivity
 			final View settingsList = settingsView.findViewById(R.id.settings_list);
 			final View settingsContainer = settingsView.findViewById(R.id.settings_container);
 			if (isTablet) {
-				mFragmentManager.beginTransaction().remove(settingsContainerFragment).commit();
+				mFragmentManager
+						.beginTransaction()
+						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+						.remove(settingsContainerFragment)
+						.commit();
 				mApp.setSettingsContainerID(-1);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
 			} else {
@@ -614,7 +618,11 @@ public class VideOSCMainActivity extends FragmentActivity
 						sensorSettingsID < 0 &&
 						debugSettingsID < 0 &&
 						aboutID < 0) {
-					mFragmentManager.beginTransaction().remove(settingsContainerFragment).commit();
+					mFragmentManager
+							.beginTransaction()
+							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.remove(settingsContainerFragment)
+							.commit();
 					mApp.setSettingsContainerID(-1);
 					VideOSCUIHelpers.resetSystemUIState(mDecorView);
 					// hack - otherwise mToolsDrawerLayout.isDrawerOpen(GravityCompat.END) returns true
@@ -624,31 +632,51 @@ public class VideOSCMainActivity extends FragmentActivity
 					if (networkSettingsID > 0) {
 						networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);
 						assert networkSettingsDialog != null;
-						mFragmentManager.beginTransaction().remove(networkSettingsDialog).commit();
+						mFragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(networkSettingsDialog)
+								.commit();
 						mApp.setNetworkSettingsID(-1);
 					}
 					if (resolutionSettingsID > 0) {
 						resolutionSettingsDialog = mFragmentManager.findFragmentById(resolutionSettingsID);
 						assert resolutionSettingsDialog != null;
-						mFragmentManager.beginTransaction().remove(resolutionSettingsDialog).commit();
+						mFragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(resolutionSettingsDialog)
+								.commit();
 						mApp.setResolutionSettingsID(-1);
 					}
 					if (sensorSettingsID > 0) {
 						sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
 						assert sensorSettingsDialog != null;
-						mFragmentManager.beginTransaction().remove(sensorSettingsDialog).commit();
+						mFragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(sensorSettingsDialog)
+								.commit();
 						mApp.setSensorSettingsID(-1);
 					}
 					if (debugSettingsID > 0) {
 						debugSettingsDialog = mFragmentManager.findFragmentById(debugSettingsID);
 						assert debugSettingsDialog != null;
-						mFragmentManager.beginTransaction().remove(debugSettingsDialog).commit();
+						mFragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(debugSettingsDialog)
+								.commit();
 						mApp.setDebugSettingsID(-1);
 					}
 					if (aboutID > 0) {
 						about = mFragmentManager.findFragmentById(aboutID);
 						assert about != null;
-						mFragmentManager.beginTransaction().remove(about).commit();
+						mFragmentManager
+								.beginTransaction()
+								.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(about)
+								.commit();
 						mApp.setAboutSettingsID(-1);
 					}
 					assert settingsList != null;
