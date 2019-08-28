@@ -22,7 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
-	final static String TAG = "SelectSnapshotFragment";
+	private final static String TAG = "SelectSnapshotFragment";
 	private Cursor mCursor;
 	private Cursor mDbCursor;
 	private MatrixCursor mExtraCursor;
@@ -77,6 +77,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 			public void onClick(View v) {
 				assert manager != null;
 				manager.beginTransaction()
+						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 						.remove(VideOSCSelectSnapshotFragment.this)
 						.commit();
 			}
