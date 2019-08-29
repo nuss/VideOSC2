@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,27 +35,46 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "ResolutionSettings";
+
 	/**
 	 * @param savedInstanceState
-	 * @deprecated
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate() called");
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		Log.d(TAG, "onViewCreated() called");
 	}
 
 	/**
 	 * @param inflater
 	 * @param container
 	 * @param savedInstanceState
-	 * @deprecated
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
+		Log.d(TAG, "onCreateView() called");
 		// the settings view - can't be final as there are two different layouts possible
 		final View view;
 		final FragmentManager fragmentManager = getFragmentManager();
@@ -73,11 +93,10 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 
 		final boolean isAutoExposureLockSupported = cameraView.mCamera.getParameters().isAutoExposureLockSupported();
 
-		if (isAutoExposureLockSupported)
+		if (isAutoExposureLockSupported) {
 			view = inflater.inflate(R.layout.resolution_settings, container, false);
-		else
+		} else
 			view = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, container, false);
-		final ViewGroup fixExposureButtonLayout = (ViewGroup) inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 
 		final String[] settingsFields = new String[]{
@@ -150,6 +169,8 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
 		if (isAutoExposureLockSupported) {
 			final Switch fixExposureCB = view.findViewById(R.id.fix_exposure_checkbox);
+			final View fixExposureButtonLayout = inflater.inflate(R.layout.cancel_ok_buttons, container, false);
+
 			fixExposureCB.setChecked(app.getExposureIsFixed());
 			fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
@@ -165,6 +186,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						final View bg = container.findViewById(R.id.settings_container);
 						bg.setBackgroundResource(0);
 						final ViewGroup containerParent = (ViewGroup) container.getParent();
+
 						containerParent.addView(fixExposureButtonLayout);
 
 						final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
@@ -336,13 +358,28 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-//		return super.onCreateView(inflater, container, savedInstanceState);
 		return view;
 	}
 
 	/**
-	 * @deprecated
+	 * Called when the fragment's activity has been created and this
+	 * fragment's view hierarchy instantiated.  It can be used to do final
+	 * initialization once these pieces are in place, such as retrieving
+	 * views or restoring state.  It is also useful for fragments that use
+	 * {@link #setRetainInstance(boolean)} to retain their instance,
+	 * as this callback tells the fragment when it is fully associated with
+	 * the new activity instance.  This is called after {@link #onCreateView}
+	 * and before {@link #onViewStateRestored(Bundle)}.
+	 *
+	 * @param savedInstanceState If the fragment is being re-created from
+	 *                           a previous saved state, this is the state.
 	 */
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		Log.d(TAG, "onActivityCreated() called");
+	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
