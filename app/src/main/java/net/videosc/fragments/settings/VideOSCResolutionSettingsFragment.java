@@ -361,27 +361,50 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		return view;
 	}
 
-	/**
-	 * Called when the fragment's activity has been created and this
-	 * fragment's view hierarchy instantiated.  It can be used to do final
-	 * initialization once these pieces are in place, such as retrieving
-	 * views or restoring state.  It is also useful for fragments that use
-	 * {@link #setRetainInstance(boolean)} to retain their instance,
-	 * as this callback tells the fragment when it is fully associated with
-	 * the new activity instance.  This is called after {@link #onCreateView}
-	 * and before {@link #onViewStateRestored(Bundle)}.
-	 *
-	 * @param savedInstanceState If the fragment is being re-created from
-	 *                           a previous saved state, this is the state.
-	 */
 	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		Log.d(TAG, "onActivityCreated() called");
+	public void onPause() {
+		Log.d(TAG, "onPause() called");
+		super.onPause();
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onLowMemory() {
+		super.onLowMemory();
+		Log.d(TAG, "onLowMemory() called");
+	}
+
+	/**
+	 * Called when the view previously created by {@link #onCreateView} has
+	 * been detached from the fragment.  The next time the fragment needs
+	 * to be displayed, a new view will be created.  This is called
+	 * after {@link #onStop()} and before {@link #onDestroy()}.  It is called
+	 * <em>regardless</em> of whether {@link #onCreateView} returned a
+	 * non-null view.  Internally it is called after the view's state has
+	 * been saved but before it has been removed from its parent.
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Log.d(TAG, "onDestroyView() called");
+	}
+
+	/**
+	 * Called when the fragment is no longer in use.  This is called
+	 * after {@link #onStop()} and before {@link #onDetach()}.
+	 */
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy() called");
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		Log.d(TAG, "onDetach() called");
 	}
 }
