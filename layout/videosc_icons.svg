@@ -463,9 +463,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.1450159"
-     inkscape:cx="526.18109"
-     inkscape:cy="372.04724"
+     inkscape:zoom="7.5864957"
+     inkscape:cx="823.13267"
+     inkscape:cy="539.53595"
      inkscape:document-units="px"
      inkscape:current-layer="layer8"
      showgrid="true"
@@ -2732,13 +2732,15 @@
      id="layer8"
      inkscape:label="strikethrough torch">
     <g
-       id="g5653">
+       id="g5653"
+       transform="translate(26.758072,11.072306)"
+       style="stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none">
       <g
          inkscape:export-ydpi="151"
          inkscape:export-xdpi="151"
          inkscape:export-filename="/home/stefan/android_workspace/VideOSC/android/app/src/main/assets/light_on.png"
          id="g4396-3"
-         style="display:inline;stroke:#000000;stroke-opacity:1"
+         style="display:inline;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
          transform="translate(-754.363,108.23215)">
         <path
            id="path4376-6"
@@ -2779,13 +2781,21 @@
          cy="584.76483"
          cx="141.11871"
          id="path7396"
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:7;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
          id="path7398"
          d="m 111.5476,555.97364 57.12485,56.4196"
-         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:6.60034943;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 855,224.09448 8,7 8,-7"
+       id="path4943"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-xdpi="350.48001"
+       inkscape:export-ydpi="350.48001" />
   </g>
   <g
      inkscape:groupmode="layer"

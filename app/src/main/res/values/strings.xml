@@ -136,5 +136,6 @@
 	<string name="cancel_editing_pixel_values">cancel editing pixel values</string>
 	<string name="values">values</string>
 	<string name="mix">mix</string>
+	<string name="select_framerate_min_max_1_s">Select framerate (min / max): %1$s</string>
 
 </resources>

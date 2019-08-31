@@ -5,19 +5,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.hardware.Camera;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -152,16 +153,30 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 				TextView.BufferType.EDITABLE
 		);
 
-		final Spinner selectFramerate = view.findViewById(R.id.framerate_selection);
+		final Button selectFramerate = view.findViewById(R.id.framerate_selection);
+		String buttonText = getResources().getString(R.string.select_framerate_min_max_1_s);
+		final short frameRateRangeIndex = settings.get(0).getFramerateRange();
+
 		List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
+		final int[] actualFrameRateRange = supportedPreviewFpsRange.get(frameRateRangeIndex);
+		buttonText = String.format(buttonText, actualFrameRateRange[0] / 1000 + " / " + actualFrameRateRange[1] / 1000);
+		selectFramerate.setText(buttonText);
+
 		String[] items = new String[supportedPreviewFpsRange.size()];
 		for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
 			int[] item = supportedPreviewFpsRange.get(j);
 			items[j] = (item[0] / 1000) + " / " + (item[1] / 1000);
 		}
 		ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(activity, R.layout.framerate_selection_item, items);
-		selectFramerate.setAdapter(fpsAdapter);
-		selectFramerate.setSelection(settings.get(0).getFramerateRange());
+		final PopupWindow frameRatePopUp = showFrameRatesList(fpsAdapter);
+		selectFramerate.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				frameRatePopUp.showAsDropDown(view);
+			}
+		});
+//		selectFramerate.setAdapter(fpsAdapter);
+//		selectFramerate.setSelection(settings.get(0).getFramerateRange());
 
 		final Switch normalizedCB = view.findViewById(R.id.normalize_output_checkbox);
 		normalizedCB.setChecked(settings.get(0).getNormalized());
@@ -285,7 +300,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-		selectFramerate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		/*selectFramerate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				values.put(
@@ -312,7 +327,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 					container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
 				}
 			}
-		});
+		});*/
 
 		normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -359,6 +374,22 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		});
 
 		return view;
+	}
+
+	private PopupWindow showFrameRatesList(ArrayAdapter<String> adapter) {
+		VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		final PopupWindow popUp = new PopupWindow(activity);
+		final ListView frameratesList = new ListView(activity);
+		frameratesList.setAdapter(adapter);
+
+		// TODO: set click listener
+
+		popUp.setFocusable(true);
+		popUp.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+		popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+		popUp.setContentView(frameratesList);
+
+		return popUp;
 	}
 
 	@Override
