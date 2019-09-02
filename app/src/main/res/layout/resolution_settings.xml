@@ -59,23 +59,6 @@
 		</LinearLayout>
 	</LinearLayout>
 
-<!--	<LinearLayout-->
-<!--		android:id="@+id/framerate_settings"-->
-<!--		android:layout_width="match_parent"-->
-<!--		android:layout_height="wrap_content"-->
-<!--		android:baselineAligned="false"-->
-<!--		android:orientation="vertical">-->
-
-<!--		<Spinner-->
-<!--			android:id="@+id/framerate_selection"-->
-<!--			android:layout_width="match_parent"-->
-<!--			android:layout_height="wrap_content"-->
-<!--			android:layout_marginBottom="10dp"-->
-<!--			android:dropDownWidth="match_parent"-->
-<!--			android:popupBackground="#ee000000" />-->
-
-<!--	</LinearLayout>-->
-
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -41,6 +45,15 @@ import androidx.fragment.app.FragmentManager;
 
 public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "ResolutionSettings";
+
+	private PopupWindow mFrameRatePopUp;
+	private ContentValues mValues;
+	private SQLiteDatabase mDb;
+	final private List<VideOSCSettingsListFragment.Settings> mSettings = new ArrayList<>();
+	private ViewGroup mContainer;
+	private VideOSCCameraFragment mCameraView;
+	private Button mSelectFramerate;
+	private ArrayAdapter<String> mFpsAdapter;
 
 	/**
 	 * @param savedInstanceState
@@ -80,19 +93,20 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		final View view;
 		final FragmentManager fragmentManager = getFragmentManager();
 		assert fragmentManager != null;
-		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		assert cameraView != null;
-		final Camera.Parameters params = cameraView.mCamera.getParameters();
+		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+		assert mCameraView != null;
+		final Camera.Parameters params = mCameraView.mCamera.getParameters();
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 
 		assert activity != null;
 
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-		final SQLiteDatabase db = activity.getDatabase();
-		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
-		final ContentValues values = new ContentValues();
+		mDb = activity.getDatabase();
+//		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
+		mValues = new ContentValues();
+		mContainer = container;
 
-		final boolean isAutoExposureLockSupported = cameraView.mCamera.getParameters().isAutoExposureLockSupported();
+		final boolean isAutoExposureLockSupported = mCameraView.mCamera.getParameters().isAutoExposureLockSupported();
 
 		if (isAutoExposureLockSupported) {
 			view = inflater.inflate(R.layout.resolution_settings, container, false);
@@ -109,7 +123,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 				SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
 		};
 
-		final Cursor cursor = db.query(
+		final Cursor cursor = mDb.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
 				settingsFields,
 				null,
@@ -120,7 +134,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		);
 
 		// clear list of settings before adding new content
-		settings.clear();
+		mSettings.clear();
 
 		while (cursor.moveToNext()) {
 			VideOSCSettingsListFragment.Settings setting = new VideOSCSettingsListFragment.Settings();
@@ -137,51 +151,51 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			setting.setFramerateRange(framerateRange);
 			setting.setNormalized(normalized);
 			setting.setRememberPixelStates(rememberPixelStates);
-			settings.add(setting);
+			mSettings.add(setting);
 		}
 
 		cursor.close();
 
 		final EditText resHField = view.findViewById(R.id.resolution_horizontal_field);
 		resHField.setText(
-				String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()),
+				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()),
 				TextView.BufferType.EDITABLE
 		);
 		final EditText resVField = view.findViewById(R.id.resolution_vertical_field);
 		resVField.setText(
-				String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()),
+				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()),
 				TextView.BufferType.EDITABLE
 		);
 
-		final Button selectFramerate = view.findViewById(R.id.framerate_selection);
+		mSelectFramerate = view.findViewById(R.id.framerate_selection);
 		String buttonText = getResources().getString(R.string.select_framerate_min_max_1_s);
-		final short frameRateRangeIndex = settings.get(0).getFramerateRange();
+		final short frameRateRangeIndex = mSettings.get(0).getFramerateRange();
 
 		List<int[]> supportedPreviewFpsRange = params.getSupportedPreviewFpsRange();
 		final int[] actualFrameRateRange = supportedPreviewFpsRange.get(frameRateRangeIndex);
 		buttonText = String.format(buttonText, actualFrameRateRange[0] / 1000 + " / " + actualFrameRateRange[1] / 1000);
-		selectFramerate.setText(buttonText);
+		mSelectFramerate.setText(buttonText);
 
 		String[] items = new String[supportedPreviewFpsRange.size()];
 		for (int j = 0; j < supportedPreviewFpsRange.size(); j++) {
 			int[] item = supportedPreviewFpsRange.get(j);
 			items[j] = (item[0] / 1000) + " / " + (item[1] / 1000);
 		}
-		ArrayAdapter<String> fpsAdapter = new ArrayAdapter<>(activity, R.layout.framerate_selection_item, items);
-		final PopupWindow frameRatePopUp = showFrameRatesList(fpsAdapter);
-		selectFramerate.setOnClickListener(new View.OnClickListener() {
+		mFpsAdapter = new ArrayAdapter<>(activity, R.layout.framerate_selection_item, items);
+		mFrameRatePopUp = showFrameRatesList(mFpsAdapter);
+		mSelectFramerate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				frameRatePopUp.showAsDropDown(view);
+				mFrameRatePopUp.showAsDropDown(view);
 			}
 		});
-//		selectFramerate.setAdapter(fpsAdapter);
-//		selectFramerate.setSelection(settings.get(0).getFramerateRange());
+		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
+		frameRatesList.setOnItemClickListener(new FrameRateOnItemClickListener());
 
 		final Switch normalizedCB = view.findViewById(R.id.normalize_output_checkbox);
-		normalizedCB.setChecked(settings.get(0).getNormalized());
+		normalizedCB.setChecked(mSettings.get(0).getNormalized());
 		final Switch rememberPixelStatesCB = view.findViewById(R.id.remember_activated_checkbox);
-		rememberPixelStatesCB.setChecked(settings.get(0).getRememberPixelStates());
+		rememberPixelStatesCB.setChecked(mSettings.get(0).getRememberPixelStates());
 		if (isAutoExposureLockSupported) {
 			final Switch fixExposureCB = view.findViewById(R.id.fix_exposure_checkbox);
 			final View fixExposureButtonLayout = inflater.inflate(R.layout.cancel_ok_buttons, container, false);
@@ -190,7 +204,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					final Camera camera = cameraView.mCamera;
+					final Camera camera = mCameraView.mCamera;
 
 					if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
 						view.setVisibility(View.INVISIBLE);
@@ -246,20 +260,20 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (!hasFocus && !resHField.getText().toString().equals(
-						String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionHorizontal()))) {
+						String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()))) {
 					String resH = resHField.getText().toString();
-					values.put(
+					mValues.put(
 							SettingsContract.SettingsEntries.RES_H,
 							resH
 					);
-					db.update(
+					mDb.update(
 							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+							mValues,
+							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
 							null
 					);
-					values.clear();
-					settings.get(0).setResolutionHorizontal(Short.parseShort(resH));
+					mValues.clear();
+					mSettings.get(0).setResolutionHorizontal(Short.parseShort(resH));
 					// update camera preview immediately
 					app.setResolution(
 							new Point(
@@ -275,20 +289,20 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
 				if (!hasFocus && !resVField.getText().toString().equals(
-						String.format(Locale.getDefault(), "%d", settings.get(0).getResolutionVertical()))) {
+						String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()))) {
 					String resV = resVField.getText().toString();
-					values.put(
+					mValues.put(
 							SettingsContract.SettingsEntries.RES_V,
 							resV
 					);
-					db.update(
+					mDb.update(
 							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+							mValues,
+							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
 							null
 					);
-					values.clear();
-					settings.get(0).setResolutionVertical(Short.parseShort(resV));
+					mValues.clear();
+					mSettings.get(0).setResolutionVertical(Short.parseShort(resV));
 					// update camera preview immediately
 					app.setResolution(
 							new Point(
@@ -300,52 +314,23 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-		/*selectFramerate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				values.put(
-						SettingsContract.SettingsEntries.FRAMERATE_RANGE,
-						position
-				);
-				db.update(
-						SettingsContract.SettingsEntries.TABLE_NAME,
-						values,
-						SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-						null
-				);
-				values.clear();
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-				}
-				// initialize camera with updated framerate
-				cameraView.mPreview.switchCamera(cameraView.mCamera);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-				}
-			}
-		});*/
-
 		normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (normalizedCB.isChecked() != settings.get(0).getNormalized()) {
+				if (normalizedCB.isChecked() != mSettings.get(0).getNormalized()) {
 					boolean isNormalized = normalizedCB.isChecked();
-					values.put(
+					mValues.put(
 							SettingsContract.SettingsEntries.NORMALIZE,
 							isNormalized
 					);
-					db.update(
+					mDb.update(
 							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+							mValues,
+							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
 							null
 					);
-					values.clear();
-					settings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
+					mValues.clear();
+					mSettings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
 					app.setNormalized(isNormalized);
 				}
 			}
@@ -354,20 +339,20 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		rememberPixelStatesCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (rememberPixelStatesCB.isChecked() != settings.get(0).getRememberPixelStates()) {
+				if (rememberPixelStatesCB.isChecked() != mSettings.get(0).getRememberPixelStates()) {
 					boolean rememberPixelStates = rememberPixelStatesCB.isChecked();
-					values.put(
+					mValues.put(
 							SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
 							rememberPixelStatesCB.isChecked()
 					);
-					db.update(
+					mDb.update(
 							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+							mValues,
+							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
 							null
 					);
-					values.clear();
-					settings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
+					mValues.clear();
+					mSettings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
 					// TODO: this setting must be picked up on app init
 				}
 			}
@@ -437,5 +422,39 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	public void onDetach() {
 		super.onDetach();
 		Log.d(TAG, "onDetach() called");
+	}
+
+	class FrameRateOnItemClickListener implements AdapterView.OnItemClickListener {
+
+		@Override
+		public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+			Animation fadeInAnimation = AnimationUtils.loadAnimation(view.getContext(), android.R.anim.fade_in);
+			fadeInAnimation.setDuration(2);
+			view.startAnimation(fadeInAnimation);
+
+			Log.d(TAG, "i: " + i + ", l: " + l);
+
+			mValues.put(SettingsContract.SettingsEntries.FRAMERATE_RANGE, i);
+			mDb.update(
+					SettingsContract.SettingsEntries.TABLE_NAME,
+					mValues,
+					SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+					null
+			);
+			mValues.clear();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+				mContainer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+			}
+			// initialize camera with updated framerate
+			mCameraView.mPreview.switchCamera(mCameraView.mCamera);
+
+			String item = mFpsAdapter.getItem(i);
+
+			String buttonText = getResources().getString(R.string.select_framerate_min_max_1_s);
+			buttonText = String.format(buttonText, item);
+			mSelectFramerate.setText(buttonText);
+
+			mFrameRatePopUp.dismiss();
+		}
 	}
 }

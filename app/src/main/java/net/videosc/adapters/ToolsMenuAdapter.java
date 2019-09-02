@@ -310,7 +310,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 					mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
 					if (TORCH != null)
 						mToolsDrawerListState.put(TORCH, R.drawable.light_on);
-//						Log.d(TAG, "new CameraId is back? " + (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) + ", R.drawable.back_camera: " + R.drawable.back_camera);
 					img = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.front_camera);
 					cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
 					if (app.getHasTorch() && TORCH != null) {

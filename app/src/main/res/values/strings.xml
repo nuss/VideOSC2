@@ -71,7 +71,7 @@
 	<string name="geo_location_sensor">Geo location: \'/%1$s/loc\', latitude, longitude, altitude</string>
 	<string name="humidity_sensor">Humidity sensor: Humidity in %% – \'/%1$s/hum\', humidity</string>
 	<string name="camera_request_permission">VideOSC needs the camera permission</string>
-	<string name="zoom_info">, zoom:</string>
+	<string name="zoom_info">zoom:</string>
 	<string name="curr_active_camera">The currently active camera</string>
 	<string name="select_framerate_min_max">Select framerate (min/max fps):</string>
 	<string name="msg_on_camera_open_fail">The camera failed to open. Possibly you will have to restart the device.</string>
@@ -136,6 +136,6 @@
 	<string name="cancel_editing_pixel_values">cancel editing pixel values</string>
 	<string name="values">values</string>
 	<string name="mix">mix</string>
-	<string name="select_framerate_min_max_1_s">Select framerate (min / max): %1$s</string>
+	<string name="select_framerate_min_max_1_s">Select framerate (min / max):&#160;&#160;&#160;&#160;&#160;%1$s</string>
 
 </resources>

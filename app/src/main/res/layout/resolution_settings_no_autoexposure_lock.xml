@@ -58,34 +58,21 @@
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/framerate_settings"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="0.5"
-		android:baselineAligned="false"
-		android:orientation="vertical">
-
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:labelFor="@+id/framerate_selection"
-			android:text="@string/select_framerate_min_max"/>
-
-		<Spinner
-			android:id="@+id/framerate_selection"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="10dp"
-			android:dropDownWidth="match_parent"
-			android:popupBackground="#ee000000"/>
-
-	</LinearLayout>
-
-	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:baselineAligned="false"
 		android:orientation="vertical">
+
+		<Button
+			android:id="@+id/framerate_selection"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="10dp"
+			android:background="@color/transparent"
+			android:drawableEnd="@drawable/carret_down_white"
+			android:text="@string/select_framerate_min_max_1_s"
+			android:drawableRight="@drawable/carret_down_white"
+			android:drawablePadding="10dp"/>
 
 		<Switch
 			android:id="@+id/normalize_output_checkbox"
