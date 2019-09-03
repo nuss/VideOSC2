@@ -24,7 +24,6 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
-	public View mLabelsView;
 
 	// empty public constructor
 	public VideOSCMultiSliderFragment() {
