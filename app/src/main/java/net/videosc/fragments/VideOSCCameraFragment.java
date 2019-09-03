@@ -164,7 +164,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		mToolsDrawer = mActivity.mToolsDrawerLayout;
 		mInflater = inflater;
 		mOscP5 = mApp.mOscHelper.getOscP5();
-//		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
 		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		// store the container for later re-use
 		mPreviewContainer = container;
@@ -758,7 +757,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
 						bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
 						mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, resolution.x, resolution.y, true), resolution.x, resolution.y);
-//						Log.d(TAG, "scaled bitmap: " + mBmp);
 						BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
 						bmpDraw.setAntiAlias(false);
 						bmpDraw.setDither(false);
@@ -878,36 +876,28 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					Rect currRect = getCurrentPixelRect(currPixel);
 					final boolean isInQuickEditMode = mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS);
 					final boolean isInEditMode = mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS);
-//					Log.d(TAG, "new move - isInEditMode: " + isInEditMode + ", isInQuickEditMode: " + isInQuickEditMode);
 
 					if (!mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
 						if (!mPixelIds.contains(currPixel + 1)) {
 							if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
-//								Log.d(TAG, "add pixel " + (currPixel + 1));
 								mPixelIds.add(currPixel + 1);
 							}
 							Collections.sort(mPixelIds);
-//							Log.d(TAG, "pixels after add: " + mPixelIds);
 						}
 						if (!containsRect(mSelectedPixels, currRect)) {
 							if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
-//								Log.d(TAG, "add pixel: " + (currPixel + 1));
 								mSelectedPixels.add(currRect);
 								if (isInEditMode && !mLockedPixels.get(currPixel))
 									mLockedPixels.set(currPixel, true);
 							}
-//							Log.d(TAG, "locked pixels after add: " + mLockedPixels);
 						} else {
 							// only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
 							if (isInEditMode && !mLockedPixels.get(currPixel)) {
-//								Log.d(TAG, "remove pixel " +(currPixel + 1));
 								mPixelIds.remove(Integer.valueOf(currPixel + 1));
 								removeRect(mSelectedPixels, currRect);
 								mLockedPixels.set(currPixel, true);
-//								Log.d(TAG, "pixels after remove: " + mPixelIds);
 							}
 						}
-//						Log.d(TAG, "mPixelIds: " + mPixelIds);
 						mOverlayView.setSelectedRects(mSelectedPixels);
 						mOverlayView.measure(getMeasuredWidth(), getMeasuredHeight());
 						mOverlayView.invalidate();
@@ -1294,7 +1284,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 
 				// pixels can only be set to ints in a range from 0-255
-//				Log.d(TAG, "mRedValues[0]: " + mRedValues.get(0));
 				if (mRedValues.get(i) != null) rPixVal = (int) Math.round(rValue * 255);
 				if (mGreenValues.get(i) != null) gPixVal = (int) Math.round(gValue * 255);
 				if (mBlueValues.get(i) != null) bPixVal = (int) Math.round(bValue * 255);
