@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.Vector;
+import java.util.List;
 
 import netP5.NetAddress;
 import oscP5.OscEventListener;
@@ -95,7 +95,7 @@ public class VideOSCOscHandlerTest {
 	@Test
 	public void addOscEventListener() {
 		OscP5 oscP5 = mHandler.getOscP5();
-		Vector<OscEventListener> listeners = oscP5.listeners();
+		List<OscEventListener> listeners = oscP5.listeners();
 		assert (listeners.size() == 0);
 		mHandler.addOscEventListener();
 		assert (listeners.size() == 1);
@@ -105,7 +105,7 @@ public class VideOSCOscHandlerTest {
 	@Test
 	public void removeOscEventListener() {
 		OscP5 oscP5 = mHandler.getOscP5();
-		Vector<OscEventListener> listeners = oscP5.listeners();
+		List<OscEventListener> listeners = oscP5.listeners();
 		mHandler.removeOscEventListener();
 		assert (listeners.size() == 0);
 	}
