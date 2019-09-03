@@ -14,7 +14,7 @@ android:
     - tools
 
     # The BuildTools version used by your project
-    - build-tools-29.0.0
+    - build-tools-29.0.2
     # - build-tools-26.0.1
 
     # ANDROID_BUILD_TOOLS=28.0.3
