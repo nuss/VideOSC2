@@ -28,8 +28,6 @@
 
 package net.videosc.fragments;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -74,7 +72,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -107,6 +107,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private String mRed, mGreen, mBlue;
 
+	private VideOSCMainActivity mActivity;
 	private VideOSCApplication mApp;
 	private LayoutInflater mInflater;
 	private static OscP5 mOscP5;
@@ -155,11 +156,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * @return a View
 	 */
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		mApp = (VideOSCApplication) activity.getApplication();
-		mToolsDrawer = activity.mToolsDrawerLayout;
+		mActivity = (VideOSCMainActivity) getActivity();
+		assert mActivity != null;
+		mApp = (VideOSCApplication) mActivity.getApplication();
+		mToolsDrawer = mActivity.mToolsDrawerLayout;
 		mInflater = inflater;
 		mOscP5 = mApp.mOscHelper.getOscP5();
 //		Log.d(TAG, "send OSC to: " + mApp.mOscHelper.getBroadcastIP());
@@ -190,7 +192,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
 
 			if (mPreview == null) {
-				mPreview = new CameraPreview(getActivity().getApplicationContext(), mCamera);
+				mPreview = new CameraPreview(mActivity.getApplicationContext(), mCamera);
 				if (view.findViewById(R.id.camera_preview) != null) {
 					preview = view.findViewById(R.id.camera_preview);
 					preview.addView(mPreview);
@@ -203,16 +205,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				Log.d(TAG, "switch camera");
 			}
 		} else {
-			final Activity activity = getActivity();
 			VideOSCDialogHelper.showDialog(
-					activity,
+					mActivity,
 					android.R.style.Theme_Holo_Light_Dialog,
 					getString(R.string.msg_on_camera_open_fail),
 					getString(R.string.OK),
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							activity.finish();
+							mActivity.finish();
 						}
 
 					}, null, null
@@ -432,7 +433,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 * <p>
 	 * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 	 */
-	class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
+	public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
 
 		// SurfaceHolder
 		private SurfaceHolder mHolder;
@@ -516,7 +517,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					SettingsContract.SettingsEntries.ROOT_CMD
 			};
 
-			final SQLiteDatabase db = ((VideOSCApplication) getActivity().getApplicationContext()).getSettingsHelper().getReadableDatabase();
+			final SQLiteDatabase db = ((VideOSCApplication) mActivity.getApplicationContext()).getSettingsHelper().getReadableDatabase();
 
 			Cursor cursor = db.query(
 					SettingsContract.SettingsEntries.TABLE_NAME,
@@ -640,13 +641,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			try {
 				mViewCamera.setPreviewDisplay(holder);
 				mViewCamera.startPreview();
-//				mCanvas = holder.lockCanvas();
-//				Log.d(TAG, "canvas initialized in surfaceCreated: " + mCanvas);
 				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
-				menuButton.bringToFront();
-				if (indicatorPanel != null)
-					indicatorPanel.bringToFront();
-//				Log.d(TAG, "holder: " + holder.lockCanvas());
+				if (mApp.getSettingsContainerID() < 0) {
+					menuButton.bringToFront();
+					if (indicatorPanel != null)
+						indicatorPanel.bringToFront();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -658,6 +658,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+			assert activity != null;
 			mPixelEditor = activity.mPixelEditor;
 			mSnapshotsBar = activity.mBasicToolbar;
 			ViewGroup snapshotsBar = activity.mBasicToolbar;
@@ -673,7 +674,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					}
 				}
 			});
-			if (mApp.getSettingsLevel() == 0)
+
+			if (mApp.getSettingsContainerID() < 0)
 				snapshotsBar.bringToFront();
 		}
 

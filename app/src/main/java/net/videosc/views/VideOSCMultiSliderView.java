@@ -99,14 +99,18 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-//		ViewGroup okButton = mContainer.findViewById(R.id.ok_button_layout);
 		ViewGroup tools = mContainer.findViewById(R.id.multislider_buttons);
+		ViewGroup labels = mContainer.findViewById(R.id.multislider_labels);
 
-		if (event.getAction() == MotionEvent.ACTION_UP)
+		if (event.getAction() == MotionEvent.ACTION_UP) {
 			tools.setVisibility(View.VISIBLE);
+			labels.setVisibility(View.VISIBLE);
+		}
 
-		if (event.getAction() == MotionEvent.ACTION_DOWN)
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			tools.setVisibility(View.INVISIBLE);
+			labels.setVisibility(View.INVISIBLE);
+		}
 
 		double sliderValue;
 		performClick();

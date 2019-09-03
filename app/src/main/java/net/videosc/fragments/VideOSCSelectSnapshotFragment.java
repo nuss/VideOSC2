@@ -1,7 +1,5 @@
 package net.videosc.fragments;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
@@ -20,8 +18,11 @@ import net.videosc.R;
 import net.videosc.adapters.SnapshotSelectAdapter;
 import net.videosc.utilities.VideOSCUIHelpers;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
-	final static String TAG = "SelectSnapshotFragment";
+	private final static String TAG = "SelectSnapshotFragment";
 	private Cursor mCursor;
 	private Cursor mDbCursor;
 	private MatrixCursor mExtraCursor;
@@ -50,13 +51,15 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	 * @return Return the View for the fragment's UI, or null.
 	 */
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d(TAG, "snapshots fragment, on create view");
 //		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
 		final FragmentManager manager = getFragmentManager();
 		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.snapshots_list, container, false);
 		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
-		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(getActivity(), R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(
+				getActivity(), R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+		);
 		snapshotsListView.setAdapter(adapter);
 		VideOSCUIHelpers.setTransitionAnimation(view);
 		// prevent underlying view from receiving touch events
@@ -72,7 +75,9 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		close.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				assert manager != null;
 				manager.beginTransaction()
+						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 						.remove(VideOSCSelectSnapshotFragment.this)
 						.commit();
 			}
@@ -82,7 +87,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 
 	/**
 	 * Called when the Fragment is no longer started.  This is generally
-	 * tied to {@link Activity#onStop() Activity.onStop} of the containing
+	 * tied to  of the containing
 	 * Activity's lifecycle.
 	 */
 	@Override

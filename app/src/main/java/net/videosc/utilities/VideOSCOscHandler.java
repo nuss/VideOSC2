@@ -12,7 +12,7 @@ import netP5.NetAddress;
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
-import oscP5.OscStatus;
+//import oscP5.OscStatus;
 
 /**
  * Created by stefan on 15.07.17, package net.videosc.utilities, project VideOSC22.
@@ -44,7 +44,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			msg = new OscMessage(cmd);
 		} else {
 			msg.clear();
-			msg.setAddrPattern(cmd);
+			msg.setAddress(cmd);
 		}
 
 		return msg;
@@ -66,11 +66,6 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
-			}
-
-			@Override
-			public void oscStatus(OscStatus oscStatus) {
-
 			}
 		};
 		mOscP5.addListener(mOscEventListener);

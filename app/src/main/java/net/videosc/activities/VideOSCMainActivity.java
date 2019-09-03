@@ -24,8 +24,6 @@ package net.videosc.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,7 +56,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -87,29 +84,30 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
-public class VideOSCMainActivity extends AppCompatActivity
+public class VideOSCMainActivity extends FragmentActivity
 		implements VideOSCBaseFragment.OnFragmentInteractionListener, View.OnTouchListener {
 
 	static final String TAG = "VideOSCMainActivity";
+
+	private androidx.fragment.app.FragmentManager mFragmentManager;
 
 	public View mCamView;
 	private Point mDimensions;
 	public DrawerLayout mToolsDrawerLayout;
 
-	// is the multisliderview currently visible?
-	private boolean isMultiSliderVisible = false;
-
-	private Fragment mCameraPreview;
-	public Fragment mMultiSliderView;
+	private VideOSCCameraFragment mCameraPreview;
+	public androidx.fragment.app.Fragment mMultiSliderView;
 	// ID of currently opened camera
 	public static int backsideCameraId;
 	public static int frontsideCameraId;
@@ -124,7 +122,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 	// ListView for the tools drawer
 	private List<BitmapDrawable> mToolsList = new ArrayList<>();
 	private ListView mToolsDrawerList;
-//	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
+	//	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
 	// toolbar status
 	public Enum mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 
@@ -210,17 +208,17 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 		mCamView = mainLayout.findViewById(R.id.camera_preview);
 
-		// maybe needed on devices other than Google Nexus?
-		// startActivity(new Intent(this, RefreshScreen.class));
+		// check if device is tablet and set app member variable accordingly
+		mApp.setIsTablet(getResources().getBoolean(R.bool.isTablet));
 
-		final FragmentManager fragmentManager = getFragmentManager();
+		mFragmentManager = getSupportFragmentManager();
 
 		if (savedInstanceState != null) return;
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 			checkCamera();
 			mCameraPreview = new VideOSCCameraFragment();
-			fragmentManager.beginTransaction()
+			mFragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
 			buildUI();
@@ -231,7 +229,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	private void buildUI() {
 		final LayoutInflater inflater = getLayoutInflater();
-		final FragmentManager fragmentManager = getFragmentManager();
 		final Context context = getApplicationContext();
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
@@ -241,7 +238,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				VideOSCUIHelpers.hasFrontsideCamera() ? R.array.drawer_icons_no_torch : R.array.drawer_icons_no_torch_no_frontside_cam;
 
 		TypedArray tools = getResources().obtainTypedArray(drawerIconsIds);
-//		Log.d(TAG, "tools: " + tools.getClass());
 		mToolsDrawerLayout = findViewById(R.id.drawer_layout);
 		mToolsDrawerLayout.setScrimColor(Color.TRANSPARENT);
 
@@ -295,7 +291,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
 				mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
-				Log.d(TAG, "quick edit pixels");
 			}
 		});
 
@@ -308,7 +303,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 				applyPixelSelection.setActivated(true);
 				applyPixelSelection.setEnabled(true);
 				mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
-				Log.d(TAG, "edit pixels");
 			}
 		});
 
@@ -320,7 +314,8 @@ public class VideOSCMainActivity extends AppCompatActivity
 				editPixels.setActivated(false);
 				applyPixelSelection.setActivated(false);
 				applyPixelSelection.setEnabled(false);
-				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+				final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
+				assert cameraFragment != null;
 				cameraFragment.getSelectedPixels().clear();
 				cameraFragment.getPixelNumbers().clear();
 				mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
@@ -331,7 +326,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		loadSnapshotsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d(TAG, "load snapshots button clicked");
 				final MatrixCursor extras = new MatrixCursor(new String[]{
 						SettingsContract.PixelSnapshotEntries._ID,
 						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
@@ -363,15 +357,13 @@ public class VideOSCMainActivity extends AppCompatActivity
 				);
 				final Cursor[] cursors = {cursor, extras};
 				final MergeCursor mergedCursor = new MergeCursor(cursors);
-				Log.d(TAG, "num results: " + mergedCursor.getCount());
-//				showBackButton();
 				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
 				snapshotSelect.setDatabase(mDb);
 				snapshotSelect.setCursors(mergedCursor, cursor, extras);
-				if (fragmentManager.findFragmentByTag("snapshot select") == null
-						&& fragmentManager.findFragmentByTag("settings selection") == null) {
-					fragmentManager
+				if (!snapshotSelect.isVisible()) {
+					mFragmentManager
 							.beginTransaction()
+							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 							.add(R.id.camera_preview, snapshotSelect, "snapshot select")
 							.commit();
 				}
@@ -405,10 +397,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
 										final ContentValues values = new ContentValues();
-										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+										final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
 										String valuesString;
 										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
 										// red values
+										assert cameraFragment != null;
 										valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
 										values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
 										// red mix values
@@ -433,7 +426,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 												null,
 												values
 										);
-										Log.d(TAG, "inserted into database, result: " + result);
 										if (result > 0) {
 											long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
 											if (numSnapshots > 0) {
@@ -491,8 +483,9 @@ public class VideOSCMainActivity extends AppCompatActivity
 		menuButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END))
+				if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END)) {
 					mToolsDrawerLayout.openDrawer(GravityCompat.END);
+				}
 				closeColorModePanel();
 			}
 		});
@@ -587,62 +580,92 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onBackPressed() {
-		View bg = findViewById(R.id.settings_background);
-		short settingsLevel = mApp.getSettingsLevel();
-		View networkSettingsDialog = findViewById(R.id.network_settings);
-		View resolutionSettingsDialog = findViewById(R.id.resolution_settings);
-		View sensorSettingsDialog = findViewById(R.id.sensor_settings);
-		View debugSettingsDialog = findViewById(R.id.debug_settings);
-		View about = findViewById(R.id.about);
-
-
-		switch (settingsLevel) {
-			case 1:
-				final FragmentManager manager = getFragmentManager();
-				final Fragment fragment = manager.findFragmentByTag("settings selection");
-				final Fragment snapshotsFragment = manager.findFragmentByTag("snapshot select");
-				VideOSCUIHelpers.removeView(findViewById(R.id.settings_selection), (FrameLayout) mCamView);
-				VideOSCUIHelpers.removeView(bg, (FrameLayout) mCamView);
+		Fragment
+				settingsContainerFragment, networkSettingsDialog, resolutionSettingsDialog,
+				sensorSettingsDialog, debugSettingsDialog, about;
+		final boolean isTablet = mApp.getIsTablet();
+		final int settingsContainerID = mApp.getSettingsContainerID();
+		final int networkSettingsID = mApp.getNetworkSettingsID();
+		final int resolutionSettingsID = mApp.getResolutionSettingsID();
+		final int sensorSettingsID = mApp.getSensorSettingsID();
+		final int debugSettingsID = mApp.getDebugSettingsID();
+		final int aboutID = mApp.getAboutSettingsID();
+		if (settingsContainerID > 0) {
+			settingsContainerFragment = mFragmentManager.findFragmentById(settingsContainerID);
+			assert settingsContainerFragment != null;
+			final View settingsView = settingsContainerFragment.getView();
+			assert settingsView != null;
+			final View settingsList = settingsView.findViewById(R.id.settings_list);
+			final View settingsContainer = settingsView.findViewById(R.id.settings_container);
+			final FragmentTransaction ft = mFragmentManager.beginTransaction();
+			if (isTablet) {
+				ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+						.remove(settingsContainerFragment)
+						.commit();
+				mApp.setSettingsContainerID(-1);
 				VideOSCUIHelpers.resetSystemUIState(mDecorView);
-				if (fragment != null)
-					manager.beginTransaction().remove(fragment).commit();
-				if (snapshotsFragment != null)
-					manager.beginTransaction().remove(snapshotsFragment).commit();
-				setFullScreen();
-				mToolsDrawerLayout.closeDrawer(GravityCompat.END);
-				mApp.setSettingsLevel(0);
-				break;
-			case 2:
-				findViewById(R.id.settings_selection_list).setVisibility(View.VISIBLE);
-				if (networkSettingsDialog != null)
-					VideOSCUIHelpers.removeView(networkSettingsDialog, (ViewGroup) bg);
-				if (resolutionSettingsDialog != null)
-					VideOSCUIHelpers.removeView(resolutionSettingsDialog, (ViewGroup) bg);
-				if (sensorSettingsDialog != null)
-					VideOSCUIHelpers.removeView(sensorSettingsDialog, (ViewGroup) bg);
-				if (debugSettingsDialog != null)
-					VideOSCUIHelpers.removeView(debugSettingsDialog, (ViewGroup) bg);
-				if (about != null)
-					VideOSCUIHelpers.removeView(about, (ViewGroup) bg);
-				bg.setVisibility(View.VISIBLE);
-				mApp.setSettingsLevel(1);
-				break;
-			case 3:
-				View exposureSetters = findViewById(R.id.ok_cancel_buttons);
-				Switch exposureSwitch = findViewById(R.id.fix_exposure_checkbox);
-				// temporarily disable checked-change listener
-				mApp.setBackPressed(true);
-				exposureSwitch.setChecked(mApp.getExposureIsFixed());
-				mApp.setBackPressed(false);
-				if (exposureSetters != null)
-					VideOSCUIHelpers.removeView(exposureSetters, (FrameLayout) mCamView);
-				bg.setVisibility(View.VISIBLE);
-				resolutionSettingsDialog.setVisibility(View.VISIBLE);
-				mApp.setExposureIsFixed(false);
-				mApp.setSettingsLevel(2);
-				break;
-			default:
-				VideOSCDialogHelper.showQuitDialog(this);
+			} else {
+				if (networkSettingsID < 0 &&
+						resolutionSettingsID < 0 &&
+						sensorSettingsID < 0 &&
+						debugSettingsID < 0 &&
+						aboutID < 0) {
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.remove(settingsContainerFragment)
+							.commit();
+					mApp.setSettingsContainerID(-1);
+					VideOSCUIHelpers.resetSystemUIState(mDecorView);
+					// hack - otherwise mToolsDrawerLayout.isDrawerOpen(GravityCompat.END) returns true
+					// though the drawer appears to be closed (???)
+					mToolsDrawerLayout.closeDrawer(GravityCompat.END);
+				} else {
+					if (networkSettingsID > 0) {
+						networkSettingsDialog = mFragmentManager.findFragmentById(networkSettingsID);
+						assert networkSettingsDialog != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(networkSettingsDialog)
+								.commit();
+						mApp.setNetworkSettingsID(-1);
+					}
+					if (resolutionSettingsID > 0) {
+						resolutionSettingsDialog = mFragmentManager.findFragmentById(resolutionSettingsID);
+						assert resolutionSettingsDialog != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(resolutionSettingsDialog)
+								.commit();
+						mApp.setResolutionSettingsID(-1);
+					}
+					if (sensorSettingsID > 0) {
+						sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
+						assert sensorSettingsDialog != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(sensorSettingsDialog)
+								.commit();
+						mApp.setSensorSettingsID(-1);
+					}
+					if (debugSettingsID > 0) {
+						debugSettingsDialog = mFragmentManager.findFragmentById(debugSettingsID);
+						assert debugSettingsDialog != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(debugSettingsDialog)
+								.commit();
+						mApp.setDebugSettingsID(-1);
+					}
+					if (aboutID > 0) {
+						about = mFragmentManager.findFragmentById(aboutID);
+						assert about != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(about)
+								.commit();
+						mApp.setAboutSettingsID(-1);
+					}
+					assert settingsList != null;
+					settingsList.setVisibility(View.VISIBLE);
+					settingsContainer.setBackgroundResource(0);
+				}
+			}
+		} else {
+			VideOSCDialogHelper.showQuitDialog(this);
 		}
 	}
 
@@ -713,13 +736,11 @@ public class VideOSCMainActivity extends AppCompatActivity
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.d(TAG, "main activity on pause");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume called: " + mToolsDrawerList);
 		if (mToolsDrawerList != null) {
 			ToolsMenuAdapter adapter = (ToolsMenuAdapter) mToolsDrawerList.getAdapter();
 			SparseIntArray toolsDrawerListState = adapter.getToolsDrawerListState();
@@ -760,7 +781,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		if (requestCode == PERMISSION_REQUEST_CAMERA) {
 			if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.d(TAG, "onRequestPermissionsResult()");
 				Snackbar.make(
 						mCamView,
 						R.string.camera_permissions_granted,
@@ -773,8 +793,7 @@ public class VideOSCMainActivity extends AppCompatActivity
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
 				mCameraPreview = new VideOSCCameraFragment();
-				FragmentManager fragmentManager = getFragmentManager();
-				fragmentManager.beginTransaction()
+				mFragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();
 				buildUI();
@@ -836,7 +855,6 @@ public class VideOSCMainActivity extends AppCompatActivity
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 				&& requestCode == CODE_WRITE_SETTINGS_PERMISSION
 				&& Settings.System.canWrite(this)) {
-			Log.d(TAG, "CODE_WRITE_SETTINGS_PERMISSION success");
 			finish();
 			startActivity(starterIntent);
 		}
@@ -850,17 +868,17 @@ public class VideOSCMainActivity extends AppCompatActivity
 
 	@Override
 	public void onFragmentInteraction(Uri uri) {
-		Log.d(TAG, "onFragmentInteraction, uri: " + uri);
+//		Log.d(TAG, "onFragmentInteraction, uri: " + uri);
 	}
 
 	@Override
 	public void onFragmentInteraction(String id) {
-		Log.d(TAG, "onFragmentInteraction, id: " + id);
+//		Log.d(TAG, "onFragmentInteraction, id: " + id);
 	}
 
 	@Override
 	public void onFragmentInteraction(int actionId) {
-		Log.d(TAG, "onFragmentInteraction, actionId: " + actionId);
+//		Log.d(TAG, "onFragmentInteraction, actionId: " + actionId);
 	}
 
 	/*@Override

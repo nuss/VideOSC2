@@ -28,17 +28,11 @@ public class VideOSCApplication extends Application {
 	private float mDensity;
 	private boolean mIsColorModePanelOpen = false;
 	private boolean mHasTorch;
+	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
 	public VideOSCOscHandler mOscHelper;
 	public Point mDimensions;
 
-	// setting dialogs
-	// levels within settings dialog
-	// 0: no dialog, normal mode
-	// 1: first level - selections 'network settings', 'resolution settings', 'sensor settings', 'debug settings', 'about'
-	// 2: editor setting details
-	// 3: beyond details - e.g. setting exposure lock
-	private short mSettingsLevel = 0;
 	private boolean mIsTorchOn = false;
 	private boolean mIsFPSCalcPanelOpen = false;
 	private boolean mCameraOSCisPlaying;  // send pixel values via OSC
@@ -49,6 +43,13 @@ public class VideOSCApplication extends Application {
 	private Point mPixelSize;
 	private PixelEditModes mPixelEditMode;
 	private boolean mOSCFeedbackActivated = false;
+
+	private int mSettingsContainerID = -1;
+	private int mNetworkSettingsID = -1;
+	private int mResolutionSettingsID = -1;
+	private int mSensorSettingsID = -1;
+	private int mDebugSettingsID = -1;
+	private int mAboutSettingsID = -1;
 
 	@Override
 	public void onCreate() {
@@ -79,14 +80,6 @@ public class VideOSCApplication extends Application {
 
 	public RGBModes getColorMode() {
 		return this.mColorMode;
-	}
-
-	public short getSettingsLevel() {
-		return this.mSettingsLevel;
-	}
-
-	public void setSettingsLevel(int level) {
-		this.mSettingsLevel = (short) level;
 	}
 
 	public SettingsDBHelper getSettingsHelper() {
@@ -267,5 +260,61 @@ public class VideOSCApplication extends Application {
 
 	public boolean getOSCFeedbackActivated() {
 		return this.mOSCFeedbackActivated;
+	}
+
+	public void setIsTablet(boolean isTablet) {
+		this.mIsTablet = isTablet;
+	}
+
+	public boolean getIsTablet() {
+		return this.mIsTablet;
+	}
+
+	public void setSettingsContainerID(int id) {
+		this.mSettingsContainerID = id;
+	}
+
+	public int getSettingsContainerID() {
+		return this.mSettingsContainerID;
+	}
+
+	public void setNetworkSettingsID(int id) {
+		this.mNetworkSettingsID = id;
+	}
+
+	public int getNetworkSettingsID() {
+		return this.mNetworkSettingsID;
+	}
+
+	public void setResolutionSettingsID(int id) {
+		this.mResolutionSettingsID = id;
+	}
+
+	public int getResolutionSettingsID() {
+		return this.mResolutionSettingsID;
+	}
+
+	public void setSensorSettingsID(int id) {
+		this.mSensorSettingsID = id;
+	}
+
+	public int getSensorSettingsID() {
+		return this.mSensorSettingsID;
+	}
+
+	public void setDebugSettingsID(int id) {
+		this.mDebugSettingsID = id;
+	}
+
+	public int getDebugSettingsID() {
+		return this.mDebugSettingsID;
+	}
+
+	public void setAboutSettingsID(int id) {
+		this.mAboutSettingsID = id;
+	}
+
+	public int getAboutSettingsID() {
+		return this.mAboutSettingsID;
 	}
 }
