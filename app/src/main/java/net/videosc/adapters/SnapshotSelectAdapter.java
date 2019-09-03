@@ -1,7 +1,6 @@
 package net.videosc.adapters;
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,8 +8,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
-import androidx.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +26,9 @@ import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
 public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	final private static String TAG = "SnapshotSelectAdapter";
@@ -54,7 +54,6 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 */
 	public SnapshotSelectAdapter(Context context, int layout, Cursor c, int flags) {
 		super(context, layout, c, flags);
-		Log.d(TAG, "cursor: " + c.getCount());
 		mActivity = (VideOSCMainActivity) context;
 		mApp = (VideOSCApplication) mActivity.getApplication();
 		mLayout = layout;
@@ -71,7 +70,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		mManager = mActivity.getFragmentManager();
+		mManager = mActivity.getSupportFragmentManager();
 		mCameraFragment = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
 		mSnapshotListFragment = (VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
 		mParent = parent;
@@ -93,48 +92,53 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 		String text;
 		final String name = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME));
 		if (numPixels > 0)
-			text = name.concat(" (" + String.valueOf(numPixels) + " pixels)");
+			text = name.concat(" (" + numPixels + " pixels)");
 		else text = name;
 		row.setText(text);
 
 		final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
 
 		if (rowId >= 0) {
-//			Log.d(TAG, "bindView called, ID: " + rowId + ", cursor position: " + cursor.getPosition());
 			final String newRed = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES));
 			final String newRedMix = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES));
 			final String newGreen = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES));
 			final String newGreenMix = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES));
 			final String newBlue = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES));
 			final String newBlueMix = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES));
+
 			ArrayList<Double> redValues = new ArrayList<>();
 			ArrayList<Double> redMixValues = new ArrayList<>();
 			ArrayList<Double> greenValues = new ArrayList<>();
 			ArrayList<Double> greenMixValues = new ArrayList<>();
 			ArrayList<Double> blueValues = new ArrayList<>();
 			ArrayList<Double> blueMixValues = new ArrayList<>();
+
 			List<String> convertList;
 
 			convertList = Arrays.asList(newRed.split(",", -1));
-			if (redValues.size() == 0)
-				redValues = convertStringValuesToDouble(convertList, redValues);
+			if (redValues.size() == 0) {
+				convertStringValuesToDouble(convertList, redValues);
+			}
 			convertList = Arrays.asList(newRedMix.split(",", -1));
-			if (redMixValues.size() == 0)
-				redMixValues = convertStringValuesToDouble(convertList, redMixValues);
+			if (redMixValues.size() == 0) {
+				convertStringValuesToDouble(convertList, redMixValues);
+			}
 			convertList = Arrays.asList(newGreen.split(",", -1));
-			if (greenValues.size() == 0)
-				greenValues = convertStringValuesToDouble(convertList, greenValues);
+			if (greenValues.size() == 0) {
+				convertStringValuesToDouble(convertList, greenValues);
+			}
 			convertList = Arrays.asList(newGreenMix.split(",", -1));
-			if (greenMixValues.size() == 0)
-				greenMixValues = convertStringValuesToDouble(convertList, greenMixValues);
+			if (greenMixValues.size() == 0) {
+				convertStringValuesToDouble(convertList, greenMixValues);
+			}
 			convertList = Arrays.asList(newBlue.split(",", -1));
-			if (blueValues.size() == 0)
-				blueValues = convertStringValuesToDouble(convertList, blueValues);
+			if (blueValues.size() == 0) {
+				convertStringValuesToDouble(convertList, blueValues);
+			}
 			convertList = Arrays.asList(newBlueMix.split(",", -1));
-			if (blueMixValues.size() == 0)
-				blueMixValues = convertStringValuesToDouble(convertList, blueMixValues);
-
-//				Log.d(TAG, "ID: " + rowId + "\nred: " + redValues + "\nred mix: " + redMixValues + "\ngreen: " + greenValues + "\ngreen Mmix: " + greenMixValues + "\nblue: " + blueValues + "\nblue mix: " + blueMixValues);
+			if (blueMixValues.size() == 0) {
+				convertStringValuesToDouble(convertList, blueMixValues);
+			}
 
 			final ArrayList<Double> fRedValues = redValues;
 			final ArrayList<Double> fRedMixValues = redMixValues;
@@ -146,7 +150,6 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 			row.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					Log.d(TAG, "clicked: item with database id: " + rowId);
 					Point res = mApp.getResolution();
 					int size = res.x * res.y;
 					mCameraFragment.setRedValues(fRedValues, size);
@@ -156,11 +159,14 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 					mCameraFragment.setBlueValues(fBlueValues, size);
 					mCameraFragment.setBlueMixValues(fBlueMixValues, size);
 
+					final VideOSCSelectSnapshotFragment snapShotSelectFragment =
+							(VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
+					assert snapShotSelectFragment != null;
 					mManager.beginTransaction()
-							.remove(mManager.findFragmentByTag("snapshot select"))
+							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.remove(snapShotSelectFragment)
 							.commit();
 					mActivity.setFullScreen();
-					mApp.setSettingsLevel(0);
 				}
 			});
 
@@ -285,13 +291,11 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 		super.changeCursor(cursor);
 	}
 
-	private ArrayList<Double> convertStringValuesToDouble(@NonNull List<String> convertList, @NonNull ArrayList<Double> resultList) {
+	private void convertStringValuesToDouble(@NonNull List<String> convertList, @NonNull ArrayList<Double> resultList) {
 		resultList.clear();
 		for (String string : convertList) {
 			if (string.length() == 0) resultList.add(null);
 			else resultList.add(Double.valueOf(string));
 		}
-
-		return resultList;
 	}
 }

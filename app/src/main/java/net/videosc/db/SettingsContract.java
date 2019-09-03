@@ -28,7 +28,7 @@ public class SettingsContract {
 		public static final String FRAMERATE_RANGE = "framerate_range";
 		public static final String NORMALIZE = "normalized";
 		public static final String REMEMBER_PIXEL_STATES = "remember_pixel_states";
-		public static final String CALC_PERIOD = "calculation_period";
+//		public static final String CALC_PERIOD = "calculation_period";
 		public static final String ROOT_CMD = "root_cmd_name";
 		public static final String UDP_RECEIVE_PORT = "udp_receive_port";
 		public static final String TCP_RECEIVE_PORT = "tcp_receive_port";

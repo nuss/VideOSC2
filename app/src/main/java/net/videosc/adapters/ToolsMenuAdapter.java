@@ -15,7 +15,7 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.fragments.VideOSCCameraFragment;
-import net.videosc.fragments.VideOSCSettingsFragment;
+import net.videosc.fragments.settings.VideOSCSettingsListFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.InteractionModes;
@@ -29,6 +29,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Created by stefan on 14.03.17.
@@ -171,7 +172,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 		public void onClick(View view) {
 			final WeakReference<VideOSCMainActivity> activityRef = new WeakReference<>((VideOSCMainActivity) getContext());
 			final VideOSCApplication app = (VideOSCApplication) activityRef.get().getApplication();
-			final android.app.FragmentManager fragmentManager = activityRef.get().getFragmentManager();
+			final FragmentManager fragmentManager = activityRef.get().getSupportFragmentManager();
 			final ViewGroup indicators = activityRef.get().mCamView.findViewById(R.id.indicator_panel);
 			final ImageView oscIndicator = indicators.findViewById(R.id.indicator_osc);
 			final ImageView rgbModeIndicator = indicators.findViewById(R.id.indicator_color);
@@ -197,6 +198,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 			//noinspection ConstantConditions
 			final int QUIT = toolsDrawerKeys.get("quit");
 			BitmapDrawable img;
+			assert cameraFragment != null;
 			Camera camera = cameraFragment.mCamera;
 			Camera.Parameters cameraParameters = camera.getParameters();
 
@@ -276,7 +278,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 					interactionModeIndicator.setImageResource(R.drawable.interaction_none_indicator);
 					if (activityRef.get().mMultiSliderView != null)
 						fragmentManager.beginTransaction().remove(activityRef.get().mMultiSliderView).commit();
-//						isMultiSliderVisible = VideOSCUIHelpers.removeView(mMultiSliderView, (FrameLayout) mCamView);
 				} else {
 					mToolsDrawerListState.put(INTERACTION, R.drawable.interaction);
 					img = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.interaction);
@@ -309,7 +310,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 					mToolsDrawerListState.put(SELECT_CAM, R.drawable.front_camera);
 					if (TORCH != null)
 						mToolsDrawerListState.put(TORCH, R.drawable.light_on);
-//						Log.d(TAG, "new CameraId is back? " + (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) + ", R.drawable.back_camera: " + R.drawable.back_camera);
 					img = (BitmapDrawable) ContextCompat.getDrawable(activityRef.get(), R.drawable.front_camera);
 					cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
 					if (app.getHasTorch() && TORCH != null) {
@@ -338,12 +338,14 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 				}
 			} else if (position == SETTINGS) {
 				activityRef.get().closeColorModePanel();
-				app.setSettingsLevel(1);
 				activityRef.get().showBackButton();
-				VideOSCSettingsFragment settings = new VideOSCSettingsFragment();
+				VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment();
 				if (fragmentManager.findFragmentByTag("settings selection") == null
 						&& fragmentManager.findFragmentByTag("snapshot selection") == null)
-					fragmentManager.beginTransaction().add(R.id.camera_preview, settings, "settings selection").commit();
+					fragmentManager.beginTransaction()
+							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.add(R.id.camera_preview, settings, "settings selection")
+							.commit();
 			} else if (position == QUIT) {
 				VideOSCDialogHelper.showQuitDialog(activityRef.get());
 			}
