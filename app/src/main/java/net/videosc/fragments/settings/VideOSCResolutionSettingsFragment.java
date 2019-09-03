@@ -186,7 +186,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		mSelectFramerate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				mFrameRatePopUp.showAsDropDown(view);
+				mFrameRatePopUp.showAsDropDown(view, 0, 0);
 			}
 		});
 		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
@@ -370,7 +370,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		// TODO: set click listener
 
 		popUp.setFocusable(true);
-		popUp.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+		popUp.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
 		popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
 		popUp.setContentView(frameratesList);
 
