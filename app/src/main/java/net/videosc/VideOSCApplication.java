@@ -62,8 +62,8 @@ public class VideOSCApplication extends Application {
 		LeakCanary.install(this);
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
-		mSettingsHelper = new SettingsDBHelper(getApplicationContext());
-		mOscHelper = new VideOSCOscHandler(getApplicationContext());
+		mSettingsHelper = new SettingsDBHelper(this);
+		mOscHelper = new VideOSCOscHandler(this);
 	}
 
 	public void setIsRGBPositive(boolean boolVal) {
