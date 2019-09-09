@@ -40,7 +40,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
-//		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 		final SQLiteDatabase db = activity.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 

@@ -432,8 +432,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			fadeInAnimation.setDuration(2);
 			view.startAnimation(fadeInAnimation);
 
-			Log.d(TAG, "i: " + i + ", l: " + l);
-
 			mValues.put(SettingsContract.SettingsEntries.FRAMERATE_RANGE, i);
 			mDb.update(
 					SettingsContract.SettingsEntries.TABLE_NAME,
