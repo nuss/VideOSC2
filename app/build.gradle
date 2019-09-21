@@ -10,8 +10,8 @@ android {
         versionCode 13
         versionName "2.0alpha2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 21
-        renderscriptSupportModeEnabled true
+//        renderscriptTargetApi 21
+//        renderscriptSupportModeEnabled true
     }
     buildTypes {
         release {
