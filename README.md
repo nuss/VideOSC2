@@ -4,3 +4,6 @@ VideOSC is an experimental OSC controller for Android that uses the color inform
 This repository is a complete rewrite of the app's first version (written using Processing, a Java-based programming environment for creative coding). The repository contains new features as well as it's focusing on stability (e.g. avoiding memory leaks) and enhanced user experience.
 
 ![screenshot 1](https://github.com/nuss/VideOSC2/blob/develop/screenshots/Screenshot_2019-09-04_175813.jpg)
+
+
+![screenshot 1](https://github.com/nuss/VideOSC2/blob/develop/screenshots/Screenshot_2019-09-04_180036.jpg)
