@@ -172,8 +172,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		private int mReceivePort;
 		private String mProtocol;
 
-		Address() {
-		}
+		Address() { }
 
 		void setRowId(long id) {
 			this.mRowId = id;
@@ -228,8 +227,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		private int mUdpReceivePort;
 		private int mTcpReceivePort;
 
-		Settings() {
-		}
+		Settings() { }
 
 		void setRowId(long id) {
 			this.mRowId = id;
@@ -326,8 +324,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		private boolean mHumiditySensorActivated;
 		private boolean mLocationSensorActivated;
 
-		Sensors() {
-		}
+		Sensors() { }
 
 		void setRowId(long rowId) {
 			this.mRowId = rowId;
