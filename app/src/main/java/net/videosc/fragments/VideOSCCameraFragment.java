@@ -1250,30 +1250,36 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				bValue = bPixVal / 255.0;
 
 				if (mRedValues.get(i) != null) {
-					if (mRedMixValues.get(i) != null && mRedMixValues.get(i) < 1.0) {
+					if (mRedMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mRedMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mRedMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
 						rValue = (rPixVal / 255.0 * mixReciprPowered + mRedValues.get(i) * mixPowered) * mult;
 					} else rValue = mRedValues.get(i);
+					// if colors are inverted
+					if (!mApp.getIsRGBPositive()) rValue = 1 - rValue;
 				}
 
 				if (mGreenValues.get(i) != null) {
-					if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) < 1.0) {
+					if (mGreenMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mGreenMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mGreenMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
 						gValue = (gPixVal / 255.0 * mixReciprPowered + mGreenValues.get(i) * mixPowered) * mult;
 					} else gValue = mGreenValues.get(i);
+					// if colors are inverted
+					if (!mApp.getIsRGBPositive()) gValue = 1 - gValue;
 				}
 
 				if (mBlueValues.get(i) != null) {
-					if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) < 1.0) {
+					if (mBlueMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mBlueMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mBlueMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
 						bValue = (bPixVal / 255.0 * mixReciprPowered + mBlueValues.get(i) * mixPowered) * mult;
 					} else bValue = mBlueValues.get(i);
+					// if colors are inverted
+					if (!mApp.getIsRGBPositive()) bValue = 1 - bValue;
 				}
 
 				// pixels can only be set to ints in a range from 0-255
