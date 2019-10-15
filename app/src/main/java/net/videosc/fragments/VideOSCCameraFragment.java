@@ -1304,9 +1304,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						gValue *= 255.0;
 						bValue *= 255.0;
 					}
-
-					Log.d(TAG, "red value after: " + rValue);
-
+					
 					// all OSC messaging (message construction sending) must happen synchronized
 					// otherwise messages easily get overwritten during processing
 					if (mPrevRedValues.get(i) == null || rValue != mPrevRedValues.get(i))
