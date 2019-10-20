@@ -1250,7 +1250,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				bValue = bPixVal / 255.0;
 
 				if (mRedValues.get(i) != null) {
-					if (mRedMixValues.get(i) < 1.0) {
+					if (mRedMixValues.get(i) != null && mRedMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mRedMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mRedMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
@@ -1261,7 +1261,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 
 				if (mGreenValues.get(i) != null) {
-					if (mGreenMixValues.get(i) < 1.0) {
+					if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mGreenMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mGreenMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
@@ -1272,7 +1272,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				}
 
 				if (mBlueValues.get(i) != null) {
-					if (mBlueMixValues.get(i) < 1.0) {
+					if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) < 1.0) {
 						mixPowered = Math.pow(mBlueMixValues.get(i), 2);
 						mixReciprPowered = Math.pow(1.0 - mBlueMixValues.get(i), 2);
 						mult = 1.0 / (mixPowered + mixReciprPowered);
