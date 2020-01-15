@@ -12,7 +12,6 @@ import java.util.List;
 
 import netP5.NetAddress;
 import oscP5.OscEventListener;
-import oscP5.OscMessage;
 import oscP5.OscP5;
 
 import static org.junit.Assert.assertEquals;
@@ -35,14 +34,14 @@ public class VideOSCOscHandlerTest {
 		mHandler = null;
 	}
 
-	@Test
+	/* @Test
 	public void makeMessage() {
 		OscMessage oscMsg = mHandler.makeMessage(null, "/test");
 		assertEquals(OscMessage.class, oscMsg.getClass());
 		assertEquals("/test", oscMsg.addrPattern());
 		oscMsg = mHandler.makeMessage(oscMsg, "/test2");
 		assertEquals("/test2", oscMsg.addrPattern());
-	}
+	} */
 
 	@Test
 	public void getOscP5() {
