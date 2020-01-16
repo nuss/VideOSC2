@@ -54,8 +54,6 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	public OscBundle makeBundle(OscBundle bundle) {
 		if (bundle == null) {
 			bundle = new OscBundle();
-		} else {
-			bundle.clear();
 		}
 
 		return bundle;
