@@ -43,8 +43,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
+		final FragmentManager fragmentManager = getChildFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 

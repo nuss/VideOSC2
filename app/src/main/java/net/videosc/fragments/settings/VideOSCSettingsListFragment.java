@@ -41,12 +41,12 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final FragmentManager fragmentManager = getFragmentManager();
+		assert fragmentManager != null;
 		final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
 		final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
 		final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
 		final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
 		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
-		assert fragmentManager != null;
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert cameraView != null;
 		final Camera.Parameters params = cameraView.mCamera.getParameters();
