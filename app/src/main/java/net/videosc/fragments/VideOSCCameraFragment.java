@@ -1335,13 +1335,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //				mOscBundleR = mApp.mOscHelper.makeBundle(mOscBundleR);
 				cmd = mRed + (count + 1);
 				if (mPrevRedValues.get(count) == null || mPrevRedValues.get(count) != value) {
-					Log.d(TAG, "command: " + cmd + ", value: " + value);
 					mOscR = new OscMessage(cmd).add(value);
 					mOscBundleR.add(mOscR);
 					mPrevRedValues.set(count, value);
 				}
 				if (count + 1 == dimensions) {
-					Log.d(TAG, "count in doSendRedOSC red: " + ++mRedSyncCount);
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						RedOscRunnable.setDebugPixelOsc(true);
 						debugMsg = new OscMessage("/num_red_set").add(++mCountR);
@@ -1369,7 +1367,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 					mPrevGreenValues.set(count, value);
 				}
 				if (count + 1 == dimensions) {
-					Log.d(TAG, "count in doSendRedOSC green: " + ++mGreenSyncCount);
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						GreenOscRunnable.setDebugPixelOsc(true);
 						debugMsg = new OscMessage("/num_green_set").add(++mCountG);
@@ -1391,13 +1388,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 //				mOscBundleB = mApp.mOscHelper.makeBundle(mOscBundleB);
 				cmd = mBlue + (count + 1);
 				if (mPrevBlueValues.get(count) == null || value != mPrevBlueValues.get(count)) {
-					Log.d(TAG, "command: " + cmd + ", value: " + value);
 					mOscB = new OscMessage(cmd).add(value);
 					mOscBundleB.add(mOscB);
 					mPrevBlueValues.set(count, value);
 				}
 				if (count + 1 == dimensions) {
-					Log.d(TAG, "count in doSendRedOSC blue: " + ++mBlueSyncCount);
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						BlueOscRunnable.setDebugPixelOsc(true);
 						debugMsg = new OscMessage("/num_blue_set").add(++mCountB);
@@ -1453,15 +1448,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mBundle != null && mBundle.size() > 0) {
-							Log.d(TAG, "sync count in RedOscRunnable: " + ++mRunnableCount);
-//							Log.d(TAG, "bundle size before: " + mBundle.size());
 							if (mDebugPixel) {
 								mSent = new OscMessage("/num_red_sent").add(++mCountSentR);
 								mBundle.add(mSent);
 							}
 							mOscP5.send(mOscHelper.getBroadcastAddr(), mBundle);
 //							mBundle.clear();
-//							Log.d(TAG, "bundle size after: " + mBundle.size());
 						}
 						mOscLock.wait();
 					} catch (InterruptedException e) {
@@ -1506,7 +1498,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mBundle != null && mBundle.size() > 0) {
-							Log.d(TAG, "sync count in GreenOscRunnable: " + ++mRunnableCount);
 							if (mDebugPixel) {
 								mSent = new OscMessage("/num_green_sent").add(++mCountSentG);
 								mBundle.add(mSent);
@@ -1557,7 +1548,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				synchronized (mOscLock) {
 					try {
 						if (mBundle != null && mBundle.size() > 0) {
-							Log.d(TAG, "sync count in BlueOscRunnable: " + ++mRunnableCount);
 							if (mDebugPixel) {
 								mSent = new OscMessage("/num_blue_sent").add(++mCountSentB);
 								mBundle.add(mSent);
