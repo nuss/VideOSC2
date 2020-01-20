@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
+	private View mView;
 	/**
 	 * @param savedInstanceState
 	 * @deprecated
@@ -50,7 +51,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		assert activity != null;
 
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-		final View view = inflater.inflate(R.layout.network_settings, container, false);
+		mView = inflater.inflate(R.layout.network_settings, container, false);
 		final SQLiteDatabase db = activity.getDatabase();
 
 		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
@@ -95,9 +96,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final EditText remoteIPField = view.findViewById(R.id.remote_ip_field);
+		final EditText remoteIPField = mView.findViewById(R.id.remote_ip_field);
 		remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-		final EditText remotePortField = view.findViewById(R.id.remote_port_field);
+		final EditText remotePortField = mView.findViewById(R.id.remote_port_field);
 		remotePortField.setText(
 				String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
 				TextView.BufferType.EDITABLE
@@ -128,14 +129,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final EditText udpReceivePortField = view.findViewById(R.id.device_port_field);
+		final EditText udpReceivePortField = mView.findViewById(R.id.device_port_field);
 		udpReceivePortField.setText(
 				String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
 				TextView.BufferType.EDITABLE
 		);
-		final EditText rootCmdField = view.findViewById(R.id.root_cmd_name_field);
+		final EditText rootCmdField = mView.findViewById(R.id.root_cmd_name_field);
 		rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
-		final TextView deviceIP = view.findViewById(R.id.device_ip_address);
+		final TextView deviceIP = mView.findViewById(R.id.device_ip_address);
 		deviceIP.setText(KetaiNet.getIP());
 
 		remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -230,7 +231,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		});
 
 		//		return super.onCreateView(inflater, container, savedInstanceState);
-		return view;
+		return mView;
+	}
+
+	@Override
+	public void onDestroyView() {
+		mView = null;
+		super.onDestroyView();
 	}
 
 	/**

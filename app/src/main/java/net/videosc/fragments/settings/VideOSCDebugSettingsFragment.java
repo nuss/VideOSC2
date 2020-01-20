@@ -15,6 +15,8 @@ import net.videosc.fragments.VideOSCBaseFragment;
 import androidx.annotation.NonNull;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
+	private View mView;
+
 	/**
 	 * @param savedInstanceState
 	 * @deprecated
@@ -36,10 +38,10 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 		assert activity != null;
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 
-		final View view = inflater.inflate(R.layout.debug_settings, container, false);
+		mView = inflater.inflate(R.layout.debug_settings, container, false);
 
-		final Switch hidePixelImageCB = view.findViewById(R.id.hide_pixel_image);
-		final Switch debugPixelOscSendingCB = view.findViewById(R.id.add_packet_drops);
+		final Switch hidePixelImageCB = mView.findViewById(R.id.hide_pixel_image);
+		final Switch debugPixelOscSendingCB = mView.findViewById(R.id.add_packet_drops);
 		hidePixelImageCB.setChecked(app.getPixelImageHidden());
 		debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
@@ -59,7 +61,13 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 
 
 //		return super.onCreateView(inflater, container, savedInstanceState);
-		return view;
+		return mView;
+	}
+
+	@Override
+	public void onDestroyView() {
+		mView = null;
+		super.onDestroyView();
 	}
 
 	/**

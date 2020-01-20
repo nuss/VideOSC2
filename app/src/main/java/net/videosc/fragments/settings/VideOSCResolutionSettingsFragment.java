@@ -46,6 +46,7 @@ import androidx.fragment.app.FragmentManager;
 public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "ResolutionSettings";
 
+	private View mView;
 	private PopupWindow mFrameRatePopUp;
 	private ContentValues mValues;
 	private SQLiteDatabase mDb;
@@ -90,7 +91,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 		Log.d(TAG, "onCreateView() called");
 		// the settings view - can't be final as there are two different layouts possible
-		final View view;
 		final FragmentManager fragmentManager = getFragmentManager();
 		assert fragmentManager != null;
 		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
@@ -109,9 +109,9 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		final boolean isAutoExposureLockSupported = mCameraView.mCamera.getParameters().isAutoExposureLockSupported();
 
 		if (isAutoExposureLockSupported) {
-			view = inflater.inflate(R.layout.resolution_settings, container, false);
+			mView = inflater.inflate(R.layout.resolution_settings, container, false);
 		} else
-			view = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, container, false);
+			mView = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, container, false);
 
 
 		final String[] settingsFields = new String[]{
@@ -156,18 +156,18 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final EditText resHField = view.findViewById(R.id.resolution_horizontal_field);
+		final EditText resHField = mView.findViewById(R.id.resolution_horizontal_field);
 		resHField.setText(
 				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()),
 				TextView.BufferType.EDITABLE
 		);
-		final EditText resVField = view.findViewById(R.id.resolution_vertical_field);
+		final EditText resVField = mView.findViewById(R.id.resolution_vertical_field);
 		resVField.setText(
 				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()),
 				TextView.BufferType.EDITABLE
 		);
 
-		mSelectFramerate = view.findViewById(R.id.framerate_selection);
+		mSelectFramerate = mView.findViewById(R.id.framerate_selection);
 		String buttonText = getResources().getString(R.string.select_framerate_min_max_1_s);
 		final short frameRateRangeIndex = mSettings.get(0).getFramerateRange();
 
@@ -192,12 +192,12 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
 		frameRatesList.setOnItemClickListener(new FrameRateOnItemClickListener());
 
-		final Switch normalizedCB = view.findViewById(R.id.normalize_output_checkbox);
+		final Switch normalizedCB = mView.findViewById(R.id.normalize_output_checkbox);
 		normalizedCB.setChecked(mSettings.get(0).getNormalized());
-		final Switch rememberPixelStatesCB = view.findViewById(R.id.remember_activated_checkbox);
+		final Switch rememberPixelStatesCB = mView.findViewById(R.id.remember_activated_checkbox);
 		rememberPixelStatesCB.setChecked(mSettings.get(0).getRememberPixelStates());
 		if (isAutoExposureLockSupported) {
-			final Switch fixExposureCB = view.findViewById(R.id.fix_exposure_checkbox);
+			final Switch fixExposureCB = mView.findViewById(R.id.fix_exposure_checkbox);
 			final View fixExposureButtonLayout = inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 			fixExposureCB.setChecked(app.getExposureIsFixed());
@@ -207,7 +207,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 					final Camera camera = mCameraView.mCamera;
 
 					if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
-						view.setVisibility(View.INVISIBLE);
+						mView.setVisibility(View.INVISIBLE);
 
 						Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
 						toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
@@ -228,7 +228,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
 								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
 								new Toast(getActivity());
-								view.setVisibility(View.VISIBLE);
+								mView.setVisibility(View.VISIBLE);
 							}
 						});
 						final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
@@ -236,7 +236,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onClick(View v) {
 								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
-								view.setVisibility(View.VISIBLE);
+								mView.setVisibility(View.VISIBLE);
 								// setting exposure is only possible if exposure
 								// isn't already fixed. As a consequence cancelling
 								// setting exposure can only result in *not* fixing
@@ -358,7 +358,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-		return view;
+		return mView;
 	}
 
 	private PopupWindow showFrameRatesList(ArrayAdapter<String> adapter) {
@@ -400,8 +400,8 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public void onDestroyView() {
+		mView = null;
 		super.onDestroyView();
-		Log.d(TAG, "onDestroyView() called");
 	}
 
 	/**

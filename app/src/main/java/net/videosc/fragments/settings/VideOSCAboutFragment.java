@@ -15,6 +15,8 @@ import java.util.Calendar;
 import androidx.annotation.NonNull;
 
 public class VideOSCAboutFragment extends VideOSCBaseFragment {
+	private View mView;
+
 	/**
 	 * @param savedInstanceState
 	 */
@@ -30,11 +32,11 @@ public class VideOSCAboutFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.about, container, false);
-		setYear(view);
+		mView = inflater.inflate(R.layout.about, container, false);
+		setYear(mView);
 
 //		return super.onCreateView(inflater, container, savedInstanceState);
-		return view;
+		return mView;
 	}
 
 	@Override
@@ -50,6 +52,12 @@ public class VideOSCAboutFragment extends VideOSCBaseFragment {
 
 		String formatted = String.format(dateString, String.valueOf(currentYear));
 		tv.setText(formatted);
+	}
+
+	@Override
+	public void onDestroyView() {
+		mView = null;
+		super.onDestroyView();
 	}
 
 }

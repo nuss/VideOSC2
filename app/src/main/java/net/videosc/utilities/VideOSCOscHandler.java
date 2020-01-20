@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import netP5.NetAddress;
-import oscP5.OscBundle;
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -40,7 +39,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mBroadcastAddr = new NetAddress(mBroadcastIP, mBroadcastPort);
 	}
 
-	/* public OscMessage makeMessage(OscMessage msg, String cmd) {
+	public OscMessage makeMessage(OscMessage msg, String cmd) {
 		if (msg == null) {
 			msg = new OscMessage(cmd);
 		} else {
@@ -49,15 +48,15 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		}
 
 		return msg;
-	} */
+	}
 
-	public OscBundle makeBundle(OscBundle bundle) {
+	/* public OscBundle makeBundle(OscBundle bundle) {
 		if (bundle == null) {
 			bundle = new OscBundle();
 		}
 
 		return bundle;
-	}
+	} */
 
 	public OscP5 getOscP5() {
 		return mOscP5;
