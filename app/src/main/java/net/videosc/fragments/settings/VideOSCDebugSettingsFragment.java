@@ -24,6 +24,7 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 	}
 
 	/**
@@ -66,8 +67,8 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 
 	@Override
 	public void onDestroyView() {
-		mView = null;
 		super.onDestroyView();
+		mView = null;
 	}
 
 	/**

@@ -62,6 +62,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 		Log.d(TAG, "onCreate() called");
 	}
 
@@ -400,8 +401,8 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public void onDestroyView() {
-		mView = null;
 		super.onDestroyView();
+		mView = null;
 	}
 
 	/**

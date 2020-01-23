@@ -1,6 +1,5 @@
 package net.videosc.fragments.settings;
 
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsList";
 	private VideOSCApplication mApp;
+	private View mView;
 
 	/**
 	 * @param savedInstanceState
@@ -31,6 +31,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 	}
 
 	/**
@@ -49,10 +50,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert cameraView != null;
-		final Camera.Parameters params = cameraView.mCamera.getParameters();
-		final View view = inflater.inflate(R.layout.settings_container, container, false);
-		final View settingsView = view.findViewById(R.id.settings_container);
-		final ListView settingsListView = view.findViewById(R.id.settings_list);
 		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
 		assert activity != null;
 		mApp = (VideOSCApplication) activity.getApplicationContext();
@@ -61,10 +58,16 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		// get the setting items for the main selection list and parse them into the layout
 		final String[] items = getResources().getStringArray(R.array.settings_select_items);
 		final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(activity, R.layout.settings_selection_item, items);
+
+		mView = inflater.inflate(R.layout.settings_container, container, false);
+
+		final View settingsView = mView.findViewById(R.id.settings_container);
+		final ListView settingsListView = mView.findViewById(R.id.settings_list);
+
 		settingsListView.setAdapter(itemsAdapter);
 		// does the fade-in animation really work?...
 		VideOSCUIHelpers.setTransitionAnimation(container);
-		view.setVisibility(View.VISIBLE);
+		mView.setVisibility(View.VISIBLE);
 
 		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -109,7 +112,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 			}
 		});
 
-		return view;
+		return mView;
 	}
 
 	@Override
@@ -143,6 +146,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		Log.d(TAG, "'onDestroyView()' called");
 		mApp.setSettingsContainerID(-1);
 		super.onDestroyView();
+		mView = null;
 	}
 
 	/**
