@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	private View mView;
+	private VideOSCMainActivity mActivity;
 
 	/**
 	 * @param savedInstanceState
@@ -41,9 +42,9 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView = inflater.inflate(R.layout.sensor_settings, container, false);
 
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final SQLiteDatabase db = activity.getDatabase();
+		mActivity = (VideOSCMainActivity) getActivity();
+		assert mActivity != null;
+		final SQLiteDatabase db = mActivity.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 
 		final Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.SensorSettingsEntries.TABLE_NAME, null);
@@ -378,6 +379,12 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mActivity = null;
 	}
 
 	@Override

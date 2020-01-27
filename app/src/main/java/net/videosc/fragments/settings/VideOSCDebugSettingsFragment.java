@@ -15,6 +15,7 @@ import net.videosc.fragments.VideOSCBaseFragment;
 import androidx.annotation.NonNull;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
+	final private static String TAG = "DebugSettingsFragment";
 	private View mView;
 
 	/**

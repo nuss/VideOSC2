@@ -24,6 +24,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	private final static String TAG = "VideOSCSettingsList";
 	private VideOSCApplication mApp;
 	private View mView;
+	private VideOSCMainActivity mActivity;
 
 	/**
 	 * @param savedInstanceState
@@ -41,23 +42,25 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
+//		final FragmentManager fragmentManager = getFragmentManager();
+//		assert fragmentManager != null;
 		final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
 		final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
 		final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
 		final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
 		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
+
+		mActivity = (VideOSCMainActivity) getActivity();
+		assert mActivity != null;
+		final FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert cameraView != null;
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		mApp = (VideOSCApplication) activity.getApplicationContext();
+		mApp = (VideOSCApplication) mActivity.getApplicationContext();
 		mApp.setSettingsContainerID(this.getId());
 
 		// get the setting items for the main selection list and parse them into the layout
 		final String[] items = getResources().getStringArray(R.array.settings_select_items);
-		final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(activity, R.layout.settings_selection_item, items);
+		final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mActivity, R.layout.settings_selection_item, items);
 
 		mView = inflater.inflate(R.layout.settings_container, container, false);
 
@@ -167,6 +170,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	public void onDetach() {
 		Log.d(TAG, "'onDetach()' called");
 		super.onDetach();
+		mActivity = null;
 	}
 
 	static class Address {

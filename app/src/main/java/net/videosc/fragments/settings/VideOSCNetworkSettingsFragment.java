@@ -27,6 +27,7 @@ import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	private View mView;
+	private VideOSCMainActivity mActivity;
 	/**
 	 * @param savedInstanceState
 	 * @deprecated
@@ -47,13 +48,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final FragmentManager fragmentManager = getChildFragmentManager();
 		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		mActivity = (VideOSCMainActivity) getActivity();
 
-		assert activity != null;
+		assert mActivity != null;
 
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		mView = inflater.inflate(R.layout.network_settings, container, false);
-		final SQLiteDatabase db = activity.getDatabase();
+		final SQLiteDatabase db = mActivity.getDatabase();
 
 		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
 		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
@@ -233,6 +234,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 		//		return super.onCreateView(inflater, container, savedInstanceState);
 		return mView;
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mActivity = null;
 	}
 
 	@Override

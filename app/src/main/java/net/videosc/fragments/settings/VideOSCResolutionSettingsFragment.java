@@ -46,6 +46,7 @@ import androidx.fragment.app.FragmentManager;
 public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "ResolutionSettings";
 
+	private VideOSCMainActivity mActivity;
 	private View mView;
 	private PopupWindow mFrameRatePopUp;
 	private ContentValues mValues;
@@ -97,12 +98,12 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert mCameraView != null;
 		final Camera.Parameters params = mCameraView.mCamera.getParameters();
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+		mActivity = (VideOSCMainActivity) getActivity();
 
-		assert activity != null;
+		assert mActivity != null;
 
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-		mDb = activity.getDatabase();
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+		mDb = mActivity.getDatabase();
 //		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		mValues = new ContentValues();
 		mContainer = container;
@@ -182,7 +183,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			int[] item = supportedPreviewFpsRange.get(j);
 			items[j] = (item[0] / 1000) + " / " + (item[1] / 1000);
 		}
-		mFpsAdapter = new ArrayAdapter<>(activity, R.layout.framerate_selection_item, items);
+		mFpsAdapter = new ArrayAdapter<>(mActivity, R.layout.framerate_selection_item, items);
 		mFrameRatePopUp = showFrameRatesList(mFpsAdapter);
 		mSelectFramerate.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -363,9 +364,9 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private PopupWindow showFrameRatesList(ArrayAdapter<String> adapter) {
-		VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		final PopupWindow popUp = new PopupWindow(activity);
-		final ListView frameratesList = new ListView(activity);
+		VideOSCMainActivity mActivity = (VideOSCMainActivity) getActivity();
+		final PopupWindow popUp = new PopupWindow(mActivity);
+		final ListView frameratesList = new ListView(mActivity);
 		frameratesList.setAdapter(adapter);
 
 		// TODO: set click listener
@@ -422,6 +423,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		mActivity = null;
 		Log.d(TAG, "onDetach() called");
 	}
 
