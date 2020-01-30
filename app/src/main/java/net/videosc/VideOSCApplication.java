@@ -3,8 +3,6 @@ package net.videosc;
 import android.app.Application;
 import android.graphics.Point;
 
-import com.squareup.leakcanary.LeakCanary;
-
 import net.videosc.db.SettingsDBHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.enums.InteractionModes;
@@ -54,12 +52,6 @@ public class VideOSCApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if (LeakCanary.isInAnalyzerProcess(this)) {
-			// This process is dedicated to LeakCanary for heap analysis.
-			// You should not init your app in this process.
-			return;
-		}
-		LeakCanary.install(this);
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
 		mSettingsHelper = new SettingsDBHelper(this);
