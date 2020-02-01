@@ -1,6 +1,7 @@
 package net.videosc.utilities;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -10,6 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowCamera;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -20,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  * Created by stefan on 25.06.17, package net.videosc.utilities, project VideOSC22.
  */
 @RunWith(RobolectricTestRunner.class)
-public class VideOSCUIHelpersTest {
+public class VideOSCUIHelpersTest extends ShadowCamera {
 
 	private final static String TAG = "VideOSCUIHelpersTest";
 
@@ -28,7 +31,7 @@ public class VideOSCUIHelpersTest {
 	private FrameLayout frameLayout;
 	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
-//	private ShadowCamera camera;
+	private Camera camera;
 //	private ShadowCamera.ShadowParameters camParams;
 
 	@Before
@@ -40,17 +43,14 @@ public class VideOSCUIHelpersTest {
 		view.setLayoutParams(params);
 		frameLayout = new FrameLayout(RuntimeEnvironment.application);
 		viewGroup = new TestViewGroup(RuntimeEnvironment.application);
-//		camera = new ShadowCamera();
-//		int camID = ShadowCamera.getLastOpenedCameraId();
-//		ShadowCamera.addCameraInfo(camID, new Camera.CameraInfo());
-//		camera = new ShadowCamera();
+		camera = ShadowCamera.open();
 	}
 
-	/*@Test
+	@Test
 	@Config(manifest = Config.NONE)
 	public void hasTorch() {
 		assertFalse("VideOSCUIHelpers.hasTorch should return false in a local testing environment", VideOSCUIHelpers.hasTorch(camera));
-	}*/
+	}
 
 	@Test
 	public void testView() {
