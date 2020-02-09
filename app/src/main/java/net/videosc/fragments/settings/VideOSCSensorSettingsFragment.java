@@ -21,12 +21,16 @@ import net.videosc.fragments.VideOSCBaseFragment;
 import androidx.annotation.NonNull;
 
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
+	private View mView;
+	private VideOSCMainActivity mActivity;
+
 	/**
 	 * @param savedInstanceState
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 	}
 
 	/**
@@ -36,17 +40,17 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.sensor_settings, container, false);
+		mView = inflater.inflate(R.layout.sensor_settings, container, false);
 
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final SQLiteDatabase db = activity.getDatabase();
+		mActivity = (VideOSCMainActivity) getActivity();
+		assert mActivity != null;
+		final SQLiteDatabase db = mActivity.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 
 		final Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.SensorSettingsEntries.TABLE_NAME, null);
 		final ContentValues values = new ContentValues();
 
-		setPlaceholder(view, db);
+		setPlaceholder(mView, db);
 
 		while (cursor.moveToNext()) {
 			switch (cursor.getString(cursor.getColumnIndex(SettingsContract.SensorSettingsEntries.SENSOR))) {
@@ -133,17 +137,17 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final Switch oriCB = view.findViewById(R.id.orientation_sensor);
-		final Switch accCB = view.findViewById(R.id.accelerometer);
-		final Switch linAccCB = view.findViewById(R.id.linear_acceleration);
-		final Switch magCB = view.findViewById(R.id.magnetic_field);
-		final Switch gravCB = view.findViewById(R.id.gravity_sensor);
-		final Switch proxCB = view.findViewById(R.id.proximity_sensor);
-		final Switch lightCB = view.findViewById(R.id.light_sensor);
-		final Switch pressCB = view.findViewById(R.id.air_pressure_sensor);
-		final Switch tempCB = view.findViewById(R.id.temperature_sensor);
-		final Switch humCB = view.findViewById(R.id.humidity_sensor);
-		final Switch locCB = view.findViewById(R.id.geo_loc_sensor);
+		final Switch oriCB = mView.findViewById(R.id.orientation_sensor);
+		final Switch accCB = mView.findViewById(R.id.accelerometer);
+		final Switch linAccCB = mView.findViewById(R.id.linear_acceleration);
+		final Switch magCB = mView.findViewById(R.id.magnetic_field);
+		final Switch gravCB = mView.findViewById(R.id.gravity_sensor);
+		final Switch proxCB = mView.findViewById(R.id.proximity_sensor);
+		final Switch lightCB = mView.findViewById(R.id.light_sensor);
+		final Switch pressCB = mView.findViewById(R.id.air_pressure_sensor);
+		final Switch tempCB = mView.findViewById(R.id.temperature_sensor);
+		final Switch humCB = mView.findViewById(R.id.humidity_sensor);
+		final Switch locCB = mView.findViewById(R.id.geo_loc_sensor);
 
 		oriCB.setChecked(sensors.getOrientationSensorActivated());
 		accCB.setChecked(sensors.getAccelerationSensorActivated());
@@ -325,7 +329,7 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 
 //		return super.onCreateView(inflater, container, savedInstanceState);
-		return view;
+		return mView;
 	}
 
 	@Override
@@ -375,6 +379,18 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 			String text = String.format(res.getString(idsAndStrings.valueAt(i)), rootCmd);
 			tv.setText(text);
 		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mActivity = null;
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		mView = null;
 	}
 
 }
