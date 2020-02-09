@@ -13,7 +13,6 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.fragments.VideOSCBaseFragment;
-import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.utilities.VideOSCUIHelpers;
 
 import androidx.annotation.NonNull;
@@ -44,17 +43,18 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //		final FragmentManager fragmentManager = getFragmentManager();
 //		assert fragmentManager != null;
-		final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
-		final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
-		final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
-		final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
-		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
+//		final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
+//		final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
+//		final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
+//		final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
+//		final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
 
 		mActivity = (VideOSCMainActivity) getActivity();
 		assert mActivity != null;
-		final FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
-		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		assert cameraView != null;
+		final FragmentManager fragmentManager = getChildFragmentManager();
+
+//		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+//		assert cameraView != null;
 		mApp = (VideOSCApplication) mActivity.getApplicationContext();
 		mApp.setSettingsContainerID(this.getId());
 
@@ -64,7 +64,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 
 		mView = inflater.inflate(R.layout.settings_container, container, false);
 
-		final View settingsView = mView.findViewById(R.id.settings_container);
 		final ListView settingsListView = mView.findViewById(R.id.settings_list);
 
 		settingsListView.setAdapter(itemsAdapter);
@@ -72,48 +71,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		VideOSCUIHelpers.setTransitionAnimation(container);
 		mView.setVisibility(View.VISIBLE);
 
-		settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				if (!mApp.getIsTablet())
-					settingsListView.setVisibility(View.INVISIBLE);
-				settingsView.setBackgroundResource(R.color.colorDarkTransparentBackground);
-				final FragmentTransaction ft = fragmentManager.beginTransaction();
-				switch (i) {
-					case 0:
-						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-								.replace(R.id.settings_container, networkSettingsFragment)
-								.commit();
-						mApp.setNetworkSettingsID(networkSettingsFragment.getId());
-						break;
-					case 1:
-						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-								.replace(R.id.settings_container, resolutionSettingsFragment)
-								.commit();
-						mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
-						break;
-					case 2:
-						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-								.replace(R.id.settings_container, sensorSettingsFragment)
-								.commit();
-						mApp.setSensorSettingsID(sensorSettingsFragment.getId());
-						break;
-					case 3:
-						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-								.replace(R.id.settings_container, debugSettingsFragment)
-								.commit();
-						mApp.setDebugSettingsID(debugSettingsFragment.getId());
-						break;
-					case 4:
-						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-								.replace(R.id.settings_container, aboutFragment)
-								.commit();
-						mApp.setAboutSettingsID(aboutFragment.getId());
-						break;
-					default:
-				}
-			}
-		});
+		settingsListView.setOnItemClickListener(new SettingsListOnItemClickListener());
 
 		return mView;
 	}
@@ -147,8 +105,8 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDestroyView() {
 		Log.d(TAG, "'onDestroyView()' called");
-		mApp.setSettingsContainerID(-1);
 		super.onDestroyView();
+		mApp.setSettingsContainerID(-1);
 		mView = null;
 	}
 
@@ -171,6 +129,72 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 		Log.d(TAG, "'onDetach()' called");
 		super.onDetach();
 		mActivity = null;
+	}
+
+	class SettingsListOnItemClickListener implements AdapterView.OnItemClickListener {
+		private final FragmentManager mFragmentManager = getFragmentManager();
+		/**
+		 * Callback method to be invoked when an item in this AdapterView has
+		 * been clicked.
+		 * <p>
+		 * Implementers can call getItemAtPosition(position) if they need
+		 * to access the data associated with the selected item.
+		 *
+		 * @param parent   The AdapterView where the click happened.
+		 * @param view     The view within the AdapterView that was clicked (this
+		 *                 will be a view provided by the adapter)
+		 * @param position The position of the view in the adapter.
+		 * @param id       The row id of the item that was clicked.
+		 */
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//			FragmentManager fragmentManager = getFragmentManager();
+//			assert mFragmentManager != null;
+
+			if (!mApp.getIsTablet())
+				parent.setVisibility(View.INVISIBLE);
+			parent.setBackgroundResource(R.color.colorDarkTransparentBackground);
+			assert mFragmentManager != null;
+			final FragmentTransaction ft = mFragmentManager.beginTransaction();
+			switch (position) {
+				case 0:
+					final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.replace(R.id.settings_container, networkSettingsFragment)
+							.commit();
+					mApp.setNetworkSettingsID(networkSettingsFragment.getId());
+					break;
+				case 1:
+					final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.replace(R.id.settings_container, resolutionSettingsFragment)
+							.commit();
+					mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
+					break;
+				case 2:
+					final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.replace(R.id.settings_container, sensorSettingsFragment)
+							.commit();
+					mApp.setSensorSettingsID(sensorSettingsFragment.getId());
+					break;
+				case 3:
+					final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.replace(R.id.settings_container, debugSettingsFragment)
+							.commit();
+					mApp.setDebugSettingsID(debugSettingsFragment.getId());
+					break;
+				case 4:
+					final VideOSCAboutFragment aboutFragment = new VideOSCAboutFragment();
+					ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+							.replace(R.id.settings_container, aboutFragment)
+							.commit();
+					mApp.setAboutSettingsID(aboutFragment.getId());
+					break;
+				default:
+			}
+		}
 	}
 
 	static class Address {

@@ -32,7 +32,6 @@ public class VideOSCUIHelpersTest extends ShadowCamera {
 	private View viewGroup;
 	private ViewGroup.MarginLayoutParams params;
 	private Camera camera;
-//	private ShadowCamera.ShadowParameters camParams;
 
 	@Before
 	public void setUp() {

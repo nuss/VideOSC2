@@ -104,7 +104,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		mDb = mActivity.getDatabase();
-//		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		mValues = new ContentValues();
 		mContainer = container;
 
@@ -214,11 +213,10 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
 						toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 						toast.show();
-						final View bg = container.findViewById(R.id.settings_container);
+						final ViewGroup bg = (ViewGroup) container.getParent();
 						bg.setBackgroundResource(0);
-						final ViewGroup containerParent = (ViewGroup) container.getParent();
 
-						containerParent.addView(fixExposureButtonLayout);
+						bg.addView(fixExposureButtonLayout);
 
 						final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
 						fixExposureButton.setOnClickListener(new View.OnClickListener() {
@@ -227,7 +225,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 								params.setAutoExposureLock(true);
 								camera.setParameters(params);
 								app.setExposureIsFixed(true);
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
+								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
 								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
 								new Toast(getActivity());
 								mView.setVisibility(View.VISIBLE);
@@ -237,7 +235,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, containerParent);
+								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
 								mView.setVisibility(View.VISIBLE);
 								// setting exposure is only possible if exposure
 								// isn't already fixed. As a consequence cancelling
@@ -364,7 +362,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	}
 
 	private PopupWindow showFrameRatesList(ArrayAdapter<String> adapter) {
-		VideOSCMainActivity mActivity = (VideOSCMainActivity) getActivity();
 		final PopupWindow popUp = new PopupWindow(mActivity);
 		final ListView frameratesList = new ListView(mActivity);
 		frameratesList.setAdapter(adapter);
