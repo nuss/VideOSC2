@@ -41,8 +41,8 @@ dependencies {
     implementation files('libs/Ketai.jar')
     implementation files('libs/oscP5.jar')
     implementation 'jp.co.cyberagent.android:gpuimage:2.0.3'
-    implementation 'com.google.android.material:material:1.0.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android-process:2.1'
+    implementation 'com.google.android.material:material:1.1.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android-process:2.2'
 //    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:2.1'
 //    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:2.1'
     testImplementation 'org.robolectric:robolectric:4.3.1'
