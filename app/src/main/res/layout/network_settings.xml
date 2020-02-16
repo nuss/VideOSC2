@@ -3,147 +3,159 @@
 	android:id="@+id/network_settings"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical">
+	android:orientation="horizontal">
 
-	<LinearLayout
-		android:id="@+id/remote_address"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:baselineAligned="false"
-		android:orientation="horizontal">
+	<!--	<LinearLayout-->
+	<!--		android:id="@+id/remote_address"-->
+	<!--		android:layout_width="match_parent"-->
+	<!--		android:layout_height="wrap_content"-->
+	<!--		android:baselineAligned="false"-->
+	<!--		android:orientation="horizontal">-->
 
-		<LinearLayout
-			android:id="@+id/remote_ip"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:orientation="vertical">
+	<!--		<LinearLayout-->
+	<!--			android:id="@+id/remote_ip"-->
+	<!--			android:layout_width="0dp"-->
+	<!--			android:layout_height="wrap_content"-->
+	<!--			android:layout_weight="0.5"-->
+	<!--			android:orientation="vertical">-->
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/send_osc_to_ip" />
+	<!--			<TextView-->
+	<!--				android:layout_width="match_parent"-->
+	<!--				android:layout_height="wrap_content"-->
+	<!--				android:text="@string/send_osc_to_ip" />-->
 
-			<EditText
-				android:id="@+id/remote_ip_field"
-				style="@style/EditTextPadding"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:digits="0123456789."
-				android:inputType="text"
-				android:nextFocusDown="@+id/remote_port_field" />
+	<!--			<EditText-->
+	<!--				android:id="@+id/remote_ip_field"-->
+	<!--				style="@style/EditTextPadding"-->
+	<!--				android:layout_width="match_parent"-->
+	<!--				android:layout_height="wrap_content"-->
+	<!--				android:digits="0123456789."-->
+	<!--				android:inputType="text"-->
+	<!--				android:nextFocusDown="@+id/remote_port_field" />-->
 
-		</LinearLayout>
+	<!--		</LinearLayout>-->
 
-		<LinearLayout
-			android:id="@+id/remote_port"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:orientation="vertical">
+	<!--		<LinearLayout-->
+	<!--			android:id="@+id/remote_port"-->
+	<!--			android:layout_width="0dp"-->
+	<!--			android:layout_height="wrap_content"-->
+	<!--			android:layout_weight="0.5"-->
+	<!--			android:orientation="vertical">-->
 
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/send_osc_to_port" />
+	<!--			<TextView-->
+	<!--				android:layout_width="match_parent"-->
+	<!--				android:layout_height="wrap_content"-->
+	<!--				android:text="@string/send_osc_to_port" />-->
 
-			<EditText
-				android:id="@+id/remote_port_field"
-				style="@style/EditTextPadding"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:digits="0123456789"
-				android:inputType="number"
-				android:nextFocusDown="@+id/device_port_field" />
+	<!--			<EditText-->
+	<!--				android:id="@+id/remote_port_field"-->
+	<!--				style="@style/EditTextPadding"-->
+	<!--				android:layout_width="match_parent"-->
+	<!--				android:layout_height="wrap_content"-->
+	<!--				android:digits="0123456789"-->
+	<!--				android:inputType="number"-->
+	<!--				android:nextFocusDown="@+id/device_port_field" />-->
 
-		</LinearLayout>
-	</LinearLayout>
+	<!--		</LinearLayout>-->
+	<!--	</LinearLayout>-->
 
 	<LinearLayout
 		android:id="@+id/device_address"
-		android:layout_width="match_parent"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:baselineAligned="false"
-		android:orientation="horizontal">
+		android:orientation="vertical"
+		android:layout_weight="0.5">
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/device_ip_address_head" />
+
+		<TextView
+			android:id="@+id/device_ip_address"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="20dp"
+			android:textSize="18sp" />
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/device_port" />
+
+		<EditText
+			android:id="@+id/device_port_field"
+			style="@style/EditTextPadding"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:digits="0123456789"
+			android:inputType="number"
+			android:nextFocusDown="@+id/root_cmd_name_field" />
+
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/root_command_name_head" />
 
 		<LinearLayout
-			android:id="@+id/device_ip"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:orientation="vertical">
+			android:baselineAligned="false"
+			android:orientation="horizontal">
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:text="@string/device_ip_address_head" />
-
-			<TextView
-				android:id="@+id/device_ip_address"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="20dp"
-				android:textSize="18sp" />
-
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/device_port"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:orientation="vertical">
-
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/device_port" />
+				android:layout_marginTop="25dp"
+				android:layout_weight="0.01"
+				android:text="@string/slash" />
 
 			<EditText
-				android:id="@+id/device_port_field"
+				android:id="@+id/root_cmd_name_field"
 				style="@style/EditTextPadding"
-				android:layout_width="match_parent"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:digits="0123456789"
-				android:inputType="number"
-				android:nextFocusDown="@+id/root_cmd_name_field" />
+				android:layout_weight="0.49"
+				android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
+				android:inputType="text" />
 
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="25dp"
+				android:layout_weight="0.5"
+				android:text="@string/sub_cmd_name" />
 		</LinearLayout>
 	</LinearLayout>
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/root_command_name_head" />
-
 	<LinearLayout
-		android:layout_width="match_parent"
+		android:id="@+id/remote_address"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:orientation="vertical"
 		android:baselineAligned="false"
-		android:orientation="horizontal">
+		android:layout_weight="0.5">
 
 		<TextView
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginTop="25dp"
-			android:layout_weight="0.01"
-			android:text="@string/slash" />
+			android:text="@string/remote_ip_addresses" />
 
-		<EditText
-			android:id="@+id/root_cmd_name_field"
-			style="@style/EditTextPadding"
-			android:layout_width="0dp"
+		<Button
+			android:id="@+id/add_address_button"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_weight="0.49"
-			android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
-			android:inputType="text" />
+			android:layout_marginTop="15dp"
+			android:layout_marginBottom="15dp"
+			android:text="@string/add_address"/>
 
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="25dp"
-			android:layout_weight="0.5"
-			android:text="@string/sub_cmd_name" />
+		<ScrollView
+			android:id="@+id/ip_addresses_list"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+
 	</LinearLayout>
 
 </LinearLayout>

@@ -137,5 +137,11 @@
 	<string name="values">values</string>
 	<string name="mix">mix</string>
 	<string name="select_framerate_min_max_1_s">Select framerate (min / max):&#160;&#160;&#160;&#160;&#160;%1$s</string>
+	<string name="remote_ip_addresses">Remote IP addresses:</string>
+	<string name="add_address">add address</string>
+	<string name="add_port">Port</string>
+	<string name="add_ip_address">IP address</string>
+	<string name="enter_a_valid_ip_address">enter a valid IP address</string>
+	<string name="add_port_hint">add a numerical port</string>
 
 </resources>

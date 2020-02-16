@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -56,6 +57,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		mView = inflater.inflate(R.layout.network_settings, container, false);
 		final SQLiteDatabase db = mActivity.getDatabase();
 
+		final Button addAddress = mView.findViewById(R.id.add_address_button);
 		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
 		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		final ContentValues values = new ContentValues();
@@ -72,6 +74,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				SettingsContract.AddressSettingsEntry.PORT
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
+
+
 
 		Cursor cursor = db.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,
@@ -97,14 +101,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		}
 
 		cursor.close();
-
-		final EditText remoteIPField = mView.findViewById(R.id.remote_ip_field);
-		remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-		final EditText remotePortField = mView.findViewById(R.id.remote_port_field);
-		remotePortField.setText(
-				String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
-				TextView.BufferType.EDITABLE
-		);
 
 		cursor = db.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
@@ -140,52 +136,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
 		final TextView deviceIP = mView.findViewById(R.id.device_ip_address);
 		deviceIP.setText(KetaiNet.getIP());
-
-		remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean b) {
-				if (!b && !remoteIPField.getText().toString().equals(addresses.get(0).getIP())) {
-					String remoteIP = remoteIPField.getText().toString();
-					values.put(
-							SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-							remoteIP
-					);
-					db.update(
-							SettingsContract.AddressSettingsEntry.TABLE_NAME,
-							values,
-							SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					// update addresses immediately, so above if clause works correctly
-					// next time we try to set the IP address
-					addresses.get(0).setIP(remoteIP);
-					app.mOscHelper.setBroadcastAddr(remoteIP, app.mOscHelper.getBroadcastPort());
-				}
-			}
-		});
-
-		remotePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean b) {
-				if (!b && !remotePortField.getText().toString().equals(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()))) {
-					String remotePort = remotePortField.getText().toString();
-					values.put(
-							SettingsContract.AddressSettingsEntry.PORT,
-							remotePort
-					);
-					db.update(
-							SettingsContract.AddressSettingsEntry.TABLE_NAME,
-							values,
-							SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					addresses.get(0).setPort(Integer.parseInt(remotePort, 10));
-					app.mOscHelper.setBroadcastAddr(app.mOscHelper.getBroadcastIP(), Integer.parseInt(remotePort, 10));
-				}
-			}
-		});
 
 		udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			@Override

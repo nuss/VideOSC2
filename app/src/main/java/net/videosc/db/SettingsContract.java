@@ -9,8 +9,7 @@ public class SettingsContract {
 	final private static String TAG = "SettingsContract";
 
 	// prevent accidential instantiation
-	private SettingsContract() {
-	}
+	private SettingsContract() { }
 
 	/* Inner class that defines the table contents */
 	public static class AddressSettingsEntry implements BaseColumns {
