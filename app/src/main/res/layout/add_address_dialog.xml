@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/add_address_dialog"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
@@ -29,10 +30,11 @@
 			android:text="@string/add_port"
 			android:hint="@string/add_port_hint" />
 
-		<ListView
+		<Button
 			android:id="@+id/select_protocol"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/protocol_1_s"
 			android:layout_weight="1" />
 	</LinearLayout>
 

@@ -143,5 +143,6 @@
 	<string name="add_ip_address">IP address</string>
 	<string name="enter_a_valid_ip_address">enter a valid IP address</string>
 	<string name="add_port_hint">add a numerical port</string>
+	<string name="protocol_1_s">Protocol: %1$s</string>
 
 </resources>
