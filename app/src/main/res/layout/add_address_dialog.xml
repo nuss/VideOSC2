@@ -12,8 +12,7 @@
 		android:ems="10"
 		android:hint="@string/enter_a_valid_ip_address"
 		android:importantForAutofill="no"
-		android:inputType="textPersonName"
-		android:text="@string/add_ip_address" />
+		android:inputType="textPersonName" />
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -27,7 +26,6 @@
 			android:layout_weight="1"
 			android:ems="10"
 			android:inputType="textPersonName"
-			android:text="@string/add_port"
 			android:hint="@string/add_port_hint" />
 
 		<Button

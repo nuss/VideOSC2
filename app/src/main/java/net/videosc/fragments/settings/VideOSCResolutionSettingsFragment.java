@@ -365,9 +365,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		final PopupWindow popUp = new PopupWindow(mActivity);
 		final ListView frameratesList = new ListView(mActivity);
 		frameratesList.setAdapter(adapter);
-
-		// TODO: set click listener
-
 		popUp.setFocusable(true);
 		popUp.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
 		popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);

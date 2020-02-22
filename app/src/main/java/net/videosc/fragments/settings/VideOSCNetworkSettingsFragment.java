@@ -1,9 +1,6 @@
 package net.videosc.fragments.settings;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -26,8 +23,6 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
@@ -218,49 +213,4 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		super.onPause();
 	}
 
-	public static class AddAddressDialog extends DialogFragment {
-		/**
-		 * Override to build your own custom Dialog container.  This is typically
-		 * used to show an AlertDialog instead of a generic Dialog; when doing so,
-		 * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} does not need
-		 * to be implemented since the AlertDialog takes care of its own content.
-		 *
-		 * <p>This method will be called after {@link #onCreate(Bundle)} and
-		 * before {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.  The
-		 * default implementation simply instantiates and returns a {@link Dialog}
-		 * class.
-		 *
-		 * <p><em>Note: DialogFragment own the {@link Dialog#setOnCancelListener
-		 * Dialog.setOnCancelListener} and {@link Dialog#setOnDismissListener
-		 * Dialog.setOnDismissListener} callbacks.  You must not set them yourself.</em>
-		 * To find out about these events, override {@link #onCancel(DialogInterface)}
-		 * and {@link #onDismiss(DialogInterface)}.</p>
-		 *
-		 * @param savedInstanceState The last saved instance state of the Fragment,
-		 *                           or null if this is a freshly created Fragment.
-		 * @return Return a new Dialog instance to be displayed by the Fragment.
-		 */
-		@NonNull
-		@Override
-		public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			LayoutInflater inflater = requireActivity().getLayoutInflater();
-			builder.setView(inflater.inflate(R.layout.add_address_dialog, null))
-					.setPositiveButton(R.string.add_address, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-
-						}
-					})
-					.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-
-						}
-					});
-
-
-			return builder.create();
-		}
-	}
 }

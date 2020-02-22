@@ -145,7 +145,7 @@ public class VideOSCMainActivity extends FragmentActivity
 	private float mEditorBoxAlpha;
 	public ViewGroup mBasicToolbar;
 
-	private SQLiteDatabase mDb;
+	public SQLiteDatabase mDb;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -376,7 +376,7 @@ public class VideOSCMainActivity extends FragmentActivity
 				LayoutInflater inflater = LayoutInflater.from(context);
 				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
-				// FIXME: Alert Dialogs should have a white backround lie other dialogs
+				// FIXME: Alert Dialogs should have a white backround like other dialogs
 				/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
 						new ContextThemeWrapper(
 								VideOSCMainActivity.this, R.style.AlertDialogCustom
