@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,19 +24,34 @@ import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 
+import java.util.regex.Pattern;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class AddAddressDialog extends DialogFragment {
 	final private static String TAG = "AddAddressDialog";
+	private ArrayAdapter<String> mProtocolsAdapter;
+	private PopupWindow mProtocolsPopUp;
+	private Button mProtocolsButton;
+	private String mSelectedProtocol;
+	private View mView;
+	private VideOSCMainActivity mActivity;
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mActivity = null;
+	}
+
 	/**
 	 * Override to build your own custom Dialog container.  This is typically
 	 * used to show an AlertDialog instead of a generic Dialog; when doing so,
 	 * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} does not need
 	 * to be implemented since the AlertDialog takes care of its own content.
 	 *
-	 * <p>This method will be called after {@link #onCreate(Bundle)} and
+	 * <p>This method will be called after {@link #onCreate(Bundle)} andprotocolsPopUp
 	 * before {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.  The
 	 * default implementation simply instantiates and returns a {@link Dialog}
 	 * class.
@@ -53,40 +70,48 @@ public class AddAddressDialog extends DialogFragment {
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-		VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final SQLiteDatabase db = activity.mDb;
-		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		mActivity = (VideOSCMainActivity) getActivity();
+		assert mActivity != null;
+		final SQLiteDatabase db = mActivity.mDb;
+		final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 		final LayoutInflater inflater = requireActivity().getLayoutInflater();
-		final View view = inflater.inflate(R.layout.add_address_dialog, null);
-		final Button protocolsButton = view.findViewById(R.id.select_protocol);
+		mView = inflater.inflate(R.layout.add_address_dialog, null);
+		mProtocolsButton = mView.findViewById(R.id.select_protocol);
 		final String[] protocols = new String[]{"UDP", "TCP/IP", "MULTICAST"};
-		final ArrayAdapter<String> protocolsAdapter = new ArrayAdapter<>(activity, R.layout.protocols_select_item, protocols);
-		final PopupWindow protocolsPopUp = showProtocolsList(activity, protocolsAdapter);
+		mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
+		mProtocolsPopUp = showProtocolsList(mActivity, mProtocolsAdapter);
 
-		protocolsButton.setOnClickListener(new View.OnClickListener() {
+		String buttonText = getResources().getString(R.string.protocol_1_s);
+		buttonText = String.format(buttonText, "UDP");
+		mProtocolsButton.setText(buttonText);
+		mProtocolsButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				protocolsPopUp.showAsDropDown(v, 0, 0);
+				mProtocolsPopUp.showAsDropDown(v, 0, 0);
 			}
 		});
 
-		final ListView protocolsList = (ListView) protocolsPopUp.getContentView();
+		final ListView protocolsList = (ListView) mProtocolsPopUp.getContentView();
 		protocolsList.setOnItemClickListener(new ProtocolsOnItemClickListener());
 
-		builder.setView(view)
+		builder.setView(mView)
 				.setPositiveButton(R.string.add_address, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						ContentValues entries = new ContentValues();
-						EditText ipAddressField = view.findViewById(R.id.add_ip_address);
-						EditText portField = view.findViewById(R.id.add_port);
-						entries.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, ipAddressField.getText().toString());
-						entries.put(SettingsContract.AddressSettingsEntry.PORT, portField.getText().toString());
-						entries.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
-						db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, entries);
-
-						entries.clear();
+						EditText ipAddressField = mView.findViewById(R.id.add_ip_address);
+						EditText portField = mView.findViewById(R.id.add_port);
+						Log.d(TAG, "IP: " + ipAddressField.getText().toString() + ", port: " + portField.getText().toString() + ", protocol: " + mSelectedProtocol);
+						final String ipEntry = ipAddressField.getText().toString();
+						final Pattern ipAddressPattern = Patterns.IP_ADDRESS;
+						final int portEntry = Integer.parseInt(portField.getText().toString());
+						if (!ipEntry.isEmpty() && ipAddressPattern.matcher(ipEntry).matches() && portEntry >= 0 && portEntry <= 65535 && mSelectedProtocol != null) {
+							entries.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, ipAddressField.getText().toString());
+							entries.put(SettingsContract.AddressSettingsEntry.PORT, portField.getText().toString());
+							entries.put(SettingsContract.AddressSettingsEntry.PROTOCOL, mSelectedProtocol);
+							db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, entries);
+							entries.clear();
+						}
 					}
 				})
 				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -96,8 +121,16 @@ public class AddAddressDialog extends DialogFragment {
 					}
 				});
 
-
 		return builder.create();
+	}
+
+	/**
+	 * Remove dialog.
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		mView = null;
 	}
 
 	private PopupWindow showProtocolsList(VideOSCMainActivity activity, ArrayAdapter<String> adapter) {
@@ -129,7 +162,11 @@ public class AddAddressDialog extends DialogFragment {
 		 */
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+			mSelectedProtocol = mProtocolsAdapter.getItem(position);
+			String buttonText = getResources().getString(R.string.protocol_1_s);
+			buttonText = String.format(buttonText, mSelectedProtocol);
+			mProtocolsButton.setText(buttonText);
+			mProtocolsPopUp.dismiss();
 		}
 	}
 }

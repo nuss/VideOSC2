@@ -12,7 +12,8 @@
 		android:ems="10"
 		android:hint="@string/enter_a_valid_ip_address"
 		android:importantForAutofill="no"
-		android:inputType="textPersonName" />
+		android:digits="0123456789."
+		android:inputType="phone" />
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -25,8 +26,10 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:ems="10"
-			android:inputType="textPersonName"
-			android:hint="@string/add_port_hint" />
+			android:inputType="number"
+			android:maxLength="5"
+			android:hint="@string/add_port_hint"
+			android:importantForAutofill="no" />
 
 		<Button
 			android:id="@+id/select_protocol"
