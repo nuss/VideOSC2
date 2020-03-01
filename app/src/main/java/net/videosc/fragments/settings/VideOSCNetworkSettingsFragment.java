@@ -14,6 +14,7 @@ import android.widget.TextView;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
@@ -27,6 +28,7 @@ import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
+	final private static String TAG = "NetworkSettingsFragment";
 	private View mView;
 	private VideOSCMainActivity mActivity;
 
@@ -72,7 +74,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		final String[] addrFields = new String[]{
 				SettingsContract.AddressSettingsEntry._ID,
 				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-				SettingsContract.AddressSettingsEntry.PORT
+				SettingsContract.AddressSettingsEntry.PORT,
+				SettingsContract.AddressSettingsEntry.PROTOCOL
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
@@ -98,6 +101,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 			address.setPort(port);
 			addresses.add(address);
 		}
+
+		final AddressesListAdapter addressesListAdapter = new AddressesListAdapter(getActivity(), R.layout.address_list_item, cursor, true);
 
 		cursor.close();
 
@@ -184,8 +189,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		addAddress.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				AddAddressDialog dialog = new AddAddressDialog();
-				dialog.show(fragmentManager, null);
+
 			}
 		});
 
