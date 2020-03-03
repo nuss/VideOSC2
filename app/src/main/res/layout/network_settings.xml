@@ -136,7 +136,7 @@
 			android:text="@string/add_address"/>
 
 		<ListView
-			android:id="@+id/ip_addresses_list"
+			android:id="@+id/addresses_list"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent" />
 

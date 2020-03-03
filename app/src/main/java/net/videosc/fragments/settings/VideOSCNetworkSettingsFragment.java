@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import net.videosc.R;
@@ -61,6 +63,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		final SQLiteDatabase db = mActivity.getDatabase();
 
 		final Button addAddress = mView.findViewById(R.id.add_address_button);
+		final ListView addressesList = mView.findViewById(R.id.addresses_list);
+
 		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
 		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		final ContentValues values = new ContentValues();
@@ -79,7 +83,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
-		Cursor cursor = db.query(
+		Cursor addressesCursor = db.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,
 				addrFields,
 				null,
@@ -91,7 +95,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 		addresses.clear();
 
-		while (cursor.moveToNext()) {
+		/*while (cursor.moveToNext()) {
 			final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
 			final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 			final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
@@ -100,13 +104,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 			address.setIP(ip);
 			address.setPort(port);
 			addresses.add(address);
-		}
+		}*/
 
-		final AddressesListAdapter addressesListAdapter = new AddressesListAdapter(getActivity(), R.layout.address_list_item, cursor, true);
+		final AddressesListAdapter addressesListAdapter = new AddressesListAdapter(
+				getActivity(), R.layout.address_list_item, addressesCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+		);
+		addressesList.setAdapter(addressesListAdapter);
 
-		cursor.close();
-
-		cursor = db.query(
+		Cursor cursor = db.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
 				settingsFields,
 				null,

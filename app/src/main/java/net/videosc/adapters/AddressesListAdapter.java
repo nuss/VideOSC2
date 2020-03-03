@@ -29,11 +29,10 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 *                    for this list item.  Unless you override them later, this will
 	 *                    define both the item views and the drop down views.
 	 * @param c           The cursor from which to get the data.
-	 * @param autoRequery If true the adapter will call requery() on the
-	 *                    cursor whenever it changes so the most recent
+	 * @param flags
 	 */
-	public AddressesListAdapter(Context context, int layout, Cursor c, boolean autoRequery) {
-		super(context, layout, c, autoRequery);
+	public AddressesListAdapter(Context context, int layout, Cursor c, int flags) {
+		super(context, layout, c, flags);
 		mLayout = layout;
 	}
 
@@ -48,7 +47,7 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		Log.d(TAG, "newView called - cursor: " + cursor + ", parent: " + parent);
+		Log.d(TAG, "newView called - cursor: " + cursor + ", parent: " + parent + ", mLayout: " + mLayout);
 		return LayoutInflater.from(context).inflate(mLayout, parent, false);
 	}
 
@@ -61,19 +60,19 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		Log.d(TAG, "bindView called");
+		Log.d(TAG, "bindView called - view: " + view);
 		TextView ipText = view.findViewById(R.id.remote_ip_address);
 		TextView portText = view.findViewById(R.id.remote_port);
 		TextView protocolText = view.findViewById(R.id.address_protocol);
+		final int count = cursor.getCount();
+		Log.d(TAG, "num entries: " + count);
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
 
 		ipText.setText(ip);
-		portText.setText(port);
+		portText.setText(String.valueOf(port));
 		protocolText.setText(protocol);
 	}
-
-
 }
