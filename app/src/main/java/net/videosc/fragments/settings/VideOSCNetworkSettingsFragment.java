@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCDialogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +65,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		mView = inflater.inflate(R.layout.network_settings, container, false);
 		final SQLiteDatabase db = mActivity.getDatabase();
 
+		final EditText addIPAddress = mView.findViewById(R.id.add_remote_ip);
+		final EditText addPort = mView.findViewById(R.id.remote_port);
+		final Button addProtocol = mView.findViewById(R.id.set_protocol);
+
 		final Button addAddress = mView.findViewById(R.id.add_address_button);
 		final ListView addressesList = mView.findViewById(R.id.addresses_list);
 
@@ -82,6 +89,56 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				SettingsContract.AddressSettingsEntry.PROTOCOL
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
+
+		addAddress.setOnClickListener(new View.OnClickListener() {
+			                              @Override
+			                              public void onClick(View v) {
+				                              Log.d(TAG, "add address was clicked: " + v);
+				                              final String addAddressText = addIPAddress.getText().toString();
+				                              final int addPortVal = Integer.parseInt(addPort.getText().toString(), 10);
+				                              final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+
+				                              if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
+					                              values.put(
+							                              SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+							                              addAddressText
+					                              );
+				                              } else {
+					                              VideOSCDialogHelper.showWarning(
+							                              activity,
+							                              android.R.style.Theme_Holo_Light_Dialog,
+							                              "The given IP address is invalid!",
+							                              "ok"
+					                              );
+				                              }
+
+				                              if (addPortVal >= 0 && addPortVal <= 65535) {
+					                              values.put(
+							                              SettingsContract.AddressSettingsEntry.PORT,
+							                              addPortVal
+					                              );
+				                              } else {
+					                              VideOSCDialogHelper.showWarning(
+							                              activity,
+							                              android.R.style.Theme_Holo_Light_Dialog,
+							                              "The given port is invalid!",
+							                              "ok"
+					                              );
+				                              }
+
+				                              values.put(
+						                              SettingsContract.AddressSettingsEntry.PROTOCOL,
+						                              addProtocol.getText().toString()
+				                              );
+
+				                              db.insert(
+						                              SettingsContract.AddressSettingsEntry.TABLE_NAME,
+						                              null,
+						                              values
+				                              );
+			                              }
+		                              }
+		);
 
 		Cursor addressesCursor = db.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,

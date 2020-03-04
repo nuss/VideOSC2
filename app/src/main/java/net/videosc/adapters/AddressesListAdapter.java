@@ -20,7 +20,7 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	/**
 	 * Constructor with default behavior as per
 	 * {@link CursorAdapter#CursorAdapter(Context, Cursor, boolean)}; it is recommended
-	 * you not use this, but instead {@link #ResourceCursorAdapter(Context, int, Cursor, int)}.
+	 * you not use this, but instead {ResourceCursorAdapter(Context, int, Cursor, int)}.
 	 * When using this constructor, {@link #FLAG_REGISTER_CONTENT_OBSERVER}
 	 * will always be set.
 	 *
@@ -64,15 +64,28 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 		TextView ipText = view.findViewById(R.id.remote_ip_address);
 		TextView portText = view.findViewById(R.id.remote_port);
 		TextView protocolText = view.findViewById(R.id.address_protocol);
-		final int count = cursor.getCount();
-		Log.d(TAG, "num entries: " + count);
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
 
+		Log.d(TAG, "ID: " + id + "\nip: " + ip + "\nport: " + port + "\nprotocol: " + protocol);
+
 		ipText.setText(ip);
 		portText.setText(String.valueOf(port));
 		protocolText.setText(protocol);
+
+		cursor.close();
+	}
+
+	/**
+	 * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
+	 * closed.
+	 *
+	 * @param cursor The new cursor to be used
+	 */
+	@Override
+	public void changeCursor(Cursor cursor) {
+		super.changeCursor(cursor);
 	}
 }

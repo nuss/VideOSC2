@@ -72,4 +72,24 @@ public class VideOSCDialogHelper {
 
 		builder.show();
 	}
+
+	public static void showWarning(
+			final Activity activity,
+			int style,
+			String msg,
+			String confirm
+	) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				new ContextThemeWrapper(activity, style)
+		)
+				.setMessage(msg)
+				.setPositiveButton(confirm, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+
+		builder.show();
+	}
 }
