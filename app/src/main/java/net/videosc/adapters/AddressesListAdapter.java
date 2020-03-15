@@ -24,11 +24,11 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 * When using this constructor, {@link #FLAG_REGISTER_CONTENT_OBSERVER}
 	 * will always be set.
 	 *
-	 * @param context     The context where the ListView associated with this adapter is running
-	 * @param layout      resource identifier of a layout file that defines the views
-	 *                    for this list item.  Unless you override them later, this will
-	 *                    define both the item views and the drop down views.
-	 * @param c           The cursor from which to get the data.
+	 * @param context The context where the ListView associated with this adapter is running
+	 * @param layout  resource identifier of a layout file that defines the views
+	 *                for this list item.  Unless you override them later, this will
+	 *                define both the item views and the drop down views.
+	 * @param c       The cursor from which to get the data.
 	 * @param flags
 	 */
 	public AddressesListAdapter(Context context, int layout, Cursor c, int flags) {
@@ -47,7 +47,13 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		Log.d(TAG, "newView called - cursor: " + cursor + ", parent: " + parent + ", mLayout: " + mLayout);
+		Log.d(TAG, "newView called - cursor position: " + cursor.getPosition() + "\nnum entries: " + cursor.getCount() + "\nparent: " + parent + "\nmLayout: " + mLayout);
+		/*while (cursor.moveToNext()) {
+			Log.d(TAG, "ID: " +
+				cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID))
+			);
+		}*/
+
 		return LayoutInflater.from(context).inflate(mLayout, parent, false);
 	}
 
@@ -60,22 +66,20 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		Log.d(TAG, "bindView called - view: " + view);
 		TextView ipText = view.findViewById(R.id.remote_ip_address);
 		TextView portText = view.findViewById(R.id.remote_port);
 		TextView protocolText = view.findViewById(R.id.address_protocol);
+
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
 
-		Log.d(TAG, "ID: " + id + "\nip: " + ip + "\nport: " + port + "\nprotocol: " + protocol);
+		Log.d(TAG, "the view: " + view + "\ncursor: " + cursor.getPosition() + "\nis last: " + cursor.isLast() + "\nID: " + id + "\nip: " + ip + "\nport: " + port + "\nprotocol: " + protocol);
 
 		ipText.setText(ip);
 		portText.setText(String.valueOf(port));
 		protocolText.setText(protocol);
-
-		cursor.close();
 	}
 
 	/**

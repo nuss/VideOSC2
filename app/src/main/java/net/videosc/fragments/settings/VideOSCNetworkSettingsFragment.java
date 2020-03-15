@@ -10,15 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
-import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
@@ -66,15 +64,17 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		final SQLiteDatabase db = mActivity.getDatabase();
 
 		final EditText addIPAddress = mView.findViewById(R.id.add_remote_ip);
-		final EditText addPort = mView.findViewById(R.id.remote_port);
+		final EditText addPort = mView.findViewById(R.id.add_remote_port);
 		final Button addProtocol = mView.findViewById(R.id.set_protocol);
 
 		final Button addAddress = mView.findViewById(R.id.add_address_button);
-		final ListView addressesList = mView.findViewById(R.id.addresses_list);
+//		final ListView addressesList = mView.findViewById(R.id.addresses_list);
 
 		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
 		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		final ContentValues values = new ContentValues();
+
+		addAddress.setOnClickListener(new AddAddressButtonOnClickListener(db, values, addIPAddress, addPort, addProtocol));
 
 		final String[] settingsFields = new String[]{
 				SettingsContract.SettingsEntries._ID,
@@ -90,56 +90,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
-		addAddress.setOnClickListener(new View.OnClickListener() {
-			                              @Override
-			                              public void onClick(View v) {
-				                              Log.d(TAG, "add address was clicked: " + v);
-				                              final String addAddressText = addIPAddress.getText().toString();
-				                              final int addPortVal = Integer.parseInt(addPort.getText().toString(), 10);
-				                              final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-
-				                              if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
-					                              values.put(
-							                              SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-							                              addAddressText
-					                              );
-				                              } else {
-					                              VideOSCDialogHelper.showWarning(
-							                              activity,
-							                              android.R.style.Theme_Holo_Light_Dialog,
-							                              "The given IP address is invalid!",
-							                              "ok"
-					                              );
-				                              }
-
-				                              if (addPortVal >= 0 && addPortVal <= 65535) {
-					                              values.put(
-							                              SettingsContract.AddressSettingsEntry.PORT,
-							                              addPortVal
-					                              );
-				                              } else {
-					                              VideOSCDialogHelper.showWarning(
-							                              activity,
-							                              android.R.style.Theme_Holo_Light_Dialog,
-							                              "The given port is invalid!",
-							                              "ok"
-					                              );
-				                              }
-
-				                              values.put(
-						                              SettingsContract.AddressSettingsEntry.PROTOCOL,
-						                              addProtocol.getText().toString()
-				                              );
-
-				                              db.insert(
-						                              SettingsContract.AddressSettingsEntry.TABLE_NAME,
-						                              null,
-						                              values
-				                              );
-			                              }
-		                              }
-		);
-
 		Cursor addressesCursor = db.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,
 				addrFields,
@@ -150,23 +100,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				sortOrder
 		);
 
+		final AddressListFragment addressesListFragment = new AddressListFragment();
+		addressesListFragment.setCursor(addressesCursor);
+		fragmentManager.beginTransaction().add(R.id.address_list_fragment, addressesListFragment).commit();
+
 		addresses.clear();
-
-		/*while (cursor.moveToNext()) {
-			final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
-			final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
-			final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
-			final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-			address.setRowId(rowId);
-			address.setIP(ip);
-			address.setPort(port);
-			addresses.add(address);
-		}*/
-
-		final AddressesListAdapter addressesListAdapter = new AddressesListAdapter(
-				getActivity(), R.layout.address_list_item, addressesCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
-		);
-		addressesList.setAdapter(addressesListAdapter);
 
 		Cursor cursor = db.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
@@ -248,13 +186,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-		addAddress.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-			}
-		});
-
 		//		return super.onCreateView(inflater, container, savedInstanceState);
 		return mView;
 	}
@@ -279,4 +210,106 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		super.onPause();
 	}
 
+	private class AddAddressButtonOnClickListener implements View.OnClickListener {
+		final private SQLiteDatabase mDb;
+		final private ContentValues mValues;
+		final private EditText mAddIPAddress;
+		final private EditText mAddPort;
+		final private Button mSetProtocol;
+
+		AddAddressButtonOnClickListener(SQLiteDatabase db, ContentValues values, EditText addIPAddress, EditText addPort, Button setProtocol) {
+			this.mDb = db;
+			this.mValues = values;
+			this.mAddIPAddress = addIPAddress;
+			this.mAddPort = addPort;
+			this.mSetProtocol = setProtocol;
+		}
+
+		/**
+		 * Called when a view has been clicked.
+		 *
+		 * @param v The view that was clicked.
+		 */
+		@Override
+		public void onClick(View v) {
+			final String addAddressText = mAddIPAddress.getText().toString();
+			final String addPortVal = mAddPort.getText().toString();
+			final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
+			boolean goOn = false;
+
+			if (addAddressText.length() > 0) {
+				if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
+					goOn = true;
+					mValues.put(
+							SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+							addAddressText
+					);
+				} else {
+					VideOSCDialogHelper.showWarning(
+							activity,
+							android.R.style.Theme_Holo_Light_Dialog,
+							"The given IP address is invalid!",
+							"ok"
+					);
+				}
+			} else {
+				VideOSCDialogHelper.showWarning(
+						activity,
+						android.R.style.Theme_Holo_Light_Dialog,
+						"The IP address must not be empty!",
+						"ok"
+				);
+			}
+
+			if (goOn) {
+				if (addPortVal.length() > 0) {
+					int portVal = Integer.parseInt(mAddPort.getText().toString(), 10);
+					if (portVal >= 0 && portVal <= 65535) {
+						mValues.put(
+								SettingsContract.AddressSettingsEntry.PORT,
+								addPortVal
+						);
+					} else {
+						goOn = false;
+						VideOSCDialogHelper.showWarning(
+								activity,
+								android.R.style.Theme_Holo_Light_Dialog,
+								"The given port is invalid!",
+								"ok"
+						);
+					}
+				} else {
+					goOn = false;
+					VideOSCDialogHelper.showWarning(
+							activity,
+							android.R.style.Theme_Holo_Light_Dialog,
+							"Port must be an integer value between 0 and 65535",
+							"ok"
+					);
+				}
+			}
+
+			if (goOn) {
+				mValues.put(
+						SettingsContract.AddressSettingsEntry.PROTOCOL,
+						mSetProtocol.getText().toString()
+				);
+			}
+
+			Log.d(TAG, "values: " + mValues);
+
+			if (goOn) {
+				long ret = mDb.insert(
+						SettingsContract.AddressSettingsEntry.TABLE_NAME,
+						null,
+						mValues
+				);
+
+				Log.d(TAG, "db result: " + ret);
+			}
+
+			mValues.clear();
+		}
+
+	}
 }

@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -26,9 +30,6 @@ import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 
 public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	final private static String TAG = "SnapshotSelectAdapter";
@@ -70,6 +71,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		Log.d(TAG, "newView called: " + cursor.getPosition());
 		mManager = mActivity.getSupportFragmentManager();
 		mCameraFragment = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
 		mSnapshotListFragment = (VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
@@ -86,6 +88,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, final Context context, final Cursor cursor) {
+		Log.d(TAG, "bindView called: " + cursor.getPosition());
 		TextView row = view.findViewById(R.id.snapshot_item);
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
 		final int numPixels = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE));
@@ -96,9 +99,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 		else text = name;
 		row.setText(text);
 
-		final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
-
-		if (rowId >= 0) {
+		if (id >= 0) {
 			final String newRed = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES));
 			final String newRedMix = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES));
 			final String newGreen = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES));
