@@ -83,10 +83,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		};
 
 		final String[] addrFields = new String[]{
-				SettingsContract.AddressSettingsEntry._ID,
 				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
 				SettingsContract.AddressSettingsEntry.PORT,
-				SettingsContract.AddressSettingsEntry.PROTOCOL
+				SettingsContract.AddressSettingsEntry.PROTOCOL,
+				SettingsContract.AddressSettingsEntry._ID
 		};
 		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
 
@@ -102,6 +102,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 		final AddressListFragment addressesListFragment = new AddressListFragment();
 		addressesListFragment.setCursor(addressesCursor);
+		addressesListFragment.setColumns(addrFields);
 		fragmentManager.beginTransaction().add(R.id.address_list_fragment, addressesListFragment).commit();
 
 		addresses.clear();
