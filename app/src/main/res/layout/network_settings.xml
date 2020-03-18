@@ -137,8 +137,8 @@
             android:layout_marginBottom="15dp"
             android:text="@string/add_address" />
 
-        <FrameLayout
-            android:id="@+id/address_list_fragment"
+        <ListView
+            android:id="@+id/addresses_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

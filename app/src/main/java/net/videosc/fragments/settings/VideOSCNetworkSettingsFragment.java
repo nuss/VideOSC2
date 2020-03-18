@@ -10,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -100,10 +103,18 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				sortOrder
 		);
 
-		final AddressListFragment addressesListFragment = new AddressListFragment();
-		addressesListFragment.setCursor(addressesCursor);
-		addressesListFragment.setColumns(addrFields);
-		fragmentManager.beginTransaction().add(R.id.address_list_fragment, addressesListFragment).commit();
+		final int[] to = new int[] {
+				R.id.remote_ip_address,
+				R.id.remote_port,
+				R.id.address_protocol,
+				R.id.entry_id
+		};
+		final SimpleCursorAdapter addressesAdapter = new SimpleCursorAdapter(
+				getActivity(), R.layout.address_list_item, addressesCursor, addrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+		);
+
+		final ListView addressesList = mView.findViewById(R.id.addresses_list);
+		addressesList.setAdapter(addressesAdapter);
 
 		addresses.clear();
 
