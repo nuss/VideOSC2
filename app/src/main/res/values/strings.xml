@@ -148,10 +148,10 @@
 	<string name="delete_address">delete address</string>
 
 	<!-- address entries -->
-	<string name="warning_address_header">"There are errors in the given entries:\n"</string>
-	<string name="warning_invalid_ip">"\n- The given IP address is invalid!"</string>
-	<string name="warning_empty_ip">"\n- The IP address must not be empty!"</string>
-	<string name="warning_invalid_port">"\n- A valid port must be an integer value </string>
-	<string name="warning_empty_port">\n- A valid port must be given</string>
+	<string name="warning_address_header">There are errors in the given entries:\n</string>
+	<string name="warning_invalid_ip">\n- The given IP address is invalid!</string>
+	<string name="warning_empty_ip">\n- The IP address must not be empty!</string>
+	<string name="warning_invalid_port">\n- A valid port must be an integer value!</string>
+	<string name="warning_empty_port">\n- A valid port must be given!</string>
 
 </resources>
