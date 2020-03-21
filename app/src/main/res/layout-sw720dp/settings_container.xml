@@ -39,6 +39,7 @@
 		android:paddingRight="20dp"
 		android:paddingBottom="20dp"
 		android:visibility="visible"
+		android:fillViewport="true"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toStartOf="@+id/settings_list"
 		app:layout_constraintHorizontal_bias="0.5"

@@ -37,6 +37,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "NetworkSettingsFragment";
 	private View mView;
 	private VideOSCMainActivity mActivity;
+	private Cursor mAddressesCursor;
+	private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
 
 	/**
 	 * @param savedInstanceState
@@ -73,7 +75,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 		final Button addAddress = mView.findViewById(R.id.add_address_button);
 //		final ListView addressesList = mView.findViewById(R.id.addresses_list);
 
-		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
+		mAddresses = new ArrayList<>();
 		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
 		final ContentValues values = new ContentValues();
 
@@ -91,9 +93,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				SettingsContract.AddressSettingsEntry.PROTOCOL,
 				SettingsContract.AddressSettingsEntry._ID
 		};
-		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
+		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " ASC";
 
-		Cursor addressesCursor = db.query(
+		mAddressesCursor = db.query(
 				SettingsContract.AddressSettingsEntry.TABLE_NAME,
 				addrFields,
 				null,
@@ -110,13 +112,26 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 				R.id.entry_id
 		};
 		final SimpleCursorAdapter addressesAdapter = new SimpleCursorAdapter(
-				getActivity(), R.layout.address_list_item, addressesCursor, addrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+				getActivity(), R.layout.address_list_item, mAddressesCursor, addrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
 		);
 
 		final ListView addressesList = mView.findViewById(R.id.addresses_list);
 		addressesList.setAdapter(addressesAdapter);
 
-		addresses.clear();
+		mAddresses.clear();
+
+		while (mAddressesCursor.moveToNext()) {
+			final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
+			final long addressId = mAddressesCursor.getLong(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
+			final String addressIP = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
+			final int port = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
+			final String protocol = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
+			address.setRowId(addressId);
+			address.setIP(addressIP);
+			address.setPort(port);
+			address.setProtocol(protocol);
+			mAddresses.add(address);
+		}
 
 		Cursor cursor = db.query(
 				SettingsContract.SettingsEntries.TABLE_NAME,
@@ -170,7 +185,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 							null
 					);
 					values.clear();
-					addresses.get(0).setReceivePort(Integer.parseInt(receivePort, 10));
+					mAddresses.get(0).setReceivePort(Integer.parseInt(receivePort, 10));
 				}
 			}
 		});
@@ -206,6 +221,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	public void onDetach() {
 		super.onDetach();
 		mActivity = null;
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mAddressesCursor.close();
 	}
 
 	@Override
@@ -247,70 +268,54 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 			final String addAddressText = mAddIPAddress.getText().toString();
 			final String addPortVal = mAddPort.getText().toString();
 			final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-			boolean goOn = false;
+			int steps = 0;
+			String msg = getString(R.string.warning_address_header);
+			Log.d(TAG, "CLICK! " + steps);
+
 
 			if (addAddressText.length() > 0) {
 				if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
-					goOn = true;
+					steps++;
 					mValues.put(
 							SettingsContract.AddressSettingsEntry.IP_ADDRESS,
 							addAddressText
 					);
 				} else {
-					VideOSCDialogHelper.showWarning(
-							activity,
-							android.R.style.Theme_Holo_Light_Dialog,
-							"The given IP address is invalid!",
-							"ok"
-					);
+					msg = msg.concat(getString(R.string.warning_invalid_ip));
 				}
 			} else {
+				msg = msg.concat(getString(R.string.warning_empty_ip));
+			}
+
+			if (addPortVal.length() > 0) {
+				int portVal = Integer.parseInt(mAddPort.getText().toString(), 10);
+				if (portVal >= 0 && portVal <= 65535) {
+					steps++;
+					mValues.put(
+							SettingsContract.AddressSettingsEntry.PORT,
+							addPortVal
+					);
+				} else {
+					msg = msg.concat(getString(R.string.warning_invalid_port));
+				}
+			} else {
+				msg = msg.concat(getString(R.string.warning_empty_port));
 				VideOSCDialogHelper.showWarning(
 						activity,
 						android.R.style.Theme_Holo_Light_Dialog,
-						"The IP address must not be empty!",
+						msg,
 						"ok"
 				);
 			}
 
-			if (goOn) {
-				if (addPortVal.length() > 0) {
-					int portVal = Integer.parseInt(mAddPort.getText().toString(), 10);
-					if (portVal >= 0 && portVal <= 65535) {
-						mValues.put(
-								SettingsContract.AddressSettingsEntry.PORT,
-								addPortVal
-						);
-					} else {
-						goOn = false;
-						VideOSCDialogHelper.showWarning(
-								activity,
-								android.R.style.Theme_Holo_Light_Dialog,
-								"The given port is invalid!",
-								"ok"
-						);
-					}
-				} else {
-					goOn = false;
-					VideOSCDialogHelper.showWarning(
-							activity,
-							android.R.style.Theme_Holo_Light_Dialog,
-							"Port must be an integer value between 0 and 65535",
-							"ok"
-					);
-				}
-			}
-
-			if (goOn) {
+			if (steps == 2) {
 				mValues.put(
 						SettingsContract.AddressSettingsEntry.PROTOCOL,
 						mSetProtocol.getText().toString()
 				);
-			}
-
-			Log.d(TAG, "values: " + mValues);
-
-			if (goOn) {
+				if (mAddresses.contains(mValues)) {
+					// TODO: create warning
+				}
 				long ret = mDb.insert(
 						SettingsContract.AddressSettingsEntry.TABLE_NAME,
 						null,
@@ -322,6 +327,5 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 			mValues.clear();
 		}
-
 	}
 }

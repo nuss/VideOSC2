@@ -30,6 +30,7 @@
 		android:paddingEnd="20dp"
 		android:paddingRight="20dp"
 		android:paddingBottom="20dp"
+		android:fillViewport="true"
 		android:visibility="visible" />
 
 </FrameLayout>

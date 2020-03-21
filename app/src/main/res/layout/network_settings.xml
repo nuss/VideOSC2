@@ -84,7 +84,7 @@
     <LinearLayout
         android:id="@+id/remote_address"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.5"
         android:baselineAligned="false"
         android:orientation="vertical">
@@ -140,7 +140,8 @@
         <ListView
             android:id="@+id/addresses_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
 
     </LinearLayout>
 

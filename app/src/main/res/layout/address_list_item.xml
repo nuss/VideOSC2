@@ -12,7 +12,7 @@
 		android:layout_weight="0"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 	<TextView
 		android:id="@+id/remote_ip_address"
@@ -21,7 +21,7 @@
 		android:layout_weight="0.45"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 	<TextView
 		android:id="@+id/remote_port"
@@ -30,7 +30,7 @@
 		android:layout_weight="0.25"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 	<TextView
 		android:id="@+id/address_protocol"
@@ -39,13 +39,15 @@
 		android:layout_weight="0.2"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 	<ImageButton
 		android:id="@+id/delete_address"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:contentDescription="@string/delete_address"
+		android:background="@color/transparent"
+		android:layout_gravity="center_vertical"
 		android:src="@drawable/close"/>
 
 </LinearLayout>
