@@ -20,7 +20,10 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.AddressSettingsEntry._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL DEFAULT '192.168.1.1'," +
 					SettingsContract.AddressSettingsEntry.PORT + " INTEGER NOT NULL DEFAULT '57120'," +
-					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL DEFAULT 'UDP')";
+					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL DEFAULT 'UDP'," +
+					"UNIQUE (" + SettingsContract.AddressSettingsEntry.IP_ADDRESS + ", " +
+					SettingsContract.AddressSettingsEntry.PORT + ", " +
+					SettingsContract.AddressSettingsEntry.PROTOCOL + "))";
 
 	private static final String SQL_ADDRESSES_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntry.TABLE_NAME;
@@ -66,7 +69,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 26;
+	private static final int DATABASE_VERSION = 27;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

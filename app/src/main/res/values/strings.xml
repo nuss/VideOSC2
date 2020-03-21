@@ -151,7 +151,9 @@
 	<string name="warning_address_header">There are errors in the given entries:\n</string>
 	<string name="warning_invalid_ip">\n- The given IP address is invalid!</string>
 	<string name="warning_empty_ip">\n- The IP address must not be empty!</string>
-	<string name="warning_invalid_port">\n- A valid port must be an integer value!</string>
+	<string name="warning_invalid_port">\n- A valid port must be an integer value between 0 and 65535!</string>
 	<string name="warning_empty_port">\n- A valid port must be given!</string>
+	<string name="warning_same_address_different_protocol">A remote host with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists.\n\nAre you sure you want to add the same address again, using a different protocol?</string>
+	<string name="warning_same_address_same_protocol">A remote host with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists in the database.</string>
 
 </resources>
