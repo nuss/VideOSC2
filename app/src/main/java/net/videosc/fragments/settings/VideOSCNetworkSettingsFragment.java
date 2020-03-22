@@ -3,6 +3,7 @@ package net.videosc.fragments.settings;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,10 +45,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     final private static String TAG = "NetworkSettingsFragment";
     private View mView;
     private VideOSCMainActivity mActivity;
+    private EditText mAddIPAddress;
+    private EditText mAddPort;
     private Button mAddProtocol;
     private ArrayAdapter<String> mProtocolsAdapter;
     private PopupWindow mProtocolsPopUp;
     private Cursor mAddressesCursor;
+    private SimpleCursorAdapter mAddressesAdapter;
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
@@ -79,8 +83,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         mView = inflater.inflate(R.layout.network_settings, container, false);
         final SQLiteDatabase db = mActivity.getDatabase();
 
-        final EditText addIPAddress = mView.findViewById(R.id.add_remote_ip);
-        final EditText addPort = mView.findViewById(R.id.add_remote_port);
+        mAddIPAddress = mView.findViewById(R.id.add_remote_ip);
+        mAddPort = mView.findViewById(R.id.add_remote_port);
         mAddProtocol = mView.findViewById(R.id.set_protocol);
 		final String[] protocols = new String[] {"UDP", "TCP/IP"};
 		mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
@@ -96,13 +100,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         final Button addAddress = mView.findViewById(R.id.add_address_button);
 
-//		final ListView addressesList = mView.findViewById(R.id.addresses_list);
-
         mAddresses = new ArrayList<>();
         final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
         final ContentValues values = new ContentValues();
 
-        addAddress.setOnClickListener(new AddAddressButtonOnClickListener(db, values, addIPAddress, addPort, mAddProtocol));
+        addAddress.setOnClickListener(new AddAddressButtonOnClickListener(db, values, mAddIPAddress, mAddPort, mAddProtocol));
 
         final String[] settingsFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
@@ -127,19 +129,32 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 null,
                 sortOrder
         );
-
+        
         final int[] to = new int[]{
                 R.id.remote_ip_address,
                 R.id.remote_port,
                 R.id.address_protocol,
                 R.id.entry_id
         };
-        final SimpleCursorAdapter addressesAdapter = new SimpleCursorAdapter(
+        mAddressesAdapter = new SimpleCursorAdapter(
                 getActivity(), R.layout.address_list_item, mAddressesCursor, addrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         );
 
         final ListView addressesList = mView.findViewById(R.id.addresses_list);
-        addressesList.setAdapter(addressesAdapter);
+        addressesList.setAdapter(mAddressesAdapter);
+        mAddressesAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                Log.d(TAG, "data set changed, cursor: " + mAddressesCursor.getCount());
+            }
+
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
+                Log.d(TAG, "data set invalidated");
+            }
+        });
 
         mAddresses.clear();
 
@@ -338,11 +353,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             }
 
             if (steps == 2) {
+                Log.d(TAG, "protocol is set to: " + mSetProtocol.getText());
                 mValues.put(
                         SettingsContract.AddressSettingsEntry.PROTOCOL,
                         mSetProtocol.getText().toString()
                 );
-                String[] compareString = new String[]{addAddressText, addPortVal, (String) mAddProtocol.getText()};
+                String[] compareString = new String[]{addAddressText, addPortVal, (String) mSetProtocol.getText()};
                 final short compResult = compare(compareString, mAddressStrings);
 
                 switch (compResult) {
@@ -357,7 +373,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
+                                        resetRemoteClientInputs();
                                         Log.d(TAG, "new database entry with ID " + ret);
+                                        mAddressesAdapter.notifyDataSetChanged();
                                     }
                                 },
                                 getString(R.string.cancel),
@@ -380,7 +398,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                 null,
                                 mValues
                         );
+                        resetRemoteClientInputs();
+                        mValues.clear();
                         Log.d(TAG, "db result: " + ret);
+                        mAddressesAdapter.notifyDataSetChanged();
                         break;
                     default:
                 }
@@ -394,8 +415,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 			}
 
 //            mAddressStrings.clear();
-            mValues.clear();
-            Log.d(TAG, "mAddressStrings and mValues cleared");
         }
 
         private short compare(String[] toMatch, ArrayList<String[]> matchStrings) {
@@ -419,12 +438,21 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         }
 
         private long insertIntoDatabase(SQLiteDatabase db, ContentValues values) {
-            return db.insert(
+            long ret = db.insert(
                     SettingsContract.AddressSettingsEntry.TABLE_NAME,
                     null,
                     values
             );
+
+            values.clear();
+            return ret;
         }
+    }
+
+    private void resetRemoteClientInputs() {
+        mAddIPAddress.setText("");
+        mAddPort.setText("");
+        mAddProtocol.setText("UDP");
     }
 
 	private class ProtocolsOnItemClickListener implements android.widget.AdapterView.OnItemClickListener {
@@ -436,6 +464,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
 			String item = mProtocolsAdapter.getItem(position);
 			mAddProtocol.setText(item);
+			mProtocolsPopUp.dismiss();
 		}
 	}
 

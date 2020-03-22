@@ -69,7 +69,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 27;
+	private static final int DATABASE_VERSION = 32;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
