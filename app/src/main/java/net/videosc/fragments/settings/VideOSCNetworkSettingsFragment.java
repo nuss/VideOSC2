@@ -10,10 +10,16 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -39,6 +45,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private View mView;
     private VideOSCMainActivity mActivity;
     private Button mAddProtocol;
+    private ArrayAdapter<String> mProtocolsAdapter;
+    private PopupWindow mProtocolsPopUp;
     private Cursor mAddressesCursor;
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
@@ -74,8 +82,20 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         final EditText addIPAddress = mView.findViewById(R.id.add_remote_ip);
         final EditText addPort = mView.findViewById(R.id.add_remote_port);
         mAddProtocol = mView.findViewById(R.id.set_protocol);
+		final String[] protocols = new String[] {"UDP", "TCP/IP"};
+		mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
+		mProtocolsPopUp = showProtocolsList(mProtocolsAdapter);
+		mAddProtocol.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mProtocolsPopUp.showAsDropDown(v, 0, 0);
+			}
+		});
+		ListView protocolsList = (ListView) mProtocolsPopUp.getContentView();
+		protocolsList.setOnItemClickListener(new ProtocolsOnItemClickListener());
 
         final Button addAddress = mView.findViewById(R.id.add_address_button);
+
 //		final ListView addressesList = mView.findViewById(R.id.addresses_list);
 
         mAddresses = new ArrayList<>();
@@ -222,7 +242,19 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         return mView;
     }
 
-    @Override
+	private PopupWindow showProtocolsList(ArrayAdapter protocolsAdapter) {
+    	final PopupWindow popUp = new PopupWindow(mActivity);
+    	final ListView protocolsList = new ListView(mActivity);
+    	protocolsList.setAdapter(protocolsAdapter);
+    	popUp.setFocusable(true);
+    	popUp.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+    	popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+    	popUp.setContentView(protocolsList);
+
+    	return popUp;
+	}
+
+	@Override
     public void onDetach() {
         super.onDetach();
         mActivity = null;
@@ -394,4 +426,17 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             );
         }
     }
+
+	private class ProtocolsOnItemClickListener implements android.widget.AdapterView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			Animation fadeInAnimation = AnimationUtils.loadAnimation(view.getContext(), android.R.anim.fade_in);
+			fadeInAnimation.setDuration(2);
+			view.startAnimation(fadeInAnimation);
+
+			String item = mProtocolsAdapter.getItem(position);
+			mAddProtocol.setText(item);
+		}
+	}
+
 }
