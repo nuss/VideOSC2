@@ -52,6 +52,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private PopupWindow mProtocolsPopUp;
     private Cursor mAddressesCursor;
     private SimpleCursorAdapter mAddressesAdapter;
+    private SQLiteDatabase mDb;
+    private String[] mAddrFields = new String[]{
+            SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+            SettingsContract.AddressSettingsEntry.PORT,
+            SettingsContract.AddressSettingsEntry.PROTOCOL,
+            SettingsContract.AddressSettingsEntry._ID
+    };
+    private String mSortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
@@ -81,7 +89,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
         mView = inflater.inflate(R.layout.network_settings, container, false);
-        final SQLiteDatabase db = mActivity.getDatabase();
+        mDb = mActivity.getDatabase();
 
         mAddIPAddress = mView.findViewById(R.id.add_remote_ip);
         mAddPort = mView.findViewById(R.id.add_remote_port);
@@ -104,7 +112,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
         final ContentValues values = new ContentValues();
 
-        addAddress.setOnClickListener(new AddAddressButtonOnClickListener(db, values, mAddIPAddress, mAddPort, mAddProtocol));
+        addAddress.setOnClickListener(new AddAddressButtonOnClickListener(mDb, values, mAddIPAddress, mAddPort, mAddProtocol));
 
         final String[] settingsFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
@@ -112,24 +120,16 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 SettingsContract.SettingsEntries.ROOT_CMD
         };
 
-        final String[] addrFields = new String[]{
-                SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-                SettingsContract.AddressSettingsEntry.PORT,
-                SettingsContract.AddressSettingsEntry.PROTOCOL,
-                SettingsContract.AddressSettingsEntry._ID
-        };
-        final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " ASC";
-
-        mAddressesCursor = db.query(
+        mAddressesCursor = mDb.query(
                 SettingsContract.AddressSettingsEntry.TABLE_NAME,
-                addrFields,
+                mAddrFields,
                 null,
                 null,
                 null,
                 null,
-                sortOrder
+                mSortOrder
         );
-        
+
         final int[] to = new int[]{
                 R.id.remote_ip_address,
                 R.id.remote_port,
@@ -137,7 +137,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 R.id.entry_id
         };
         mAddressesAdapter = new SimpleCursorAdapter(
-                getActivity(), R.layout.address_list_item, mAddressesCursor, addrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+                getActivity(), R.layout.address_list_item, mAddressesCursor, mAddrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         );
 
         final ListView addressesList = mView.findViewById(R.id.addresses_list);
@@ -146,13 +146,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                Log.d(TAG, "data set changed, cursor: " + mAddressesCursor.getCount());
             }
 
             @Override
             public void onInvalidated() {
                 super.onInvalidated();
-                Log.d(TAG, "data set invalidated");
             }
         });
 
@@ -173,7 +171,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             mAddresses.add(address);
         }
 
-        Cursor cursor = db.query(
+        Cursor cursor = mDb.query(
                 SettingsContract.SettingsEntries.TABLE_NAME,
                 settingsFields,
                 null,
@@ -218,7 +216,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                             SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
                             receivePort
                     );
-                    db.update(
+                    mDb.update(
                             SettingsContract.SettingsEntries.TABLE_NAME,
                             values,
                             SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
@@ -239,7 +237,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                             SettingsContract.SettingsEntries.ROOT_CMD,
                             rootCmd
                     );
-                    db.update(
+                    mDb.update(
                             SettingsContract.SettingsEntries.TABLE_NAME,
                             values,
                             SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
@@ -257,7 +255,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         return mView;
     }
 
-	private PopupWindow showProtocolsList(ArrayAdapter protocolsAdapter) {
+    private Cursor requeryDb() {
+        return mDb.query(
+                SettingsContract.AddressSettingsEntry.TABLE_NAME,
+                mAddrFields, null, null, null, null, mSortOrder
+        );
+    }
+
+    private PopupWindow showProtocolsList(ArrayAdapter protocolsAdapter) {
     	final PopupWindow popUp = new PopupWindow(mActivity);
     	final ListView protocolsList = new ListView(mActivity);
     	protocolsList.setAdapter(protocolsAdapter);
@@ -374,7 +379,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
                                         resetRemoteClientInputs();
-                                        Log.d(TAG, "new database entry with ID " + ret);
+                                        mAddressesCursor = requeryDb();
+                                        mAddressesAdapter.changeCursor(mAddressesCursor);
                                         mAddressesAdapter.notifyDataSetChanged();
                                     }
                                 },
@@ -400,7 +406,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                         );
                         resetRemoteClientInputs();
                         mValues.clear();
-                        Log.d(TAG, "db result: " + ret);
+                        mAddressesCursor = requeryDb();
+                        mAddressesAdapter.changeCursor(mAddressesCursor);
                         mAddressesAdapter.notifyDataSetChanged();
                         break;
                     default:
