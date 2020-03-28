@@ -2,11 +2,13 @@ package net.videosc.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -16,6 +18,15 @@ import net.videosc.db.SettingsContract;
 public class AddressesListAdapter extends ResourceCursorAdapter {
 	final private static String TAG = "AddressesListAdapter";
 	private int mLayout;
+	private SQLiteDatabase mDb;
+	private String[] mAddrFields = new String[]{
+			SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+			SettingsContract.AddressSettingsEntry.PORT,
+			SettingsContract.AddressSettingsEntry.PROTOCOL,
+			SettingsContract.AddressSettingsEntry._ID
+	};
+	final private String mSortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
+
 
 	/**
 	 * Constructor with default behavior as per
@@ -47,13 +58,6 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		Log.d(TAG, "newView called - cursor position: " + cursor.getPosition() + "\nnum entries: " + cursor.getCount() + "\nparent: " + parent + "\nmLayout: " + mLayout);
-		/*while (cursor.moveToNext()) {
-			Log.d(TAG, "ID: " +
-				cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID))
-			);
-		}*/
-
 		return LayoutInflater.from(context).inflate(mLayout, parent, false);
 	}
 
@@ -66,30 +70,46 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		TextView ipText = view.findViewById(R.id.remote_ip_address);
-		TextView portText = view.findViewById(R.id.remote_port);
-		TextView protocolText = view.findViewById(R.id.address_protocol);
+		final TextView ipText = view.findViewById(R.id.remote_ip_address);
+		final TextView portText = view.findViewById(R.id.remote_port);
+		final TextView protocolText = view.findViewById(R.id.address_protocol);
+		final ImageButton deleteButton = view.findViewById(R.id.delete_address);
 
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
 		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
 		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
 		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
 
-		Log.d(TAG, "the view: " + view + "\ncursor: " + cursor.getPosition() + "\nis last: " + cursor.isLast() + "\nID: " + id + "\nip: " + ip + "\nport: " + port + "\nprotocol: " + protocol);
-
 		ipText.setText(ip);
 		portText.setText(String.valueOf(port));
 		protocolText.setText(protocol);
+
+		deleteButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				int ret = mDb.delete(
+						SettingsContract.AddressSettingsEntry.TABLE_NAME,
+						SettingsContract.AddressSettingsEntry._ID + " = " + id,
+						null
+				);
+				if (ret > 0) {
+					Cursor cursor = mDb.query(
+							SettingsContract.AddressSettingsEntry.TABLE_NAME,
+							mAddrFields,
+							null,
+							null,
+							null,
+							null,
+							mSortOrder
+					);
+					changeCursor(cursor);
+					notifyDataSetChanged();
+				}
+			}
+		});
 	}
 
-	/**
-	 * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
-	 * closed.
-	 *
-	 * @param cursor The new cursor to be used
-	 */
-	@Override
-	public void changeCursor(Cursor cursor) {
-		super.changeCursor(cursor);
+	public void setDatabase(SQLiteDatabase db) {
+		this.mDb = db;
 	}
 }

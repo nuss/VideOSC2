@@ -6,15 +6,6 @@
 	android:layout_height="wrap_content">
 
 	<TextView
-		android:id="@+id/entry_id"
-		android:layout_height="wrap_content"
-		android:layout_width="0dp"
-		android:layout_weight="0"
-		android:paddingBottom="15dp"
-		android:paddingTop="15dp"
-		android:textSize="17sp" />
-
-	<TextView
 		android:id="@+id/remote_ip_address"
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"

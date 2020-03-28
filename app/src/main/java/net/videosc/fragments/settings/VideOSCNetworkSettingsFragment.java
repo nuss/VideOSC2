@@ -21,7 +21,6 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +29,7 @@ import androidx.fragment.app.FragmentManager;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
@@ -51,7 +51,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private ArrayAdapter<String> mProtocolsAdapter;
     private PopupWindow mProtocolsPopUp;
     private Cursor mAddressesCursor;
-    private SimpleCursorAdapter mAddressesAdapter;
+    private AddressesListAdapter mAddressesAdapter;
     private SQLiteDatabase mDb;
     private String[] mAddrFields = new String[]{
             SettingsContract.AddressSettingsEntry.IP_ADDRESS,
@@ -59,7 +59,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             SettingsContract.AddressSettingsEntry.PROTOCOL,
             SettingsContract.AddressSettingsEntry._ID
     };
-    private String mSortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
@@ -120,25 +119,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 SettingsContract.SettingsEntries.ROOT_CMD
         };
 
-        mAddressesCursor = mDb.query(
-                SettingsContract.AddressSettingsEntry.TABLE_NAME,
-                mAddrFields,
-                null,
-                null,
-                null,
-                null,
-                mSortOrder
-        );
+        mAddressesCursor = queryAddresses();
 
-        final int[] to = new int[]{
-                R.id.remote_ip_address,
-                R.id.remote_port,
-                R.id.address_protocol,
-                R.id.entry_id
-        };
-        mAddressesAdapter = new SimpleCursorAdapter(
-                getActivity(), R.layout.address_list_item, mAddressesCursor, mAddrFields, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        mAddressesAdapter = new AddressesListAdapter(
+                getActivity(), R.layout.address_list_item, mAddressesCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         );
+        mAddressesAdapter.setDatabase(mDb);
 
         final ListView addressesList = mView.findViewById(R.id.addresses_list);
         addressesList.setAdapter(mAddressesAdapter);
@@ -255,10 +241,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         return mView;
     }
 
-    private Cursor requeryDb() {
+    private Cursor queryAddresses() {
+        String sortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
         return mDb.query(
                 SettingsContract.AddressSettingsEntry.TABLE_NAME,
-                mAddrFields, null, null, null, null, mSortOrder
+                mAddrFields, null, null, null, null, sortOrder
         );
     }
 
@@ -379,7 +366,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
                                         resetRemoteClientInputs();
-                                        mAddressesCursor = requeryDb();
+                                        mAddressesCursor = queryAddresses();
                                         mAddressesAdapter.changeCursor(mAddressesCursor);
                                         mAddressesAdapter.notifyDataSetChanged();
                                     }
@@ -406,7 +393,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                         );
                         resetRemoteClientInputs();
                         mValues.clear();
-                        mAddressesCursor = requeryDb();
+                        mAddressesCursor = queryAddresses();
                         mAddressesAdapter.changeCursor(mAddressesCursor);
                         mAddressesAdapter.notifyDataSetChanged();
                         break;
