@@ -10,35 +10,52 @@
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"
 		android:layout_weight="0.45"
+		android:paddingLeft="5dp"
+		android:paddingStart="5dp"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="17sp" />
+		android:paddingRight="5dp"
+		android:paddingEnd="5dp"
+		android:textSize="16sp" />
 
 	<TextView
 		android:id="@+id/remote_port"
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"
 		android:layout_weight="0.25"
+		android:paddingLeft="5dp"
+		android:paddingStart="5dp"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="17sp" />
+		android:paddingRight="5dp"
+		android:paddingEnd="5dp"
+		android:textSize="16sp" />
 
 	<TextView
 		android:id="@+id/address_protocol"
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"
 		android:layout_weight="0.2"
+		android:paddingLeft="5dp"
+		android:paddingStart="5dp"
+		android:paddingRight="5dp"
+		android:paddingEnd="5dp"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
-		android:textSize="17sp" />
+		android:textSize="16sp" />
 
 	<ImageButton
 		android:id="@+id/delete_address"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
+		android:layout_weight="0.1"
 		android:layout_height="wrap_content"
 		android:contentDescription="@string/delete_address"
 		android:background="@color/transparent"
 		android:layout_gravity="center_vertical"
+		android:paddingLeft="5dp"
+		android:paddingStart="5dp"
+		android:paddingRight="5dp"
+		android:paddingEnd="5dp"
 		android:src="@drawable/close"/>
 
 </LinearLayout>

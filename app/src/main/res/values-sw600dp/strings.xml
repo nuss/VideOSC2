@@ -2,4 +2,7 @@
 <resources>
 	<string name="receive_port">set the app\'s receiving port</string>
 	<string name="add_ip_address">IP address</string>
+    <string name="list_header_ip_address">IP address</string>
+    <string name="list_header_port">port</string>
+    <string name="list_header_protocol">protocol</string>
 </resources>

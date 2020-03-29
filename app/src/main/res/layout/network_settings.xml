@@ -23,8 +23,9 @@
             android:id="@+id/device_ip_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textSize="18sp" />
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:textSize="17sp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -40,12 +41,16 @@
             android:digits="0123456789"
             android:hint="@string/receive_port"
             android:inputType="number"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:textSize="16sp"
             android:nextFocusDown="@+id/root_cmd_name_field" />
 
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="@string/root_command_name_head" />
 
         <LinearLayout
@@ -70,7 +75,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.45"
                 android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
-                android:inputType="text" />
+                android:hint="@string/command_namespace"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:inputType="text"
+                android:textSize="16sp"
+                android:autofillHints="vosc" />
 
             <TextView
                 android:layout_width="0dp"
@@ -103,39 +113,76 @@
                 android:id="@+id/add_remote_ip"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.55"
+                android:layout_weight="0.5"
                 android:autofillHints="IP address"
                 android:digits="0123456789."
                 android:hint="@string/add_ip_address"
                 android:inputType="text"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:textSize="16sp"
                 android:nextFocusDown="@+id/add_remote_port" />
 
             <EditText
                 android:id="@+id/add_remote_port"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="0.2"
                 android:autofillHints="port"
                 android:hint="@string/add_port"
                 android:inputType="number"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 android:maxLength="5" />
 
             <Button
                 android:id="@+id/set_protocol"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2"
+                android:background="@color/transparent"
+                android:layout_weight="0.3"
+
+                android:drawableEnd="@drawable/carret_down_white"
+                android:drawableRight="@drawable/carret_down_white"
                 android:text="UDP" />
 
         </LinearLayout>
 
         <Button
             android:id="@+id/add_address_button"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:text="@string/add_address" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.45"
+                android:padding="5dp"
+                android:text="@string/list_header_ip_address"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.25"
+                android:padding="5dp"
+                android:text="@string/list_header_port"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:padding="5dp"
+                android:text="@string/list_header_protocol" />
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/addresses_list"
