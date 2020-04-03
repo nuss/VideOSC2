@@ -48,6 +48,7 @@ public class VideOSCApplication extends Application {
 	private int mSensorSettingsID = -1;
 	private int mDebugSettingsID = -1;
 	private int mAboutSettingsID = -1;
+	private int mCommandMappingsID = -1;
 
 	@Override
 	public void onCreate() {
@@ -284,6 +285,14 @@ public class VideOSCApplication extends Application {
 
 	public int getResolutionSettingsID() {
 		return this.mResolutionSettingsID;
+	}
+
+	public void setCommandMappingsID(int id) {
+		this.mCommandMappingsID = id;
+	}
+
+	public int getCommandMappingsID() {
+		return this.mCommandMappingsID;
 	}
 
 	public void setSensorSettingsID(int id) {
