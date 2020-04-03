@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
-import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
@@ -86,7 +85,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         assert mActivity != null;
 
-        final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
         mView = inflater.inflate(R.layout.network_settings, container, false);
         mDb = mActivity.getDatabase();
 
