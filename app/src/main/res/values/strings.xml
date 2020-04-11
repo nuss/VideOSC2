@@ -160,5 +160,6 @@
 	<string name="list_header_ip_address">IP address</string>
 	<string name="list_header_port">port</string>
 	<string name="list_header_protocol">protocol</string>
+    <string name="switch_between_scrolling_and_selecting">Switch between scrolling and selecting</string>
 
 </resources>
