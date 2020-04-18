@@ -78,7 +78,7 @@
 	<string name="msg_on_camera_open_fail">The camera failed to open. Possibly you will have to restart the device.</string>
 	<string name="OK">OK</string>
 	<string name="hide_pixel_image_overlay">Hide pixel image overlay</string>
-	<string name="count_messages">Add the number of OSC sending attempts and the number of actually sent OSC messages as additional slots to OSC messages: When sending pixel values over OSC some packets may get dropped. This setting should give a clear picture on how many packets actually get lost.</string>
+	<string name="count_messages">Report the number of OSC bundles created vs. the number of actually sent OSC bundles in OSC messages \'/num_red_bundles\', \'/num_green_bundles\' and \'/num_blue_bundles\'.</string>
 	<string name="debug_eplanation">The following settings will not get stored permanently. They will get reset with every restart of VideOSC.</string>
 	<string name="fix_exposure_temporary">Fix exposure temporarily (will be reset on restart)</string>
 	<string name="set_exposure_to_fixed">Set exposure to fixed</string>
