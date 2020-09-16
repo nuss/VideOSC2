@@ -35,12 +35,12 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public int getRowCount() {
-        return 0;
+        return mTableDataSource.getRowsCount();
     }
 
     @Override
     public int getColumnCount() {
-        return 0;
+        return mTableDataSource.getColumnsCount();
     }
 
     @NonNull
