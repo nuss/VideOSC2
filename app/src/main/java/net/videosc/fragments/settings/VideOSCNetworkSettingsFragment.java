@@ -53,10 +53,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private AddressesListAdapter mAddressesAdapter;
     private SQLiteDatabase mDb;
     private String[] mAddrFields = new String[]{
-            SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-            SettingsContract.AddressSettingsEntry.PORT,
-            SettingsContract.AddressSettingsEntry.PROTOCOL,
-            SettingsContract.AddressSettingsEntry._ID
+            SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+            SettingsContract.AddressSettingsEntries.PORT,
+            SettingsContract.AddressSettingsEntries.PROTOCOL,
+            SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
@@ -79,7 +79,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final FragmentManager fragmentManager = getChildFragmentManager();
+        final FragmentManager fragmentManager = getFragmentManager();
+        assert fragmentManager != null;
+        // in API 30 getting the cameraView only seems to work with fragmentManager retrieved retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
         mActivity = (VideOSCMainActivity) getActivity();
 
@@ -142,10 +144,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         while (mAddressesCursor.moveToNext()) {
             final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
-            final long addressId = mAddressesCursor.getLong(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
-            final String addressIP = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
-            final int port = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-            final String protocol = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
+            final long addressId = mAddressesCursor.getLong(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+            final String addressIP = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+            final String protocol = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
             address.setRowId(addressId);
             address.setIP(addressIP);
             address.setPort(port);
@@ -240,9 +242,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     }
 
     private Cursor queryAddresses() {
-        String sortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
+        String sortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
         return mDb.query(
-                SettingsContract.AddressSettingsEntry.TABLE_NAME,
+                SettingsContract.AddressSettingsEntries.TABLE_NAME,
                 mAddrFields, null, null, null, null, sortOrder
         );
     }
@@ -317,7 +319,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
                     steps++;
                     mValues.put(
-                            SettingsContract.AddressSettingsEntry.IP_ADDRESS,
+                            SettingsContract.AddressSettingsEntries.IP_ADDRESS,
                             addAddressText
                     );
                 } else {
@@ -332,7 +334,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 if (portVal >= 0 && portVal <= 65535) {
                     steps++;
                     mValues.put(
-                            SettingsContract.AddressSettingsEntry.PORT,
+                            SettingsContract.AddressSettingsEntries.PORT,
                             addPortVal
                     );
                 } else {
@@ -345,7 +347,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             if (steps == 2) {
                 Log.d(TAG, "protocol is set to: " + mSetProtocol.getText());
                 mValues.put(
-                        SettingsContract.AddressSettingsEntry.PROTOCOL,
+                        SettingsContract.AddressSettingsEntries.PROTOCOL,
                         mSetProtocol.getText().toString()
                 );
                 String[] compareString = new String[]{addAddressText, addPortVal, (String) mSetProtocol.getText()};
@@ -385,7 +387,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                     case 0:
                     	Log.d(TAG, "case 0");
                         long ret = mDb.insert(
-                                SettingsContract.AddressSettingsEntry.TABLE_NAME,
+                                SettingsContract.AddressSettingsEntries.TABLE_NAME,
                                 null,
                                 mValues
                         );
@@ -431,7 +433,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         private long insertIntoDatabase(SQLiteDatabase db, ContentValues values) {
             long ret = db.insert(
-                    SettingsContract.AddressSettingsEntry.TABLE_NAME,
+                    SettingsContract.AddressSettingsEntries.TABLE_NAME,
                     null,
                     values
             );

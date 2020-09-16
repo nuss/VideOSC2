@@ -3,7 +3,6 @@ package net.videosc.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +19,12 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	private int mLayout;
 	private SQLiteDatabase mDb;
 	private String[] mAddrFields = new String[]{
-			SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-			SettingsContract.AddressSettingsEntry.PORT,
-			SettingsContract.AddressSettingsEntry.PROTOCOL,
-			SettingsContract.AddressSettingsEntry._ID
+			SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+			SettingsContract.AddressSettingsEntries.PORT,
+			SettingsContract.AddressSettingsEntries.PROTOCOL,
+			SettingsContract.AddressSettingsEntries._ID
 	};
-	final private String mSortOrder = SettingsContract.AddressSettingsEntry._ID + " DESC";
+	final private String mSortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
 
 
 	/**
@@ -75,10 +74,10 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 		final TextView protocolText = view.findViewById(R.id.address_protocol);
 		final ImageButton deleteButton = view.findViewById(R.id.delete_address);
 
-		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
-		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
-		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PROTOCOL));
+		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
 
 		ipText.setText(ip);
 		portText.setText(String.valueOf(port));
@@ -88,13 +87,13 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 			@Override
 			public void onClick(View v) {
 				int ret = mDb.delete(
-						SettingsContract.AddressSettingsEntry.TABLE_NAME,
-						SettingsContract.AddressSettingsEntry._ID + " = " + id,
+						SettingsContract.AddressSettingsEntries.TABLE_NAME,
+						SettingsContract.AddressSettingsEntries._ID + " = " + id,
 						null
 				);
 				if (ret > 0) {
 					Cursor cursor = mDb.query(
-							SettingsContract.AddressSettingsEntry.TABLE_NAME,
+							SettingsContract.AddressSettingsEntries.TABLE_NAME,
 							mAddrFields,
 							null,
 							null,

@@ -12,7 +12,7 @@ public class SettingsContract {
 	private SettingsContract() { }
 
 	/* Inner class that defines the table contents */
-	public static class AddressSettingsEntry implements BaseColumns {
+	public static class AddressSettingsEntries implements BaseColumns {
 		public static final String TABLE_NAME = "vosc_client_addresses";
 		public static final String IP_ADDRESS = "ip_address";
 		public static final String PORT = "port";

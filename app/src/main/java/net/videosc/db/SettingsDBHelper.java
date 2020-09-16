@@ -16,17 +16,17 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String TAG = "SettingsDBHelper";
 
 	private static final String SQL_ADDRESSES_CREATE_ENTRIES =
-			"CREATE TABLE " + SettingsContract.AddressSettingsEntry.TABLE_NAME + " (" +
-					SettingsContract.AddressSettingsEntry._ID + " INTEGER PRIMARY KEY," +
-					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL," +
-					SettingsContract.AddressSettingsEntry.PORT + " INTEGER NOT NULL," +
-					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL," +
-					"UNIQUE (" + SettingsContract.AddressSettingsEntry.IP_ADDRESS + ", " +
-					SettingsContract.AddressSettingsEntry.PORT + ", " +
-					SettingsContract.AddressSettingsEntry.PROTOCOL + "))";
+			"CREATE TABLE " + SettingsContract.AddressSettingsEntries.TABLE_NAME + " (" +
+					SettingsContract.AddressSettingsEntries._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.AddressSettingsEntries.IP_ADDRESS + " TEXT NOT NULL," +
+					SettingsContract.AddressSettingsEntries.PORT + " INTEGER NOT NULL," +
+					SettingsContract.AddressSettingsEntries.PROTOCOL + " TEXT NOT NULL," +
+					"UNIQUE (" + SettingsContract.AddressSettingsEntries.IP_ADDRESS + ", " +
+					SettingsContract.AddressSettingsEntries.PORT + ", " +
+					SettingsContract.AddressSettingsEntries.PROTOCOL + "))";
 
 	private static final String SQL_ADDRESSES_DELETE_ENTRIES =
-			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntry.TABLE_NAME;
+			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntries.TABLE_NAME;
 
 	private static final String SQL_SETTINGS_CREATE_ENTRIES =
 			"CREATE TABLE " + SettingsContract.SettingsEntries.TABLE_NAME + " (" +
@@ -69,7 +69,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 37;
+	private static final int DATABASE_VERSION = 38;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -93,10 +93,10 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 
 		// net address(es)
-		/*values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.1");
-		values.put(SettingsContract.AddressSettingsEntry.PORT, 57120);
-		values.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
-		newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
+		/*values.put(SettingsContract.AddressSettingsEntries.IP_ADDRESS, "192.168.1.1");
+		values.put(SettingsContract.AddressSettingsEntries.PORT, 57120);
+		values.put(SettingsContract.AddressSettingsEntries.PROTOCOL, "UDP");
+		newRowId = db.insert(SettingsContract.AddressSettingsEntries.TABLE_NAME, null, values);
 		Log.d(TAG, "new row ID: " + newRowId);
 
 		// reset

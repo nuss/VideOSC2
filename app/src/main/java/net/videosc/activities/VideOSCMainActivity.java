@@ -176,12 +176,12 @@ public class VideOSCMainActivity extends FragmentActivity
 		mDbHelper = new SettingsDBHelper(this);
 		mDb = mDbHelper.getReadableDatabase();
 		final String[] settingsFields = new String[]{
-				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-				SettingsContract.AddressSettingsEntry.PORT
+				SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+				SettingsContract.AddressSettingsEntries.PORT
 		};
 
 		Cursor cursor = mDb.query(
-				SettingsContract.AddressSettingsEntry.TABLE_NAME,
+				SettingsContract.AddressSettingsEntries.TABLE_NAME,
 				settingsFields,
 				null,
 				null,
@@ -194,8 +194,8 @@ public class VideOSCMainActivity extends FragmentActivity
 		// protocol will be UDP
 		if (cursor.moveToFirst()) {
 			mApp.mOscHelper.setBroadcastAddr(
-					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS)),
-					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT))
+					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
 			);
 		}
 
@@ -582,11 +582,12 @@ public class VideOSCMainActivity extends FragmentActivity
 	public void onBackPressed() {
 		Fragment
 				settingsContainerFragment, networkSettingsDialog, resolutionSettingsDialog,
-				sensorSettingsDialog, debugSettingsDialog, about;
+				commandMappingsDialog, sensorSettingsDialog, debugSettingsDialog, about;
 		final boolean isTablet = mApp.getIsTablet();
 		final int settingsContainerID = mApp.getSettingsContainerID();
 		final int networkSettingsID = mApp.getNetworkSettingsID();
 		final int resolutionSettingsID = mApp.getResolutionSettingsID();
+		final int commandMappingsID = mApp.getCommandMappingsID();
 		final int sensorSettingsID = mApp.getSensorSettingsID();
 		final int debugSettingsID = mApp.getDebugSettingsID();
 		final int aboutID = mApp.getAboutSettingsID();
@@ -607,6 +608,7 @@ public class VideOSCMainActivity extends FragmentActivity
 			} else {
 				if (networkSettingsID < 0 &&
 						resolutionSettingsID < 0 &&
+						commandMappingsID < 0 &&
 						sensorSettingsID < 0 &&
 						debugSettingsID < 0 &&
 						aboutID < 0) {
@@ -634,6 +636,14 @@ public class VideOSCMainActivity extends FragmentActivity
 								.remove(resolutionSettingsDialog)
 								.commit();
 						mApp.setResolutionSettingsID(-1);
+					}
+					if (commandMappingsID > 0) {
+						commandMappingsDialog = mFragmentManager.findFragmentById(commandMappingsID);
+						assert commandMappingsDialog != null;
+						ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+								.remove(commandMappingsDialog)
+								.commit();
+						mApp.setCommandMappingsID(-1);
 					}
 					if (sensorSettingsID > 0) {
 						sensorSettingsDialog = mFragmentManager.findFragmentById(sensorSettingsID);
