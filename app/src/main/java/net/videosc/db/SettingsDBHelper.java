@@ -68,8 +68,17 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_PIXEL_SNAPSHOTS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
+	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE =
+			"CREATE TABLE " + SettingsContract.AddressCommandsMappings.TABLE_NAME + " (" +
+					SettingsContract.AddressCommandsMappings._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.AddressCommandsMappings.ADDRESS + " INTEGER NOT NULL," +
+					SettingsContract.AddressCommandsMappings.MAPPINGS + " TEXT NOT NULL)";
+
+	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
+
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 38;
+	private static final int DATABASE_VERSION = 39;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -146,6 +155,9 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		// create snapshots table
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_CREATE);
+
+		// create address_commands_mappings table
+		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE);
 	}
 
 	/**
@@ -175,6 +187,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		db.execSQL(SQL_SETTINGS_DELETE_ENTRIES);
 		db.execSQL(SQL_SENSOR_SETTINGS_DELETE);
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_DELETE);
+		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE);
 		onCreate(db);
 	}
 

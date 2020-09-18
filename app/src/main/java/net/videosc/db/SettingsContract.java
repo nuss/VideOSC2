@@ -51,6 +51,12 @@ public class SettingsContract {
 		public static final String SNAPSHOT_SIZE = "snapshot_size";
 	}
 
+	public static class AddressCommandsMappings implements BaseColumns {
+		public static final String TABLE_NAME = "vosc_address_commands_mappings";
+		public static final String ADDRESS = "address_id";
+		public static final String MAPPINGS = "command_mappings";
+	}
+
 	// TODO
 /*
 	public static class MultiTouchSettingEntries implements BaseColumns {
