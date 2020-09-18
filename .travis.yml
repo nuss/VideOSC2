@@ -35,7 +35,8 @@ android:
     # - sys-img-x86-google_apis_playstore-26
     # - sys-img-armeabi-v7a-google_apis-26
   before_install:
-    - yes | sdkmanager --licenses && yes | sdkmanager --update
+    # - yes | sdkmanager --licenses && yes | sdkmanager --update
+    - sdkmanager --update && yes | sdkmanager --licenses
     # - yes | sdkmanager "platforms;android-30;default;armeabi-v7a"
     - yes | sdkmanager "platforms;android-30"
     - yes | sdkmanager "build-tools;30.0.2"
