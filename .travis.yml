@@ -34,8 +34,10 @@ android:
     # - sys-img-x86-google_apis_playstore-26
     # - sys-img-armeabi-v7a-google_apis-26
   before_install:
-    - yes | ~/Android/Sdk/tools/bin/sdkmanager --licenses && yes | ~/Android/Sdk/tools/bin/sdkmanager --update
+    - yes | sdkmanager --licenses && yes | sdkmanager --update
     # - yes | sdkmanager "platforms;android-30;default;armeabi-v7a"
+    - yes | sdkmanager "platforms;android-30"
+    - yes | sdkmanager "build-tools;30.0.2"
     - mkdir "$ANDROID_HOME/licenses" || true
     - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
     - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
