@@ -1,6 +1,6 @@
 language: android
 # jdk: oraclejdk8
-jdk: openjdk14
+jdk: openjdk8
 env:
   global:
     # install timeout in minutes (2 minutes by default)
