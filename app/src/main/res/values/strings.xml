@@ -37,7 +37,7 @@
 	<!-- settings -->
 	<string name="selection_network_settings">Network Settings</string>
 	<string name="selection_resolution_settings">Resolution Settings</string>
-	<string name="command_device_mappings">Command / Device Mappings</string>
+	<string name="command_device_mappings">Command-Device Mappings</string>
 	<string name="selection_sensor_settings">Sensor Settings</string>
 	<string name="selection_debug_settings">Debug Settings (temporary)</string>
 	<string name="selection_about_videosc">About VideOSC</string>

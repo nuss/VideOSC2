@@ -1,4 +1,4 @@
-package net.videosc.adapters;
+package net.videosc.interfaces;
 
 public interface TableDataSource<TFirstHeaderDataType, TRowHeaderDataType, TColumnHeaderDataType, TItemDataType> {
     int getRowsCount();
