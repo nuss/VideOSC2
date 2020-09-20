@@ -37,11 +37,9 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private HashMap<Long, String> mAddresses;
     private ArrayList<String> mCommands;
     private HashMap<Long, String> mMappings;
-//    private final TableDataSource mTableDataSource;
 
     public CommandMappingsTableAdapter(Context context, VideOSCMainActivity activity) {
         this.mLayoutInflater = LayoutInflater.from(context);
-//        this.mTableDataSource = tableDataSource;
         this.mApp = (VideOSCApplication) activity.getApplication();
         this.mResolution = mApp.getResolution();
         Resources res = context.getResources();
@@ -66,34 +64,29 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     @NonNull
     @Override
     public ViewHolderImpl onCreateItemViewHolder(@NonNull ViewGroup parent) {
-        Log.d(TAG, "onCreateItemViewHolder called, parent: " + parent);
         return new TableViewHolder(mLayoutInflater.inflate(R.layout.table_item_card, parent, false));
     }
 
     @NonNull
     @Override
     public ViewHolderImpl onCreateColumnHeaderViewHolder(@NonNull ViewGroup parent) {
-        Log.d(TAG, "onCreateColumnHeaderViewHolder called, parent: " + parent);
         return new TableHeaderColumnViewHolder(mLayoutInflater.inflate(R.layout.table_item_header_column, parent, false));
     }
 
     @NonNull
     @Override
     public ViewHolderImpl onCreateRowHeaderViewHolder(@NonNull ViewGroup parent) {
-        Log.d(TAG, "onCreateRowHeaderViewHolder called, parent: " + parent);
         return new TableHeaderRowViewHolder(mLayoutInflater.inflate(R.layout.table_item_header_row, parent, false));
     }
 
     @NonNull
     @Override
     public ViewHolderImpl onCreateLeftTopHeaderViewHolder(@NonNull ViewGroup parent) {
-        Log.d(TAG, "onCreateLeftTopHeaderViewHolder called, parent: " + parent);
         return new TableLeftTopViewHolder(mLayoutInflater.inflate(R.layout.table_item_header_left_top, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderImpl viewHolder, int row, int column) {
-        Log.d(TAG, "onBindViewHolder, row, column: " + row + ", " + column);
         final TableViewHolder vh = (TableViewHolder) viewHolder;
 
         final String colData = mMappings.get((long) column);
@@ -102,38 +95,30 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
             rawMapping = colData.charAt(row);
         }
         String itemData = rawMapping == 1 ? "ON" : "OFF";
-        Log.d(TAG, "item data: " + itemData);
         vh.cellText.setVisibility(View.VISIBLE);
         vh.cellText.setText(itemData);
     }
 
     @Override
     public void onBindHeaderColumnViewHolder(@NonNull ViewHolderImpl viewHolder, int column) {
-        Log.d(TAG, "onBindHeaderColumnViewHolder, column: " + column);
         final TableHeaderColumnViewHolder vh = (TableHeaderColumnViewHolder) viewHolder;
         final String itemData = mAddresses.values().iterator().next();
         Log.d(TAG, "next address: " + itemData);
         vh.cellText.setText(itemData);
-//        vh.cellText.setText((Integer) mTableDataSource.getColumnHeaderData(column));
     }
 
     @Override
     public void onBindHeaderRowViewHolder(@NonNull ViewHolderImpl viewHolder, int row) {
-        Log.d(TAG, "onBindHeaderRowViewHolder, row: " + row);
         final TableHeaderRowViewHolder vh = (TableHeaderRowViewHolder) viewHolder;
         final String itemData = mCommands.get(row-1);
-        Log.d(TAG, "row header data at row " + row + ": " + itemData);
         vh.cellText.setText(itemData);
-//        vh.cellText.setText((Integer) mTableDataSource.getItemData(row, 0));
     }
 
     @Override
     public void onBindLeftTopHeaderViewHolder(@NonNull ViewHolderImpl viewHolder) {
-        Log.d(TAG, "onBindLeftTopHeaderViewHolder");
         final TableLeftTopViewHolder vh = (TableLeftTopViewHolder) viewHolder;
         final String itemData = "scroll on/off";
         vh.cellText.setText(itemData);
-//        vh.cellText.setText((Integer) mTableDataSource.getFirstHeaderData());
     }
 
     @Override
@@ -195,7 +180,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
         cursor.close();
 
-//        Log.d(TAG, "addresses: " + addresses);
         return addresses;
     }
 
@@ -232,7 +216,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
         cursor.close();
 
-//        Log.d(TAG, "commands: " + commands);
         return commands;
     }
 
@@ -263,7 +246,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
         cursor.close();
 
-        Log.d(TAG, "mappings: " + mappings);
         return mappings;
      }
 

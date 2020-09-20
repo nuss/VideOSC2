@@ -1,6 +1,5 @@
 package net.videosc.fragments.settings;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,23 +12,15 @@ import androidx.annotation.Nullable;
 import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 
 import net.videosc.R;
-import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
 import net.videosc.fragments.VideOSCBaseFragment;
-
-import java.util.ArrayList;
 
 public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
     private AdaptiveTableLayout mTableLayout;
-    private CommandMappingsTableAdapter mAdapter;
     private VideOSCMainActivity mActivity;
-    private SQLiteDatabase mDb;
-    private final ArrayList<String> mAddresses = new ArrayList<>();
-    private final ArrayList<String> mCommands = new ArrayList<>();
-    private VideOSCApplication mApplication;
     private CommandMappingsTableAdapter mTableAdapter;
 
     @Override
