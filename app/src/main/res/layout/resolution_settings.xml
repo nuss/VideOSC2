@@ -76,7 +76,7 @@
 			android:drawableRight="@drawable/carret_down_white"
 			android:drawablePadding="10dp"/>
 
-		<Switch
+		<androidx.appcompat.widget.SwitchCompat
 			android:id="@+id/fix_exposure_checkbox"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
 
 		<View style="@style/Divider" />
 
-		<Switch
+		<androidx.appcompat.widget.SwitchCompat
 			android:id="@+id/normalize_output_checkbox"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
 
 		<View style="@style/Divider" />
 
-		<Switch
+		<androidx.appcompat.widget.SwitchCompat
 			android:id="@+id/remember_activated_checkbox"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

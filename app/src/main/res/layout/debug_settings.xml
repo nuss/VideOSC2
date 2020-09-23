@@ -15,7 +15,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/hide_pixel_image"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/add_packet_drops"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

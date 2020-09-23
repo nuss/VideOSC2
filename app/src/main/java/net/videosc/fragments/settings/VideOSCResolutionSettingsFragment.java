@@ -23,12 +23,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
@@ -193,12 +193,12 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
 		frameRatesList.setOnItemClickListener(new FrameRateOnItemClickListener());
 
-		final Switch normalizedCB = mView.findViewById(R.id.normalize_output_checkbox);
+		final SwitchCompat normalizedCB = mView.findViewById(R.id.normalize_output_checkbox);
 		normalizedCB.setChecked(mSettings.get(0).getNormalized());
-		final Switch rememberPixelStatesCB = mView.findViewById(R.id.remember_activated_checkbox);
+		final SwitchCompat rememberPixelStatesCB = mView.findViewById(R.id.remember_activated_checkbox);
 		rememberPixelStatesCB.setChecked(mSettings.get(0).getRememberPixelStates());
 		if (isAutoExposureLockSupported) {
-			final Switch fixExposureCB = mView.findViewById(R.id.fix_exposure_checkbox);
+			final SwitchCompat fixExposureCB = mView.findViewById(R.id.fix_exposure_checkbox);
 			final View fixExposureButtonLayout = inflater.inflate(R.layout.cancel_ok_buttons, container, false);
 
 			fixExposureCB.setChecked(app.getExposureIsFixed());

@@ -23,6 +23,7 @@ import net.videosc.db.SettingsContract;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<ViewHolderImpl> {
     private static final String TAG = CommandMappingsTableAdapter.class.getSimpleName();
@@ -37,6 +38,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private HashMap<Long, String> mAddresses;
     private ArrayList<String> mCommands;
     private HashMap<Long, String> mMappings;
+    private Iterator mAddrIterator;
 
     public CommandMappingsTableAdapter(Context context, VideOSCMainActivity activity) {
         this.mLayoutInflater = LayoutInflater.from(context);
@@ -102,7 +104,8 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     @Override
     public void onBindHeaderColumnViewHolder(@NonNull ViewHolderImpl viewHolder, int column) {
         final TableHeaderColumnViewHolder vh = (TableHeaderColumnViewHolder) viewHolder;
-        final String itemData = mAddresses.values().iterator().next();
+        if (mAddrIterator == null) mAddrIterator = mAddresses.values().iterator();
+        final String itemData = (String) mAddrIterator.next();
         Log.d(TAG, "next address: " + itemData);
         vh.cellText.setText(itemData);
     }

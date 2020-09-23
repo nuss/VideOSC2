@@ -10,15 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
-
-import androidx.annotation.NonNull;
 
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	private View mView;
@@ -137,17 +137,17 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final Switch oriCB = mView.findViewById(R.id.orientation_sensor);
-		final Switch accCB = mView.findViewById(R.id.accelerometer);
-		final Switch linAccCB = mView.findViewById(R.id.linear_acceleration);
-		final Switch magCB = mView.findViewById(R.id.magnetic_field);
-		final Switch gravCB = mView.findViewById(R.id.gravity_sensor);
-		final Switch proxCB = mView.findViewById(R.id.proximity_sensor);
-		final Switch lightCB = mView.findViewById(R.id.light_sensor);
-		final Switch pressCB = mView.findViewById(R.id.air_pressure_sensor);
-		final Switch tempCB = mView.findViewById(R.id.temperature_sensor);
-		final Switch humCB = mView.findViewById(R.id.humidity_sensor);
-		final Switch locCB = mView.findViewById(R.id.geo_loc_sensor);
+		final SwitchCompat oriCB = mView.findViewById(R.id.orientation_sensor);
+		final SwitchCompat accCB = mView.findViewById(R.id.accelerometer);
+		final SwitchCompat linAccCB = mView.findViewById(R.id.linear_acceleration);
+		final SwitchCompat magCB = mView.findViewById(R.id.magnetic_field);
+		final SwitchCompat gravCB = mView.findViewById(R.id.gravity_sensor);
+		final SwitchCompat proxCB = mView.findViewById(R.id.proximity_sensor);
+		final SwitchCompat lightCB = mView.findViewById(R.id.light_sensor);
+		final SwitchCompat pressCB = mView.findViewById(R.id.air_pressure_sensor);
+		final SwitchCompat tempCB = mView.findViewById(R.id.temperature_sensor);
+		final SwitchCompat humCB = mView.findViewById(R.id.humidity_sensor);
+		final SwitchCompat locCB = mView.findViewById(R.id.geo_loc_sensor);
 
 		oriCB.setChecked(sensors.getOrientationSensorActivated());
 		accCB.setChecked(sensors.getAccelerationSensorActivated());

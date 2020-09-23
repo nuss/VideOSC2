@@ -161,5 +161,6 @@
 	<string name="list_header_port">port</string>
 	<string name="list_header_protocol">protocol</string>
     <string name="switch_between_scrolling_and_selecting">Switch between scrolling and selecting</string>
+    <string name="no_netaddresses_defined">You must at least define two different NetAddresses (a combination of an IP address, a port and network protocol) in \"Network Settings\" before you can define the Command-Address mappings.</string>
 
 </resources>

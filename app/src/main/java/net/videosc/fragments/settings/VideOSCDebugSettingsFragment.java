@@ -5,14 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.fragments.VideOSCBaseFragment;
-
-import androidx.annotation.NonNull;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "DebugSettingsFragment";
@@ -42,8 +42,8 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 
 		mView = inflater.inflate(R.layout.debug_settings, container, false);
 
-		final Switch hidePixelImageCB = mView.findViewById(R.id.hide_pixel_image);
-		final Switch debugPixelOscSendingCB = mView.findViewById(R.id.add_packet_drops);
+		final SwitchCompat hidePixelImageCB = mView.findViewById(R.id.hide_pixel_image);
+		final SwitchCompat debugPixelOscSendingCB = mView.findViewById(R.id.add_packet_drops);
 		hidePixelImageCB.setChecked(app.getPixelImageHidden());
 		debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
