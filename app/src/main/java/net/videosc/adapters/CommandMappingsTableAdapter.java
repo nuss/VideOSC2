@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private HashMap<Long, String> mAddresses;
     private ArrayList<String> mCommands;
     private HashMap<Long, String> mMappings;
-    private Iterator mAddrIterator;
+    private Iterator<String> mAddrIterator;
 
     public CommandMappingsTableAdapter(Context context, VideOSCMainActivity activity) {
         this.mLayoutInflater = LayoutInflater.from(context);
@@ -90,14 +89,25 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     @Override
     public void onBindViewHolder(@NonNull ViewHolderImpl viewHolder, int row, int column) {
         final TableViewHolder vh = (TableViewHolder) viewHolder;
-
         final String colData = mMappings.get((long) column);
         char rawMapping = 1;
+        String itemData;
+        int bgColor, textColor;
         if (colData != null) {
             rawMapping = colData.charAt(row);
         }
-        String itemData = rawMapping == 1 ? "ON" : "OFF";
+        if (rawMapping > 0) {
+            itemData = "ON";
+            bgColor = 0xffffffff;
+            textColor = 0xff000000;
+        } else {
+            itemData = "OFF";
+            bgColor = 0xff000000;
+            textColor = 0xffffffff;
+        }
         vh.cellText.setVisibility(View.VISIBLE);
+        vh.cellText.setBackgroundColor(bgColor);
+        vh.cellText.setTextColor(textColor);
         vh.cellText.setText(itemData);
     }
 
@@ -105,8 +115,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     public void onBindHeaderColumnViewHolder(@NonNull ViewHolderImpl viewHolder, int column) {
         final TableHeaderColumnViewHolder vh = (TableHeaderColumnViewHolder) viewHolder;
         if (mAddrIterator == null) mAddrIterator = mAddresses.values().iterator();
-        final String itemData = (String) mAddrIterator.next();
-        Log.d(TAG, "next address: " + itemData);
+        final String itemData = mAddrIterator.next();
         vh.cellText.setText(itemData);
     }
 
