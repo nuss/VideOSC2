@@ -1,6 +1,7 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -57,6 +58,10 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	private Button mSelectFramerate;
 	private ArrayAdapter<String> mFpsAdapter;
 
+	public VideOSCResolutionSettingsFragment(Context context) {
+		this.mActivity = (VideOSCMainActivity) context;
+	}
+
 	/**
 	 * @param savedInstanceState
 	 */
@@ -98,10 +103,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert mCameraView != null;
 		final Camera.Parameters params = mCameraView.mCamera.getParameters();
-		mActivity = (VideOSCMainActivity) getActivity();
-
-		assert mActivity != null;
-
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		mDb = mActivity.getDatabase();
 		mValues = new ContentValues();

@@ -1,10 +1,13 @@
 package net.videosc.fragments;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -15,13 +18,12 @@ import net.videosc.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-
 /**
  * Created by stefan on 19.05.18, package net.videosc.views, project VideOSC22.
  */
 public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragmentRGB";
+	private final VideOSCMainActivity mActivity;
 	private VideOSCMultiSliderView mMSViewRedRight;
 	private VideOSCMultiSliderView mMSViewRedLeft;
 	private VideOSCMultiSliderView mMSViewGreenRight;
@@ -30,16 +32,15 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	private VideOSCMultiSliderView mMSViewBlueLeft;
 
 	// empty public constructor
-	public VideOSCMultiSliderFragmentRGB() {
-		super();
+	public VideOSCMultiSliderFragmentRGB(Context context) {
+		super(context);
+		this.mActivity = (VideOSCMainActivity) context;
 	}
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		final Point resolution = app.getResolution();
 		final int numTotalPixels = resolution.x * resolution.y;
 
@@ -107,7 +108,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
-			SliderBar barRedLeft = new SliderBar(getActivity());
+			SliderBar barRedLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -116,14 +117,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barRedLeft.setNum(String.valueOf(num));
 			mMSViewRedLeft.mBars.add(barRedLeft);
 			mMSViewRedLeft.addView(barRedLeft);
-			SliderBar barRedRight = new SliderBar(getActivity());
+			SliderBar barRedRight = new SliderBar(mActivity);
 			barRedRight.setColor(0x99ff0000);
 			barRedRight.mScreenDensity = density;
 			barRedRight.setNum(String.valueOf(num));
 			mMSViewRedRight.mBars.add(barRedRight);
 			mMSViewRedRight.addView(barRedRight);
 
-			SliderBar barGreenLeft = new SliderBar(getActivity());
+			SliderBar barGreenLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -132,14 +133,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barGreenLeft.setNum(String.valueOf(num));
 			mMSViewGreenLeft.mBars.add(barGreenLeft);
 			mMSViewGreenLeft.addView(barGreenLeft);
-			SliderBar barGreenRight = new SliderBar(getActivity());
+			SliderBar barGreenRight = new SliderBar(mActivity);
 			barGreenRight.setColor(0x9900ff00);
 			barGreenRight.mScreenDensity = density;
 			barGreenRight.setNum(String.valueOf(num));
 			mMSViewGreenRight.mBars.add(barGreenRight);
 			mMSViewGreenRight.addView(barGreenRight);
 
-			SliderBar barBlueLeft = new SliderBar(getActivity());
+			SliderBar barBlueLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -148,7 +149,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barBlueLeft.setNum(String.valueOf(num));
 			mMSViewBlueLeft.mBars.add(barBlueLeft);
 			mMSViewBlueLeft.addView(barBlueLeft);
-			SliderBar barBlueRight = new SliderBar(getActivity());
+			SliderBar barBlueRight = new SliderBar(mActivity);
 			barBlueRight.setColor(0x990000ff);
 			barBlueRight.mScreenDensity = density;
 			barBlueRight.setNum(String.valueOf(num));

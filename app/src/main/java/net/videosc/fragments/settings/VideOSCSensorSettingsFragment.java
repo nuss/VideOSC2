@@ -1,6 +1,7 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,7 +25,11 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	private View mView;
 	private VideOSCMainActivity mActivity;
 
-	/**
+    public VideOSCSensorSettingsFragment(Context context) {
+    	this.mActivity = (VideOSCMainActivity) context;
+    }
+
+    /**
 	 * @param savedInstanceState
 	 */
 	@Override
@@ -41,9 +46,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView = inflater.inflate(R.layout.sensor_settings, container, false);
-
-		mActivity = (VideOSCMainActivity) getActivity();
-		assert mActivity != null;
 		final SQLiteDatabase db = mActivity.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 
@@ -384,7 +386,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		mActivity = null;
 	}
 
 	@Override

@@ -25,7 +25,6 @@ package net.videosc.activities;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -217,7 +216,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 			checkCamera();
-			mCameraPreview = new VideOSCCameraFragment();
+			mCameraPreview = new VideOSCCameraFragment(this);
 			mFragmentManager.beginTransaction()
 					.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 					.commit();
@@ -229,7 +228,6 @@ public class VideOSCMainActivity extends FragmentActivity
 
 	private void buildUI() {
 		final LayoutInflater inflater = getLayoutInflater();
-		final Context context = getApplicationContext();
 
 		// does the device have an inbuilt flashlight? frontside camera? flashlight but no frontside camera
 		// frontside camer but no flashlight?...
@@ -357,7 +355,7 @@ public class VideOSCMainActivity extends FragmentActivity
 				);
 				final Cursor[] cursors = {cursor, extras};
 				final MergeCursor mergedCursor = new MergeCursor(cursors);
-				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment();
+				VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
 				snapshotSelect.setDatabase(mDb);
 				snapshotSelect.setCursors(mergedCursor, cursor, extras);
 				if (!snapshotSelect.isVisible()) {
@@ -373,7 +371,7 @@ public class VideOSCMainActivity extends FragmentActivity
 		saveSnapshotButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				LayoutInflater inflater = LayoutInflater.from(context);
+				LayoutInflater inflater = LayoutInflater.from(VideOSCMainActivity.this);
 				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
 				// FIXME: Alert Dialogs should have a white backround like other dialogs
@@ -802,7 +800,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
 				// the camera fragment overlays all other screen elements
 				// hence, we get gui elements to front in surfaceCreated() within CameraPreview (VideOSCCameraFragment)
-				mCameraPreview = new VideOSCCameraFragment();
+				mCameraPreview = new VideOSCCameraFragment(this);
 				mFragmentManager.beginTransaction()
 						.replace(R.id.camera_preview, mCameraPreview, "CamPreview")
 						.commit();

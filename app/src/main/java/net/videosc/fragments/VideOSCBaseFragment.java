@@ -22,6 +22,7 @@
 
 package net.videosc.fragments;
 
+import android.content.Context;
 import android.net.Uri;
 import androidx.fragment.app.Fragment;
 
@@ -30,7 +31,9 @@ import androidx.fragment.app.Fragment;
  */
 public class VideOSCBaseFragment extends Fragment {
 
-	/**
+    protected Context mContext;
+
+    /**
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {

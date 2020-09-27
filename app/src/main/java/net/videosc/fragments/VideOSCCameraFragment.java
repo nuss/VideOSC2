@@ -52,6 +52,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
@@ -72,9 +76,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 import oscP5.OscBundle;
 import oscP5.OscMessage;
@@ -146,9 +147,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	/**
 	 * Default empty constructor.
+	 * @param activity
 	 */
-	public VideOSCCameraFragment() {
+	public VideOSCCameraFragment(VideOSCMainActivity activity) {
 		super();
+		this.mActivity = activity;
 	}
 
 	/**
@@ -162,8 +165,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		mActivity = (VideOSCMainActivity) getActivity();
-		assert mActivity != null;
 		mApp = (VideOSCApplication) mActivity.getApplication();
 		mToolsDrawer = mActivity.mToolsDrawerLayout;
 		mInflater = inflater;
@@ -195,7 +196,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			mSupportedPreviewFpsRanges = mCameraParams.getSupportedPreviewFpsRange();
 
 			if (mPreview == null) {
-				mPreview = new CameraPreview(mActivity.getApplicationContext(), mCamera);
+				mPreview = new CameraPreview(mActivity, mCamera);
 				if (view.findViewById(R.id.camera_preview) != null) {
 					preview = view.findViewById(R.id.camera_preview);
 					preview.addView(mPreview);
@@ -434,6 +435,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	 */
 	public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
 
+		private final VideOSCMainActivity mActivity;
 		// SurfaceHolder
 		private SurfaceHolder mHolder;
 
@@ -472,7 +474,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		CameraPreview(Context context, Camera camera) {
 			super(context);
-
+			
+			this.mActivity = (VideOSCMainActivity) context;
 			Log.d(TAG, "CameraPreview(): " + camera);
 			// Capture the context
 			setCamera(camera);
@@ -656,11 +659,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
 			}
 
-			VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-			assert activity != null;
-			mPixelEditor = activity.mPixelEditor;
-			mSnapshotsBar = activity.mBasicToolbar;
-			ViewGroup snapshotsBar = activity.mBasicToolbar;
+			mPixelEditor = mActivity.mPixelEditor;
+			mSnapshotsBar = mActivity.mBasicToolbar;
+			ViewGroup snapshotsBar = mActivity.mBasicToolbar;
 			ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
 			applySelection.setOnClickListener(new OnClickListener() {
 				@Override
@@ -1001,7 +1002,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mManager.findFragmentByTag("MultiSliderView") == null) {
 				if (!mApp.getColorMode().equals(RGBModes.RGB)) {
-					VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment();
+					VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mContext);
 					mManager.beginTransaction()
 							.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 							.commit();
@@ -1016,7 +1017,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						});
 					} else mPixelIds.clear();
 				} else {
-					final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB();
+					final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB(mContext);
 					mManager.beginTransaction()
 							.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 							.commit();

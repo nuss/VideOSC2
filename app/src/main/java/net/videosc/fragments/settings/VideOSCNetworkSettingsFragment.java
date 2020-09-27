@@ -1,6 +1,7 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -61,6 +62,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
+    public VideOSCNetworkSettingsFragment(Context context) {
+        this.mActivity = (VideOSCMainActivity) context;
+    }
+
     /**
      * @param savedInstanceState
      * @deprecated
@@ -83,10 +88,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         assert fragmentManager != null;
         // in API 30 getting the cameraView only seems to work with fragmentManager retrieved retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-        mActivity = (VideOSCMainActivity) getActivity();
-
-        assert mActivity != null;
-
         mView = inflater.inflate(R.layout.network_settings, container, false);
         mDb = mActivity.getDatabase();
 
@@ -264,7 +265,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	@Override
     public void onDetach() {
         super.onDetach();
-        mActivity = null;
     }
 
     @Override

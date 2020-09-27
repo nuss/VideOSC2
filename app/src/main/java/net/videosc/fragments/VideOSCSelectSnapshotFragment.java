@@ -1,5 +1,6 @@
 package net.videosc.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
@@ -14,22 +15,25 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import net.videosc.R;
-import net.videosc.adapters.SnapshotSelectAdapter;
-import net.videosc.utilities.VideOSCUIHelpers;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
+import net.videosc.R;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.adapters.SnapshotSelectAdapter;
+import net.videosc.utilities.VideOSCUIHelpers;
+
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	private final static String TAG = "SelectSnapshotFragment";
+	private final VideOSCMainActivity mActivity;
 	private Cursor mCursor;
 	private Cursor mDbCursor;
 	private MatrixCursor mExtraCursor;
 	private SQLiteDatabase mDb;
 
-	public VideOSCSelectSnapshotFragment() {
+	public VideOSCSelectSnapshotFragment(Context context) {
 		super();
+		this.mActivity = (VideOSCMainActivity) context;
 	}
 
 	/**
@@ -58,7 +62,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.snapshots_list, container, false);
 		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(
-				getActivity(), R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+				mActivity, R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
 		);
 		snapshotsListView.setAdapter(adapter);
 		VideOSCUIHelpers.setTransitionAnimation(view);

@@ -1,5 +1,6 @@
 package net.videosc.fragments.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,14 @@ import net.videosc.fragments.VideOSCBaseFragment;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "DebugSettingsFragment";
+	private final VideOSCMainActivity mActivity;
 	private View mView;
 
-	/**
+    public VideOSCDebugSettingsFragment(Context context) {
+    	this.mActivity = (VideOSCMainActivity) context;
+    }
+
+    /**
 	 * @param savedInstanceState
 	 * @deprecated
 	 */
@@ -36,9 +42,7 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 
 		mView = inflater.inflate(R.layout.debug_settings, container, false);
 

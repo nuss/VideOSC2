@@ -1,16 +1,17 @@
 package net.videosc.fragments;
 
+import android.content.Context;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
@@ -21,14 +22,15 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	FragmentManager mManager;
 	VideOSCBaseFragment mFragment;
 
-	public VideOSCMSBaseFragment() { }
+	public VideOSCMSBaseFragment(Context context) {
+		this.mContext = context;
+	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
+		final VideOSCMainActivity activity = (VideOSCMainActivity) mContext;
 		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
 		final DrawerLayout toolsDrawer = activity.mToolsDrawerLayout;
 		ImageButton ok = mMSButtons.findViewById(R.id.ok);

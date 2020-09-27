@@ -1,10 +1,13 @@
 package net.videosc.fragments;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -15,19 +18,19 @@ import net.videosc.views.VideOSCMultiSliderView;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-
 /**
  * Created by stefan on 19.05.18, package net.videosc.views, project VideOSC22.
  */
 public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
+	private final VideOSCMainActivity mActivity;
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
 
 	// empty public constructor
-	public VideOSCMultiSliderFragment() {
-		super();
+	public VideOSCMultiSliderFragment(Context context) {
+		super(context);
+		this.mActivity = (VideOSCMainActivity) context;
 	}
 
 	@Override
@@ -36,9 +39,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		int color = 0x66ffffff;
 		double[] vals = new double[]{};
 		double[] mixVals = new double[]{};
-		final VideOSCMainActivity activity = (VideOSCMainActivity) getActivity();
-		assert activity != null;
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		final Point resolution = app.getResolution();
 		final int numTotalPixels = resolution.x * resolution.y;
 
@@ -103,7 +104,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		assert sliderNums != null;
 
 		for (int i = 0; i < sliderNums.size(); i++) {
-			SliderBar barLeft = new SliderBar(getActivity());
+			SliderBar barLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -112,7 +113,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 			barLeft.setColor(color);
 			mMSViewLeft.mBars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
-			SliderBar barRight = new SliderBar(getActivity());
+			SliderBar barRight = new SliderBar(mActivity);
 			barRight.mScreenDensity = density;
 			barRight.setNum(String.valueOf(sliderNums.get(i)));
 			barRight.setColor(color);

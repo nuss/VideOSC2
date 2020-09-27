@@ -1,5 +1,6 @@
 package net.videosc.adapters;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -259,8 +260,21 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         cursor.close();
 
         return mappings;
-     }
+    }
 
+    public void updateMappings(long addrID, String mappings) {
+        ContentValues values = new ContentValues();
+        values.put(
+                SettingsContract.AddressCommandsMappings.MAPPINGS,
+                mappings
+        );
+        mDb.update(
+                SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                values,
+                SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrID,
+                null
+        );
+    }
 
     /* ---------------- view holders --------------------------- */
     private static class TableViewHolder extends ViewHolderImpl {

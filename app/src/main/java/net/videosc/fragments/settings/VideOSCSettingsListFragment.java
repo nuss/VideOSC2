@@ -1,5 +1,6 @@
 package net.videosc.fragments.settings;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,11 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     private View mView;
     private VideOSCMainActivity mActivity;
 
+    public VideOSCSettingsListFragment(Context context) {
+        this.mActivity = (VideOSCMainActivity) context;
+        this.mContext = context;
+    }
+
     /**
      * @param savedInstanceState
      */
@@ -41,9 +47,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = (VideOSCMainActivity) getActivity();
-        assert mActivity != null;
-
         mApp = (VideOSCApplication) mActivity.getApplicationContext();
         mApp.setSettingsContainerID(this.getId());
 
@@ -117,7 +120,6 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     public void onDetach() {
         Log.d(TAG, "'onDetach()' called");
         super.onDetach();
-        mActivity = null;
     }
 
     class SettingsListOnItemClickListener implements AdapterView.OnItemClickListener {
@@ -148,35 +150,35 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
             switch (position) {
                 case 0:
-                    final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment();
+                    final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment(mContext);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, networkSettingsFragment)
                             .commit();
                     mApp.setNetworkSettingsID(networkSettingsFragment.getId());
                     break;
                 case 1:
-                    final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment();
+                    final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment(mContext);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, resolutionSettingsFragment)
                             .commit();
                     mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
                     break;
                 case 2:
-                    final VideOSCCommandMappingsFragment cmdMappingsFragment = new VideOSCCommandMappingsFragment();
+                    final VideOSCCommandMappingsFragment cmdMappingsFragment = new VideOSCCommandMappingsFragment(mContext);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, cmdMappingsFragment)
                             .commit();
                     mApp.setCommandMappingsID(cmdMappingsFragment.getId());
                     break;
                 case 3:
-                    final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment();
+                    final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment(mContext);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, sensorSettingsFragment)
                             .commit();
                     mApp.setSensorSettingsID(sensorSettingsFragment.getId());
                     break;
                 case 4:
-                    final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment();
+                    final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment(mContext);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, debugSettingsFragment)
                             .commit();
