@@ -1,4 +1,4 @@
-package net.videosc.mappings_data_source;
+package net.videosc.interfaces.mappings_data_source;
 
 public interface MappingsTableDataSource<TRowHeaderDataType, TColumnHeaderDataType, TItemDataType> {
 

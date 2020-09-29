@@ -1,4 +1,4 @@
-package net.videosc.mappings_data_source;
+package net.videosc.interfaces.mappings_data_source;
 
 import android.database.sqlite.SQLiteDatabase;
 

@@ -250,7 +250,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         );
     }
 
-    private PopupWindow showProtocolsList(ArrayAdapter protocolsAdapter) {
+    private PopupWindow showProtocolsList(ArrayAdapter<String> protocolsAdapter) {
     	final PopupWindow popUp = new PopupWindow(mActivity);
     	final ListView protocolsList = new ListView(mActivity);
     	protocolsList.setAdapter(protocolsAdapter);
