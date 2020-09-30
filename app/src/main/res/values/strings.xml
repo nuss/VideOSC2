@@ -94,6 +94,7 @@
 	<string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
 	<string name="camera_permissions_granted">Camera permissions granted. Starting preview.</string>
 	<string name="camera_permissions_denied">Camera Permission was denied.</string>
+	<string name="protocol_label">"\n(protocol: %1$s)"</string>
 
 	<!-- editing pixels -->
 	<string name="outline_for_a_multislider_bar">outline for a multislider bar</string>

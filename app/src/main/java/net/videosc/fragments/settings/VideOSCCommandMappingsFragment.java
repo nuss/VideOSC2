@@ -20,6 +20,7 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
+import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 
 public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implements OnItemClickListener {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
@@ -27,6 +28,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
     private AdaptiveTableLayout mTableLayout;
     private VideOSCMainActivity mActivity;
     private CommandMappingsTableAdapter mTableAdapter;
+    private MappingsTableDataSourceImpl mTableDataSource;
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -36,6 +38,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "VideOSCCommandMappingsFragment onCreate");
         super.onCreate(savedInstanceState);
+        mTableDataSource = new MappingsTableDataSourceImpl(mActivity);
     }
 
     @Nullable

@@ -77,8 +77,17 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
 
+	private static final String SQL_PANELS_CREATE =
+			"CREATE TABLE " + SettingsContract.Panels.TABLE_NAME + " (" +
+					SettingsContract.Panels._ID + "INTEGER PRIMARY KEY," +
+					SettingsContract.Panels.NAME + " TEXT NOT NULL DEFAULT '1', " +
+					SettingsContract.Panels.CMD + " TEXT NOT NULL DEFAULT '1')";
+
+	private static final String SQL_PANELS_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.Panels.TABLE_NAME;
+
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 39;
+	private static final int DATABASE_VERSION = 41;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -100,16 +109,6 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		db.execSQL(SQL_ADDRESSES_CREATE_ENTRIES);
 
 		ContentValues values = new ContentValues();
-
-		// net address(es)
-		/*values.put(SettingsContract.AddressSettingsEntries.IP_ADDRESS, "192.168.1.1");
-		values.put(SettingsContract.AddressSettingsEntries.PORT, 57120);
-		values.put(SettingsContract.AddressSettingsEntries.PROTOCOL, "UDP");
-		newRowId = db.insert(SettingsContract.AddressSettingsEntries.TABLE_NAME, null, values);
-		Log.d(TAG, "new row ID: " + newRowId);
-
-		// reset
-		values.clear();*/
 
 		// create table for single value settings
 		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
@@ -158,6 +157,15 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		// create address_commands_mappings table
 		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE);
+
+		// create panels table
+		db.execSQL(SQL_PANELS_CREATE);
+
+		values.put(SettingsContract.Panels.NAME, "1");
+		values.put(SettingsContract.Panels.CMD, "1");
+		/*newRowId = */db.insert(SettingsContract.Panels.TABLE_NAME, null, values);
+
+		values.clear();
 	}
 
 	/**
@@ -188,6 +196,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		db.execSQL(SQL_SENSOR_SETTINGS_DELETE);
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_DELETE);
 		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE);
+		db.execSQL(SQL_PANELS_DELETE);
 		onCreate(db);
 	}
 

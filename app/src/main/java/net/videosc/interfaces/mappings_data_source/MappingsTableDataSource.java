@@ -6,7 +6,7 @@ public interface MappingsTableDataSource<TRowHeaderDataType, TColumnHeaderDataTy
     int getColumnsCount();
 
 //    TFirstHeaderDataType getFirstHeaderData();
-    TRowHeaderDataType getRowHeaderDataType(int index);
+    TRowHeaderDataType getRowHeaderData(int index);
     TColumnHeaderDataType getColumnHeaderData(int index);
     TItemDataType getItemData(int rowIndex, int columnIndex);
 }

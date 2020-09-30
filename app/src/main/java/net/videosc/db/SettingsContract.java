@@ -57,6 +57,12 @@ public class SettingsContract {
 		public static final String MAPPINGS = "command_mappings";
 	}
 
+	public static class Panels implements BaseColumns {
+		public static final String TABLE_NAME = "panels";
+		public static final String NAME = "panel_name";
+		public static final String CMD = "panel_cmd";
+	}
+
 	// TODO
 /*
 	public static class MultiTouchSettingEntries implements BaseColumns {
