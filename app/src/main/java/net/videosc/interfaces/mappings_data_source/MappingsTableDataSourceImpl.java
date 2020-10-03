@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
+import android.util.Log;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -11,9 +13,8 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class MappingsTableDataSourceImpl implements MappingsTableDataSource<String, String, String> {
+public class MappingsTableDataSourceImpl implements MappingsTableDataSource<String, String, Character> {
     final private static String TAG = MappingsTableDataSourceImpl.class.getSimpleName();
     final private SQLiteDatabase mDb;
     final private VideOSCApplication mApp;
@@ -32,12 +33,12 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public int getRowsCount() {
-        return 0;
+        return getCommands().size()+1;
     }
 
     @Override
     public int getColumnsCount() {
-        return 0;
+        return getAddresses().size()+1;
     }
 
 /*
@@ -49,26 +50,33 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public String getRowHeaderData(int index) {
-
-        return null;
+        final ArrayList<String> commands = getCommands();
+//        Log.d(TAG, "row at index " + index + ": " + commands.get(index));
+        return commands.get(index);
     }
 
     @Override
     public String getColumnHeaderData(int index) {
-        return null;
+        final ArrayList<String> addresses = getAddresses();
+        Log.d(TAG, "address: " + addresses.get(index));
+        return addresses.get(index);
     }
 
     @Override
-    public String getItemData(int rowIndex, int columnIndex) {
-
-        return null;
+    public Character getItemData(int rowIndex, int columnIndex) {
+        final ArrayList<String> mappings = getMappings();
+        char itemData;
+        if (mappings.isEmpty()) {
+            itemData = '1';
+        } else {
+            itemData = mappings.get(columnIndex).charAt(rowIndex);
+        }
+        return itemData;
     }
 
-    // TODO: Are HashMaps the best solution here?
-
-    private HashMap<Long, String> getAddresses() {
+    private ArrayList<String> getAddresses() {
         Resources res = mActivity.getResources();
-        final HashMap<Long, String> addresses = new HashMap<>();
+        final ArrayList<String> addresses = new ArrayList<>();
 
         final String[] addrFields = new String[] {
                 SettingsContract.AddressSettingsEntries._ID,
@@ -92,18 +100,19 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
             final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
             final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-            addresses.put(addrID, ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocol));
+            addresses.add(ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocol));
         }
 
         cursor.close();
-
+        Log.d(TAG, "addresses: " + addresses);
         return addresses;
     }
 
-    private ArrayList<String> getCommands(int width, int height) {
+    private ArrayList<String> getCommands() {
         final ArrayList<String> commands = new ArrayList<>();
         final String[] colors = new String[] {"red", "green", "blue"};
-        final int size = width * height;
+        final Point res = mApp.getResolution();
+        final int size = res.x * res.y;
         String rootCmd = "";
 
         final String[] rootCmdFields = new String[] {
@@ -125,11 +134,12 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
         }
 
-        cursor.close();
+//        cursor.close();
 
         final String[] panels = new String[] {
-                SettingsContract.Panels._ID,
-                SettingsContract.Panels.NAME
+//                SettingsContract.Panels._ID,
+//                SettingsContract.Panels.NAME,
+                SettingsContract.Panels.CMD
         };
 
         cursor = mDb.query(
@@ -142,28 +152,30 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 null
         );
 
-        ArrayList<String> panelNames = new ArrayList<>();
+        ArrayList<String> panelCmds = new ArrayList<>();
         while (cursor.moveToNext()) {
-            final long panelID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.Panels._ID));
-            final String panelName = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.Panels.NAME));
-            panelNames.add((int) panelID, panelName);
+//            final long panelID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.Panels._ID));
+            final String panelCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.Panels.CMD));
+            panelCmds.add(panelCmd);
         }
 
-        for (String panel : panelNames) {
+        for (String panelCmd : panelCmds) {
             for (String color : colors) {
                 for (int i = 0; i < size; ) {
-                    commands.add("/" + rootCmd + "/" + color + (++i) + "/" + panel);
+                    commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (++i));
                 }
             }
         }
+
+//        Log.d(TAG, "commands: " + commands);
 
         cursor.close();
 
         return commands;
     }
 
-    private HashMap<Long, String> getMappings() {
-        final HashMap<Long, String> mappings = new HashMap<>();
+    private ArrayList<String> getMappings() {
+        final ArrayList<String> mappings = new ArrayList<>();
 
         String[] mappingsFields = new String[] {
                 SettingsContract.AddressCommandsMappings._ID,
@@ -184,7 +196,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         while (cursor.moveToNext()) {
             final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS));
             final String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
-            mappings.put(addrID, mappingsString);
+            mappings.add(mappingsString);
         }
 
         cursor.close();

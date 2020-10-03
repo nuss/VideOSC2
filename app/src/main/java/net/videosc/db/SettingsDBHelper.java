@@ -87,7 +87,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.Panels.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 41;
+	private static final int DATABASE_VERSION = 45;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -163,7 +163,8 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		values.put(SettingsContract.Panels.NAME, "1");
 		values.put(SettingsContract.Panels.CMD, "1");
-		/*newRowId = */db.insert(SettingsContract.Panels.TABLE_NAME, null, values);
+		newRowId = db.insert(SettingsContract.Panels.TABLE_NAME, null, values);
+		Log.d(TAG, "new panel id: " + newRowId);
 
 		values.clear();
 	}

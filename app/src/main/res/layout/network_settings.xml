@@ -73,7 +73,7 @@
                 style="@style/EditTextPadding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.45"
+                android:layout_weight="0.25"
                 android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
                 android:hint="@string/command_namespace"
                 android:paddingTop="10dp"
@@ -86,7 +86,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
-                android:layout_weight="0.5"
+                android:layout_weight="0.7"
                 android:text="@string/sub_cmd_name" />
         </LinearLayout>
     </LinearLayout>

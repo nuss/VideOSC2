@@ -51,7 +51,7 @@
 	<string name="root_command_name_head">Root command name:</string>
 	<string name="slash">/</string>
 	<string name="root_cmd_name">vosc</string>
-	<string name="sub_cmd_name"><![CDATA[/<sub_cmd_name>]]></string>
+	<string name="sub_cmd_name"><![CDATA[/<panel>/<sub_cmd_name>]]></string>
 	<string name="cancel">@android:string/cancel</string>
 	<string name="save_settings">save settings</string>
 	<string name="horizontal_resolution">Horizontal resolution:</string>

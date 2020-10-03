@@ -1,11 +1,10 @@
 package net.videosc.adapters;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +19,8 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
+import net.videosc.interfaces.mappings_data_source.MappingsTableDataSource;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<ViewHolderImpl> {
@@ -35,32 +33,34 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private final SQLiteDatabase mDb;
     private final VideOSCApplication mApp;
     private final Point mResolution;
-    private HashMap<Long, String> mAddresses;
-    private ArrayList<String> mCommands;
-    private HashMap<Long, String> mMappings;
+    private final MappingsTableDataSource<String, String, Character> mTableDataSource;
+    private String mAddress;
+    private String mCommand;
+    private String mMapping;
     private Iterator<String> mAddrIterator;
 
-    public CommandMappingsTableAdapter(Context context, VideOSCMainActivity activity) {
-        this.mLayoutInflater = LayoutInflater.from(context);
+    public CommandMappingsTableAdapter(VideOSCMainActivity activity, MappingsTableDataSource<String, String, Character> tableDataSource) {
+        this.mLayoutInflater = LayoutInflater.from(activity);
         this.mApp = (VideOSCApplication) activity.getApplication();
         this.mResolution = mApp.getResolution();
-        Resources res = context.getResources();
+        Resources res = activity.getResources();
         this.mColumnWidth = res.getDimensionPixelSize(R.dimen.col_width);
         this.mRowHeight = res.getDimensionPixelSize(R.dimen.row_height);
         this.mHeaderHeight = res.getDimensionPixelSize(R.dimen.col_header_height);
         this.mHeaderWidth = res.getDimensionPixelSize(R.dimen.row_header_width);
+        this.mTableDataSource = tableDataSource;
         this.mDb = activity.getDatabase();
-        initTableData(activity);
     }
 
     @Override
     public int getRowCount() {
-        return getCommands(mResolution.x, mResolution.y).size() + 1;
+        return mTableDataSource.getRowsCount();
     }
 
     @Override
     public int getColumnCount() {
-        return getAddresses().size() + 1;
+        Log.d(TAG, "num columns: " + mTableDataSource.getColumnsCount());
+        return mTableDataSource.getColumnsCount();
     }
 
     @NonNull
@@ -89,14 +89,11 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderImpl viewHolder, int row, int column) {
-        final TableViewHolder vh = (TableViewHolder) viewHolder;
-        final String colData = mMappings.get((long) column);
-        char rawMapping = 1;
+//        Log.d(TAG, "onBindViewHolder: row: " + row + ", column: " + column);
         String itemData;
         int bgColor, textColor;
-        if (colData != null) {
-            rawMapping = colData.charAt(row);
-        }
+        final TableViewHolder vh = (TableViewHolder) viewHolder;
+        int rawMapping = Integer.parseInt(String.valueOf(mTableDataSource.getItemData(row-1, column-1)));
         if (rawMapping > 0) {
             itemData = "ON";
             bgColor = 0xffffffff;
@@ -114,16 +111,16 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public void onBindHeaderColumnViewHolder(@NonNull ViewHolderImpl viewHolder, int column) {
+        Log.d(TAG, "onBindHeaderColumnViewHolder, column: " + column);
         final TableHeaderColumnViewHolder vh = (TableHeaderColumnViewHolder) viewHolder;
-        if (mAddrIterator == null) mAddrIterator = mAddresses.values().iterator();
-        final String itemData = mAddrIterator.next();
+        String itemData = mTableDataSource.getColumnHeaderData(column-1);
         vh.cellText.setText(itemData);
     }
 
     @Override
     public void onBindHeaderRowViewHolder(@NonNull ViewHolderImpl viewHolder, int row) {
         final TableHeaderRowViewHolder vh = (TableHeaderRowViewHolder) viewHolder;
-        final String itemData = mCommands.get(row-1);
+        final String itemData = mTableDataSource.getRowHeaderData(row-1);
         vh.cellText.setText(itemData);
     }
 
@@ -154,16 +151,16 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         return mHeaderWidth;
     }
 
-    private void initTableData(VideOSCMainActivity activity) {
-        final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-        final int width = app.getResolution().x;
-        final int height = app.getResolution().y;
-        mAddresses = getAddresses();
-        mCommands = getCommands(width, height);
-        mMappings = getMappings();
-    }
+//    private void initTableData(VideOSCMainActivity activity) {
+//        final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+//        final int width = app.getResolution().x;
+//        final int height = app.getResolution().y;
+////        mAddress = mTableDataSource.get();
+////        mCommand = getCommands(width, height);
+////        mMapping = getMappings();
+//    }
 
-    private HashMap<Long, String> getAddresses() {
+ /*   private HashMap<Long, String> getAddresses() {
         final HashMap<Long, String> addresses = new HashMap<>();
 
         final String[] addrFields = new String[] {
@@ -230,9 +227,9 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         cursor.close();
 
         return commands;
-    }
+    } */
 
-    private HashMap<Long, String> getMappings() {
+   /* private HashMap<Long, String> getMappings() {
         final HashMap<Long, String> mappings = new HashMap<>();
 
         String[] mappingsFields = new String[] {
@@ -260,7 +257,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         cursor.close();
 
         return mappings;
-    }
+    }*/
 
     public void updateMappings(long addrID, String mappings) {
         ContentValues values = new ContentValues();
@@ -283,6 +280,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
+//            Log.d(TAG, "new TableViewHolder, cellText: " + cellText);
         }
     }
 
@@ -292,6 +290,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableHeaderColumnViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
+            Log.d(TAG, "new TableHeaderColumnViewHolder, celltext: " + cellText);
         }
     }
 
@@ -301,6 +300,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableHeaderRowViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
+//            Log.d(TAG, "new TableHeaderRowViewHolder, cellText: " + cellText);
         }
     }
 
@@ -310,6 +310,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableLeftTopViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
+//            Log.d(TAG, "new TableLeftTopViewHolder, cellText: " + cellText);
         }
     }
 }

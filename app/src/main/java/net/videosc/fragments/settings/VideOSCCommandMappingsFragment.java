@@ -49,7 +49,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
         if (numAddresses > 1) {
             view = inflater.inflate(R.layout.address_command_mappings_table, container, false);
             mTableLayout = view.findViewById(R.id.address_command_mappings_table);
-            mTableAdapter = new CommandMappingsTableAdapter(getContext(), mActivity);
+            mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
             mTableAdapter.setOnItemClickListener(this);
             mTableLayout.setAdapter(mTableAdapter);
         } else {
@@ -104,12 +104,12 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
 
     @Override
     public void onRowHeaderClick(int row) {
-
+        Log.d(TAG, "row header clicked: " + row);
     }
 
     @Override
     public void onColumnHeaderClick(int column) {
-
+        Log.d(TAG, "column header clicked: " + column);
     }
 
     @Override
