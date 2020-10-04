@@ -1,6 +1,6 @@
 package net.videosc.interfaces.mappings_data_source;
 
-public interface MappingsTableDataSource<TRowHeaderDataType, TColumnHeaderDataType, TItemDataType> {
+public interface MappingsTableDataSource</*TFirstHeaderDataType, */TRowHeaderDataType, TColumnHeaderDataType, TItemDataType> {
 
     int getRowsCount();
     int getColumnsCount();

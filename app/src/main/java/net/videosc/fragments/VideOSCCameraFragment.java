@@ -705,7 +705,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param h      the surface height
 		 */
 		@Override
-		public void surfaceChanged(final SurfaceHolder holder, int format, final int w, final int h) {
+		public void surfaceChanged(@NonNull final SurfaceHolder holder, int format, final int w, final int h) {
 			Log.d(TAG, "surface changed: " + mApp.getResolution());
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist

@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <Button
         android:id="@+id/cell_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
         android:textSize="12sp"
+        android:text="@string/sort_by_cmd_num"
         tools:text="Text" />
 
 </RelativeLayout>

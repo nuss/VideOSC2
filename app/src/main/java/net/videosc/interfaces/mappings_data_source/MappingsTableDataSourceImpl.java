@@ -43,7 +43,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
 /*
     @Override
-    public Object getFirstHeaderData() {
+    public Button getFirstHeaderData() {
         return null;
     }
 */
@@ -159,10 +159,22 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             panelCmds.add(panelCmd);
         }
 
-        for (String panelCmd : panelCmds) {
-            for (String color : colors) {
-                for (int i = 0; i < size; ) {
-                    commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (++i));
+        boolean orderByNum = false;
+
+        if (!orderByNum) {
+            for (String panelCmd : panelCmds) {
+                for (String color : colors) {
+                    for (int i = 0; i < size; ) {
+                        commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (++i));
+                    }
+                }
+            }
+        } else {
+            for (String panelCmd : panelCmds) {
+                for (int i = 0; i < size; i++) {
+                    for (String color : colors) {
+                        commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (i+1));
+                    }
                 }
             }
         }
