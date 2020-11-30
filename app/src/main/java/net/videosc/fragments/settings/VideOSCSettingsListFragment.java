@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -23,12 +24,9 @@ import net.videosc.utilities.VideOSCUIHelpers;
 public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCSettingsList";
     private VideOSCApplication mApp;
-    private View mView;
-    private VideOSCMainActivity mActivity;
 
     public VideOSCSettingsListFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
-        this.mContext = context;
     }
 
     /**
@@ -47,6 +45,23 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.mContainer = container;
+        return inflater.inflate(R.layout.settings_container, container, false);
+    }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mApp = (VideOSCApplication) mActivity.getApplicationContext();
         mApp.setSettingsContainerID(this.getId());
 
@@ -54,62 +69,15 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         final String[] items = getResources().getStringArray(R.array.settings_select_items);
         final ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(mActivity, R.layout.settings_selection_item, items);
 
-        mView = inflater.inflate(R.layout.settings_container, container, false);
-
-        final ListView settingsListView = mView.findViewById(R.id.settings_list);
+        final ListView settingsListView = view.findViewById(R.id.settings_list);
 
         settingsListView.setAdapter(itemsAdapter);
         // does the fade-in animation really work?...
-        VideOSCUIHelpers.setTransitionAnimation(container);
-        mView.setVisibility(View.VISIBLE);
+        VideOSCUIHelpers.setTransitionAnimation(mContainer);
+        view.setVisibility(View.VISIBLE);
 
         settingsListView.setOnItemClickListener(new SettingsListOnItemClickListener());
 
-        return mView;
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "'onPause()' called");
-        super.onPause();
-    }
-
-    /**
-     * Called when the Fragment is no longer started.  This is generally
-     * tied to 'onStop()' of the containing
-     * Activity's lifecycle.
-     */
-    @Override
-    public void onStop() {
-        Log.d(TAG, "'onStop()' called");
-        super.onStop();
-    }
-
-    /**
-     * Called when the view previously created by {@link #onCreateView} has
-     * been detached from the fragment.  The next time the fragment needs
-     * to be displayed, a new view will be created.  This is called
-     * after {@link #onStop()} and before {@link #onDestroy()}.  It is called
-     * <em>regardless</em> of whether {@link #onCreateView} returned a
-     * non-null view.  Internally it is called after the view's state has
-     * been saved but before it has been removed from its parent.
-     */
-    @Override
-    public void onDestroyView() {
-        Log.d(TAG, "'onDestroyView()' called");
-        super.onDestroyView();
-        mApp.setSettingsContainerID(-1);
-        mView = null;
-    }
-
-    /**
-     * Called when the fragment is no longer in use.  This is called
-     * after {@link #onStop()} and before {@link #onDetach()}.
-     */
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "'onDestroy()' called");
-        super.onDestroy();
     }
 
     /**
@@ -120,6 +88,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     public void onDetach() {
         Log.d(TAG, "'onDetach()' called");
         super.onDetach();
+        this.mActivity = null;
     }
 
     class SettingsListOnItemClickListener implements AdapterView.OnItemClickListener {
@@ -150,35 +119,35 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
             switch (position) {
                 case 0:
-                    final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment(mContext);
+                    final VideOSCNetworkSettingsFragment networkSettingsFragment = new VideOSCNetworkSettingsFragment(mActivity);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, networkSettingsFragment)
                             .commit();
                     mApp.setNetworkSettingsID(networkSettingsFragment.getId());
                     break;
                 case 1:
-                    final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment(mContext);
+                    final VideOSCResolutionSettingsFragment resolutionSettingsFragment = new VideOSCResolutionSettingsFragment(mActivity);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, resolutionSettingsFragment)
                             .commit();
                     mApp.setResolutionSettingsID(resolutionSettingsFragment.getId());
                     break;
                 case 2:
-                    final VideOSCCommandMappingsFragment cmdMappingsFragment = new VideOSCCommandMappingsFragment(mContext);
+                    final VideOSCCommandMappingsFragment cmdMappingsFragment = new VideOSCCommandMappingsFragment(mActivity);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, cmdMappingsFragment)
                             .commit();
                     mApp.setCommandMappingsID(cmdMappingsFragment.getId());
                     break;
                 case 3:
-                    final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment(mContext);
+                    final VideOSCSensorSettingsFragment sensorSettingsFragment = new VideOSCSensorSettingsFragment(mActivity);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, sensorSettingsFragment)
                             .commit();
                     mApp.setSensorSettingsID(sensorSettingsFragment.getId());
                     break;
                 case 4:
-                    final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment(mContext);
+                    final VideOSCDebugSettingsFragment debugSettingsFragment = new VideOSCDebugSettingsFragment(mActivity);
                     ft.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .replace(R.id.settings_container, debugSettingsFragment)
                             .commit();

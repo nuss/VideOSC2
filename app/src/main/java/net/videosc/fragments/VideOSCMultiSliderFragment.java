@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
  */
 public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragment";
-	private final VideOSCMainActivity mActivity;
 	private VideOSCMultiSliderView mMSViewRight;
 	private VideOSCMultiSliderView mMSViewLeft;
 
@@ -36,6 +36,24 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		this.mContainer = container;
+		this.mInflater = inflater;
+		return inflater.inflate(R.layout.multislider_view, container, false);
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		int color = 0x66ffffff;
 		double[] vals = new double[]{};
 		double[] mixVals = new double[]{};
@@ -63,17 +81,16 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 				break;
 		}
 
-		View msContainer = inflater.inflate(R.layout.multislider_view, container, false);
-		mMSViewLeft = msContainer.findViewById(R.id.multislider_view_left);
+		mMSViewLeft = view.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
-		mMSViewLeft.setContainerView(container);
+		mMSViewLeft.setContainerView(mContainer);
 
-		mMSButtons = inflater.inflate(R.layout.multislider_buttons, container, false);
-		mLabelsView = inflater.inflate(R.layout.multislider_labels, container, false);
+		mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);
+		mLabelsView = mInflater.inflate(R.layout.multislider_labels, mContainer, false);
 
-		mMSViewRight = msContainer.findViewById(R.id.multislider_view_right);
+		mMSViewRight = view.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
-		mMSViewRight.setContainerView(container);
+		mMSViewRight.setContainerView(mContainer);
 
 		// colors are determining slider positions on the left
 		mMSViewLeft.setValues(vals);
@@ -123,13 +140,10 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 
 		setSliderProps(sliderNums);
 
-		VideOSCUIHelpers.addView(mMSButtons, container);
-		VideOSCUIHelpers.addView(mLabelsView, container);
+		VideOSCUIHelpers.addView(mMSButtons, mContainer);
+		VideOSCUIHelpers.addView(mLabelsView, mContainer);
 
-		mContainer = container;
 		mFragment = this;
-
-		return msContainer;
 	}
 
 	@Override
@@ -139,6 +153,16 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 			createViewCallback.onCreateView();
 			createViewCallback = null;
 		}
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mActivity = null;
 	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {

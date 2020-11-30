@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
@@ -25,7 +26,6 @@ import net.videosc.utilities.VideOSCUIHelpers;
 
 public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	private final static String TAG = "SelectSnapshotFragment";
-	private final VideOSCMainActivity mActivity;
 	private Cursor mCursor;
 	private Cursor mDbCursor;
 	private MatrixCursor mExtraCursor;
@@ -57,15 +57,29 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d(TAG, "snapshots fragment, on create view");
-//		final ScrollView bg = (ScrollView) inflater.inflate(R.layout.settings_background_scroll, container, false);
+		return inflater.inflate(R.layout.snapshots_list, container, false);
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		final FragmentManager manager = getFragmentManager();
-		ViewGroup view = (ViewGroup) inflater.inflate(R.layout.snapshots_list, container, false);
 		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(
 				mActivity, R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
 		);
 		snapshotsListView.setAdapter(adapter);
-		VideOSCUIHelpers.setTransitionAnimation(view);
+		VideOSCUIHelpers.setTransitionAnimation((ViewGroup) view);
 		// prevent underlying view from receiving touch events
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -86,7 +100,6 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 						.commit();
 			}
 		});
-		return view;
 	}
 
 	/**
@@ -100,6 +113,16 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		mCursor.close();
 		mDbCursor.close();
 		mExtraCursor.close();
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mActivity = null;
 	}
 
 	public void setCursors(MergeCursor cursor, Cursor dbCursor, MatrixCursor extras) {

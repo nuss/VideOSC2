@@ -26,9 +26,9 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
     private AdaptiveTableLayout mTableLayout;
-    private VideOSCMainActivity mActivity;
     private CommandMappingsTableAdapter mTableAdapter;
     private MappingsTableDataSourceImpl mTableDataSource;
+    private int mNumAddresses;
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -38,44 +38,41 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(TAG, "VideOSCCommandMappingsFragment onCreate");
         super.onCreate(savedInstanceState);
-        mTableDataSource = new MappingsTableDataSourceImpl(mActivity);
+        this.mTableDataSource = new MappingsTableDataSourceImpl(mActivity);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view;
-        int numAddresses = countAddresses();
-        if (numAddresses > 1) {
+        this.mNumAddresses = countAddresses();
+        if (mNumAddresses > 1) {
             view = inflater.inflate(R.layout.address_command_mappings_table, container, false);
-            mTableLayout = view.findViewById(R.id.address_command_mappings_table);
-            mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
-            mTableAdapter.setOnItemClickListener(this);
-            mTableLayout.setAdapter(mTableAdapter);
         } else {
             view = inflater.inflate(R.layout.no_addresses_defined, container, false);
         }
         return view;
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (mNumAddresses > 1) {
+            mTableLayout = view.findViewById(R.id.address_command_mappings_table);
+            mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
+            mTableAdapter.setOnItemClickListener(this);
+            mTableLayout.setAdapter(mTableAdapter);
+        }
     }
 
     @Override

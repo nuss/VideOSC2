@@ -25,6 +25,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
@@ -43,8 +44,6 @@ import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     final private static String TAG = "NetworkSettingsFragment";
-    private View mView;
-    private VideOSCMainActivity mActivity;
     private EditText mAddIPAddress;
     private EditText mAddPort;
     private Button mAddProtocol;
@@ -73,7 +72,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     /**
@@ -84,29 +82,44 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.network_settings, container, false);
+    }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         final FragmentManager fragmentManager = getFragmentManager();
         assert fragmentManager != null;
         // in API 30 getting the cameraView only seems to work with fragmentManager retrieved retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-        mView = inflater.inflate(R.layout.network_settings, container, false);
         mDb = mActivity.getDatabase();
 
-        mAddIPAddress = mView.findViewById(R.id.add_remote_ip);
-        mAddPort = mView.findViewById(R.id.add_remote_port);
-        mAddProtocol = mView.findViewById(R.id.set_protocol);
-		final String[] protocols = new String[] {"UDP", "TCP/IP"};
-		mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
-		mProtocolsPopUp = showProtocolsList(mProtocolsAdapter);
-		mAddProtocol.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mProtocolsPopUp.showAsDropDown(v, 0, 0);
-			}
-		});
-		ListView protocolsList = (ListView) mProtocolsPopUp.getContentView();
-		protocolsList.setOnItemClickListener(new ProtocolsOnItemClickListener());
+        mAddIPAddress = view.findViewById(R.id.add_remote_ip);
+        mAddPort = view.findViewById(R.id.add_remote_port);
+        mAddProtocol = view.findViewById(R.id.set_protocol);
+        final String[] protocols = new String[] {"UDP", "TCP/IP"};
+        mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
+        mProtocolsPopUp = showProtocolsList(mProtocolsAdapter);
+        mAddProtocol.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mProtocolsPopUp.showAsDropDown(v, 0, 0);
+            }
+        });
+        ListView protocolsList = (ListView) mProtocolsPopUp.getContentView();
+        protocolsList.setOnItemClickListener(new ProtocolsOnItemClickListener());
 
-        final Button addAddress = mView.findViewById(R.id.add_address_button);
+        final Button addAddress = view.findViewById(R.id.add_address_button);
 
         mAddresses = new ArrayList<>();
         final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
@@ -127,7 +140,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         );
         mAddressesAdapter.setDatabase(mDb);
 
-        final ListView addressesList = mView.findViewById(R.id.addresses_list);
+        final ListView addressesList = view.findViewById(R.id.addresses_list);
         addressesList.setAdapter(mAddressesAdapter);
         mAddressesAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -183,14 +196,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         cursor.close();
 
-        final EditText udpReceivePortField = mView.findViewById(R.id.device_port_field);
+        final EditText udpReceivePortField = view.findViewById(R.id.device_port_field);
         udpReceivePortField.setText(
                 String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
                 TextView.BufferType.EDITABLE
         );
-        final EditText rootCmdField = mView.findViewById(R.id.root_cmd_name_field);
+        final EditText rootCmdField = view.findViewById(R.id.root_cmd_name_field);
         rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
-        final TextView deviceIP = mView.findViewById(R.id.device_ip_address);
+        final TextView deviceIP = view.findViewById(R.id.device_ip_address);
         deviceIP.setText(KetaiNet.getIP());
 
         udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -237,9 +250,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 }
             }
         });
-
-        //		return super.onCreateView(inflater, container, savedInstanceState);
-        return mView;
     }
 
     private Cursor queryAddresses() {
@@ -265,26 +275,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 	@Override
     public void onDetach() {
         super.onDetach();
+        this.mActivity = null;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mAddressesCursor.close();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mView = null;
-    }
-
-    /**
-     * @deprecated
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     private class AddAddressButtonOnClickListener implements View.OnClickListener {

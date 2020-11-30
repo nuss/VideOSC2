@@ -53,6 +53,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
@@ -95,8 +96,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// View to display the camera output.
 	public CameraPreview mPreview;
-	// preview container
-	private ViewGroup mPreviewContainer;
 	// the toolsDrawer on the right
 	private DrawerLayout mToolsDrawer;
 
@@ -109,9 +108,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	private String mRed, mGreen, mBlue;
 
-	private VideOSCMainActivity mActivity;
 	private VideOSCApplication mApp;
-	private LayoutInflater mInflater;
 	private static OscP5 mOscP5;
 
 	// pixels set by multislider
@@ -165,19 +162,32 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		mApp = (VideOSCApplication) mActivity.getApplication();
-		mToolsDrawer = mActivity.mToolsDrawerLayout;
-		mInflater = inflater;
-		mOscP5 = mApp.mOscHelper.getOscP5();
-		View view = inflater.inflate(R.layout.fragment_native_camera, container, false);
 		// store the container for later re-use
-		mPreviewContainer = container;
+		this.mContainer = container;
+		this.mInflater = inflater;
+		return inflater.inflate(R.layout.fragment_native_camera, container, false);
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		mApp = (VideOSCApplication) mActivity.getApplication();
+		mOscP5 = mApp.mOscHelper.getOscP5();
+		mToolsDrawer = mActivity.mToolsDrawerLayout;
 		mImage = view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
-
-		return view;
 	}
 
 	/**
@@ -246,6 +256,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		super.onDestroy();
 		Log.d(TAG, "onDestroy called");
 		releaseCameraAndPreview();
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mActivity = null;
 	}
 
 	/**
@@ -638,12 +658,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		@Override
 		public void surfaceCreated(SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + mViewCamera);
-			final ViewGroup indicatorPanel = mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup indicatorPanel = mContainer.findViewById(R.id.indicator_panel);
 
 			try {
 				mViewCamera.setPreviewDisplay(holder);
 				mViewCamera.startPreview();
-				View menuButton = mPreviewContainer.findViewById(R.id.show_menu);
+				View menuButton = mContainer.findViewById(R.id.show_menu);
 				if (mApp.getSettingsContainerID() < 0) {
 					menuButton.bringToFront();
 					if (indicatorPanel != null)
@@ -654,9 +674,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			}
 
 			if (mOverlayView == null) {
-				ViewGroup overlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mPreviewContainer, false);
+				ViewGroup overlay = (ViewGroup) mInflater.inflate(R.layout.tile_overlay_view, mContainer, false);
 				mOverlayView = overlay.findViewById(R.id.tile_draw_view);
-				VideOSCUIHelpers.addView(mOverlayView, mPreviewContainer);
+				VideOSCUIHelpers.addView(mOverlayView, mContainer);
 			}
 
 			mPixelEditor = mActivity.mPixelEditor;
@@ -712,20 +732,20 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				return;
 			}
 
-			final ViewGroup colorModePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup colorModePanel = mContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = mContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup indicators = mContainer.findViewById(R.id.indicator_panel);
 
 			// memorize current pixel size
 			setPixelSize(holder);
 
 			if (mApp.getIsMultiSliderActive()) {
 				if (mApp.getIsFPSCalcPanelOpen())
-					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mPreviewContainer);
+					VideOSCUIHelpers.removeView(fpsRateCalcPanel, mContainer);
 				if (mApp.getIsColorModePanelOpen())
-					VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
+					VideOSCUIHelpers.removeView(colorModePanel, mContainer);
 				if (mApp.getIsIndicatorPanelOpen()) {
-					mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mPreviewContainer));
+					mApp.setIsIndicatorPanelOpen(VideOSCUIHelpers.removeView(indicators, mContainer));
 				}
 			}
 
@@ -746,10 +766,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						mNow = System.currentTimeMillis();
 						mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
 						mPrev = mNow;
-						TextView frameRateText = mPreviewContainer.findViewById(R.id.fps);
+						TextView frameRateText = mContainer.findViewById(R.id.fps);
 						if (frameRateText != null)
 							frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
-						TextView zoomText = mPreviewContainer.findViewById(R.id.zoom);
+						TextView zoomText = mContainer.findViewById(R.id.zoom);
 						if (zoomText != null)
 							zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
 						Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -801,12 +821,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public boolean onTouchEvent(MotionEvent motionEvent) {
 			performClick();
 			final Camera.Parameters params = mViewCamera.getParameters();
-			final ViewGroup colorModePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
-			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup colorModePanel = mContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup fpsRateCalcPanel = mContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup indicators = mContainer.findViewById(R.id.indicator_panel);
 
 			if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-				VideOSCUIHelpers.removeView(colorModePanel, mPreviewContainer);
+				VideOSCUIHelpers.removeView(colorModePanel, mContainer);
 				if (mApp.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL)) {
 					if (fpsRateCalcPanel != null)
 						fpsRateCalcPanel.setVisibility(View.INVISIBLE);
@@ -931,9 +951,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		}
 
 		public void createMultiSliders() {
-			final ViewGroup indicators = mPreviewContainer.findViewById(R.id.indicator_panel);
-			final ViewGroup fpsRateCalcPanel = mPreviewContainer.findViewById(R.id.fps_calc_period_indicator);
-			final ViewGroup modePanel = mPreviewContainer.findViewById(R.id.color_mode_panel);
+			final ViewGroup indicators = mContainer.findViewById(R.id.indicator_panel);
+			final ViewGroup fpsRateCalcPanel = mContainer.findViewById(R.id.fps_calc_period_indicator);
+			final ViewGroup modePanel = mContainer.findViewById(R.id.color_mode_panel);
 			short numSelectedPixels = (short) mPixelIds.size();
 			int[] colors = new int[numSelectedPixels];
 			double[] redVals = new double[numSelectedPixels];
@@ -1002,12 +1022,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mManager.findFragmentByTag("MultiSliderView") == null) {
 				if (!mApp.getColorMode().equals(RGBModes.RGB)) {
-					VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mContext);
+					VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mActivity);
 					mManager.beginTransaction()
 							.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 							.commit();
 					multiSliderFragment.setArguments(msArgsBundle);
-					multiSliderFragment.setParentContainer(mPreviewContainer);
+					multiSliderFragment.setParentContainer(mContainer);
 					if (multiSliderFragment.getView() == null) {
 						multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
 							@Override
@@ -1017,12 +1037,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						});
 					} else mPixelIds.clear();
 				} else {
-					final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB(mContext);
+					final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB(mActivity);
 					mManager.beginTransaction()
 							.add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
 							.commit();
 					multiSliderFragment.setArguments(msArgsBundle);
-					multiSliderFragment.setParentContainer(mPreviewContainer);
+					multiSliderFragment.setParentContainer(mContainer);
 					if (multiSliderFragment.getView() == null) {
 						multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
 							@Override
@@ -1037,7 +1057,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				indicators.setVisibility(View.INVISIBLE);
 				if (fpsRateCalcPanel != null)
 					fpsRateCalcPanel.setVisibility(View.INVISIBLE);
-				mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mPreviewContainer));
+				mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mContainer));
 				mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 			}
 		}
@@ -1158,15 +1178,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
 			// color mode RGB (or RGB inverted)
-			VideOSCMultiSliderView msRedLeft = mPreviewContainer.findViewById(R.id.multislider_view_r_left);
-			VideOSCMultiSliderView msRedRight = mPreviewContainer.findViewById(R.id.multislider_view_r_right);
-			VideOSCMultiSliderView msGreenLeft = mPreviewContainer.findViewById(R.id.multislider_view_g_left);
-			VideOSCMultiSliderView msGreenRight = mPreviewContainer.findViewById(R.id.multislider_view_g_right);
-			VideOSCMultiSliderView msBlueLeft = mPreviewContainer.findViewById(R.id.multislider_view_b_left);
-			VideOSCMultiSliderView msBlueRight = mPreviewContainer.findViewById(R.id.multislider_view_b_right);
+			VideOSCMultiSliderView msRedLeft = mContainer.findViewById(R.id.multislider_view_r_left);
+			VideOSCMultiSliderView msRedRight = mContainer.findViewById(R.id.multislider_view_r_right);
+			VideOSCMultiSliderView msGreenLeft = mContainer.findViewById(R.id.multislider_view_g_left);
+			VideOSCMultiSliderView msGreenRight = mContainer.findViewById(R.id.multislider_view_g_right);
+			VideOSCMultiSliderView msBlueLeft = mContainer.findViewById(R.id.multislider_view_b_left);
+			VideOSCMultiSliderView msBlueRight = mContainer.findViewById(R.id.multislider_view_b_right);
 			// color mode R, G or B
-			VideOSCMultiSliderView msLeft = mPreviewContainer.findViewById(R.id.multislider_view_left);
-			VideOSCMultiSliderView msRight = mPreviewContainer.findViewById(R.id.multislider_view_right);
+			VideOSCMultiSliderView msLeft = mContainer.findViewById(R.id.multislider_view_left);
+			VideOSCMultiSliderView msRight = mContainer.findViewById(R.id.multislider_view_right);
 
 			for (int i = 0; i < dimensions; i++) {
 				Double mixVal;

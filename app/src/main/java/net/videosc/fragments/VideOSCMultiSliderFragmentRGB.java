@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
  */
 public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	private final static String TAG = "MultiSliderFragmentRGB";
-	private final VideOSCMainActivity mActivity;
 	private VideOSCMultiSliderView mMSViewRedRight;
 	private VideOSCMultiSliderView mMSViewRedLeft;
 	private VideOSCMultiSliderView mMSViewGreenRight;
@@ -40,6 +40,26 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+		this.mContainer = container;
+		this.mInflater = inflater;
+		return inflater.inflate(R.layout.multislider_view_rgb, container, false);
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		mLabelsView = mInflater.inflate(R.layout.multislider_labels, mContainer, false);
+
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		final Point resolution = app.getResolution();
 		final int numTotalPixels = resolution.x * resolution.y;
@@ -57,26 +77,24 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		final double[] blueVals = argsBundle.getDoubleArray("blueVals");
 		final double[] blueMixVals = argsBundle.getDoubleArray("blueMixVals");
 
-		mLabelsView = inflater.inflate(R.layout.multislider_labels, container, false);
-		View msContainer = inflater.inflate(R.layout.multislider_view_rgb, container, false);
-		mMSViewRedLeft = msContainer.findViewById(R.id.multislider_view_r_left);
+		mMSViewRedLeft = view.findViewById(R.id.multislider_view_r_left);
 		mMSViewRedLeft.setValuesArray(numTotalPixels);
-		mMSViewRedLeft.setContainerView(container);
-		mMSViewRedRight = msContainer.findViewById(R.id.multislider_view_r_right);
+		mMSViewRedLeft.setContainerView(mContainer);
+		mMSViewRedRight = view.findViewById(R.id.multislider_view_r_right);
 		mMSViewRedRight.setValuesArray(numTotalPixels);
-		mMSViewRedRight.setContainerView(container);
-		mMSViewGreenLeft = msContainer.findViewById(R.id.multislider_view_g_left);
+		mMSViewRedRight.setContainerView(mContainer);
+		mMSViewGreenLeft = view.findViewById(R.id.multislider_view_g_left);
 		mMSViewGreenLeft.setValuesArray(numTotalPixels);
-		mMSViewGreenLeft.setContainerView(container);
-		mMSViewGreenRight = msContainer.findViewById(R.id.multislider_view_g_right);
+		mMSViewGreenLeft.setContainerView(mContainer);
+		mMSViewGreenRight = view.findViewById(R.id.multislider_view_g_right);
 		mMSViewGreenRight.setValuesArray(numTotalPixels);
-		mMSViewGreenRight.setContainerView(container);
-		mMSViewBlueLeft = msContainer.findViewById(R.id.multislider_view_b_left);
+		mMSViewGreenRight.setContainerView(mContainer);
+		mMSViewBlueLeft = view.findViewById(R.id.multislider_view_b_left);
 		mMSViewBlueLeft.setValuesArray(numTotalPixels);
-		mMSViewBlueLeft.setContainerView(container);
-		mMSViewBlueRight = msContainer.findViewById(R.id.multislider_view_b_right);
+		mMSViewBlueLeft.setContainerView(mContainer);
+		mMSViewBlueRight = view.findViewById(R.id.multislider_view_b_right);
 		mMSViewBlueRight.setValuesArray(numTotalPixels);
-		mMSViewBlueRight.setContainerView(container);
+		mMSViewBlueRight.setContainerView(mContainer);
 
 		mMSViewRedLeft.setValues(redVals);
 		mMSViewRedRight.setValues(redMixVals);
@@ -85,7 +103,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueLeft.setValues(blueVals);
 		mMSViewBlueRight.setValues(blueMixVals);
 
-		ViewGroup column = msContainer.findViewById(R.id.multislider_rgb_left_column);
+		ViewGroup column = view.findViewById(R.id.multislider_rgb_left_column);
 		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) column.getLayoutParams();
 		int topMargin = lp.topMargin;
 		float density = app.getScreenDensity();
@@ -104,7 +122,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		mMSViewBlueRight.setParentTopMargin(topMargin);
 		mMSViewBlueRight.setDisplayHeight(displayHeight);
 
-		mMSButtons = inflater.inflate(R.layout.multislider_buttons, container, false);
+		mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
@@ -159,13 +177,11 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		setSliderProps(sliderNums);
 
-		VideOSCUIHelpers.addView(mMSButtons, container);
-		VideOSCUIHelpers.addView(mLabelsView, container);
+		VideOSCUIHelpers.addView(mMSButtons, mContainer);
+		VideOSCUIHelpers.addView(mLabelsView, mContainer);
 
-		mContainer = container;
 		mFragment = this;
 
-		return msContainer;
 	}
 
 	@Override
@@ -175,6 +191,16 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			createViewCallback.onCreateView();
 			createViewCallback = null;
 		}
+	}
+
+	/**
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		this.mActivity = null;
 	}
 
 	private void setSliderProps(ArrayList<Integer> sliderNums) {

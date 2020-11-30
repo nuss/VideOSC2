@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
 import net.videosc.R;
@@ -17,8 +18,6 @@ import net.videosc.fragments.VideOSCBaseFragment;
 
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "DebugSettingsFragment";
-	private final VideOSCMainActivity mActivity;
-	private View mView;
 
     public VideOSCDebugSettingsFragment(Context context) {
     	this.mActivity = (VideOSCMainActivity) context;
@@ -31,7 +30,6 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 	}
 
 	/**
@@ -42,12 +40,25 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.debug_settings, container, false);
+	}
+
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
-
-		mView = inflater.inflate(R.layout.debug_settings, container, false);
-
-		final SwitchCompat hidePixelImageCB = mView.findViewById(R.id.hide_pixel_image);
-		final SwitchCompat debugPixelOscSendingCB = mView.findViewById(R.id.add_packet_drops);
+		final SwitchCompat hidePixelImageCB = view.findViewById(R.id.hide_pixel_image);
+		final SwitchCompat debugPixelOscSendingCB = view.findViewById(R.id.add_packet_drops);
 		hidePixelImageCB.setChecked(app.getPixelImageHidden());
 		debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
@@ -64,23 +75,15 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 				VideOSCApplication.setDebugPixelOsc(isChecked);
 			}
 		});
-
-
-//		return super.onCreateView(inflater, container, savedInstanceState);
-		return mView;
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mView = null;
 	}
 
 	/**
-	 * @deprecated
+	 * Called when the fragment is no longer attached to its activity.  This
+	 * is called after {@link #onDestroy()}.
 	 */
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onDetach() {
+		super.onDetach();
+		this.mActivity = null;
 	}
 }

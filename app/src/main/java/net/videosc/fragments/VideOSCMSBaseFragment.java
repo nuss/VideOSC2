@@ -16,23 +16,21 @@ import net.videosc.activities.VideOSCMainActivity;
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
 	private ViewGroup mParentContainer;
-	ViewGroup mContainer;
 	View mMSButtons;
 	View mLabelsView;
 	FragmentManager mManager;
 	VideOSCBaseFragment mFragment;
 
 	public VideOSCMSBaseFragment(Context context) {
-		this.mContext = context;
+		this.mActivity = (VideOSCMainActivity) context;
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 
-		final VideOSCMainActivity activity = (VideOSCMainActivity) mContext;
-		final VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-		final DrawerLayout toolsDrawer = activity.mToolsDrawerLayout;
+		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+		final DrawerLayout toolsDrawer = mActivity.mToolsDrawerLayout;
 		ImageButton ok = mMSButtons.findViewById(R.id.ok);
 		ImageButton cancel = mMSButtons.findViewById(R.id.cancel);
 		final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
@@ -44,7 +42,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		mMSButtons.bringToFront();
 		mLabelsView.bringToFront();
 		// move behaviour defined in VideOSCMainActivity > onTouch()
-		mMSButtons.setOnTouchListener(activity);
+		mMSButtons.setOnTouchListener(mActivity);
 
 		ok.setOnClickListener(new View.OnClickListener() {
 			@Override
