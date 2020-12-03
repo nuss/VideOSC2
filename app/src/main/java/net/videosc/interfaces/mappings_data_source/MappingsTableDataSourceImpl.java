@@ -11,6 +11,7 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
+import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.ArrayList;
 
@@ -33,12 +34,12 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public int getRowsCount() {
-        return getCommands().size()+1;
+        return getCommands(mApp.getCommandMappingsSortMode()).size() + 1;
     }
 
     @Override
     public int getColumnsCount() {
-        return getAddresses().size()+1;
+        return getAddresses().size() + 1;
     }
 
 /*
@@ -50,7 +51,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public String getRowHeaderData(int index) {
-        final ArrayList<String> commands = getCommands();
+        final ArrayList<String> commands = getCommands(mApp.getCommandMappingsSortMode());
 //        Log.d(TAG, "row at index " + index + ": " + commands.get(index));
         return commands.get(index);
     }
@@ -78,7 +79,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         Resources res = mActivity.getResources();
         final ArrayList<String> addresses = new ArrayList<>();
 
-        final String[] addrFields = new String[] {
+        final String[] addrFields = new String[]{
                 SettingsContract.AddressSettingsEntries._ID,
                 SettingsContract.AddressSettingsEntries.IP_ADDRESS,
                 SettingsContract.AddressSettingsEntries.PORT,
@@ -108,14 +109,14 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return addresses;
     }
 
-    private ArrayList<String> getCommands() {
+    private ArrayList<String> getCommands(CommandMappingsSortModes sortMode) {
         final ArrayList<String> commands = new ArrayList<>();
-        final String[] colors = new String[] {"red", "green", "blue"};
+        final String[] colors = new String[]{"red", "green", "blue"};
         final Point res = mApp.getResolution();
         final int size = res.x * res.y;
         String rootCmd = "";
 
-        final String[] rootCmdFields = new String[] {
+        final String[] rootCmdFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
                 SettingsContract.SettingsEntries.ROOT_CMD
         };
@@ -134,54 +135,21 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
         }
 
-//        cursor.close();
-
-        final String[] panels = new String[] {
-//                SettingsContract.Panels._ID,
-//                SettingsContract.Panels.NAME,
-                SettingsContract.Panels.CMD
-        };
-
-        cursor = mDb.query(
-                SettingsContract.Panels.TABLE_NAME,
-                panels,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        ArrayList<String> panelCmds = new ArrayList<>();
-        while (cursor.moveToNext()) {
-//            final long panelID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.Panels._ID));
-            final String panelCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.Panels.CMD));
-            panelCmds.add(panelCmd);
-        }
-
-        boolean orderByNum = false;
-
-        if (!orderByNum) {
-            for (String panelCmd : panelCmds) {
-                for (String color : colors) {
-                    for (int i = 0; i < size; ) {
-                        commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (++i));
-                    }
-                }
-            }
-        } else {
-            for (String panelCmd : panelCmds) {
-                for (int i = 0; i < size; i++) {
-                    for (String color : colors) {
-                        commands.add("/" + rootCmd + "/" + panelCmd + "/" + color + (i+1));
-                    }
-                }
-            }
-        }
-
-//        Log.d(TAG, "commands: " + commands);
-
         cursor.close();
+
+        if (sortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
+            for (String color : colors) {
+                for (int i = 0; i < size;) {
+                    commands.add("/" + rootCmd + "/" + color + (++i));
+                }
+            }
+        } else if (sortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+            for (int i = 0; i < size; i++) {
+                for (String color : colors) {
+                    commands.add("/" + rootCmd + "/" + color + (i+1));
+                }
+            }
+        }
 
         return commands;
     }
@@ -189,7 +157,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     private ArrayList<String> getMappings() {
         final ArrayList<String> mappings = new ArrayList<>();
 
-        String[] mappingsFields = new String[] {
+        String[] mappingsFields = new String[]{
                 SettingsContract.AddressCommandsMappings._ID,
                 SettingsContract.AddressCommandsMappings.ADDRESS,
                 SettingsContract.AddressCommandsMappings.MAPPINGS

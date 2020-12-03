@@ -144,8 +144,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	/**
 	 * Default empty constructor.
-	 * @param activity
 	 */
+	public VideOSCCameraFragment() { }
+
 	public VideOSCCameraFragment(VideOSCMainActivity activity) {
 		super();
 		this.mActivity = activity;

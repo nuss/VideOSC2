@@ -25,6 +25,8 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCSettingsList";
     private VideOSCApplication mApp;
 
+    public VideOSCSettingsListFragment() { }
+
     public VideOSCSettingsListFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
     }

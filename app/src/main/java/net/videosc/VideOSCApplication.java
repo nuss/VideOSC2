@@ -5,6 +5,7 @@ import android.graphics.Point;
 
 import net.videosc.db.SettingsDBHelper;
 import net.videosc.utilities.VideOSCOscHandler;
+import net.videosc.utilities.enums.CommandMappingsSortModes;
 import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
@@ -41,6 +42,8 @@ public class VideOSCApplication extends Application {
 	private Point mPixelSize;
 	private PixelEditModes mPixelEditMode;
 	private boolean mOSCFeedbackActivated = false;
+
+	private CommandMappingsSortModes mCommandMappingsSortMode = CommandMappingsSortModes.SORT_BY_NUM;
 
 	private int mSettingsContainerID = -1;
 	private int mNetworkSettingsID = -1;
@@ -317,5 +320,13 @@ public class VideOSCApplication extends Application {
 
 	public int getAboutSettingsID() {
 		return this.mAboutSettingsID;
+	}
+
+	public void setCommandMappingsSortmode(CommandMappingsSortModes sortMode) {
+		this.mCommandMappingsSortMode = sortMode;
+	}
+
+	public CommandMappingsSortModes getCommandMappingsSortMode() {
+		return this.mCommandMappingsSortMode;
 	}
 }

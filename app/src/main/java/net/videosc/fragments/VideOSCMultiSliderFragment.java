@@ -28,6 +28,8 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	private VideOSCMultiSliderView mMSViewLeft;
 
 	// empty public constructor
+	public VideOSCMultiSliderFragment() { }
+
 	public VideOSCMultiSliderFragment(Context context) {
 		super(context);
 		this.mActivity = (VideOSCMainActivity) context;

@@ -16,6 +16,9 @@ import net.videosc.fragments.VideOSCBaseFragment;
 import java.util.Calendar;
 
 public class VideOSCAboutFragment extends VideOSCBaseFragment {
+
+	public VideOSCAboutFragment() { }
+
 	/**
 	 * @param savedInstanceState
 	 */

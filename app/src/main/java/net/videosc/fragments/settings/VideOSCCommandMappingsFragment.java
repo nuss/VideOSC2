@@ -16,19 +16,22 @@ import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 import com.cleveroad.adaptivetablelayout.OnItemClickListener;
 
 import net.videosc.R;
+import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 
-public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implements OnItemClickListener {
+public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
     private AdaptiveTableLayout mTableLayout;
     private CommandMappingsTableAdapter mTableAdapter;
     private MappingsTableDataSourceImpl mTableDataSource;
     private int mNumAddresses;
+
+    public VideOSCCommandMappingsFragment() { }
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -67,10 +70,32 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
         if (mNumAddresses > 1) {
             mTableLayout = view.findViewById(R.id.address_command_mappings_table);
-            mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
-            mTableAdapter.setOnItemClickListener(this);
+            mTableAdapter = new CommandMappingsTableAdapter(mActivity, app.getCommandMappingsSortMode(), mTableDataSource);
+//            mTableAdapter.setOnItemClickListener(this);
+            mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(int row, int column) {
+                    Log.d(TAG, "row: " + row + ", column: " + column);
+                }
+
+                @Override
+                public void onRowHeaderClick(int row) {
+
+                }
+
+                @Override
+                public void onColumnHeaderClick(int column) {
+
+                }
+
+                @Override
+                public void onLeftTopHeaderClick() {
+
+                }
+            });
             mTableLayout.setAdapter(mTableAdapter);
         }
     }
@@ -91,26 +116,5 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment implemen
         cursor.close();
 
         return count;
-    }
-
-    @Override
-    public void onItemClick(int row, int column) {
-        Log.d(TAG, "item clicked, x: " + column + ", y: " + row);
-//        mTableAdapter.updateMappings();
-    }
-
-    @Override
-    public void onRowHeaderClick(int row) {
-        Log.d(TAG, "row header clicked: " + row);
-    }
-
-    @Override
-    public void onColumnHeaderClick(int column) {
-        Log.d(TAG, "column header clicked: " + column);
-    }
-
-    @Override
-    public void onLeftTopHeaderClick() {
-        Log.d(TAG, "top left header clicked");
     }
 }

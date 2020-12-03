@@ -24,11 +24,13 @@ import net.videosc.fragments.VideOSCBaseFragment;
 
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
-    public VideOSCSensorSettingsFragment(Context context) {
+	public VideOSCSensorSettingsFragment() { }
+
+	public VideOSCSensorSettingsFragment(Context context) {
     	this.mActivity = (VideOSCMainActivity) context;
     }
 
-    /**
+	/**
 	 * @param savedInstanceState
 	 */
 	@Override

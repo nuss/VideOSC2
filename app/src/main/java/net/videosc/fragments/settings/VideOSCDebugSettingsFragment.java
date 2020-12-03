@@ -19,11 +19,13 @@ import net.videosc.fragments.VideOSCBaseFragment;
 public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "DebugSettingsFragment";
 
-    public VideOSCDebugSettingsFragment(Context context) {
+	public VideOSCDebugSettingsFragment() { }
+
+	public VideOSCDebugSettingsFragment(Context context) {
     	this.mActivity = (VideOSCMainActivity) context;
     }
 
-    /**
+	/**
 	 * @param savedInstanceState
 	 * @deprecated
 	 */

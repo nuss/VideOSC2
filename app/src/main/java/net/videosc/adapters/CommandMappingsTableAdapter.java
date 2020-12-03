@@ -15,6 +15,7 @@ import com.cleveroad.adaptivetablelayout.LinkedAdaptiveTableAdapter;
 import com.cleveroad.adaptivetablelayout.ViewHolderImpl;
 
 import net.videosc.R;
+import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSource;
@@ -32,7 +33,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private final CommandMappingsSortModes mSortMode;
     private final int mNumRows;
 
-    public CommandMappingsTableAdapter(VideOSCMainActivity activity, MappingsTableDataSource<String, String, Character> tableDataSource) {
+    public CommandMappingsTableAdapter(VideOSCMainActivity activity, CommandMappingsSortModes sortMode, MappingsTableDataSource<String, String, Character> tableDataSource) {
         this.mLayoutInflater = LayoutInflater.from(activity);
         Resources res = activity.getResources();
         this.mColumnWidth = res.getDimensionPixelSize(R.dimen.col_width);
@@ -41,7 +42,8 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         this.mHeaderWidth = res.getDimensionPixelSize(R.dimen.row_header_width);
         this.mTableDataSource = tableDataSource;
         this.mDb = activity.getDatabase();
-        this.mSortMode = CommandMappingsSortModes.SORT_BY_NUM;
+        VideOSCApplication app = (VideOSCApplication) activity.getApplication();
+        this.mSortMode = app.getCommandMappingsSortMode();
         this.mNumRows = getRowCount();
     }
 
@@ -89,12 +91,28 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         if (rawMapping > 0) {
             itemData = "ON";
 //            TODO: color me rgb!
-            if (row <= mNumRows/3) {
-                bgColor = 0xffff0000;
-            } else if (row > mNumRows/3 && row <= mNumRows/3*2) {
-                bgColor = 0xff00ff00;
+            if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
+                if (row <= mNumRows / 3) {
+                    bgColor = 0xffff0000;
+                } else if (row > mNumRows / 3 && row <= mNumRows / 3 * 2) {
+                    bgColor = 0xff00ff00;
+                } else if (row > mNumRows / 3 * 2) {
+                    bgColor = 0xff0000ff;
+                } else {
+                    bgColor = 0xffffffff;
+                }
+            } else if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+                if ((row-1)%3 == 0) {
+                    bgColor = 0xffff0000;
+                } else if ((row-1)%3 == 1) {
+                    bgColor = 0xff00ff00;
+                } else if ((row-1)%3 == 2) {
+                    bgColor = 0xff0000ff;
+                } else {
+                    bgColor = 0xffffffff;
+                }
             } else {
-                bgColor = 0xff0000ff;
+                bgColor = 0xffffffff;
             }
             textColor = 0xff000000;
         } else {

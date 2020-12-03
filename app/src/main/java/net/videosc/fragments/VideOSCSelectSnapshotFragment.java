@@ -31,6 +31,8 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	private MatrixCursor mExtraCursor;
 	private SQLiteDatabase mDb;
 
+	public VideOSCSelectSnapshotFragment() { }
+
 	public VideOSCSelectSnapshotFragment(Context context) {
 		super();
 		this.mActivity = (VideOSCMainActivity) context;

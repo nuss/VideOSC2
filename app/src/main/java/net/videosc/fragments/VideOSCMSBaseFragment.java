@@ -21,6 +21,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	FragmentManager mManager;
 	VideOSCBaseFragment mFragment;
 
+	public VideOSCMSBaseFragment() { }
+
 	public VideOSCMSBaseFragment(Context context) {
 		this.mActivity = (VideOSCMainActivity) context;
 	}

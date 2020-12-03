@@ -52,14 +52,16 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private Cursor mAddressesCursor;
     private AddressesListAdapter mAddressesAdapter;
     private SQLiteDatabase mDb;
-    private String[] mAddrFields = new String[]{
+    private final String[] mAddrFields = new String[]{
             SettingsContract.AddressSettingsEntries.IP_ADDRESS,
             SettingsContract.AddressSettingsEntries.PORT,
             SettingsContract.AddressSettingsEntries.PROTOCOL,
             SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
-    private ArrayList<String[]> mAddressStrings = new ArrayList<>();
+    private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
+
+    public VideOSCNetworkSettingsFragment() { }
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;

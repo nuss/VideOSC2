@@ -57,6 +57,8 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	private LayoutInflater mInflater;
 	private boolean mIsAutoExposureLockSupported;
 
+	public VideOSCResolutionSettingsFragment() { }
+
 	public VideOSCResolutionSettingsFragment(Context context) {
 		this.mActivity = (VideOSCMainActivity) context;
 	}
