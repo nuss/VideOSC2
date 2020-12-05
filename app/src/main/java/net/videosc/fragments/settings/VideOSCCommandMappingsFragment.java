@@ -73,12 +73,29 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
         VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
         if (mNumAddresses > 1) {
             mTableLayout = view.findViewById(R.id.address_command_mappings_table);
-            mTableAdapter = new CommandMappingsTableAdapter(mActivity, app.getCommandMappingsSortMode(), mTableDataSource);
+            mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
 //            mTableAdapter.setOnItemClickListener(this);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
+                private boolean firstClick = false;
+
                 @Override
                 public void onItemClick(int row, int column) {
-                    Log.d(TAG, "row: " + row + ", column: " + column);
+                    firstClick = !firstClick;
+                    String data = "";
+                    if (mTableDataSource.rowIsFull(row)) {
+                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full: " + mTableDataSource.rowIsFull(row));
+                        data = mTableDataSource.setFullRowData(row, column);
+                    } else {
+                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full: " + mTableDataSource.rowIsFull(row));
+                        if (mTableDataSource.rowHasAtLeastTwoMappings(row)) {
+                            data = mTableDataSource.setItemData(row, column);
+                        } else {
+                            if (mTableDataSource.getItemData(row, column) == '0') {
+                                data = mTableDataSource.setItemData(row, column);
+                            }
+                        }
+                    }
+                    Log.d(TAG, "new row data: " + data);
                 }
 
                 @Override

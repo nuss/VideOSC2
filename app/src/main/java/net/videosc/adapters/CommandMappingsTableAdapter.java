@@ -33,7 +33,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private final CommandMappingsSortModes mSortMode;
     private final int mNumRows;
 
-    public CommandMappingsTableAdapter(VideOSCMainActivity activity, CommandMappingsSortModes sortMode, MappingsTableDataSource<String, String, Character> tableDataSource) {
+    public CommandMappingsTableAdapter(VideOSCMainActivity activity, MappingsTableDataSource<String, String, Character> tableDataSource) {
         this.mLayoutInflater = LayoutInflater.from(activity);
         Resources res = activity.getResources();
         this.mColumnWidth = res.getDimensionPixelSize(R.dimen.col_width);

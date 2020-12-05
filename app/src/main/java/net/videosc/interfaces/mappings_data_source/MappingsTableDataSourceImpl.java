@@ -75,6 +75,27 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return itemData;
     }
 
+    public boolean rowIsFull(int rowIndex) {
+        boolean isFull = true;
+        final int numCols = getColumnsCount()-1;
+        for (int i = 0; i < numCols; i++) {
+            if (getItemData(rowIndex, i+1) == '0') {
+                isFull = false;
+                break;
+            }
+        }
+        return isFull;
+    }
+
+    public boolean rowHasAtLeastTwoMappings(int row) {
+        final int numCols = getColumnsCount()-1;
+        int count = 0;
+        for (int i = 0; i < numCols; i++) {
+            if (getItemData(row, i+1) == '1') count++;
+        }
+        return count > 1;
+    }
+
     private ArrayList<String> getAddresses() {
         Resources res = mActivity.getResources();
         final ArrayList<String> addresses = new ArrayList<>();
@@ -182,6 +203,42 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         cursor.close();
 
         return mappings;
+    }
+
+    // if a row in VideOSC is sending to all clients
+    // a click should select a single cell in a row
+    public String setFullRowData(int row, int column) {
+        final int numCols = getColumnsCount()-1;
+        StringBuilder rowData = new StringBuilder();
+        for (int i = 0; i < numCols; i++) {
+            if (i + 1 == column) {
+                rowData.append(1);
+            } else {
+                rowData.append(0);
+            }
+        }
+        return String.valueOf(rowData);
+    }
+
+    // get mappings in specified row
+    public String getRowData(int row) {
+        StringBuilder rowData = new StringBuilder();
+        final int numCols = getColumnsCount()-1;
+        for (int i = 0; i < numCols; i++) {
+            rowData.append(getItemData(row, i+1));
+        }
+
+        return String.valueOf(rowData);
+    }
+
+    // one cell in a row should always remain selected
+    public String setItemData(int row, int column) {
+        StringBuilder rowData = new StringBuilder(getRowData(row));
+        Character itemData = getItemData(row, column);
+        int newVal = itemData == '0' ? 1 : 0;
+        rowData.setCharAt(column+1, (char) newVal);
+
+        return String.valueOf(rowData);
     }
 
     public void updateMappings(long addrID, String mappings) {
