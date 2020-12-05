@@ -95,6 +95,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                             }
                         }
                     }
+                    mTableAdapter.notifyRowChanged(row);
                     Log.d(TAG, "new row data: " + data);
                 }
 
