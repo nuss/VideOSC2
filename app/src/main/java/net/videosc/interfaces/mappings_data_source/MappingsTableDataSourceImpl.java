@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.util.Log;
+import android.util.SparseArray;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -20,26 +21,30 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     final private SQLiteDatabase mDb;
     final private VideOSCApplication mApp;
     private final VideOSCMainActivity mActivity;
+    private final SparseArray<String> mMappings;
+    private final SparseArray<String> mAddresses;
+    private final ArrayList<String> mCommands;
+    private final CommandMappingsSortModes mSortMode;
 
     public MappingsTableDataSourceImpl(VideOSCMainActivity activity) {
         this.mActivity = activity;
         this.mDb = activity.getDatabase();
         this.mApp = (VideOSCApplication) activity.getApplication();
-        init();
-    }
-
-    private void init() {
-
+        this.mSortMode = mApp.getCommandMappingsSortMode();
+        this.mMappings = getMappings();
+        Log.d(TAG, "mappings: " + mMappings);
+        this.mAddresses = getAddresses();
+        this.mCommands = getCommands(this.mSortMode);
     }
 
     @Override
     public int getRowsCount() {
-        return getCommands(mApp.getCommandMappingsSortMode()).size() + 1;
+        return mCommands.size();
     }
 
     @Override
     public int getColumnsCount() {
-        return getAddresses().size() + 1;
+        return mAddresses.size();
     }
 
 /*
@@ -51,44 +56,48 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public String getRowHeaderData(int index) {
-        final ArrayList<String> commands = getCommands(mApp.getCommandMappingsSortMode());
 //        Log.d(TAG, "row at index " + index + ": " + commands.get(index));
-        return commands.get(index);
+        return mCommands.get(index);
     }
 
     @Override
     public String getColumnHeaderData(int index) {
-        final ArrayList<String> addresses = getAddresses();
-        Log.d(TAG, "address: " + addresses.get(index));
-        return addresses.get(index);
+        Log.d(TAG, "address: " + mAddresses.valueAt(index));
+        return mAddresses.valueAt(index);
     }
 
     @Override
     public Character getItemData(int rowIndex, int columnIndex) {
-        final ArrayList<String> mappings = getMappings();
+        Log.d(TAG, "getItemData, row: " + rowIndex + ", column: " + columnIndex);
         char itemData;
-        if (mappings.isEmpty()) {
-            itemData = '1';
+        if (mMappings.size() > 0) {
+            if (mMappings.valueAt(columnIndex).isEmpty()) {
+                itemData = '1';
+            } else {
+                Log.d(TAG, "mapping in row " + rowIndex + ", column " + columnIndex + " is " + mMappings.valueAt(columnIndex).charAt(rowIndex));
+                itemData = mMappings.valueAt(columnIndex).charAt(rowIndex);
+            }
         } else {
-            itemData = mappings.get(columnIndex).charAt(rowIndex);
+            itemData = '1';
         }
         return itemData;
     }
 
     public boolean rowIsFull(int rowIndex) {
         boolean isFull = true;
-        final int numCols = getColumnsCount()-1;
+        final int numCols = getColumnsCount();
         for (int i = 0; i < numCols; i++) {
-            if (getItemData(rowIndex, i+1) == '0') {
+            if (getItemData(rowIndex, i) == '0') {
                 isFull = false;
                 break;
             }
         }
+//        Log.d(TAG, "rowIsFull: " + isFull);
         return isFull;
     }
 
     public boolean rowHasAtLeastTwoMappings(int row) {
-        final int numCols = getColumnsCount()-1;
+        final int numCols = getColumnsCount();
         int count = 0;
         for (int i = 0; i < numCols; i++) {
             if (getItemData(row, i+1) == '1') count++;
@@ -96,9 +105,9 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return count > 1;
     }
 
-    private ArrayList<String> getAddresses() {
+    private SparseArray<String> getAddresses() {
         Resources res = mActivity.getResources();
-        final ArrayList<String> addresses = new ArrayList<>();
+        final SparseArray<String> addresses = new SparseArray<>();
 
         final String[] addrFields = new String[]{
                 SettingsContract.AddressSettingsEntries._ID,
@@ -122,11 +131,11 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
             final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
             final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-            addresses.add(ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocol));
+            addresses.put((int) addrID, ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocol));
         }
 
         cursor.close();
-        Log.d(TAG, "addresses: " + addresses);
+
         return addresses;
     }
 
@@ -175,8 +184,8 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return commands;
     }
 
-    private ArrayList<String> getMappings() {
-        final ArrayList<String> mappings = new ArrayList<>();
+    private SparseArray<String> getMappings() {
+        final SparseArray<String> mappings = new SparseArray<>();
 
         String[] mappingsFields = new String[]{
                 SettingsContract.AddressCommandsMappings._ID,
@@ -196,39 +205,90 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
         while (cursor.moveToNext()) {
             final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS));
-            final String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
-            mappings.add(mappingsString);
+            String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
+            // FIXME: if sort order is SORT_BY_NUM mappings must be reordered before creating table layout
+            if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+                char[] mappingsArr = mappingsString.toCharArray();
+                // mappings for each color are store in blocks of mappingsArr.length/3
+                // first block: red, second: green, third: blue
+                int blockLength = mappingsArr.length/3;
+                StringBuilder sortedMappings = new StringBuilder();
+                for (int i = 0; i < blockLength; i++) {
+                    // first we iterate over the block length...
+                    for (int j = 0; j < 3; j++) {
+                        // ... then we take the element at i + j * blocklength = same number in next color
+                        sortedMappings.append(mappingsArr[i+(j*blockLength)]);
+                    }
+                }
+                mappingsString = String.valueOf(sortedMappings);
+            }
+            mappings.put((int) addrID, mappingsString);
         }
 
         cursor.close();
 
+//        Log.d(TAG, "mappings: " + mappings);
         return mappings;
     }
 
     // if a row in VideOSC is sending to all clients
     // a click should select a single cell in a row
     public String setFullRowData(int row, int column) {
-        final int numCols = getColumnsCount()-1;
+        final int numCols = getColumnsCount();
+//        Log.d(TAG, "setFullRowData: " + row + "/" + column + ", num columns: " + numCols);
         StringBuilder rowData = new StringBuilder();
         for (int i = 0; i < numCols; i++) {
-            if (i + 1 == column) {
-                rowData.append(1);
-            } else {
-                rowData.append(0);
+            char newMapping = '1';
+            if (column != i+1) {
+                newMapping = '0';
             }
+            rowData.append(newMapping);
+            StringBuilder columnData = new StringBuilder(getColumnData(i));
+            if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+                // commands are stored in blocks: first red, second green, then blue
+                // each block has a size of numRows/3
+                // index is the index within a block
+                // for color green add colorBlockSize once
+                // for color blue add colorBlocksize twice
+                int index = row / 3;
+                final int colorBlockSize = getRowsCount() / 3;
+                // only need to correct index for colors green and blue
+                if (row % 3 == 2) { // green
+                    index += colorBlockSize;
+                } else if (row % 3 == 0) { // blue
+                    index += (colorBlockSize * 2);
+                }
+                columnData.setCharAt(index, newMapping);
+            } else {
+                columnData.setCharAt(row-1, newMapping);
+            }
+            updateMappings(mAddresses.keyAt(i), String.valueOf(columnData));
         }
         return String.valueOf(rowData);
     }
 
     // get mappings in specified row
     public String getRowData(int row) {
-        StringBuilder rowData = new StringBuilder();
-        final int numCols = getColumnsCount()-1;
+        // TODO: consider sort order?
+        final StringBuilder rowData = new StringBuilder();
+        final int numCols = getColumnsCount();
         for (int i = 0; i < numCols; i++) {
-            rowData.append(getItemData(row, i+1));
+            rowData.append(getItemData(row, i));
         }
 
         return String.valueOf(rowData);
+    }
+
+    // get mappings in specified column
+    public String getColumnData(int column) {
+        // TODO: consider sort order?
+        final StringBuilder columnData = new StringBuilder();
+        final int numRows = getRowsCount();
+        for (int i = 0; i < numRows; i++) {
+            columnData.append(getItemData(i, column));
+        }
+
+        return String.valueOf(columnData);
     }
 
     // one cell in a row should always remain selected
@@ -237,22 +297,38 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         Character itemData = getItemData(row, column);
         int newVal = itemData == '0' ? 1 : 0;
         rowData.setCharAt(column+1, (char) newVal);
+        Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column));
 
         return String.valueOf(rowData);
     }
 
     public void updateMappings(long addrID, String mappings) {
+        Log.d(TAG, "updateMappings, addrID: " + addrID + ", mappings: " + mappings);
         ContentValues values = new ContentValues();
+        values.put(
+                SettingsContract.AddressCommandsMappings.ADDRESS,
+                addrID
+        );
         values.put(
                 SettingsContract.AddressCommandsMappings.MAPPINGS,
                 mappings
         );
-        mDb.update(
-                SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                values,
-                SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrID,
-                null
-        );
+        long result;
+        if (mMappings.size() == 0) {
+            result = mDb.insert(
+                    SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                    null,
+                    values
+            );
+            Log.d(TAG, "insert result: " + result);
+        } else {
+            result = mDb.update(
+                    SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                    values,
+                    SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrID,
+                    null
+            );
+        }
     }
 
 }
