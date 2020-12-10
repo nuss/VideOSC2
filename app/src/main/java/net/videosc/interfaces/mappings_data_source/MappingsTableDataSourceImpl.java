@@ -100,7 +100,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         final int numCols = getColumnsCount();
         int count = 0;
         for (int i = 0; i < numCols; i++) {
-            if (getItemData(row, i+1) == '1') count++;
+            if (getItemData(row, i) == '1') count++;
         }
         return count > 1;
     }
@@ -239,7 +239,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         StringBuilder rowData = new StringBuilder();
         for (int i = 0; i < numCols; i++) {
             char newMapping = '1';
-            if (column != i+1) {
+            if (column != i) {
                 newMapping = '0';
             }
             rowData.append(newMapping);
@@ -260,7 +260,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 }
                 columnData.setCharAt(index, newMapping);
             } else {
-                columnData.setCharAt(row-1, newMapping);
+                columnData.setCharAt(row, newMapping);
             }
             updateMappings(mAddresses.keyAt(i), String.valueOf(columnData));
         }
@@ -293,11 +293,15 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     // one cell in a row should always remain selected
     public String setItemData(int row, int column) {
+        // FIXME: do we need rowData at all here?
         StringBuilder rowData = new StringBuilder(getRowData(row));
+        StringBuilder columnData = new StringBuilder(getColumnData(column));
         Character itemData = getItemData(row, column);
-        int newVal = itemData == '0' ? 1 : 0;
-        rowData.setCharAt(column+1, (char) newVal);
-        Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column));
+        int newVal = itemData == '0' ? '1' : '0';
+        rowData.setCharAt(column, (char) newVal);
+        columnData.setCharAt(row, (char) newVal);
+        updateMappings(mAddresses.keyAt(column), String.valueOf(columnData));
+        Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column) + ", new row data: " + String.valueOf(rowData));
 
         return String.valueOf(rowData);
     }

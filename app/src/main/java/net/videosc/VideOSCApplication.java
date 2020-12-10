@@ -43,7 +43,7 @@ public class VideOSCApplication extends Application {
 	private PixelEditModes mPixelEditMode;
 	private boolean mOSCFeedbackActivated = false;
 
-	private CommandMappingsSortModes mCommandMappingsSortMode = CommandMappingsSortModes.SORT_BY_NUM;
+	private CommandMappingsSortModes mCommandMappingsSortMode = CommandMappingsSortModes.SORT_BY_COLOR;
 
 	private int mSettingsContainerID = -1;
 	private int mNetworkSettingsID = -1;

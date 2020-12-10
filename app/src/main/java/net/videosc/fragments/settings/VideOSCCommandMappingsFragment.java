@@ -82,16 +82,16 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                 public void onItemClick(int row, int column) {
                     firstClick = !firstClick;
                     String data = "";
-                    if (mTableDataSource.rowIsFull(row)) {
-                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full: " + mTableDataSource.rowIsFull(row));
-                        data = mTableDataSource.setFullRowData(row, column);
+                    if (mTableDataSource.rowIsFull(row-1)) {
+                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full");
+                        data = mTableDataSource.setFullRowData(row-1, column-1);
                     } else {
-                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full: " + mTableDataSource.rowIsFull(row));
-                        if (mTableDataSource.rowHasAtLeastTwoMappings(row)) {
-                            data = mTableDataSource.setItemData(row, column);
+                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
+                        if (mTableDataSource.rowHasAtLeastTwoMappings(row-1)) {
+                            data = mTableDataSource.setItemData(row-1, column-1);
                         } else {
-                            if (mTableDataSource.getItemData(row, column) == '0') {
-                                data = mTableDataSource.setItemData(row, column);
+                            if (mTableDataSource.getItemData(row-1, column-1) == '0') {
+                                data = mTableDataSource.setItemData(row-1, column-1);
                             }
                         }
                     }
