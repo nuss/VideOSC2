@@ -3,6 +3,7 @@ package net.videosc.fragments.settings;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +17,6 @@ import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 import com.cleveroad.adaptivetablelayout.OnItemClickListener;
 
 import net.videosc.R;
-import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
 import net.videosc.db.SettingsContract;
@@ -26,7 +26,6 @@ import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
-    private AdaptiveTableLayout mTableLayout;
     private CommandMappingsTableAdapter mTableAdapter;
     private MappingsTableDataSourceImpl mTableDataSource;
     private int mNumAddresses;
@@ -70,32 +69,45 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
         if (mNumAddresses > 1) {
-            mTableLayout = view.findViewById(R.id.address_command_mappings_table);
+            AdaptiveTableLayout mTableLayout = view.findViewById(R.id.address_command_mappings_table);
             mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
-//            mTableAdapter.setOnItemClickListener(this);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
                 private boolean firstClick = false;
 
                 @Override
                 public void onItemClick(int row, int column) {
-                    firstClick = !firstClick;
-                    String data = "";
+                    Point from = new Point(), to = new Point();
                     if (mTableDataSource.rowIsFull(row-1)) {
+                        firstClick = !firstClick;
                         Log.d(TAG, "row: " + row + ", column: " + column + ", row is full");
-                        data = mTableDataSource.setFullRowData(row-1, column-1);
+                        mTableDataSource.setFullRowData(row-1, column-1);
                     } else {
                         Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
                         if (mTableDataSource.rowHasAtLeastTwoMappings(row-1)) {
-                            data = mTableDataSource.setItemData(row-1, column-1);
+                            firstClick = !firstClick;
+                            mTableDataSource.setItemData(row-1, column-1);
                         } else {
                             if (mTableDataSource.getItemData(row-1, column-1) == '0') {
-                                data = mTableDataSource.setItemData(row-1, column-1);
+                                firstClick = !firstClick;
+                                mTableDataSource.setItemData(row-1, column-1);
                             }
                         }
                     }
-                    mTableAdapter.notifyRowChanged(row);
+                    if (firstClick) {
+                        from.x = row;
+                        from.y = column;
+                    } else {
+                        to.x = row;
+                        to.y = column;
+                        Log.d(TAG, "selected range: " + from + "-" + to);
+                    }
+                    Log.d(TAG, "first click: " + firstClick);
+
+                    // update mappings from database
+                    // store mappings in mTableDataSource.mMappings
+                    mTableDataSource.getMappings();
+                    mTableAdapter.notifyDataSetChanged();
                 }
 
                 @Override

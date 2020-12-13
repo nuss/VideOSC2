@@ -21,7 +21,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     final private SQLiteDatabase mDb;
     final private VideOSCApplication mApp;
     private final VideOSCMainActivity mActivity;
-    private final SparseArray<String> mMappings;
+    private SparseArray<String> mMappings;
     private final SparseArray<String> mAddresses;
     private final ArrayList<String> mCommands;
     private final CommandMappingsSortModes mSortMode;
@@ -31,7 +31,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         this.mDb = activity.getDatabase();
         this.mApp = (VideOSCApplication) activity.getApplication();
         this.mSortMode = mApp.getCommandMappingsSortMode();
-        this.mMappings = getMappings();
+        getMappings();
         Log.d(TAG, "mappings: " + mMappings);
         this.mAddresses = getAddresses();
         this.mCommands = getCommands(this.mSortMode);
@@ -184,7 +184,8 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return commands;
     }
 
-    private SparseArray<String> getMappings() {
+    @Override
+    public void getMappings() {
         final SparseArray<String> mappings = new SparseArray<>();
 
         String[] mappingsFields = new String[]{
@@ -228,7 +229,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         cursor.close();
 
 //        Log.d(TAG, "mappings: " + mappings);
-        return mappings;
+        this.mMappings = mappings;
     }
 
     // if a row in VideOSC is sending to all clients

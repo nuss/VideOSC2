@@ -4,6 +4,7 @@ public interface MappingsTableDataSource</*TFirstHeaderDataType, */TRowHeaderDat
 
     int getRowsCount();
     int getColumnsCount();
+    void getMappings();
 
 //    TFirstHeaderDataType getFirstHeaderData();
     TRowHeaderDataType getRowHeaderData(int index);

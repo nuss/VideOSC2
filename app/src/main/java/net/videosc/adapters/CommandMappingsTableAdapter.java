@@ -1,6 +1,5 @@
 package net.videosc.adapters;
 
-import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -17,7 +16,6 @@ import com.cleveroad.adaptivetablelayout.ViewHolderImpl;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
-import net.videosc.db.SettingsContract;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSource;
 import net.videosc.utilities.enums.CommandMappingsSortModes;
 
@@ -84,6 +82,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderImpl viewHolder, int row, int column) {
+        Log.d(TAG, "onBindViewHolder(" + viewHolder + ", " + row + ", " + column + ")");
         String itemData;
         int bgColor, textColor;
         final TableViewHolder vh = (TableViewHolder) viewHolder;
@@ -172,20 +171,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     @Override
     public int getHeaderRowWidth() {
         return mHeaderWidth;
-    }
-
-    public void updateMappings(long addrID, String mappings) {
-        ContentValues values = new ContentValues();
-        values.put(
-                SettingsContract.AddressCommandsMappings.MAPPINGS,
-                mappings
-        );
-        mDb.update(
-                SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                values,
-                SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrID,
-                null
-        );
     }
 
     /* ---------------- view holders --------------------------- */
