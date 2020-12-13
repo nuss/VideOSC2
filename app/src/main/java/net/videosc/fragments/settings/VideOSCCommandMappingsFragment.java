@@ -29,6 +29,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private CommandMappingsTableAdapter mTableAdapter;
     private MappingsTableDataSourceImpl mTableDataSource;
     private int mNumAddresses;
+    private final Point from = new Point();
 
     public VideOSCCommandMappingsFragment() { }
 
@@ -70,20 +71,21 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mNumAddresses > 1) {
-            AdaptiveTableLayout mTableLayout = view.findViewById(R.id.address_command_mappings_table);
+            final AdaptiveTableLayout mTableLayout = view.findViewById(R.id.address_command_mappings_table);
             mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
                 private boolean firstClick = false;
 
                 @Override
                 public void onItemClick(int row, int column) {
-                    Point from = new Point(), to = new Point();
+                    Point to = new Point();
+                    int diffV, diffH;
                     if (mTableDataSource.rowIsFull(row-1)) {
                         firstClick = !firstClick;
-                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full");
+//                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full");
                         mTableDataSource.setFullRowData(row-1, column-1);
                     } else {
-                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
+//                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
                         if (mTableDataSource.rowHasAtLeastTwoMappings(row-1)) {
                             firstClick = !firstClick;
                             mTableDataSource.setItemData(row-1, column-1);
@@ -94,15 +96,30 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                             }
                         }
                     }
+
+/*
                     if (firstClick) {
                         from.x = row;
                         from.y = column;
+                        Log.d(TAG, "first click is true, row: " + from.x + ", column: " + from.y);
                     } else {
+                        mTableDataSource.setFullRowData(12, 1);
+                        Log.d(TAG, "from row: " + from.x + ", from column: " + from.y);
                         to.x = row;
                         to.y = column;
-                        Log.d(TAG, "selected range: " + from + "-" + to);
+                        diffV = to.x-from.x;
+                        diffH = to.y-from.y;
+                        Log.d(TAG, "diff vertical: " + diffV + ", diff horizontal: " + diffH);
+                        if (diffH > 0 && diffV > 0) {
+                            for (int i = 1; i < diffV; i++) {
+                                int nextRow = from.x + i;
+                                int nextColumn = (int) Math.floor((float) (from.x + i)/diffV * diffH);
+                                Log.d(TAG, "next row: " + nextRow + ", next column: " + nextColumn);
+                                mTableDataSource.setFullRowData(nextRow, nextColumn);
+                            }
+                        }
                     }
-                    Log.d(TAG, "first click: " + firstClick);
+*/
 
                     // update mappings from database
                     // store mappings in mTableDataSource.mMappings

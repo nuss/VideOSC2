@@ -234,7 +234,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     // if a row in VideOSC is sending to all clients
     // a click should select a single cell in a row
-    public String setFullRowData(int row, int column) {
+    public void setFullRowData(int row, int column) {
         final int numCols = getColumnsCount();
 //        Log.d(TAG, "setFullRowData: " + row + "/" + column + ", num columns: " + numCols);
         StringBuilder rowData = new StringBuilder();
@@ -265,7 +265,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             }
             updateMappings(mAddresses.keyAt(i), String.valueOf(columnData));
         }
-        return String.valueOf(rowData);
     }
 
     // get mappings in specified row
@@ -293,7 +292,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     }
 
     // one cell in a row should always remain selected
-    public String setItemData(int row, int column) {
+    public void setItemData(int row, int column) {
         // FIXME: do we need rowData at all here?
         StringBuilder rowData = new StringBuilder(getRowData(row));
         StringBuilder columnData = new StringBuilder(getColumnData(column));
@@ -303,8 +302,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         columnData.setCharAt(row, (char) newVal);
         updateMappings(mAddresses.keyAt(column), String.valueOf(columnData));
         Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column) + ", new row data: " + String.valueOf(rowData));
-
-        return String.valueOf(rowData);
     }
 
     public void updateMappings(long addrID, String mappings) {
