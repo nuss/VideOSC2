@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,15 +24,17 @@ import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 
+import java.util.ArrayList;
+
 public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
     private CommandMappingsTableAdapter mTableAdapter;
     private MappingsTableDataSourceImpl mTableDataSource;
     private int mNumAddresses;
-    private final Point from = new Point();
 
-    public VideOSCCommandMappingsFragment() { }
+    public VideOSCCommandMappingsFragment() {
+    }
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -75,56 +78,107 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
             mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
                 private boolean firstClick = false;
+                int firstRow, firstColumn;
 
                 @Override
                 public void onItemClick(int row, int column) {
-                    Point to = new Point();
-                    int diffV, diffH;
                     if (mTableDataSource.rowIsFull(row-1)) {
                         firstClick = !firstClick;
-//                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is full");
-                        mTableDataSource.setFullRowData(row-1, column-1);
+                        if (firstClick) {
+                            // cache start row
+                            firstRow = row;
+                            firstColumn = column;
+                            mTableDataSource.setFullRowData(row - 1, column - 1);
+                        } else {
+                            setRange(firstRow, row, firstColumn, column);
+                        }
                     } else {
 //                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
-                        if (mTableDataSource.rowHasAtLeastTwoMappings(row-1)) {
-                            firstClick = !firstClick;
-                            mTableDataSource.setItemData(row-1, column-1);
+                        if (mTableDataSource.rowHasAtLeastTwoMappings(row - 1)) {
+                            mTableDataSource.setItemData(row - 1, column - 1);
                         } else {
-                            if (mTableDataSource.getItemData(row-1, column-1) == '0') {
-                                firstClick = !firstClick;
-                                mTableDataSource.setItemData(row-1, column-1);
+                            if (mTableDataSource.getItemData(row - 1, column - 1) == '0') {
+                                mTableDataSource.setItemData(row - 1, column - 1);
                             }
                         }
                     }
 
-/*
-                    if (firstClick) {
-                        from.x = row;
-                        from.y = column;
-                        Log.d(TAG, "first click is true, row: " + from.x + ", column: " + from.y);
-                    } else {
-                        mTableDataSource.setFullRowData(12, 1);
-                        Log.d(TAG, "from row: " + from.x + ", from column: " + from.y);
-                        to.x = row;
-                        to.y = column;
-                        diffV = to.x-from.x;
-                        diffH = to.y-from.y;
-                        Log.d(TAG, "diff vertical: " + diffV + ", diff horizontal: " + diffH);
-                        if (diffH > 0 && diffV > 0) {
-                            for (int i = 1; i < diffV; i++) {
-                                int nextRow = from.x + i;
-                                int nextColumn = (int) Math.floor((float) (from.x + i)/diffV * diffH);
-                                Log.d(TAG, "next row: " + nextRow + ", next column: " + nextColumn);
-                                mTableDataSource.setFullRowData(nextRow, nextColumn);
-                            }
-                        }
+                    SparseArray<String> mappings = mTableDataSource.getCachedMappings();
+                    for (int i = 0; i < mTableDataSource.getColumnsCount(); i++) {
+                        mTableDataSource.updateMappings(mappings.keyAt(i), mappings.valueAt(i));
                     }
-*/
 
                     // update mappings from database
                     // store mappings in mTableDataSource.mMappings
                     mTableDataSource.getMappings();
                     mTableAdapter.notifyDataSetChanged();
+                }
+
+                private void setRange(int firstRow, int secondRow, int firstColumn, int secondColumn) {
+                    Point entry = new Point(firstColumn, firstRow);
+                    Point outro = new Point(secondColumn, secondRow);
+                    int diffH = Math.abs(outro.x - entry.x);
+                    int diffV = Math.abs(outro.y - entry.y);
+                    int startColumn, endColumn;
+                    int startRow, endRow;
+                    int row;
+                    ArrayList<Integer> colIndices = new ArrayList<>();
+
+                    if (diffV > 0) {
+                        if (diffH == 0) {
+                            // firstColumn == secondcolumn
+                            for (int i = 0; i < diffV; i++) {
+                                colIndices.add(firstColumn);
+                            }
+                        }
+
+                        if (firstRow > secondRow) {
+                            startRow = secondRow - 1; // first row needs to be considered too
+                            endRow = firstRow;
+                            startColumn = secondColumn;
+                            endColumn = firstColumn;
+                        } else {
+                            startRow = firstRow; // first row has already been set
+                            endRow = secondRow;
+                            startColumn = firstColumn;
+                            endColumn = secondColumn;
+                        }
+
+                        float deltaH = diffH/(float) diffV;
+                        if (firstColumn > secondColumn || firstRow > secondRow) {
+                            deltaH *= -1;
+                        }
+
+                        for (int i = startRow; i < endRow; i++) {
+                            Log.d(TAG, "startRow: " + startRow + ", endRow: " + endRow);
+                            if (diffH == 0) {
+                                if (mTableDataSource.rowIsFull(i)) {
+                                    mTableDataSource.setFullRowData(i, firstColumn);
+                                }
+                            } else {
+                                if (mTableDataSource.rowIsFull(i)) {
+//                                    Log.d(TAG, "i: " + i + ", startRow: " + startRow + ", endRow: " + endRow + ", delta: " + Math.round(startColumn - 1 + (i - startRow) * deltaH));
+//                                    Log.d(TAG, "diffV: " + diffV + "\nfirst column: " + (firstColumn - 1) + "\ni: " + (i - startRow) + "\ndeltaH:" + deltaH + "\nnext column raw: " + (firstColumn + i * deltaH) + "\nnext column rounded: " + Math.round(firstColumn + i * deltaH));
+                                    mTableDataSource.setFullRowData(i, Math.round(startColumn - 1 + (i - startRow) * deltaH));
+                                }
+                            }
+                        }
+                    }
+/*
+                    if (firstRow < secondRow) {
+                        lastRow = secondRow;
+                        lastColumn = secondColumn;
+                    } else if (firstRow > secondRow) {
+                        lastRow = firstRow;
+                        firstRow = secondRow;
+                        lastColumn = firstColumn;
+                        firstColumn = secondColumn;
+                    }
+
+                    diffV = lastRow - firstRow;
+                    diffH = lastColumn - firstColumn;
+*/
+
                 }
 
                 @Override

@@ -1,7 +1,6 @@
 package net.videosc.adapters;
 
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     private final int mRowHeight;
     private final int mHeaderHeight;
     private final int mHeaderWidth;
-    private final SQLiteDatabase mDb;
     private final MappingsTableDataSource<String, String, Character> mTableDataSource;
     private final CommandMappingsSortModes mSortMode;
     private final int mNumRows;
@@ -39,7 +37,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         this.mHeaderHeight = res.getDimensionPixelSize(R.dimen.col_header_height);
         this.mHeaderWidth = res.getDimensionPixelSize(R.dimen.row_header_width);
         this.mTableDataSource = tableDataSource;
-        this.mDb = activity.getDatabase();
         VideOSCApplication app = (VideOSCApplication) activity.getApplication();
         this.mSortMode = app.getCommandMappingsSortMode();
         this.mNumRows = getRowCount();
