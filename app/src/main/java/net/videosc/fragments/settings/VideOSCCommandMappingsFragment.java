@@ -24,8 +24,6 @@ import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 
-import java.util.ArrayList;
-
 public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCCommandMappingsFragment.class.getSimpleName();
 
@@ -119,33 +117,31 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     Point outro = new Point(secondColumn, secondRow);
                     int diffH = Math.abs(outro.x - entry.x);
                     int diffV = Math.abs(outro.y - entry.y);
-                    int startColumn, endColumn;
+                    int startColumn;
                     int startRow, endRow;
-                    int row;
-                    ArrayList<Integer> colIndices = new ArrayList<>();
 
                     if (diffV > 0) {
+/*
                         if (diffH == 0) {
                             // firstColumn == secondcolumn
                             for (int i = 0; i < diffV; i++) {
                                 colIndices.add(firstColumn);
                             }
                         }
+*/
 
                         if (firstRow > secondRow) {
                             startRow = secondRow - 1; // first row needs to be considered too
                             endRow = firstRow;
                             startColumn = secondColumn;
-                            endColumn = firstColumn;
                         } else {
                             startRow = firstRow; // first row has already been set
                             endRow = secondRow;
                             startColumn = firstColumn;
-                            endColumn = secondColumn;
                         }
 
                         float deltaH = diffH/(float) diffV;
-                        if (firstColumn > secondColumn || firstRow > secondRow) {
+                        if ((secondRow > firstRow && firstColumn > secondColumn) || (firstRow > secondRow && secondColumn > firstColumn)) {
                             deltaH *= -1;
                         }
 
@@ -164,21 +160,6 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                             }
                         }
                     }
-/*
-                    if (firstRow < secondRow) {
-                        lastRow = secondRow;
-                        lastColumn = secondColumn;
-                    } else if (firstRow > secondRow) {
-                        lastRow = firstRow;
-                        firstRow = secondRow;
-                        lastColumn = firstColumn;
-                        firstColumn = secondColumn;
-                    }
-
-                    diffV = lastRow - firstRow;
-                    diffH = lastColumn - firstColumn;
-*/
-
                 }
 
                 @Override
