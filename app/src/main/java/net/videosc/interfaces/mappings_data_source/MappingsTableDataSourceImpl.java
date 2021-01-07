@@ -43,6 +43,24 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         // independently from sort mode
         // mMappings must be reordered before updating database
         getMappings();
+        // TODO: check for added or deleted addresses
+
+        if (mAddresses.size() > mMappings.size()) {
+            Log.d(TAG, "mappings before: " + mMappings);
+            Point res = mApp.getResolution();
+            StringBuilder mappingsStringB = new StringBuilder(res.x * res.y * 3);
+            for (int i = 0; i < res.x * res.y * 3; i++) {
+                mappingsStringB.append('1');
+            };
+            String mappingString = String.valueOf(mappingsStringB);
+            for (int i = 0; i < mAddresses.size(); i++) {
+                int addrKey = mAddresses.keyAt(i);
+                if (mMappings.get(addrKey) == null) {
+                    mMappings.put(addrKey, mappingString);
+                    Log.d(TAG, "mappings after: " + mMappings);
+                }
+            }
+        }
 
         if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
             for (int i = 0; i < mMappings.size(); i++) {
@@ -99,7 +117,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public Character getItemData(int rowIndex, int columnIndex) {
-//        Log.d(TAG, "getItemData, row: " + rowIndex + ", column: " + columnIndex);
+        Log.d(TAG, "mMappings size: " + mMappings.size() + "\nmMappings at column " + columnIndex + ": " + mMappings.keyAt(columnIndex) + ", " + mMappings.valueAt(columnIndex) + "\ngetItemData, row: " + rowIndex + ", column: " + columnIndex);
         char itemData;
         if (mMappings.size() > 0) {
             if (mMappings.valueAt(columnIndex).isEmpty()) {
@@ -326,6 +344,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
             mappings = revertSort(mappings);
         }
+
         ContentValues values = new ContentValues();
         values.put(
                 SettingsContract.AddressCommandsMappings.ADDRESS,
@@ -336,7 +355,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 mappings
         );
         long result;
-        if (mMappings.size() == 0) {
+        if (mMappings.size() == 0 || !checkIfEntryExists(addrID)) {
             result = mDb.insert(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
                     null,
@@ -351,6 +370,15 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                     null
             );
         }
+    }
+
+    private boolean checkIfEntryExists(long addrId) {
+        String query = "Select * from " + SettingsContract.AddressCommandsMappings.TABLE_NAME + " where " + SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrId + ";";
+        Cursor cursor = mDb.rawQuery(query, null);
+        boolean ret = cursor.getCount() > 0;
+        cursor.close();
+
+        return ret;
     }
 
 }

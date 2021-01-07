@@ -86,7 +86,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         int rawMapping = Integer.parseInt(String.valueOf(mTableDataSource.getItemData(row-1, column-1)));
         if (rawMapping > 0) {
             itemData = "ON";
-//            TODO: color me rgb!
             if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
                 if (row <= mNumRows / 3) {
                     bgColor = 0xffff0000;

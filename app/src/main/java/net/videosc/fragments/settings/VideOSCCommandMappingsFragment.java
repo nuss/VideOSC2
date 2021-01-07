@@ -121,16 +121,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     int startRow, endRow;
 
                     if (diffV > 0) {
-/*
-                        if (diffH == 0) {
-                            // firstColumn == secondcolumn
-                            for (int i = 0; i < diffV; i++) {
-                                colIndices.add(firstColumn);
-                            }
-                        }
-*/
-
-                        if (firstRow > secondRow) {
+                      if (firstRow > secondRow) {
                             startRow = secondRow - 1; // first row needs to be considered too
                             endRow = firstRow;
                             startColumn = secondColumn;
@@ -146,16 +137,14 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                         }
 
                         for (int i = startRow; i < endRow; i++) {
-                            Log.d(TAG, "startRow: " + startRow + ", endRow: " + endRow);
                             if (diffH == 0) {
                                 if (mTableDataSource.rowIsFull(i)) {
                                     mTableDataSource.setFullRowData(i, firstColumn);
                                 }
                             } else {
                                 if (mTableDataSource.rowIsFull(i)) {
-//                                    Log.d(TAG, "i: " + i + ", startRow: " + startRow + ", endRow: " + endRow + ", delta: " + Math.round(startColumn - 1 + (i - startRow) * deltaH));
-//                                    Log.d(TAG, "diffV: " + diffV + "\nfirst column: " + (firstColumn - 1) + "\ni: " + (i - startRow) + "\ndeltaH:" + deltaH + "\nnext column raw: " + (firstColumn + i * deltaH) + "\nnext column rounded: " + Math.round(firstColumn + i * deltaH));
-                                    mTableDataSource.setFullRowData(i, Math.round(startColumn - 1 + (i - startRow) * deltaH));
+                                    float roundingFix = secondRow > firstRow ? deltaH : 0;
+                                    mTableDataSource.setFullRowData(i, Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix));
                                 }
                             }
                         }
