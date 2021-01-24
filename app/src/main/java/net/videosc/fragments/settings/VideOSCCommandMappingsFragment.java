@@ -95,6 +95,8 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     if (mTableDataSource.rowIsFull(row - 1)) {
                         firstClick = !firstClick;
                         if (firstClick) {
+                            // disable drag and drop while firstClick is true
+                            tableLayout.setDragAndDropEnabled(false);
                             // cache start row
                             // consider changes in row order
                             firstRow = rowCurrentPosition == null ? row : rowCurrentPosition;
@@ -103,11 +105,11 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                         } else {
                             final int currentRow = rowCurrentPosition == null ? row : rowCurrentPosition;
                             final int currentColumn = columnCurrentPosition == null ? column : columnCurrentPosition;
-                            Log.d(TAG, "setRange(" + firstRow + ", " + currentRow + ", " + firstColumn + ", " + currentColumn + ")");
                             setRange(firstRow, currentRow, firstColumn, currentColumn);
+                            // re-enable drag and drop
+                            tableLayout.setDragAndDropEnabled(true);
                         }
                     } else {
-//                        Log.d(TAG, "row: " + row + ", column: " + column + ", row is not full, getItemData: " + mTableDataSource.getItemData(row-1, column-1));
                         if (mTableDataSource.rowHasAtLeastTwoMappings(row - 1)) {
                             mTableDataSource.setItemData(row - 1, column - 1);
                         } else {
@@ -138,12 +140,10 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
 
                     if (diffV > 0) {
                         if (firstRow > secondRow) {
-//                            Log.d(TAG, "first row > second row");
                             startRow = secondRow - 1; // first row needs to be considered too
                             endRow = firstRow;
                             startColumn = secondColumn;
                         } else {
-//                            Log.d(TAG, "second row > first row");
                             startRow = firstRow; // first row has already been set
                             endRow = secondRow;
                             startColumn = firstColumn;
@@ -156,40 +156,17 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
 
                         float roundingFix = secondRow > firstRow ? deltaH : 0;
 
-/*
-                        SparseIntArray changedRows = new SparseIntArray();
-                        for (Map.Entry<Integer, Integer> mapEntry : mRowChanges.entrySet()) {
-                            changedRows.append(mapEntry.getKey(), mapEntry.getValue());
-                        }
-*/
-
-//                        Log.d(TAG, "row changes: " + mRowChanges + "\nstart row: " + startRow + ", end row: " + endRow);
-
-//                        Log.d(TAG, "startRow: " + startRow + ", endRow: " + endRow);
                         for (int i = startRow; i < endRow; i++) {
-//                            Log.d(TAG, "i: " + i);
-//                            final Integer currentRowValue = MapHelper.getKeyByValue(mRowChanges, i);
                             final Integer currentRowValue = mRowChanges.get(i+1);
-//                            Log.d(TAG, "i: " + i + ", current row value: " + currentRowValue);
                             final int currentRow = currentRowValue == null ? i+1 : currentRowValue;
-//                            Log.d(TAG, "i: " + i + ", current row: " + currentRow + ", deltaH: " + deltaH);
 
                             if (diffH == 0) {
-//                                if (mTableDataSource.rowIsFull(i)) {
-//                                    mTableDataSource.setFullRowData(i, firstColumn);
-//                                }
-                                if (mTableDataSource.rowIsFull(currentRow)) {
-                                    mTableDataSource.setFullRowData(currentRow, firstColumn);
+                                if (mTableDataSource.rowIsFull(currentRow-1)) {
+                                    mTableDataSource.setFullRowData(currentRow-1, firstColumn);
                                 }
                             } else {
-//                                if (mTableDataSource.rowIsFull(i)) {
-//                                    mTableDataSource.setFullRowData(i, Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix));
-//                                }
                                 if (mTableDataSource.rowIsFull(currentRow-1)) {
-                                    Log.d(TAG, "setFullRowData(" + currentRow + ", " + Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix) + ")");
                                     mTableDataSource.setFullRowData(currentRow-1, Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix));
-                                } else {
-                                    Log.d(TAG, "row is full: " + currentRow);
                                 }
                             }
                         }
