@@ -130,7 +130,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     }
 
     @Override
-    public void onBindHeaderRowViewHolder(@NonNull ViewHolderImpl viewHolder, int row) {
+    public void onBindHeaderRowViewHolder(@NonNull ViewHolderImpl viewHolder, final int row) {
         final TableHeaderRowViewHolder vh = (TableHeaderRowViewHolder) viewHolder;
         final String itemData = mTableDataSource.getRowHeaderData(row-1);
         vh.cellText.setText(itemData);

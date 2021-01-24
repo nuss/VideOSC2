@@ -11,7 +11,7 @@
         android:id="@+id/address_command_mappings_table"
         app:fixedHeaders="true"
         app:solidRowHeaders="true"
-        app:dragAndDropEnabled="false"
+        app:dragAndDropEnabled="true"
         app:cellMargin="1dp" />
 
 </LinearLayout>
