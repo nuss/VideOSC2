@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 import com.cleveroad.adaptivetablelayout.OnItemClickListener;
-import com.cleveroad.adaptivetablelayout.OnItemLongClickListener;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
@@ -37,8 +35,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private Map<Integer, Integer> mRowChanges;
     private Map<Integer, Integer> mColumnChanges;
 
-    public VideOSCCommandMappingsFragment() {
-    }
+    public VideOSCCommandMappingsFragment() { }
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -46,7 +43,6 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "VideOSCCommandMappingsFragment onCreate");
         super.onCreate(savedInstanceState);
         this.mTableDataSource = new MappingsTableDataSourceImpl(mActivity);
     }
@@ -91,7 +87,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     mColumnChanges = tableLayout.getLinkedAdapterColumnsModifications();
                     final Integer rowCurrentPosition = MapHelper.getKeyByValue(mRowChanges, row);
                     final Integer columnCurrentPosition = MapHelper.getKeyByValue(mColumnChanges, column);
-//                    Log.d(TAG, "row " + row + " now at position " + MapHelper.getKeyByValue(mRowChanges, row) + "\nrow changes: " + mRowChanges);
+
                     if (mTableDataSource.rowIsFull(row - 1)) {
                         firstClick = !firstClick;
                         if (firstClick) {
@@ -157,16 +153,28 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                         float roundingFix = secondRow > firstRow ? deltaH : 0;
 
                         for (int i = startRow; i < endRow; i++) {
+                            // if rows have been shifted get the original order
+                            // will return null if index doesn't exist in mRowChanges
+                            // we need i+1 due header row being first row (first table row has index 1)
                             final Integer currentRowValue = mRowChanges.get(i+1);
+                            // if row not contained in mRowChanges just use i+1 as next row
                             final int currentRow = currentRowValue == null ? i+1 : currentRowValue;
 
                             if (diffH == 0) {
                                 if (mTableDataSource.rowIsFull(currentRow-1)) {
-                                    mTableDataSource.setFullRowData(currentRow-1, firstColumn);
+                                    mTableDataSource.setFullRowData(currentRow-1, firstColumn-1);
                                 }
                             } else {
                                 if (mTableDataSource.rowIsFull(currentRow-1)) {
-                                    mTableDataSource.setFullRowData(currentRow-1, Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix));
+                                    // calculate next column based on number of rows to be considered
+                                    // since number of rows may be arbitrary and column index must be integer round the result
+                                    // depending an whether first row has a lower or higher index than the last row in the selected range
+                                    // we must supply a rounding fix that can be 0 or deltaH
+                                    final int columnIndex = Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix);
+                                    // analog currentRow we have to check for next column in mColumnChanges
+                                    final Integer column = mColumnChanges.get(columnIndex+1);
+                                    final int currentColumn = column == null ? columnIndex+1 : column;
+                                    mTableDataSource.setFullRowData(currentRow-1, currentColumn-1);
                                 }
                             }
                         }
@@ -175,7 +183,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
 
                 @Override
                 public void onRowHeaderClick(int row) {
-                    Log.d(TAG, "click, row: " + row + "\nrow changes: " + tableLayout.getLinkedAdapterRowsModifications() + "\ncolumn changes: " + tableLayout.getLinkedAdapterColumnsModifications());
+
                 }
 
                 @Override
@@ -188,17 +196,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
 
                 }
             });
-            mTableAdapter.setOnItemLongClickListener(new OnItemLongClickListener() {
-                @Override
-                public void onItemLongClick(int row, int column) {
-                    Log.d(TAG, "long click, row: " + row);
-                }
 
-                @Override
-                public void onLeftTopHeaderLongClick() {
-
-                }
-            });
             tableLayout.setAdapter(mTableAdapter);
         }
     }
@@ -210,11 +208,10 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     }
 
     private int countAddresses() {
-        int count = 0;
         SQLiteDatabase db = mActivity.getDatabase();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.AddressSettingsEntries.TABLE_NAME + ";", null);
-        count = cursor.getCount();
+        int count = cursor.getCount();
 
         cursor.close();
 
