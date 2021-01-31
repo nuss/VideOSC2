@@ -20,13 +20,13 @@ import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<ViewHolderImpl> {
     private static final String TAG = CommandMappingsTableAdapter.class.getSimpleName();
+    private final VideOSCApplication mApp;
     private final LayoutInflater mLayoutInflater;
     private final int mColumnWidth;
     private final int mRowHeight;
     private final int mHeaderHeight;
     private final int mHeaderWidth;
     private final MappingsTableDataSource<String, String, Character> mTableDataSource;
-    private final CommandMappingsSortModes mSortMode;
     private final int mNumRows;
 
     public CommandMappingsTableAdapter(VideOSCMainActivity activity, MappingsTableDataSource<String, String, Character> tableDataSource) {
@@ -37,8 +37,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         this.mHeaderHeight = res.getDimensionPixelSize(R.dimen.col_header_height);
         this.mHeaderWidth = res.getDimensionPixelSize(R.dimen.row_header_width);
         this.mTableDataSource = tableDataSource;
-        VideOSCApplication app = (VideOSCApplication) activity.getApplication();
-        this.mSortMode = app.getCommandMappingsSortMode();
+        this.mApp = (VideOSCApplication) activity.getApplication();
         this.mNumRows = getRowCount();
     }
 
@@ -80,13 +79,14 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
     @Override
     public void onBindViewHolder(@NonNull ViewHolderImpl viewHolder, int row, int column) {
         Log.d(TAG, "onBindViewHolder(" + viewHolder + ", " + row + ", " + column + ")");
+        final CommandMappingsSortModes sortMode = mApp.getCommandMappingsSortMode();
         String itemData;
         int bgColor, textColor;
         final TableViewHolder vh = (TableViewHolder) viewHolder;
         int rawMapping = Integer.parseInt(String.valueOf(mTableDataSource.getItemData(row-1, column-1)));
         if (rawMapping > 0) {
             itemData = "ON";
-            if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
+            if (sortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
                 if (row <= mNumRows / 3) {
                     bgColor = 0xffff0000;
                 } else if (row > mNumRows / 3 && row <= mNumRows / 3 * 2) {
@@ -96,7 +96,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
                 } else {
                     bgColor = 0xffffffff;
                 }
-            } else if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+            } else if (sortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
                 if ((row-1)%3 == 0) {
                     bgColor = 0xffff0000;
                 } else if ((row-1)%3 == 1) {
@@ -131,6 +131,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public void onBindHeaderRowViewHolder(@NonNull ViewHolderImpl viewHolder, final int row) {
+        Log.d(TAG, "onBindHeaderRowViewHolder, row: " + row);
         final TableHeaderRowViewHolder vh = (TableHeaderRowViewHolder) viewHolder;
         final String itemData = mTableDataSource.getRowHeaderData(row-1);
         vh.cellText.setText(itemData);
@@ -138,6 +139,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
 
     @Override
     public void onBindLeftTopHeaderViewHolder(@NonNull ViewHolderImpl viewHolder) {
+/*
         final TableLeftTopViewHolder vh = (TableLeftTopViewHolder) viewHolder;
         switch (mSortMode) {
             case SORT_BY_NUM:
@@ -147,6 +149,7 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
                 vh.cellText.setText(R.string.sort_by_cmd_num);
                 break;
         }
+*/
     }
 
     @Override
@@ -176,7 +179,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
-//            Log.d(TAG, "new TableViewHolder, cellText: " + cellText);
         }
     }
 
@@ -186,7 +188,6 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableHeaderColumnViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
-            Log.d(TAG, "new TableHeaderColumnViewHolder, celltext: " + cellText);
         }
     }
 
@@ -196,11 +197,10 @@ public class CommandMappingsTableAdapter extends LinkedAdaptiveTableAdapter<View
         private TableHeaderRowViewHolder(@NonNull View itemView) {
             super(itemView);
             cellText = itemView.findViewById(R.id.cell_text);
-//            Log.d(TAG, "new TableHeaderRowViewHolder, cellText: " + cellText);
         }
     }
 
-    private  static class TableLeftTopViewHolder extends ViewHolderImpl {
+    private static class TableLeftTopViewHolder extends ViewHolderImpl {
         TextView cellText;
 
         private TableLeftTopViewHolder(@NonNull View itemView) {

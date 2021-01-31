@@ -141,7 +141,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:layout_weight="0.3"
-
                 android:drawableEnd="@drawable/carret_down_white"
                 android:drawableRight="@drawable/carret_down_white"
                 android:text="UDP" />

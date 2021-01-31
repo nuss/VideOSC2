@@ -102,7 +102,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         super.onViewCreated(view, savedInstanceState);
         final FragmentManager fragmentManager = getFragmentManager();
         assert fragmentManager != null;
-        // in API 30 getting the cameraView only seems to work with fragmentManager retrieved retrieved through getFragmentManager, not getChildFragmentManager
+        // in API 30 getting the cameraView only seems to work with fragmentManager retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
         mDb = mActivity.getDatabase();
 

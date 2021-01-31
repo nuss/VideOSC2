@@ -1,14 +1,24 @@
 package net.videosc.fragments.settings;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +27,14 @@ import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 import com.cleveroad.adaptivetablelayout.OnItemClickListener;
 
 import net.videosc.R;
+import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 import net.videosc.utilities.MapHelper;
+import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.Map;
 
@@ -34,11 +46,16 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private int mNumAddresses;
     private Map<Integer, Integer> mRowChanges;
     private Map<Integer, Integer> mColumnChanges;
+    private VideOSCApplication mApp;
+    private ArrayAdapter<String> mSortSwitchAdapter;
+    private PopupWindow mSortModesPopUp;
+    private Button mSortSwitcher;
 
     public VideOSCCommandMappingsFragment() { }
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
+        this.mApp = (VideOSCApplication) context.getApplicationContext();
     }
 
     @Override
@@ -75,6 +92,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
         super.onViewCreated(view, savedInstanceState);
         if (mNumAddresses > 1) {
             final AdaptiveTableLayout tableLayout = view.findViewById(R.id.address_command_mappings_table);
+            mSortSwitcher = view.findViewById(R.id.sort_mode_switch);
             mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
                 private boolean firstClick = false;
@@ -182,22 +200,33 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                 }
 
                 @Override
-                public void onRowHeaderClick(int row) {
-
-                }
+                public void onRowHeaderClick(int row) { }
 
                 @Override
-                public void onColumnHeaderClick(int column) {
-
-                }
+                public void onColumnHeaderClick(int column) { }
 
                 @Override
-                public void onLeftTopHeaderClick() {
-
-                }
+                public void onLeftTopHeaderClick() { }
             });
 
             tableLayout.setAdapter(mTableAdapter);
+
+            // sort switch
+            final Resources res = getResources();
+            final String[] sortModes = new String[]{
+                    res.getString(R.string.sort_by_color),
+                    res.getString(R.string.sort_by_cmd_num)
+            };
+            mSortSwitchAdapter = new ArrayAdapter<>(mActivity, R.layout.sort_mode_item, sortModes);
+            mSortModesPopUp = showSortModesList(mSortSwitchAdapter);
+            mSortSwitcher.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSortModesPopUp.showAsDropDown(v, 0, 0);
+                }
+            });
+            ListView sortModesList = (ListView) mSortModesPopUp.getContentView();
+            sortModesList.setOnItemClickListener(new SortModesOnItemClickListener());
         }
     }
 
@@ -205,6 +234,18 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     public void onDetach() {
         super.onDetach();
         mActivity = null;
+    }
+
+    private PopupWindow showSortModesList(ArrayAdapter<String> sortModesAdapter) {
+        final PopupWindow popUp = new PopupWindow(mActivity);
+        final ListView sortModesList = new ListView(mActivity);
+        sortModesList.setAdapter(sortModesAdapter);
+        popUp.setFocusable(true);
+        popUp.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popUp.setContentView(sortModesList);
+
+        return popUp;
     }
 
     private int countAddresses() {
@@ -216,5 +257,24 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
         cursor.close();
 
         return count;
+    }
+
+    private class SortModesOnItemClickListener implements AdapterView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Animation fadeInAnimation = AnimationUtils.loadAnimation(view.getContext(), android.R.anim.fade_in);
+            fadeInAnimation.setDuration(2);
+            view.startAnimation(fadeInAnimation);
+
+            String item = mSortSwitchAdapter.getItem(position);
+            mSortSwitcher.setText(item);
+            String[] sortEnums = CommandMappingsSortModes.getNames(CommandMappingsSortModes.class);
+            mApp.setCommandMappingsSortmode(CommandMappingsSortModes.valueOf(sortEnums[position]));
+            Log.d(TAG, "sort mode: " + mApp.getCommandMappingsSortMode());
+            mTableDataSource.initSortMode();
+            mTableAdapter.notifyLayoutChanged();
+            mSortModesPopUp.dismiss();
+        }
     }
 }

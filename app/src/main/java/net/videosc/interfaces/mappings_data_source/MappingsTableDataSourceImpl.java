@@ -36,7 +36,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         initSortMode();
     }
 
-    private void initSortMode() {
+    public void initSortMode() {
         // get mMappings from database
         // use getCachedMappings to retrieve current mappings
         // cached mappings should be treated only by their row indexes
@@ -283,6 +283,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         }
     }
 
+/*
     // get mappings in specified row
     public String getRowData(int row) {
         // TODO: consider sort order?
@@ -294,6 +295,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
         return String.valueOf(rowData);
     }
+*/
 
     // get mappings in specified column
     public String getColumnData(int column) {
