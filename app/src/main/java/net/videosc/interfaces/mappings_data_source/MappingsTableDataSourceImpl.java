@@ -23,16 +23,16 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     private final VideOSCMainActivity mActivity;
     private SparseArray<String> mMappings;
     private final SparseArray<String> mAddresses;
-    private final ArrayList<String> mCommands;
-    private final CommandMappingsSortModes mSortMode;
+    private ArrayList<String> mCommands;
+    private String mRootCmd;
 
     public MappingsTableDataSourceImpl(VideOSCMainActivity activity) {
         this.mActivity = activity;
         this.mDb = activity.getDatabase();
         this.mApp = (VideOSCApplication) activity.getApplication();
-        this.mSortMode = mApp.getCommandMappingsSortMode();
+        CommandMappingsSortModes sortMode = mApp.getCommandMappingsSortMode();
         this.mAddresses = getAddresses();
-        this.mCommands = getCommands(this.mSortMode);
+        getCommands(sortMode);
         initSortMode();
     }
 
@@ -46,7 +46,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         // TODO: check for added or deleted addresses
 
         if (mAddresses.size() > mMappings.size()) {
-            Log.d(TAG, "mappings before: " + mMappings);
+//            Log.d(TAG, "mappings before: " + mMappings);
             Point res = mApp.getResolution();
             StringBuilder mappingsStringB = new StringBuilder(res.x * res.y * 3);
             for (int i = 0; i < res.x * res.y * 3; i++) {
@@ -62,18 +62,17 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             }
         }
 
+        Log.d(TAG, "initSortMode, sortMode: " + mApp.getCommandMappingsSortMode());
         if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
             for (int i = 0; i < mMappings.size(); i++) {
                 int key = mMappings.keyAt(i);
                 String oldMappings = mMappings.valueAt(i);
-//                Log.d(TAG, "mappings at '" + key + "', length: " + oldMappings.length() + ", mappings: " + oldMappings);
                 StringBuilder newMappings = new StringBuilder();
                 int colorBlockSize = oldMappings.length()/3;
                 for (int j = 0; j < colorBlockSize; j++) {
                     // first we iterate over the block length...
                     for (int k = 0; k < 3; k++) {
                         // ... then we take the element at i + j * blocklength = same number in next color
-//                        Log.d(TAG, "next row: " + (j+(k*colorBlockSize)));
                         newMappings.append(oldMappings.charAt(j+(k*colorBlockSize)));
                     }
                 }
@@ -117,7 +116,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public Character getItemData(int rowIndex, int columnIndex) {
-        Log.d(TAG, "mMappings size: " + mMappings.size() + "\nmMappings at column " + columnIndex + ": " + mMappings.keyAt(columnIndex) + ", " + mMappings.valueAt(columnIndex) + "\ngetItemData, row: " + rowIndex + ", column: " + columnIndex);
+//        Log.d(TAG, "mMappings size: " + mMappings.size() + "\nmMappings at column " + columnIndex + ": " + mMappings.keyAt(columnIndex) + ", " + mMappings.valueAt(columnIndex) + "\ngetItemData, row: " + rowIndex + ", column: " + columnIndex);
         char itemData;
         if (mMappings.size() > 0) {
             if (mMappings.valueAt(columnIndex).isEmpty()) {
@@ -188,13 +187,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         return addresses;
     }
 
-    private ArrayList<String> getCommands(CommandMappingsSortModes sortMode) {
-        final ArrayList<String> commands = new ArrayList<>();
-        final String[] colors = new String[]{"red", "green", "blue"};
-        final Point res = mApp.getResolution();
-        final int size = res.x * res.y;
-        String rootCmd = "";
-
+    private void getCommands(CommandMappingsSortModes sortMode) {
         final String[] rootCmdFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
                 SettingsContract.SettingsEntries.ROOT_CMD
@@ -211,26 +204,33 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         );
 
         if (cursor.moveToFirst()) {
-            rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+            mRootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
         }
 
         cursor.close();
 
+        sortCommands(sortMode);
+    }
+
+    public void sortCommands(CommandMappingsSortModes sortMode) {
+        mCommands = new ArrayList<>();
+        final String[] colors = new String[]{"red", "green", "blue"};
+        final Point res = mApp.getResolution();
+        final int size = res.x * res.y;
+
         if (sortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
             for (String color : colors) {
                 for (int i = 0; i < size;) {
-                    commands.add("/" + rootCmd + "/" + color + (++i));
+                    mCommands.add("/" + mRootCmd + "/" + color + (++i));
                 }
             }
         } else if (sortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
             for (int i = 0; i < size; i++) {
                 for (String color : colors) {
-                    commands.add("/" + rootCmd + "/" + color + (i+1));
+                    mCommands.add("/" + mRootCmd + "/" + color + (i+1));
                 }
             }
         }
-
-        return commands;
     }
 
     @Override
@@ -269,7 +269,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     // a click should select a single cell in a row
     public void setFullRowData(int row, int column) {
         final int numCols = getColumnsCount();
-        Log.d(TAG, "setFullRowData: " + row + "/" + column + ", num columns: " + numCols);
+//        Log.d(TAG, "setFullRowData: " + row + "/" + column + ", num columns: " + numCols);
         StringBuilder rowData = new StringBuilder();
         for (int i = 0; i < numCols; i++) {
             char newMapping = '1';
@@ -327,6 +327,8 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 //        Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column) + ", new row data: " + String.valueOf(rowData));
     }
 
+    // FIXME: if sort mode is SORT_BY_NUMBER this doesn't re-sort to SORT_BY_COLOR (the default)
+/*
     private String revertSort(String mappings) {
         StringBuilder colData = new StringBuilder(mappings);
         char[] mappingsArr = mappings.toCharArray();
@@ -340,11 +342,35 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         }
         return String.valueOf(mappingsArr);
     }
+*/
+
+    private String revertSort(String mappings) {
+        final StringBuilder rData = new StringBuilder();
+        final StringBuilder gData = new StringBuilder();
+        final StringBuilder bData = new StringBuilder();
+
+        char[] mappingsArr = mappings.toCharArray();
+
+        for (int i = 0; i < mappingsArr.length; i++) {
+            if (i % 3 == 0) {
+                rData.append(mappingsArr[i]);
+            } else if (i % 3 == 1) {
+                gData.append(mappingsArr[i]);
+            } else {
+                bData.append(mappingsArr[i]);
+            }
+        }
+
+        final StringBuilder revertedMappings = rData.append(gData).append(bData);
+
+        return String.valueOf(revertedMappings);
+    }
 
     public void updateMappings(long addrID, String mappings) {
-//        Log.d(TAG, "updateMappings, addrID: " + addrID + ", mappings: " + mappings);
-        if (mSortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+        if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
+            Log.d(TAG, "updateMappings before, addrID: " + addrID + ", mappings: " + mappings);
             mappings = revertSort(mappings);
+            Log.d(TAG, "updateMappings after, addrID: " + addrID + ", mappings: " + mappings);
         }
 
         ContentValues values = new ContentValues();

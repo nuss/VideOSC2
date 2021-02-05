@@ -141,6 +141,10 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     // update mappings from database
                     // store mappings in mTableDataSource.mMappings
                     mTableDataSource.getMappings();
+                    // getMappings() will retrieve mappings as ordered in mode SORT_BY_COLOR
+                    // hence, we need to reorder them before displaying them if mode is SORT_BY_NUM
+                    if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM))
+                        mTableDataSource.initSortMode();
                     mTableAdapter.notifyDataSetChanged();
                 }
 
@@ -233,6 +237,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        mApp.setCommandMappingsSortmode(CommandMappingsSortModes.SORT_BY_COLOR);
         mActivity = null;
     }
 
@@ -271,8 +276,10 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
             mSortSwitcher.setText(item);
             String[] sortEnums = CommandMappingsSortModes.getNames(CommandMappingsSortModes.class);
             mApp.setCommandMappingsSortmode(CommandMappingsSortModes.valueOf(sortEnums[position]));
-            Log.d(TAG, "sort mode: " + mApp.getCommandMappingsSortMode());
+            Log.d(TAG, "mappings before: " + mTableDataSource.getCachedMappings());
             mTableDataSource.initSortMode();
+            Log.d(TAG, "mappings after: " + mTableDataSource.getCachedMappings());
+            mTableDataSource.sortCommands(mApp.getCommandMappingsSortMode());
             mTableAdapter.notifyLayoutChanged();
             mSortModesPopUp.dismiss();
         }
