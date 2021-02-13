@@ -30,22 +30,40 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/device_port" />
+            android:text="@string/device_udp_port" />
 
         <EditText
-            android:id="@+id/device_port_field"
+            android:id="@+id/device_udp_port_field"
             style="@style/EditTextPadding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="12345"
             android:digits="0123456789"
-            android:hint="@string/receive_port"
+            android:hint="@string/udp_receive_port"
+            android:inputType="number"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:textSize="16sp"
+            android:nextFocusDown="@+id/device_tcp_port_field" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/device_tcp_port" />
+
+        <EditText
+            android:id="@+id/device_tcp_port_field"
+            style="@style/EditTextPadding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="12345"
+            android:digits="0123456789"
+            android:hint="@string/tcp_receive_port"
             android:inputType="number"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             android:textSize="16sp"
             android:nextFocusDown="@+id/root_cmd_name_field" />
-
 
         <TextView
             android:layout_width="match_parent"

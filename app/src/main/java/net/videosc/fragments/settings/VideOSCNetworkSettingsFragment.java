@@ -198,9 +198,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         cursor.close();
 
-        final EditText udpReceivePortField = view.findViewById(R.id.device_port_field);
+        final EditText udpReceivePortField = view.findViewById(R.id.device_udp_port_field);
         udpReceivePortField.setText(
                 String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
+                TextView.BufferType.EDITABLE
+        );
+        final EditText tcpReceivePortField = view.findViewById(R.id.device_tcp_port_field);
+        tcpReceivePortField.setText(
+                String.format(Locale.getDefault(), "%d", settings.get(0).getTcpReceivePort()),
                 TextView.BufferType.EDITABLE
         );
         final EditText rootCmdField = view.findViewById(R.id.root_cmd_name_field);
@@ -211,21 +216,61 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean b) {
-                if (!b && !udpReceivePortField.getText().toString().equals(
-                        String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
-                    String receivePort = udpReceivePortField.getText().toString();
-                    values.put(
-                            SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-                            receivePort
+                final String udpPortString = udpReceivePortField.getText().toString();
+                if (!udpPortString.equals(tcpReceivePortField.getText().toString())) {
+                    if (!b && !udpPortString.equals(
+                            String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
+                        values.put(
+                                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+                                udpPortString
+                        );
+                        mDb.update(
+                                SettingsContract.SettingsEntries.TABLE_NAME,
+                                values,
+                                SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                                null
+                        );
+                        values.clear();
+                        mAddresses.get(0).setUdpReceivePort(Integer.parseInt(udpPortString, 10));
+                    }
+                } else {
+                    VideOSCDialogHelper.showWarning(
+                            mActivity,
+                            android.R.style.Theme_Holo_Light_Dialog,
+                            getString(R.string.udp_receive_port_should_differ),
+                            getString(R.string.OK)
                     );
-                    mDb.update(
-                            SettingsContract.SettingsEntries.TABLE_NAME,
-                            values,
-                            SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-                            null
+                }
+            }
+        });
+
+        tcpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                final String tcpPortString = tcpReceivePortField.getText().toString();
+                if (!tcpPortString.equals(udpReceivePortField.getText().toString())) {
+                    if (!hasFocus && !tcpPortString.equals(
+                            String.format(Locale.getDefault(), "%d", settings.get(0).getTcpReceivePort()))) {
+                        values.put(
+                                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
+                                tcpPortString
+                        );
+                        mDb.update(
+                                SettingsContract.SettingsEntries.TABLE_NAME,
+                                values,
+                                SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                                null
+                        );
+                        values.clear();
+                        mAddresses.get(0).setTcpReceivePort(Integer.parseInt(tcpPortString, 10));
+                    }
+                } else {
+                    VideOSCDialogHelper.showWarning(
+                            mActivity,
+                            android.R.style.Theme_Holo_Light_Dialog,
+                            getString(R.string.tcp_receive_port_should_differ),
+                            getString(R.string.OK)
                     );
-                    values.clear();
-                    mAddresses.get(0).setReceivePort(Integer.parseInt(receivePort, 10));
                 }
             }
         });

@@ -46,8 +46,10 @@
 	<string name="send_osc_to_port">Send OSC to port:</string>
 	<string name="default_remote_port">57120</string>
 	<string name="device_ip_address_head">Device IP address:</string>
-	<string name="device_port">Device port:</string>
-	<string name="device_port_value">32000</string>
+	<string name="device_udp_port">Device UDP port:</string>
+	<string name="device_udp_port_value">32000</string>
+	<string name="device_tcp_port">Device TCP/IP port:</string>
+	<string name="device_tcp_port_value">32100</string>
 	<string name="root_command_name_head">Root command name:</string>
 	<string name="slash">/</string>
 	<string name="root_cmd_name">vosc</string>
@@ -146,7 +148,8 @@
 	<string name="enter_a_valid_ip_address">enter a valid IP address</string>
 	<string name="add_port_hint">add a numerical port</string>
 	<string name="protocol_1_s">set protocol: %1$s</string>
-	<string name="receive_port">set the app\'s receiving port</string>
+	<string name="udp_receive_port">set the app\'s UDP receiving port</string>
+	<string name="tcp_receive_port">set the app\'s TCP/IP receiving port</string>
 	<string name="delete_address">delete address</string>
 
 	<!-- address entries -->
@@ -165,5 +168,8 @@
     <string name="no_netaddresses_defined">You must at least define two different NetAddresses (a combination of an IP address, a port and network protocol) in \"Network Settings\" before you can define the Command-Address mappings.</string>
 	<string name="sort_by_color">Sort by color</string>
 	<string name="sort_by_cmd_num">Sort by number</string>
+	<string name="udp_receive_port_should_differ">UDP receive port should differ from TCP/IP receive port!</string>
+	<string name="tcp_receive_port_should_differ">TCP/IP receive port should differ from UDP receive port!</string>
+	<string name="define_client_address">You need to define at least one client address to send OSC messages to before you can start playing!</string>
 
 </resources>

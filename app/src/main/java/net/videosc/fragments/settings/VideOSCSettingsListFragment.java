@@ -171,8 +171,9 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         private long mRowId;
         private String mIp;
         private int mPort;
-        private int mReceivePort;
+        private int mUdpReceivePort;
         private String mProtocol;
+        private int mTcpReceivePort;
 
         Address() {
         }
@@ -189,8 +190,12 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
             this.mPort = port;
         }
 
-        void setReceivePort(int port) {
-            this.mReceivePort = port;
+        void setUdpReceivePort(int port) {
+            this.mUdpReceivePort = port;
+        }
+
+        void setTcpReceivePort(int port) {
+            this.mTcpReceivePort = port;
         }
 
         void setProtocol(String protocol) {
@@ -209,8 +214,12 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
             return this.mPort;
         }
 
-        int getReceivePort() {
-            return this.mReceivePort;
+        int getUdpReceivePort() {
+            return this.mUdpReceivePort;
+        }
+
+        int getTcpReceivePort() {
+            return this.mTcpReceivePort;
         }
 
         String getProtocol() {

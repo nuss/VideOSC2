@@ -2,8 +2,6 @@ package net.videosc.fragments.settings;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,10 +28,10 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.CommandMappingsTableAdapter;
-import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.interfaces.mappings_data_source.MappingsTableDataSourceImpl;
 import net.videosc.utilities.MapHelper;
+import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.Map;
@@ -50,12 +48,14 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     private ArrayAdapter<String> mSortSwitchAdapter;
     private PopupWindow mSortModesPopUp;
     private Button mSortSwitcher;
+    private VideOSCDBHelpers mDBHelper;
 
     public VideOSCCommandMappingsFragment() { }
 
     public VideOSCCommandMappingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
         this.mApp = (VideOSCApplication) context.getApplicationContext();
+        this.mDBHelper = new VideOSCDBHelpers(mActivity);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view;
-        this.mNumAddresses = countAddresses();
+        this.mNumAddresses = mDBHelper.countAddresses();
         if (mNumAddresses > 1) {
             view = inflater.inflate(R.layout.address_command_mappings_table, container, false);
         } else {
@@ -251,17 +251,6 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
         popUp.setContentView(sortModesList);
 
         return popUp;
-    }
-
-    private int countAddresses() {
-        SQLiteDatabase db = mActivity.getDatabase();
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.AddressSettingsEntries.TABLE_NAME + ";", null);
-        int count = cursor.getCount();
-
-        cursor.close();
-
-        return count;
     }
 
     private class SortModesOnItemClickListener implements AdapterView.OnItemClickListener {
