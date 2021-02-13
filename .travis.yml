@@ -38,7 +38,7 @@ android:
     - yes | sdkmanager "platforms;android-30"   
     - yes | sdkmanager "build-tools;30.0.3"   
     # - yes | sdkmanager --licenses && yes | sdkmanager --update
-    - sdkmanager --update && yes | sdkmanager --licenses
+    - run: sdkmanager --update && yes | sdkmanager --licenses
     # - yes | sdkmanager "platforms;android-30;default;armeabi-v7a"
     - mkdir "$ANDROID_HOME/licenses" || true
     - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
