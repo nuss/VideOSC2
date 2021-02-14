@@ -4,11 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
-import netP5.NetAddress;
+
+import net.videosc.activities.VideOSCMainActivity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
@@ -20,12 +22,15 @@ import oscP5.OscP5;
 public class VideOSCOscHandler/* implements OscEventListener*/ {
 	final private static String TAG = "VideOSCOscHandler";
 
-	private OscP5 mOscP5;
-	private NetAddress mBroadcastAddr;
-	private NetAddress mFeedbackAddr;
-	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
-	private int mListeningPort = 32000; // default port to listen on, updated via settings
-	private int mBroadcastPort = 57120; // default port to send to, updated via settings
+	private final OscP5 mTcpListener, mUdpListener;
+	private final VideOSCMainActivity mActivity;
+	//	private NetAddress mBroadcastAddr;
+//	private NetAddress mFeedbackAddr;
+//	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
+	private final int mUDPListeningPort = 32000; // default port to listen on messages sent over UDP, updated via settings
+	private final int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
+//	private int mBroadcastPort = 57120; // default port to send to, updated via settings
+	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 	private OscEventListener mOscEventListener;
 
 	private final SparseArray<ArrayList<String>> mFbStringsR = new SparseArray<>();
@@ -33,10 +38,9 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
 
 	public VideOSCOscHandler(Context context) {
-		final WeakReference<Context> contextRef = new WeakReference<>(context);
-		mOscP5 = new OscP5(contextRef.get(), mListeningPort);
-		// intermediate - should be invoked through user interaction
-		mBroadcastAddr = new NetAddress(mBroadcastIP, mBroadcastPort);
+		this.mActivity = (VideOSCMainActivity) context;
+		this.mUdpListener = new OscP5(context, mUDPListeningPort, OscP5.UDP);
+		this.mTcpListener = new OscP5(context, mTCPListeningPort, OscP5.TCP);
 	}
 
 	public OscMessage makeMessage(OscMessage msg, String cmd) {
@@ -58,35 +62,49 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		return bundle;
 	} */
 
-	public OscP5 getOscP5() {
-		return mOscP5;
+	public OscP5 getOscP5(int key) {
+		return mBroadcastAddresses.get(key);
 	}
 
-	public void setBroadcastAddr(String ip, int port) {
-		mBroadcastIP = ip;
-		mBroadcastPort = port;
-		mBroadcastAddr = new NetAddress(ip, port);
+	public void addBroadcastAddr(int key, OscP5 oscP5) {
+		mBroadcastAddresses.put(key, oscP5);
 	}
 
-	public void addOscEventListener() {
+	public void addOscUdpEventListener() {
 		mOscEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc message: " + oscMessage);
+				Log.d(TAG, "osc udp message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
 			}
 		};
-		mOscP5.addListener(mOscEventListener);
+		mUdpListener.addListener(mOscEventListener);
 	}
 
-	public void removeOscEventListener() {
-		mOscP5.removeListener(mOscEventListener);
+	public void addOscTcpEventListener() {
+		mOscEventListener = new OscEventListener() {
+			@Override
+			public void oscEvent(OscMessage oscMessage) {
+				Log.d(TAG, "osc tcp message: " + oscMessage);
+				createOscFeedbackStrings(oscMessage);
+			}
+		};
+		mTcpListener.addListener(mOscEventListener);
 	}
 
-	public NetAddress getBroadcastAddr() {
-		return mBroadcastAddr;
+	public void removeOscUdpEventListener() {
+		mUdpListener.removeListener(mOscEventListener);
 	}
 
+	public void removeOscTcpEventListener() {
+		mTcpListener.removeListener(mOscEventListener);
+	}
+
+	public OscP5 getBroadcastAddr(int key) {
+		return mBroadcastAddresses.get(key);
+	}
+
+/*
 	public void setBroadcastIP(String ip) {
 		mBroadcastIP = ip;
 	}
@@ -102,6 +120,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	public int getBroadcastPort() {
 		return mBroadcastPort;
 	}
+*/
 
 	public SparseArray<ArrayList<String>> getRedFeedbackStrings() {
 		return mFbStringsR;
@@ -132,17 +151,17 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			if (pixel.matches("^red[0-9]+")) {
 				if (mFbStringsR.get(index) == null)
 					mFbStringsR.put(index, new ArrayList<String>());
-				if (mFbStringsR.get(index).indexOf(sender) < 0)
+				if (!mFbStringsR.get(index).contains(sender))
 					mFbStringsR.get(index).add(sender);
 			} else if (pixel.matches("^green[0-9]+")) {
 				if (mFbStringsG.get(index) == null)
 					mFbStringsG.put(index, new ArrayList<String>());
-				if (mFbStringsG.get(index).indexOf(sender) < 0)
+				if (!mFbStringsG.get(index).contains(sender))
 					mFbStringsG.get(index).add(sender);
 			} else if (pixel.matches("^blue[0-9]+")) {
 				if (mFbStringsB.get(index) == null)
 					mFbStringsB.put(index, new ArrayList<String>());
-				if (mFbStringsB.get(index).indexOf(sender) < 0)
+				if (!mFbStringsB.get(index).contains(sender))
 					mFbStringsB.get(index).add(sender);
 			}
 		}

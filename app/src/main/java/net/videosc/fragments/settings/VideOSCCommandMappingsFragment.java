@@ -141,6 +141,8 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     // update mappings from database
                     // store mappings in mTableDataSource.mMappings
                     mTableDataSource.getMappings();
+                    // make new mappings accessible across the application
+                    mApp.setCommandMappings(mTableDataSource.getCachedMappings());
                     // getMappings() will retrieve mappings as ordered in mode SORT_BY_COLOR
                     // hence, we need to reorder them before displaying them if mode is SORT_BY_NUM
                     if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM))

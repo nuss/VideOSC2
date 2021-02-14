@@ -8,6 +8,8 @@ import android.graphics.Point;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
@@ -94,13 +96,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     public int getColumnsCount() {
         return mAddresses.size();
     }
-
-/*
-    @Override
-    public Button getFirstHeaderData() {
-        return null;
-    }
-*/
 
     @Override
     public String getRowHeaderData(int index) {
@@ -261,7 +256,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
         cursor.close();
 
-//        Log.d(TAG, "mappings: " + mappings);
         this.mMappings = mappings;
     }
 
@@ -283,23 +277,8 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         }
     }
 
-/*
-    // get mappings in specified row
-    public String getRowData(int row) {
-        // TODO: consider sort order?
-        final StringBuilder rowData = new StringBuilder();
-        final int numCols = getColumnsCount();
-        for (int i = 0; i < numCols; i++) {
-            rowData.append(getItemData(row, i));
-        }
-
-        return String.valueOf(rowData);
-    }
-*/
-
     // get mappings in specified column
     public String getColumnData(int column) {
-        // TODO: consider sort order?
         final StringBuilder columnData = new StringBuilder();
         final int numRows = getRowsCount();
         for (int i = 0; i < numRows; i++) {
@@ -311,39 +290,18 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     // one cell in a row should always remain selected
     public void setItemData(int row, int column) {
-        // FIXME: do we need rowData at all here?
-//        StringBuilder rowData = new StringBuilder(getRowData(row));
         StringBuilder columnData = new StringBuilder(getColumnData(column));
         Character itemData = getItemData(row, column);
         int newVal = itemData == '0' ? '1' : '0';
-//        rowData.setCharAt(column, (char) newVal);
         columnData.setCharAt(row, (char) newVal);
 
         for (int i = 0; i < getColumnsCount(); i++) {
             if (column == i)
             mMappings.put(mMappings.keyAt(i), String.valueOf(columnData));
         }
-
-//        Log.d(TAG, "address at index " + column + ": " + getColumnHeaderData(column) + ", new row data: " + String.valueOf(rowData));
     }
 
-    // FIXME: if sort mode is SORT_BY_NUMBER this doesn't re-sort to SORT_BY_COLOR (the default)
-/*
-    private String revertSort(String mappings) {
-        StringBuilder colData = new StringBuilder(mappings);
-        char[] mappingsArr = mappings.toCharArray();
-        int blockLength = mappings.length()/3;
-        for (int i = 0; i < blockLength; i++) {
-            // first we iterate over the block length...
-            for (int j = 0; j < 3; j++) {
-                // ... then we take the element at i + j * blocklength = same number in next color
-                colData.append(mappingsArr[i+(j*blockLength)]);
-            }
-        }
-        return String.valueOf(mappingsArr);
-    }
-*/
-
+    @NonNull
     private String revertSort(String mappings) {
         final StringBuilder rData = new StringBuilder();
         final StringBuilder gData = new StringBuilder();
@@ -368,9 +326,9 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     public void updateMappings(long addrID, String mappings) {
         if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
-            Log.d(TAG, "updateMappings before, addrID: " + addrID + ", mappings: " + mappings);
+//            Log.d(TAG, "updateMappings before, addrID: " + addrID + ", mappings: " + mappings);
             mappings = revertSort(mappings);
-            Log.d(TAG, "updateMappings after, addrID: " + addrID + ", mappings: " + mappings);
+//            Log.d(TAG, "updateMappings after, addrID: " + addrID + ", mappings: " + mappings);
         }
 
         ContentValues values = new ContentValues();

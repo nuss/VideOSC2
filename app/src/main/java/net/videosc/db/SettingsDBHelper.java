@@ -20,7 +20,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.AddressSettingsEntries._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.AddressSettingsEntries.IP_ADDRESS + " TEXT NOT NULL," +
 					SettingsContract.AddressSettingsEntries.PORT + " INTEGER NOT NULL," +
-					SettingsContract.AddressSettingsEntries.PROTOCOL + " TEXT NOT NULL," +
+					SettingsContract.AddressSettingsEntries.PROTOCOL + " INTEGER NOT NULL," +
 					"UNIQUE (" + SettingsContract.AddressSettingsEntries.IP_ADDRESS + ", " +
 					SettingsContract.AddressSettingsEntries.PORT + ", " +
 					SettingsContract.AddressSettingsEntries.PROTOCOL + "))";
@@ -78,7 +78,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 51;
+	private static final int DATABASE_VERSION = 52;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

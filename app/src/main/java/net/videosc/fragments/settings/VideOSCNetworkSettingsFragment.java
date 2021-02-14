@@ -35,12 +35,14 @@ import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import ketai.net.KetaiNet;
+import oscP5.OscP5;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     final private static String TAG = "NetworkSettingsFragment";
@@ -60,11 +62,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
+    private VideOSCOscHandler mOscHandler;
 
     public VideOSCNetworkSettingsFragment() { }
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
+        this.mOscHandler = new VideOSCOscHandler(mActivity);
     }
 
     /**
@@ -389,10 +393,21 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             }
 
             if (steps == 2) {
-                Log.d(TAG, "protocol is set to: " + mSetProtocol.getText());
+                final String protocolName = mSetProtocol.getText().toString();
+                final int protocol;
+                switch (protocolName) {
+                    case "UDP":
+                        protocol = OscP5.UDP;
+                        break;
+                    case "TCP/IP":
+                        protocol = OscP5.TCP;
+                        break;
+                    default:
+                        protocol = OscP5.UDP;
+                }
                 mValues.put(
                         SettingsContract.AddressSettingsEntries.PROTOCOL,
-                        mSetProtocol.getText().toString()
+                        protocol
                 );
                 String[] compareString = new String[]{addAddressText, addPortVal, (String) mSetProtocol.getText()};
                 final short compResult = compare(compareString, mAddressStrings);
@@ -409,6 +424,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
+                                        if (ret > -1) {
+                                            mOscHandler.addBroadcastAddr((int) ret, new OscP5(addAddressText, Integer.parseInt(addPortVal), protocol));
+                                        }
                                         resetRemoteClientInputs();
                                         mAddressesCursor = queryAddresses();
                                         mAddressesAdapter.changeCursor(mAddressesCursor);

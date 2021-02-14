@@ -109,7 +109,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private String mRed, mGreen, mBlue;
 
 	private VideOSCApplication mApp;
-	private static OscP5 mOscP5;
+//	private static OscP5 mOscP5;
 
 	// pixels set by multislider
 	// these arrays shouldn't get get reinitialized
@@ -141,6 +141,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 	// debugging
 	private volatile OscMessage mDebugRed, mDebugGreen, mDebugBlue;
+	private VideOSCOscHandler mOscHelper;
 
 	/**
 	 * Default empty constructor.
@@ -182,10 +183,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mApp = (VideOSCApplication) mActivity.getApplication();
-		mOscP5 = mApp.mOscHelper.getOscP5();
-		mToolsDrawer = mActivity.mToolsDrawerLayout;
-		mImage = view.findViewById(R.id.camera_downscaled);
+		this.mApp = (VideOSCApplication) mActivity.getApplication();
+		this.mOscHelper = mApp.getOscHelper();
+//		mOscP5 = mApp.mOscHelper.getOscP5();
+		this.mToolsDrawer = mActivity.mToolsDrawerLayout;
+		this.mImage = view.findViewById(R.id.camera_downscaled);
 
 		// Create our Preview view and set it as the content of our activity.
 		safeCameraOpenInView(view);
@@ -513,21 +515,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 			if (mRedOscSender == null) {
 				mRedOscRunnable = new RedOscRunnable();
-				RedOscRunnable.setOscHelper(mApp.mOscHelper);
+				RedOscRunnable.setOscHelper(mOscHelper);
 				mRedOscSender = new Thread(mRedOscRunnable);
 				mRedOscSender.start();
 			}
 
 			if (mGreenOscSender == null) {
 				mGreenOscRunnable = new GreenOscRunnable();
-				GreenOscRunnable.setOscHelper(mApp.mOscHelper);
+				GreenOscRunnable.setOscHelper(mOscHelper);
 				mGreenOscSender = new Thread(mGreenOscRunnable);
 				mGreenOscSender.start();
 			}
 
 			if (mBlueOscSender == null) {
 				mBlueOscRunnable = new BlueOscRunnable();
-				BlueOscRunnable.setOscHelper(mApp.mOscHelper);
+				BlueOscRunnable.setOscHelper(mOscHelper);
 				mBlueOscSender = new Thread(mBlueOscRunnable);
 				mBlueOscSender.start();
 			}
@@ -617,9 +619,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 			ViewGroup parent = (ViewGroup) mPreview.getParent();
 			// cache new preview locally and remove old preview later
 			// removing old preview immediately caused surfaceDestroyed to be called
-			// and switching wasn't finished but ONLY when switching back from front- to backside
+			// and switching wasn't finished unless when switching back from front- to backside
 			// camera...
-			CameraPreview preview = new CameraPreview(getContext(), camera);
+			CameraPreview preview = new CameraPreview(mActivity, camera);
 			SurfaceHolder holder = preview.getHolder();
 			holder.addCallback(this);
 			parent.addView(preview);
@@ -657,7 +659,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		@Override
-		public void surfaceCreated(SurfaceHolder holder) {
+		public void surfaceCreated(@NonNull SurfaceHolder holder) {
 			Log.d(TAG, "surfaceCreated: " + mViewCamera);
 			final ViewGroup indicatorPanel = mContainer.findViewById(R.id.indicator_panel);
 
@@ -706,7 +708,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 * @param holder the surface holder
 		 */
 		@Override
-		public void surfaceDestroyed(SurfaceHolder holder) {
+		public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
 			Log.d(TAG, "surfaceDestroyed");
 			// prevent errors resulting from camera being used after Camera.release() has been
 			// called. Seems to work...
@@ -727,7 +729,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		 */
 		@Override
 		public void surfaceChanged(@NonNull final SurfaceHolder holder, int format, final int w, final int h) {
-			Log.d(TAG, "surface changed: " + mApp.getResolution());
+//			Log.d(TAG, "surface changed: " + mApp.getResolution());
+			final SparseArray<String> commandMappings = mApp.getCommandMappings();
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist
 				return;
@@ -1347,7 +1350,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendRedOSC(double value, int count, int dimensions) {
 			String cmd;
-			OscMessage debugMsg;
+			// TODO: must iterate over addresses
 			synchronized (mRedOscRunnable.mOscLock) {
 				if (count == 0) mOscBundleR = new OscBundle();
 				cmd = mRed + (count + 1);
@@ -1359,7 +1362,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (count + 1 == dimensions) {
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						RedOscRunnable.setDebugPixelOsc(true);
-						mDebugRed = mApp.mOscHelper.makeMessage(mDebugRed, "/num_red_bundles").add(++mCountR);
+						mDebugRed = mOscHelper.makeMessage(mDebugRed, "/num_red_bundles").add(++mCountR);
 						mRedOscRunnable.mDebugMsg = mDebugRed;
 					} else {
 						RedOscRunnable.setDebugPixelOsc(false);
@@ -1372,7 +1375,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendGreenOSC(double value, int count, int dimensions) {
 			String cmd;
-			OscMessage debugMsg;
+			// TODO: must iterate over addresses
 			synchronized (mGreenOscRunnable.mOscLock) {
 				if (count == 0) mOscBundleG = new OscBundle();
 				cmd = mGreen + (count + 1);
@@ -1384,7 +1387,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (count + 1 == dimensions) {
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						GreenOscRunnable.setDebugPixelOsc(true);
-						mDebugGreen = mApp.mOscHelper.makeMessage(mDebugGreen,"/num_green_bundles").add(++mCountG);
+						mDebugGreen = mOscHelper.makeMessage(mDebugGreen,"/num_green_bundles").add(++mCountG);
 						mGreenOscRunnable.mDebugMsg = mDebugGreen;
 					} else {
 						GreenOscRunnable.setDebugPixelOsc(false);
@@ -1397,7 +1400,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendBlueOSC(double value, int count, int dimensions) {
 			String cmd;
-			OscMessage debugMsg;
+			// TODO: must iterate over addresses
 			synchronized (mBlueOscRunnable.mOscLock) {
 				if (count == 0) mOscBundleB = new OscBundle();
 				cmd = mBlue + (count + 1);
@@ -1409,7 +1412,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 				if (count + 1 == dimensions) {
 					if (VideOSCApplication.getDebugPixelOsc()) {
 						BlueOscRunnable.setDebugPixelOsc(true);
-						mDebugBlue = mApp.mOscHelper.makeMessage(mDebugBlue, "/num_blue_bundles").add(++mCountB);
+						mDebugBlue = mOscHelper.makeMessage(mDebugBlue, "/num_blue_bundles").add(++mCountB);
 						mBlueOscRunnable.mDebugMsg = mDebugBlue;
 					} else {
 						BlueOscRunnable.setDebugPixelOsc(false);
@@ -1429,6 +1432,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	// see also https://stackoverflow.com/questions/29694222/is-this-runnable-safe-from-memory-leak
 	// or http://www.androiddesignpatterns.com/2013/04/activitys-threads-memory-leaks.html
 	private static class RedOscRunnable implements Runnable {
+		// TODO: add variable for setting address ID
 		private volatile OscBundle mBundle;
 		private volatile OscMessage mDebugMsg;
 		private final Object mOscLock = new Object();
@@ -1464,6 +1468,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 								mDebugMsg.add(++mCountSentR);
 								mBundle.add(mDebugMsg);
 							}
+							// TODO: get broadcast address for given key
 							mOscP5.send(mOscHelper.getBroadcastAddr(), mBundle);
 						}
 						mOscLock.wait();

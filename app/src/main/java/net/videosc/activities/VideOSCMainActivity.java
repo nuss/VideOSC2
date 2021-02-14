@@ -77,6 +77,7 @@ import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.GestureModes;
 import net.videosc.utilities.enums.InteractionModes;
@@ -90,6 +91,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import oscP5.OscP5;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.
@@ -116,14 +119,14 @@ public class VideOSCMainActivity extends FragmentActivity
 	private VideOSCApplication mApp;
 
 	// the current gesture mode
-	public Enum mGestureMode = GestureModes.SWAP;
+	public Enum<GestureModes> mGestureMode = GestureModes.SWAP;
 
 	// ListView for the tools drawer
 	private List<BitmapDrawable> mToolsList = new ArrayList<>();
 	private ListView mToolsDrawerList;
 	//	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
 	// toolbar status
-	public Enum mColorModeToolsDrawer = RGBToolbarStatus.RGB;
+	public Enum<RGBToolbarStatus> mColorModeToolsDrawer = RGBToolbarStatus.RGB;
 
 	// pop-out menu for setting color mode
 	public ViewGroup mModePanel;
@@ -145,6 +148,7 @@ public class VideOSCMainActivity extends FragmentActivity
 	public ViewGroup mBasicToolbar;
 
 	public SQLiteDatabase mDb;
+	private HashMap<Integer, OscP5> mBroadcastAddresses;
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -175,8 +179,10 @@ public class VideOSCMainActivity extends FragmentActivity
 		mDbHelper = new SettingsDBHelper(this);
 		mDb = mDbHelper.getReadableDatabase();
 		final String[] settingsFields = new String[]{
+				SettingsContract.SettingsEntries._ID,
 				SettingsContract.AddressSettingsEntries.IP_ADDRESS,
-				SettingsContract.AddressSettingsEntries.PORT
+				SettingsContract.AddressSettingsEntries.PORT,
+				SettingsContract.AddressSettingsEntries.PROTOCOL
 		};
 
 		Cursor cursor = mDb.query(
@@ -191,10 +197,14 @@ public class VideOSCMainActivity extends FragmentActivity
 
 		// for now we only have one address stored in the addresses table
 		// protocol will be UDP
-		if (cursor.moveToFirst()) {
-			mApp.mOscHelper.setBroadcastAddr(
-					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
+		while (cursor.moveToNext()) {
+			mBroadcastAddresses.put(
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID)),
+					new OscP5(
+							cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
+							cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)),
+							cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL))
+					)
 			);
 		}
 
@@ -461,13 +471,14 @@ public class VideOSCMainActivity extends FragmentActivity
 		oscFeedbackButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				VideOSCOscHandler oscHelper = mApp.getOscHelper();
 				mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
 				if (mApp.getOSCFeedbackActivated()) {
 					view.setActivated(true);
-					mApp.mOscHelper.addOscEventListener();
+					oscHelper.addOscEventListener();
 				} else {
 					view.setActivated(false);
-					mApp.mOscHelper.removeOscEventListener();
+					oscHelper.removeOscEventListener();
 				}
 			}
 		});

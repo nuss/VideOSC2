@@ -2,6 +2,7 @@ package net.videosc;
 
 import android.app.Application;
 import android.graphics.Point;
+import android.util.SparseArray;
 
 import net.videosc.db.SettingsDBHelper;
 import net.videosc.utilities.VideOSCOscHandler;
@@ -9,6 +10,10 @@ import net.videosc.utilities.enums.CommandMappingsSortModes;
 import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
+
+import java.util.HashMap;
+
+import oscP5.OscP5;
 
 /**
  * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.
@@ -29,7 +34,7 @@ public class VideOSCApplication extends Application {
 	private boolean mHasTorch;
 	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
-	public VideOSCOscHandler mOscHelper;
+	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 	public Point mDimensions;
 
 	private boolean mIsTorchOn = false;
@@ -41,9 +46,11 @@ public class VideOSCApplication extends Application {
 	private boolean mIndicatorPanelOpen;
 	private Point mPixelSize;
 	private PixelEditModes mPixelEditMode;
+	private VideOSCOscHandler mOscHelper;
 	private boolean mOSCFeedbackActivated = false;
 
 	private CommandMappingsSortModes mCommandMappingsSortMode = CommandMappingsSortModes.SORT_BY_COLOR;
+	private SparseArray<String> mCommandMappings;
 
 	private int mSettingsContainerID = -1;
 	private int mNetworkSettingsID = -1;
@@ -58,8 +65,24 @@ public class VideOSCApplication extends Application {
 		super.onCreate();
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
-		mSettingsHelper = new SettingsDBHelper(this);
-		mOscHelper = new VideOSCOscHandler(this);
+		this.mSettingsHelper = new SettingsDBHelper(this);
+		this.mOscHelper = new VideOSCOscHandler(this);
+	}
+
+	public HashMap<Integer, OscP5> getBroadcastAddresses() {
+		return this.mBroadcastAddresses;
+	}
+
+	public VideOSCOscHandler getOscHelper() {
+		return this.mOscHelper;
+	}
+
+	public void setCommandMappings(SparseArray<String> mappings) {
+		this.mCommandMappings = mappings;
+	}
+
+	public SparseArray<String> getCommandMappings() {
+		return this.mCommandMappings;
 	}
 
 	public void setIsRGBPositive(boolean boolVal) {
