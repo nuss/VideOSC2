@@ -17,6 +17,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
@@ -26,8 +28,6 @@ import net.videosc.utilities.enums.RGBModes;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
 
 public class TileOverlayView extends View {
 	final private static String TAG = "TileOverlayView";
@@ -277,7 +277,7 @@ public class TileOverlayView extends View {
 		}
 
 		if (oscFeedbackActivated) {
-			VideOSCOscHandler oscHelper = mApp.mOscHelper;
+			VideOSCOscHandler oscHelper = mApp.getOscHelper();
 			mPaint.setTextSize(15f * mApp.getScreenDensity());
 			String text = "";
 			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();

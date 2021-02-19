@@ -138,8 +138,9 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                         mTableDataSource.updateMappings(mappings.keyAt(i), mappings.valueAt(i));
                     }
 
-                    // update mappings from database
-                    // store mappings in mTableDataSource.mMappings
+                    // update mMappings from database
+                    // store mMappings in mTableDataSource.mMappings
+                    // NEEDED IN CAMERA FRAGMENT!!
                     mTableDataSource.getMappings();
                     // make new mappings accessible across the application
                     mApp.setCommandMappings(mTableDataSource.getCachedMappings());
@@ -195,7 +196,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                                     // depending an whether first row has a lower or higher index than the last row in the selected range
                                     // we must supply a rounding fix that can be 0 or deltaH
                                     final int columnIndex = Math.round((startColumn - 1 + (i - startRow) * deltaH) + roundingFix);
-                                    // analog currentRow we have to check for next column in mColumnChanges
+                                    // analog to currentRow we have to check for next column in mColumnChanges
                                     final Integer column = mColumnChanges.get(columnIndex+1);
                                     final int currentColumn = column == null ? columnIndex+1 : column;
                                     mTableDataSource.setFullRowData(currentRow-1, currentColumn-1);

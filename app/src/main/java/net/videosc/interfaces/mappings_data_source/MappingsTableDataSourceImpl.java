@@ -359,7 +359,8 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     }
 
     private boolean checkIfEntryExists(long addrId) {
-        String query = "Select * from " + SettingsContract.AddressCommandsMappings.TABLE_NAME + " where " + SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrId + ";";
+        String query = "Select * from " + SettingsContract.AddressCommandsMappings.TABLE_NAME +
+                " where " + SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrId + ";";
         Cursor cursor = mDb.rawQuery(query, null);
         boolean ret = cursor.getCount() > 0;
         cursor.close();

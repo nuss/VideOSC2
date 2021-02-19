@@ -44,6 +44,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -148,7 +149,7 @@ public class VideOSCMainActivity extends FragmentActivity
 	public ViewGroup mBasicToolbar;
 
 	public SQLiteDatabase mDb;
-	private HashMap<Integer, OscP5> mBroadcastAddresses;
+	final private HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -166,6 +167,10 @@ public class VideOSCMainActivity extends FragmentActivity
 //		requestSettingsPermission();
 
 		mApp = (VideOSCApplication) getApplicationContext();
+
+		final VideOSCOscHandler oscHelper = new VideOSCOscHandler(this);
+		mApp.setOscHelper(oscHelper);
+
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
 			frontsideCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -178,7 +183,7 @@ public class VideOSCMainActivity extends FragmentActivity
 		// keep db access open through the app's lifetime
 		mDbHelper = new SettingsDBHelper(this);
 		mDb = mDbHelper.getReadableDatabase();
-		final String[] settingsFields = new String[]{
+		String[] settingsFields = new String[]{
 				SettingsContract.SettingsEntries._ID,
 				SettingsContract.AddressSettingsEntries.IP_ADDRESS,
 				SettingsContract.AddressSettingsEntries.PORT,
@@ -198,7 +203,7 @@ public class VideOSCMainActivity extends FragmentActivity
 		// for now we only have one address stored in the addresses table
 		// protocol will be UDP
 		while (cursor.moveToNext()) {
-			mBroadcastAddresses.put(
+			oscHelper.setBroadcastAddr(
 					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID)),
 					new OscP5(
 							cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
@@ -209,6 +214,34 @@ public class VideOSCMainActivity extends FragmentActivity
 		}
 
 		cursor.close();
+
+		settingsFields = new String[] {
+				SettingsContract.AddressCommandsMappings._ID,
+				SettingsContract.AddressCommandsMappings.ADDRESS,
+				SettingsContract.AddressCommandsMappings.MAPPINGS
+		};
+
+		cursor = mDb.query(
+				SettingsContract.AddressCommandsMappings.TABLE_NAME,
+				settingsFields,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+
+		SparseArray<String> mappings = new SparseArray<>();
+		while (cursor.moveToNext()) {
+			mappings.put(
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS)),
+					cursor.getString((cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS)))
+			);
+		}
+
+		cursor.close();
+
+		mApp.setCommandMappings(mappings);
 
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -475,10 +508,10 @@ public class VideOSCMainActivity extends FragmentActivity
 				mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
 				if (mApp.getOSCFeedbackActivated()) {
 					view.setActivated(true);
-					oscHelper.addOscEventListener();
+//					oscHelper.addOscEventListener();
 				} else {
 					view.setActivated(false);
-					oscHelper.removeOscEventListener();
+//					oscHelper.removeOscEventListener();
 				}
 			}
 		});

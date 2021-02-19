@@ -1,6 +1,5 @@
 package net.videosc.utilities;
 
-import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -37,10 +36,10 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final SparseArray<ArrayList<String>> mFbStringsG = new SparseArray<>();
 	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
 
-	public VideOSCOscHandler(Context context) {
-		this.mActivity = (VideOSCMainActivity) context;
-		this.mUdpListener = new OscP5(context, mUDPListeningPort, OscP5.UDP);
-		this.mTcpListener = new OscP5(context, mTCPListeningPort, OscP5.TCP);
+	public VideOSCOscHandler(VideOSCMainActivity activity) {
+		this.mActivity = activity;
+		this.mUdpListener = new OscP5(activity, mUDPListeningPort, OscP5.UDP);
+		this.mTcpListener = new OscP5(activity, mTCPListeningPort, OscP5.TCP);
 	}
 
 	public OscMessage makeMessage(OscMessage msg, String cmd) {
@@ -98,6 +97,10 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 
 	public void removeOscTcpEventListener() {
 		mTcpListener.removeListener(mOscEventListener);
+	}
+
+	public void setBroadcastAddr(int key, OscP5 oscP5) {
+		mBroadcastAddresses.put(key, oscP5);
 	}
 
 	public OscP5 getBroadcastAddr(int key) {

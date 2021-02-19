@@ -66,11 +66,14 @@ public class VideOSCApplication extends Application {
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
 		this.mSettingsHelper = new SettingsDBHelper(this);
-		this.mOscHelper = new VideOSCOscHandler(this);
 	}
 
 	public HashMap<Integer, OscP5> getBroadcastAddresses() {
 		return this.mBroadcastAddresses;
+	}
+
+	public void setOscHelper(VideOSCOscHandler oscHelper) {
+		this.mOscHelper = oscHelper;
 	}
 
 	public VideOSCOscHandler getOscHelper() {
