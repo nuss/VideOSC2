@@ -140,7 +140,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private ViewGroup mSnapshotsBar;
 
 	// debugging
-	private volatile OscMessage mDebugRed, mDebugGreen, mDebugBlue;
+	private OscMessage mDebugRed, mDebugGreen, mDebugBlue;
 	private VideOSCOscHandler mOscHelper;
 
 	/**
@@ -732,6 +732,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		public void surfaceChanged(@NonNull final SurfaceHolder holder, int format, final int w, final int h) {
 //			Log.d(TAG, "surface changed: " + mApp.getResolution());
 			this.mMappings = mApp.getCommandMappings();
+			Log.d(TAG, "mappings: " + mMappings);
 
 			if (mHolder.getSurface() == null) {
 				// preview surface does not exist
@@ -1352,7 +1353,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendRedOSC(double value, int count, int dimensions) {
 			String cmd;
-			// TODO: must iterate over addresses
+
 			for (int i = 0; i < mMappings.size(); i++) {
 				synchronized (mRedOscRunnable.mOscLock) {
 					final int addrKey = mMappings.keyAt(i);
@@ -1372,7 +1373,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						} else {
 							RedOscRunnable.setDebugPixelOsc(false);
 						}
-						mRedOscRunnable.mOscP5 = mOscHelper.getOscP5(addrKey);
+						mRedOscRunnable.mOscP5 = mApp.getBroadcastAddress(addrKey);
+//						Log.d(TAG, "address key: " + addrKey);
+						Log.d(TAG, "broadcast address: " + mRedOscRunnable.mOscP5 + "\ncount: " + count +"\nbundle size after creation: " + mOscBundleR.size());
 						mRedOscRunnable.mBundle = mOscBundleR;
 						mRedOscRunnable.mOscLock.notify();
 					}
@@ -1382,7 +1385,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendGreenOSC(double value, int count, int dimensions) {
 			String cmd;
-			// TODO: must iterate over addresses
+
 			for (int i = 0; i < mMappings.size(); i++) {
 				synchronized (mGreenOscRunnable.mOscLock) {
 					final int addrKey = mMappings.keyAt(i);
@@ -1402,7 +1405,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						} else {
 							GreenOscRunnable.setDebugPixelOsc(false);
 						}
-						mGreenOscRunnable.mOscP5 = mOscHelper.getOscP5(addrKey);
+						mGreenOscRunnable.mOscP5 = mApp.getBroadcastAddress(addrKey);
 						mGreenOscRunnable.mBundle = mOscBundleG;
 						mGreenOscRunnable.mOscLock.notify();
 					}
@@ -1412,7 +1415,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
 		private void doSendBlueOSC(double value, int count, int dimensions) {
 			String cmd;
-			// TODO: must iterate over addresses
+
 			for (int i = 0; i < mMappings.size(); i++) {
 				synchronized (mBlueOscRunnable.mOscLock) {
 					final int addrKey = mMappings.keyAt(i);
@@ -1432,7 +1435,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 						} else {
 							BlueOscRunnable.setDebugPixelOsc(false);
 						}
-						mBlueOscRunnable.mOscP5 = mOscHelper.getOscP5(addrKey);
+						mBlueOscRunnable.mOscP5 = mApp.getBroadcastAddress(addrKey);
 						mBlueOscRunnable.mBundle = mOscBundleB;
 						mBlueOscRunnable.mOscLock.notify();
 					}
@@ -1457,7 +1460,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private final Object mOscLock = new Object();
 		private long mCountSentR = 0;
 		private static boolean mDebugPixel = false;
-//		private static VideOSCOscHandler mOscHelper;
 
 		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
@@ -1490,6 +1492,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 								mBundle.add(mDebugMsg);
 							}
 							// TODO: get broadcast address for given key
+							Log.d(TAG, "bundle size on send: " + mBundle.size() + "\noscP5: " + mOscP5);
 							mOscP5.send(mBundle);
 						}
 						mOscLock.wait();
@@ -1504,18 +1507,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 	private static class GreenOscRunnable implements Runnable {
 		private OscP5 mOscP5;
 		private OscBundle mBundle;
-		private volatile OscMessage mDebugMsg;
+		private OscMessage mDebugMsg;
 		private final Object mOscLock = new Object();
 		private long mCountSentG = 0;
 		private static boolean mDebugPixel = false;
-		private static VideOSCOscHandler mOscHelper;
 
 		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
-		}
-
-		private static void setOscHelper(VideOSCOscHandler oscHelper) {
-			mOscHelper = oscHelper;
 		}
 
 		/**
@@ -1556,14 +1554,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 		private final Object mOscLock = new Object();
 		private long mCountSentB = 0;
 		private static boolean mDebugPixel = false;
-		private static VideOSCOscHandler mOscHelper;
 
 		private static void setDebugPixelOsc(boolean debugPixel) {
 			mDebugPixel = debugPixel;
-		}
-
-		private static void setOscHelper(VideOSCOscHandler oscHelper) {
-			mOscHelper = oscHelper;
 		}
 
 		/**

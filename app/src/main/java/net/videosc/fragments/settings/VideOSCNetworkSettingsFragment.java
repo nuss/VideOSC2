@@ -29,13 +29,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
+import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
-import net.videosc.utilities.VideOSCOscHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +62,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
-    private VideOSCOscHandler mOscHandler;
 
     public VideOSCNetworkSettingsFragment() { }
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
-        this.mOscHandler = new VideOSCOscHandler(mActivity);
     }
 
     /**
@@ -358,6 +356,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
          */
         @Override
         public void onClick(View v) {
+            final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
             final String addAddressText = mAddIPAddress.getText().toString();
             final String addPortVal = mAddPort.getText().toString();
             int steps = 0;
@@ -425,7 +424,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
                                         if (ret > -1) {
-                                            mOscHandler.addBroadcastAddr((int) ret, new OscP5(addAddressText, Integer.parseInt(addPortVal), protocol));
+                                            app.putBroadcastAddress((int) ret, new OscP5(addAddressText, Integer.parseInt(addPortVal), protocol));
                                         }
                                         resetRemoteClientInputs();
                                         mAddressesCursor = queryAddresses();

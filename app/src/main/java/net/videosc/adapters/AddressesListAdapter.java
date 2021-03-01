@@ -16,16 +16,15 @@ import net.videosc.db.SettingsContract;
 
 public class AddressesListAdapter extends ResourceCursorAdapter {
 	final private static String TAG = "AddressesListAdapter";
-	private int mLayout;
+	private final int mLayout;
 	private SQLiteDatabase mDb;
-	private String[] mAddrFields = new String[]{
+	private final String[] mAddrFields = new String[]{
 			SettingsContract.AddressSettingsEntries.IP_ADDRESS,
 			SettingsContract.AddressSettingsEntries.PORT,
 			SettingsContract.AddressSettingsEntries.PROTOCOL,
 			SettingsContract.AddressSettingsEntries._ID
 	};
 	final private String mSortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
-
 
 	/**
 	 * Constructor with default behavior as per
@@ -43,7 +42,7 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	public AddressesListAdapter(Context context, int layout, Cursor c, int flags) {
 		super(context, layout, c, flags);
-		mLayout = layout;
+		this.mLayout = layout;
 	}
 
 	/**
@@ -92,6 +91,14 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 						null
 				);
 				if (ret > 0) {
+					// we don't know if a mappings entry for the given address exists
+					// so we don't make progress dependent on a successful delete
+					mDb.delete(
+							SettingsContract.AddressCommandsMappings.TABLE_NAME,
+							SettingsContract.AddressCommandsMappings.ADDRESS + " = " + id,
+							null
+					);
+
 					Cursor cursor = mDb.query(
 							SettingsContract.AddressSettingsEntries.TABLE_NAME,
 							mAddrFields,

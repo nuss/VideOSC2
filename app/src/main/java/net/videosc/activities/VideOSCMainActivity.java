@@ -167,9 +167,7 @@ public class VideOSCMainActivity extends FragmentActivity
 //		requestSettingsPermission();
 
 		mApp = (VideOSCApplication) getApplicationContext();
-
-		final VideOSCOscHandler oscHelper = new VideOSCOscHandler(this);
-		mApp.setOscHelper(oscHelper);
+		final VideOSCOscHandler oscHelper = mApp.getOscHelper();
 
 		backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
 		if (VideOSCUIHelpers.hasFrontsideCamera()) {
@@ -203,17 +201,22 @@ public class VideOSCMainActivity extends FragmentActivity
 		// for now we only have one address stored in the addresses table
 		// protocol will be UDP
 		while (cursor.moveToNext()) {
-			oscHelper.setBroadcastAddr(
-					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID)),
-					new OscP5(
-							cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-							cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)),
-							cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL))
-					)
+			final int key = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+			final OscP5 value = new OscP5(
+					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)),
+					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL))
 			);
+
+			// avoid memory leak
+			// cache broadcast addresses in mApp.mBroadcastAddresses
+			// instead of OSC helper
+			mApp.getBroadcastAddresses().put(key, value);
 		}
 
 		cursor.close();
+
+		Log.d(TAG, "broadcast Addresses: " + mApp.getBroadcastAddresses());
 
 		settingsFields = new String[] {
 				SettingsContract.AddressCommandsMappings._ID,
