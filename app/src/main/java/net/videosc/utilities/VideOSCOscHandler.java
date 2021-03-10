@@ -50,6 +50,14 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		return msg;
 	}
 
+	public OscP5 getUdpListener() {
+		return this.mUdpListener;
+	}
+
+	public OscP5 getTcpListener() {
+		return this.mTcpListener;
+	}
+
 	/* public OscBundle makeBundle(OscBundle bundle) {
 		if (bundle == null) {
 			bundle = new OscBundle();

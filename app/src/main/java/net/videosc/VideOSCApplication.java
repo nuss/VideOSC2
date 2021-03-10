@@ -11,10 +11,6 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 
-import java.util.HashMap;
-
-import oscP5.OscP5;
-
 /**
  * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.
  */
@@ -34,7 +30,7 @@ public class VideOSCApplication extends Application {
 	private boolean mHasTorch;
 	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
-	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
+	private final SparseArray<Object> mBroadcastClients = new SparseArray<>();
 	public Point mDimensions;
 
 	private boolean mIsTorchOn = false;
@@ -70,16 +66,16 @@ public class VideOSCApplication extends Application {
 		this.mOscHelper = new VideOSCOscHandler(this);
 	}
 
-	public HashMap<Integer, OscP5> getBroadcastAddresses() {
-		return this.mBroadcastAddresses;
+	public SparseArray<Object> getBroadcastClients() {
+		return this.mBroadcastClients;
 	}
 
-	public void putBroadcastAddress(int key, OscP5 oscP5) {
-		this.mBroadcastAddresses.put(key, oscP5);
+	public void putBroadcastClient(int key, Object client) {
+		this.mBroadcastClients.put(key, client);
 	}
 
-	public OscP5 getBroadcastAddress(int key) {
-		return this.mBroadcastAddresses.get(key);
+	public Object getBroadcastClient(int key) {
+		return this.mBroadcastClients.get(key);
 	}
 
 	public void setOscHelper(VideOSCOscHandler oscHelper) {

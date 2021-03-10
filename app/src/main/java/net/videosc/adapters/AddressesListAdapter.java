@@ -92,7 +92,7 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 				);
 				if (ret > 0) {
 					// we don't know if a mappings entry for the given address exists
-					// so we don't make progress dependent on a successful delete
+					// so we don't make progress dependent on a successful deletion
 					mDb.delete(
 							SettingsContract.AddressCommandsMappings.TABLE_NAME,
 							SettingsContract.AddressCommandsMappings.ADDRESS + " = " + id,

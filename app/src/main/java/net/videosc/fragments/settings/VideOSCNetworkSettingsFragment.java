@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -35,6 +36,8 @@ import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.TcpAddress;
+import net.videosc.utilities.UdpAddress;
 import net.videosc.utilities.VideOSCDialogHelper;
 
 import java.util.ArrayList;
@@ -62,8 +65,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
     private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
-
-    public VideOSCNetworkSettingsFragment() { }
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -424,7 +425,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                     public void onClick(DialogInterface dialog, int which) {
                                         long ret = insertIntoDatabase(mDb, mValues);
                                         if (ret > -1) {
-                                            app.putBroadcastAddress((int) ret, new OscP5(addAddressText, Integer.parseInt(addPortVal), protocol));
+                                            addAddressMappings(mDb, ret);
+                                            if (protocol == OscP5.TCP) {
+                                                app.putBroadcastClient((int) ret, new TcpAddress(addAddressText, Integer.parseInt(addPortVal)));
+                                            } else {
+                                                app.putBroadcastClient((int) ret, new UdpAddress(addAddressText, Integer.parseInt(addPortVal)));
+                                            }
                                         }
                                         resetRemoteClientInputs();
                                         mAddressesCursor = queryAddresses();
@@ -447,11 +453,15 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                         break;
                     case 0:
                     	Log.d(TAG, "case 0");
-                        long ret = mDb.insert(
-                                SettingsContract.AddressSettingsEntries.TABLE_NAME,
-                                null,
-                                mValues
-                        );
+                        long ret = insertIntoDatabase(mDb, mValues);
+                        if (ret > -1) {
+                            addAddressMappings(mDb, ret);
+                            if (protocol == OscP5.TCP) {
+                                app.putBroadcastClient((int) ret, new TcpAddress(addAddressText, Integer.parseInt(addPortVal)));
+                            } else {
+                                app.putBroadcastClient((int) ret, new UdpAddress(addAddressText, Integer.parseInt(addPortVal)));
+                            }
+                        }
                         resetRemoteClientInputs();
                         mValues.clear();
                         mAddressesCursor = queryAddresses();
@@ -501,6 +511,30 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
             values.clear();
             return ret;
+        }
+
+        private void addAddressMappings(SQLiteDatabase db, long addressIndex) {
+            VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+            Point resolution = app.getResolution();
+            StringBuilder mappings = new StringBuilder(resolution.x * resolution.y);
+            for (int i = 0; i < resolution.x * resolution.y; i++) {
+                mappings.append('1');
+            }
+            ContentValues values = new ContentValues();
+            values.put(
+                    SettingsContract.AddressCommandsMappings.ADDRESS,
+                    addressIndex
+            );
+            values.put(
+                    SettingsContract.AddressCommandsMappings.MAPPINGS,
+                    String.valueOf(mappings)
+            );
+            db.insert(
+                    SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                    null,
+                    values
+            );
+            values.clear();
         }
     }
 
