@@ -18,6 +18,8 @@ import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.ArrayList;
 
+import oscP5.OscP5;
+
 public class MappingsTableDataSourceImpl implements MappingsTableDataSource<String, String, Character> {
     final private static String TAG = MappingsTableDataSourceImpl.class.getSimpleName();
     final private SQLiteDatabase mDb;
@@ -151,6 +153,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     private SparseArray<String> getAddresses() {
         Resources res = mActivity.getResources();
         final SparseArray<String> addresses = new SparseArray<>();
+        String protocolName;
 
         final String[] addrFields = new String[]{
                 SettingsContract.AddressSettingsEntries._ID,
@@ -173,8 +176,9 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
             final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
             final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
-            final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-            addresses.put((int) addrID, ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocol));
+            final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+            protocolName = protocol == OscP5.TCP ? "TCP/IP" : "UDP";
+            addresses.put((int) addrID, ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocolName));
         }
 
         cursor.close();

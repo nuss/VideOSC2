@@ -14,6 +14,8 @@ import android.widget.TextView;
 import net.videosc.R;
 import net.videosc.db.SettingsContract;
 
+import oscP5.OscP5;
+
 public class AddressesListAdapter extends ResourceCursorAdapter {
 	final private static String TAG = "AddressesListAdapter";
 	private final int mLayout;
@@ -68,6 +70,8 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
+		String protocolName;
+
 		final TextView ipText = view.findViewById(R.id.remote_ip_address);
 		final TextView portText = view.findViewById(R.id.remote_port);
 		final TextView protocolText = view.findViewById(R.id.address_protocol);
@@ -76,11 +80,17 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
 		final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
 		final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
-		final String protocol = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+		final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+
+		if (protocol == OscP5.TCP) {
+			protocolName = "TCP/IP";
+		} else {
+			protocolName = "UDP";
+		}
 
 		ipText.setText(ip);
 		portText.setText(String.valueOf(port));
-		protocolText.setText(protocol);
+		protocolText.setText(protocolName);
 
 		deleteButton.setOnClickListener(new View.OnClickListener() {
 			@Override

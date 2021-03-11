@@ -1377,9 +1377,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     }
                 }
                 cmd = mRed + (count + 1);
-//                Log.d(TAG, "value at " + count + " equals previous value: " + (mPrevRedValues.get(count) != null && mPrevRedValues.get(count) == value));
                 if (mPrevRedValues.get(count) == null || mPrevRedValues.get(count) != value) {
-//                    Log.d(TAG, "mapping at " + count + ": " + mappingString.charAt(count));
+                    Log.d(TAG, "mapping at index " + count + ": " + mappingString.charAt(count));
                     if (mappingString.charAt(count) == '1') {
                         OscMessage oscR = new OscMessage(cmd).add(value);
                         mOscBundlesR.get(i).add(oscR);
@@ -1397,8 +1396,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                         RedOscRunnable.setDebugPixelOsc(false);
                     }
                     mRedOscRunnable.mOscClients = mApp.getBroadcastClients();
-//					Log.d(TAG, "address key: " + addrKey);
-                  Log.d(TAG, "i: " + i + "\nbundle size after creation: " + mOscBundlesR.get(i).size() + "\nbroadcast addresses: " + mRedOscRunnable.mOscClients);
                     if (i == mMappings.size() - 1) {
                         synchronized (mRedOscRunnable.mOscLock) {
                             mRedOscRunnable.mOscHelper = mOscHelper;
@@ -1531,19 +1528,16 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         public void run() {
             while (true) {
                 synchronized (mOscLock) {
-                    Log.d(TAG, "received lock");
                     try {
                         if (mBundles != null && mBundles.size() > 0) {
                             for (int i = 0; i < mBundles.size(); i++) {
                                 OscBundle bundle = mBundles.get(i);
-//                                Log.d(TAG, "bundle size on send: " + bundle.size() + "\noscP5: " + bundle);
                                 if (bundle.size() > 0) {
                                     if (mDebugPixel) {
                                         mDebugMsg.add(++mCountSentR);
                                         bundle.add(mDebugMsg);
                                     }
                                     final Object client = mOscClients.valueAt(i);
-                                    Log.d(TAG, "client: " + client);
                                     if (client instanceof TcpAddress) {
                                         mOscHelper.getTcpListener().send(bundle, ((TcpAddress) client).address(), ((TcpAddress) client).port());
                                     } else {

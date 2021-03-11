@@ -135,6 +135,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         final String[] settingsFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
                 SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
                 SettingsContract.SettingsEntries.ROOT_CMD
         };
 
@@ -166,13 +167,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             final long addressId = mAddressesCursor.getLong(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
             final String addressIP = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
             final int port = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
-            final String protocol = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+            final int protocol = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
             address.setRowId(addressId);
             address.setIP(addressIP);
             address.setPort(port);
             address.setProtocol(protocol);
             // for comparision before submitting current entry
-            mAddressStrings.add(new String[]{addressIP, String.valueOf(port), protocol});
+            mAddressStrings.add(new String[]{addressIP, String.valueOf(port), String.valueOf(protocol)});
             mAddresses.add(address);
         }
 
@@ -192,9 +193,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             final VideOSCSettingsListFragment.Settings setting = new VideOSCSettingsListFragment.Settings();
             final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
             final int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+            final int tcpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
             final String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
             setting.setRowId(rowId);
             setting.setUdpReceivePort(udpReceivePort);
+            setting.setTcpReceivePort(tcpReceivePort);
             setting.setRootCmd(cmd);
             settings.add(setting);
         }
@@ -394,27 +397,26 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
             if (steps == 2) {
                 final String protocolName = mSetProtocol.getText().toString();
-                final int protocol;
-                switch (protocolName) {
-                    case "UDP":
-                        protocol = OscP5.UDP;
-                        break;
-                    case "TCP/IP":
-                        protocol = OscP5.TCP;
-                        break;
-                    default:
-                        protocol = OscP5.UDP;
+                int protocol;
+
+                if (protocolName.equals("TCP/IP")) {
+                    protocol = OscP5.TCP;
+                } else {
+                    protocol = OscP5.UDP;
                 }
+
                 mValues.put(
                         SettingsContract.AddressSettingsEntries.PROTOCOL,
                         protocol
                 );
-                String[] compareString = new String[]{addAddressText, addPortVal, (String) mSetProtocol.getText()};
+
+                String[] compareString = new String[]{addAddressText, addPortVal, String.valueOf(protocol)};
                 final short compResult = compare(compareString, mAddressStrings);
 
                 switch (compResult) {
                     case 1:
                     	Log.d(TAG, "case 1");
+                    	final int innerProtocol = protocol;
                         VideOSCDialogHelper.showDialog(
                                 mActivity,
                                 android.R.style.Theme_Holo_Light_Dialog,
@@ -426,7 +428,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                         long ret = insertIntoDatabase(mDb, mValues);
                                         if (ret > -1) {
                                             addAddressMappings(mDb, ret);
-                                            if (protocol == OscP5.TCP) {
+                                            if (innerProtocol == OscP5.TCP) {
                                                 app.putBroadcastClient((int) ret, new TcpAddress(addAddressText, Integer.parseInt(addPortVal)));
                                             } else {
                                                 app.putBroadcastClient((int) ret, new UdpAddress(addAddressText, Integer.parseInt(addPortVal)));
@@ -483,13 +485,18 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         }
 
         private short compare(String[] toMatch, ArrayList<String[]> matchStrings) {
+            String protocol;
             for (String[] addr : matchStrings) {
+                if (Integer.parseInt(addr[2]) == OscP5.TCP) {
+                    protocol = "TCP/IP";
+                } else {
+                    protocol = "UDP";
+                }
                 if (addr[0].equals(toMatch[0]) && addr[1].equals(toMatch[1])) {
+                    setWarningStrings(addr[0], addr[1], protocol);
                     if (!addr[2].equals(toMatch[2])) {
-                        setWarningStrings(addr[0], addr[1], addr[2]);
                         return 1;
                     } else {
-                        setWarningStrings(addr[0], addr[1], addr[2]);
                         return 2;
                     }
                 }
@@ -516,8 +523,9 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         private void addAddressMappings(SQLiteDatabase db, long addressIndex) {
             VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
             Point resolution = app.getResolution();
-            StringBuilder mappings = new StringBuilder(resolution.x * resolution.y);
-            for (int i = 0; i < resolution.x * resolution.y; i++) {
+            // number of mappings: resolution.x * resolution.y * 3 - we have 3 channels: red, green and blue
+            StringBuilder mappings = new StringBuilder(resolution.x * resolution.y * 3);
+            for (int i = 0; i < resolution.x * resolution.y * 3; i++) {
                 mappings.append('1');
             }
             ContentValues values = new ContentValues();
