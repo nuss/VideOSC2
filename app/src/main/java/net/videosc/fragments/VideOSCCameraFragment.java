@@ -741,10 +741,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
          */
         @Override
         public void surfaceChanged(@NonNull final SurfaceHolder holder, int format, final int w, final int h) {
-//			Log.d(TAG, "surface changed: " + mApp.getResolution());
-            this.mMappings = mApp.getCommandMappings();
-            Log.d(TAG, "mappings: " + mMappings);
-
             if (mHolder.getSurface() == null) {
                 // preview surface does not exist
                 return;
@@ -779,6 +775,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     public void onPreviewFrame(byte[] data, Camera camera) {
                         Point resolution = mApp.getResolution();
                         int previewSize = resolution.x * resolution.y;
+                        mMappings = mApp.getCommandMappings();
                         int diff = previewSize - mRedValues.size();
                         if (diff != 0) pad(diff);
                         mNow = System.currentTimeMillis();
@@ -1378,13 +1375,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 }
                 cmd = mRed + (count + 1);
                 if (mPrevRedValues.get(count) == null || mPrevRedValues.get(count) != value) {
-                    Log.d(TAG, "mapping at index " + count + ": " + mappingString.charAt(count));
                     if (mappingString.charAt(count) == '1') {
                         OscMessage oscR = new OscMessage(cmd).add(value);
                         mOscBundlesR.get(i).add(oscR);
-                    }
-                    if (i == mMappings.size() - 1) {
-                        mPrevRedValues.set(count, value);
+                        // set previous values only once
+                        // we're in the same frame, hence we
+                        // don't need to set the same value again for every client address
+                        if (i == mMappings.size() - 1) {
+                            mPrevRedValues.set(count, value);
+                        }
                     }
                 }
                 if (count + 1 == dimensions) {
@@ -1396,6 +1395,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                         RedOscRunnable.setDebugPixelOsc(false);
                     }
                     mRedOscRunnable.mOscClients = mApp.getBroadcastClients();
+                    // send bundles once we've iterated over all client addresses
                     if (i == mMappings.size() - 1) {
                         synchronized (mRedOscRunnable.mOscLock) {
                             mRedOscRunnable.mOscHelper = mOscHelper;
@@ -1421,12 +1421,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 }
                 cmd = mGreen + (count + 1);
                 if (mPrevGreenValues.get(count) == null || value != mPrevGreenValues.get(count)) {
-                    if (mappingString.charAt(count + mMappings.size() / 3) == '1') {
+                    if (mappingString.charAt(count + mappingString.length() / 3) == '1') {
                         OscMessage oscG = new OscMessage(cmd).add(value);
                         mOscBundlesG.get(i).add(oscG);
-                    }
-                    if (i == mMappings.size() - 1) {
-                        mPrevGreenValues.set(count, value);
+                        if (i == mMappings.size() - 1) {
+                            mPrevGreenValues.set(count, value);
+                        }
                     }
                 }
                 if (count + 1 == dimensions) {
@@ -1463,12 +1463,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 }
                 cmd = mBlue + (count + 1);
                 if (mPrevBlueValues.get(count) == null || value != mPrevBlueValues.get(count)) {
-                    if (mappingString.charAt(count + mMappings.size() * 2 / 3) == '1') {
+                    if (mappingString.charAt(count + mappingString.length() * 2 / 3) == '1') {
                         OscMessage mOscB = new OscMessage(cmd).add(value);
                         mOscBundlesB.get(i).add(mOscB);
-                    }
-                    if (i == mMappings.size() - 1) {
-                        mPrevBlueValues.set(count, value);
+                        if (i == mMappings.size() - 1) {
+                            mPrevBlueValues.set(count, value);
+                        }
                     }
                 }
                 if (count + 1 == dimensions) {
