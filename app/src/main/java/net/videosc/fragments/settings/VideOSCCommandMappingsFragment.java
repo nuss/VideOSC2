@@ -268,9 +268,9 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
             mSortSwitcher.setText(item);
             String[] sortEnums = CommandMappingsSortModes.getNames(CommandMappingsSortModes.class);
             mApp.setCommandMappingsSortmode(CommandMappingsSortModes.valueOf(sortEnums[position]));
-            Log.d(TAG, "mappings before: " + mTableDataSource.getCachedMappings());
+//            Log.d(TAG, "mappings before: " + mTableDataSource.getCachedMappings());
             mTableDataSource.initSortMode();
-            Log.d(TAG, "mappings after: " + mTableDataSource.getCachedMappings());
+//            Log.d(TAG, "mappings after: " + mTableDataSource.getCachedMappings());
             mTableDataSource.sortCommands(mApp.getCommandMappingsSortMode());
             mTableAdapter.notifyLayoutChanged();
             mSortModesPopUp.dismiss();

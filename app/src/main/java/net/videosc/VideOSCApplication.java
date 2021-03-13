@@ -74,6 +74,10 @@ public class VideOSCApplication extends Application {
 		this.mBroadcastClients.put(key, client);
 	}
 
+	public void removeBroadcastClient(int key) {
+		this.mBroadcastClients.delete(key);
+	}
+
 	public Object getBroadcastClient(int key) {
 		return this.mBroadcastClients.get(key);
 	}
@@ -88,6 +92,10 @@ public class VideOSCApplication extends Application {
 
 	public void setCommandMappings(SparseArray<String> mappings) {
 		this.mCommandMappings = mappings;
+	}
+
+	public void removeCommandMappingsAt(int key) {
+		this.mCommandMappings.delete(key);
 	}
 
 	public SparseArray<String> getCommandMappings() {

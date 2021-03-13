@@ -64,7 +64,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
-    private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
+//    private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -160,22 +160,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             }
         });
 
-        mAddresses.clear();
-
-        while (mAddressesCursor.moveToNext()) {
-            final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
-            final long addressId = mAddressesCursor.getLong(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
-            final String addressIP = mAddressesCursor.getString(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
-            final int port = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
-            final int protocol = mAddressesCursor.getInt(mAddressesCursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-            address.setRowId(addressId);
-            address.setIP(addressIP);
-            address.setPort(port);
-            address.setProtocol(protocol);
-            // for comparision before submitting current entry
-            mAddressStrings.add(new String[]{addressIP, String.valueOf(port), String.valueOf(protocol)});
-            mAddresses.add(address);
-        }
+        mAddresses = getAddresses(mAddressesCursor);
 
         Cursor cursor = mDb.query(
                 SettingsContract.SettingsEntries.TABLE_NAME,
@@ -313,6 +298,38 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         );
     }
 
+    private ArrayList<VideOSCSettingsListFragment.Address> getAddresses(Cursor cursor) {
+        final ArrayList<VideOSCSettingsListFragment.Address> res = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
+            final long addressId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+            final String addressIP = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+            final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+            address.setRowId(addressId);
+            address.setIP(addressIP);
+            address.setPort(port);
+            address.setProtocol(protocol);
+
+            res.add(address);
+        }
+
+        return res;
+    }
+
+    private ArrayList<String[]> getAddressesCompareStrings(Cursor cursor) {
+        final ArrayList<String[]> res = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            final String addressIP = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+            final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
+            res.add(new String[]{addressIP, String.valueOf(port), String.valueOf(protocol)});
+        }
+
+        return res;
+    }
+
     private PopupWindow showProtocolsList(ArrayAdapter<String> protocolsAdapter) {
     	final PopupWindow popUp = new PopupWindow(mActivity);
     	final ListView protocolsList = new ListView(mActivity);
@@ -334,6 +351,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy called");
         mAddressesCursor.close();
     }
 
@@ -410,8 +428,10 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                         protocol
                 );
 
-                String[] compareString = new String[]{addAddressText, addPortVal, String.valueOf(protocol)};
-                final short compResult = compare(compareString, mAddressStrings);
+                final String[] compareString = new String[]{addAddressText, addPortVal, String.valueOf(protocol)};
+                mAddressesCursor = queryAddresses();
+                final ArrayList<String[]> addressesStrings = getAddressesCompareStrings(mAddressesCursor);
+                final short compResult = compare(compareString, addressesStrings);
 
                 switch (compResult) {
                     case 1:
@@ -480,18 +500,11 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 						getString(R.string.OK)
 				);
 			}
-
-//            mAddressStrings.clear();
         }
 
         private short compare(String[] toMatch, ArrayList<String[]> matchStrings) {
-            String protocol;
             for (String[] addr : matchStrings) {
-                if (Integer.parseInt(addr[2]) == OscP5.TCP) {
-                    protocol = "TCP/IP";
-                } else {
-                    protocol = "UDP";
-                }
+                String protocol = Integer.parseInt(addr[2]) == OscP5.TCP ? "TCP/IP" : "UDP";
                 if (addr[0].equals(toMatch[0]) && addr[1].equals(toMatch[1])) {
                     setWarningStrings(addr[0], addr[1], protocol);
                     if (!addr[2].equals(toMatch[2])) {
@@ -501,7 +514,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                     }
                 }
             }
-
             return 0;
         }
 

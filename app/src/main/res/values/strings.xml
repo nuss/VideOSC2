@@ -158,8 +158,8 @@
 	<string name="warning_empty_ip">\n- The IP address must not be empty!</string>
 	<string name="warning_invalid_port">\n- A valid port must be an integer value between 0 and 65535!</string>
 	<string name="warning_empty_port">\n- A valid port must be given!</string>
-	<string name="warning_same_address_different_protocol">A remote host with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists.\n\nAre you sure you want to add the same address again, using a different protocol?</string>
-	<string name="warning_same_address_same_protocol">A remote host with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists in the database.</string>
+	<string name="warning_same_address_different_protocol">A remote client with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists.\n\nAre you sure you want to add the same address again, using a different protocol?</string>
+	<string name="warning_same_address_same_protocol">A remote client with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists in the database.</string>
 	<string name="command_namespace">command namespace</string>
 	<string name="list_header_ip_address">IP address</string>
 	<string name="list_header_port">port</string>
@@ -171,5 +171,6 @@
 	<string name="udp_receive_port_should_differ">UDP receive port should differ from TCP/IP receive port!</string>
 	<string name="tcp_receive_port_should_differ">TCP/IP receive port should differ from UDP receive port!</string>
 	<string name="define_client_address">You need to define at least one client address to send OSC messages to before you can start playing!</string>
+    <string name="could_net_remove_mappings_for_given_client_address">Could not remove mappings for given client address!</string>
 
 </resources>

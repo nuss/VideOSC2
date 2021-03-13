@@ -41,10 +41,6 @@
 					android:path="/"/>
 			</intent-filter>
 		</activity>
-		<activity
-			android:name="net.videosc.activities.RefreshScreen"/>
-		<activity
-			android:name="net.videosc.utilities.VideOSCUIHelpers"/>
 	</application>
 
 </manifest>
