@@ -159,7 +159,7 @@ public class TileOverlayView extends View {
 					canvas.drawText(
 							String.valueOf(i + 1),
 							i % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-							i / resolution.x * pixelSize.y + pixelSize.y - 3.5f * mApp.getScreenDensity(),
+							(float) (i / resolution.x) * pixelSize.y + pixelSize.y - 3.5f * mApp.getScreenDensity(),
 							mPaint
 					);
 				}

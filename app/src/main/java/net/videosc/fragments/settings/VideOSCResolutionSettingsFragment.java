@@ -9,6 +9,7 @@ import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCStringHelpers;
 import net.videosc.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
@@ -81,7 +83,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View view;
-		Log.d(TAG, "onCreateView() called");
+//		Log.d(TAG, "onCreateView() called");
 		this.mContainer = container;
 		this.mInflater = inflater;
 		// the settings view - can't be final as there are two different layouts possible
@@ -112,7 +114,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Log.d(TAG, "onViewCreated() called");
+//		Log.d(TAG, "onViewCreated() called");
 		final Camera.Parameters params = mCameraView.mCamera.getParameters();
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		mDb = mActivity.getDatabase();
@@ -284,6 +286,29 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 									app.getResolution().y
 							)
 					);
+					// adjust mappings to new resolution
+					SparseArray<String> mappings = app.getCommandMappings();
+					Log.d(TAG, "mappings before setting width: " + mappings);
+					Point resolution = app.getResolution();
+					for (int i = 0; i < mappings.size(); i++) {
+//						Log.d(TAG, "mappings for key " + mappings.keyAt(i) + ": " + mappings.valueAt(i));
+						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
+//						Log.d(TAG, "mappings after padding: " + paddedMappings);
+						mValues.put(
+								SettingsContract.AddressCommandsMappings.MAPPINGS,
+								paddedMappings
+						);
+						mDb.update(
+								SettingsContract.AddressCommandsMappings.TABLE_NAME,
+								mValues,
+								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
+								null
+						);
+						mValues.clear();
+						mappings.put(mappings.keyAt(i), paddedMappings);
+					}
+					app.setCommandMappings(mappings);
+					Log.d(TAG, "mappings after setting width: " + app.getCommandMappings());
 				}
 			}
 		});
@@ -313,6 +338,25 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 									Integer.parseInt(resV)
 							)
 					);
+					// adjust mappings to new resolution
+					SparseArray<String> mappings = app.getCommandMappings();
+					Point resolution = app.getResolution();
+					for (int i = 0; i < mappings.size(); i++) {
+						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
+						mValues.put(
+								SettingsContract.AddressCommandsMappings.MAPPINGS,
+								paddedMappings
+						);
+						mDb.update(
+								SettingsContract.AddressCommandsMappings.TABLE_NAME,
+								mValues,
+								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
+								null
+						);
+						mValues.clear();
+						mappings.put(mappings.keyAt(i), paddedMappings);
+					}
+					app.setCommandMappings(mappings);
 				}
 			}
 		});

@@ -64,7 +64,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
-//    private final ArrayList<String[]> mAddressStrings = new ArrayList<>();
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
