@@ -160,7 +160,7 @@
 	<string name="warning_empty_port">\n- A valid port must be given!</string>
 	<string name="warning_same_address_different_protocol">A remote client with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists.\n\nAre you sure you want to add the same address again, using a different protocol?</string>
 	<string name="warning_same_address_same_protocol">A remote client with IP address %1$s and port %2$s, using the \'%3$s\' protocol, already exists in the database.</string>
-	<string name="command_namespace">command namespace</string>
+	<string name="command_namespace">root cmd</string>
 	<string name="list_header_ip_address">IP address</string>
 	<string name="list_header_port">port</string>
 	<string name="list_header_protocol">protocol</string>

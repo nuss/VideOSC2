@@ -91,14 +91,15 @@
                 style="@style/EditTextPadding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:layout_weight="0.25"
+                android:autofillHints="vosc"
                 android:digits="0123456789_abcdefghijklmnopqrstuvwxyz"
                 android:hint="@string/command_namespace"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
                 android:inputType="text"
-                android:textSize="16sp"
-                android:autofillHints="vosc" />
+                android:paddingTop="3dp"
+                android:paddingBottom="10dp"
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="0dp"

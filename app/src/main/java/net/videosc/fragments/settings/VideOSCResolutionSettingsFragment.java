@@ -291,9 +291,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 					Log.d(TAG, "mappings before setting width: " + mappings);
 					Point resolution = app.getResolution();
 					for (int i = 0; i < mappings.size(); i++) {
-//						Log.d(TAG, "mappings for key " + mappings.keyAt(i) + ": " + mappings.valueAt(i));
 						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
-//						Log.d(TAG, "mappings after padding: " + paddedMappings);
 						mValues.put(
 								SettingsContract.AddressCommandsMappings.MAPPINGS,
 								paddedMappings
