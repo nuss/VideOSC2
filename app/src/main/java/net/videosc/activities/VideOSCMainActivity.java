@@ -523,13 +523,7 @@ public class VideOSCMainActivity extends FragmentActivity
             public void onClick(View view) {
 //				VideOSCOscHandler oscHelper = mApp.getOscHelper();
                 mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
-                if (mApp.getOSCFeedbackActivated()) {
-                    view.setActivated(true);
-//					oscHelper.addOscEventListener();
-                } else {
-                    view.setActivated(false);
-//					oscHelper.removeOscEventListener();
-                }
+                view.setActivated(mApp.getOSCFeedbackActivated());
             }
         });
 
@@ -794,7 +788,7 @@ public class VideOSCMainActivity extends FragmentActivity
         super.onDestroy();
     }
 
-    public Enum getColorModeToolsDrawer() {
+    public Enum<RGBToolbarStatus> getColorModeToolsDrawer() {
         return this.mColorModeToolsDrawer;
     }
 

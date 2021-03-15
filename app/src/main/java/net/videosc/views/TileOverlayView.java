@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
-import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.RGBModes;
@@ -78,8 +77,8 @@ public class TileOverlayView extends View {
 		init(contextRef);
 	}
 
-	private void init(WeakReference contextRef) {
-		Resources res = ((VideOSCMainActivity) contextRef.get()).getResources();
+	private void init(WeakReference<Context> contextRef) {
+		Resources res = contextRef.get().getResources();
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inMutable = true;
 		Bitmap patSrc = BitmapFactory.decodeResource(res, R.drawable.hover_rect_tile, options);
@@ -351,7 +350,7 @@ public class TileOverlayView extends View {
 		canvas.drawText(
 				text,
 				pixIndex % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-				pixIndex / resolution.x * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
+				(float) (pixIndex / resolution.x) * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
 				mPaint
 		);
 	}
