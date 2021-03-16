@@ -101,25 +101,21 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public String getRowHeaderData(int index) {
-//        Log.d(TAG, "row at index " + index + ": " + commands.get(index));
         return mCommands.get(index);
     }
 
     @Override
     public String getColumnHeaderData(int index) {
-//        Log.d(TAG, "address: " + mAddresses.valueAt(index));
         return mAddresses.valueAt(index);
     }
 
     @Override
     public Character getItemData(int rowIndex, int columnIndex) {
-//        Log.d(TAG, "mMappings size: " + mMappings.size() + "\nmMappings at column " + columnIndex + ": " + mMappings.keyAt(columnIndex) + ", " + mMappings.valueAt(columnIndex) + "\ngetItemData, row: " + rowIndex + ", column: " + columnIndex);
         char itemData;
         if (mMappings.size() > 0) {
             if (mMappings.valueAt(columnIndex).isEmpty()) {
                 itemData = '1';
             } else {
-//                Log.d(TAG, "mapping in row " + rowIndex + ", column " + columnIndex + " is " + mMappings.valueAt(columnIndex).charAt(rowIndex));
                 itemData = mMappings.valueAt(columnIndex).charAt(rowIndex);
             }
         } else {
@@ -137,7 +133,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 break;
             }
         }
-//        Log.d(TAG, "rowIsFull: " + isFull);
         return isFull;
     }
 
@@ -330,9 +325,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     public void updateMappings(long addrID, String mappings) {
         if (mApp.getCommandMappingsSortMode().equals(CommandMappingsSortModes.SORT_BY_NUM)) {
-//            Log.d(TAG, "updateMappings before, addrID: " + addrID + ", mappings: " + mappings);
             mappings = revertSort(mappings);
-//            Log.d(TAG, "updateMappings after, addrID: " + addrID + ", mappings: " + mappings);
         }
 
         ContentValues values = new ContentValues();
@@ -351,7 +344,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                     null,
                     values
             );
-//            Log.d(TAG, "insert result: " + result);
         } else {
             result = mDb.update(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
