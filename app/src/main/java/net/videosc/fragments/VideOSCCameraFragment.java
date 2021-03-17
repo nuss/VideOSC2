@@ -142,7 +142,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
     // debugging
     private OscMessage mDebugRed, mDebugGreen, mDebugBlue;
-    private VideOSCOscHandler mOscHelper;
 
 //    private Bitmap debugPrevBmp;
 
@@ -188,8 +187,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.mApp = (VideOSCApplication) mActivity.getApplication();
-        this.mOscHelper = mApp.getOscHelper();
-//		mOscP5 = mApp.mOscHelper.getOscP5();
         this.mToolsDrawer = mActivity.mToolsDrawerLayout;
         this.mImage = view.findViewById(R.id.camera_downscaled);
 
@@ -474,12 +471,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         // Camera Sizing (For rotation, orientation changes)
         private Camera.Size mPreviewSize;
 
-        // List of supported preview sizes
-        private List<Camera.Size> mSupportedPreviewSizes;
-
-        // Flash modes supported by this camera
-        private List<String> mSupportedFlashModes;
-
         private double mOldFingerDistance = 0.0;
         private final Point mPixelSize = new Point();
 
@@ -651,10 +642,12 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             mViewCamera = camera;
             mCameraParams = camera.getParameters();
             // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
-            mSupportedPreviewSizes = mCameraParams.getSupportedPreviewSizes();
+            // List of supported preview sizes
+            List<Camera.Size> mSupportedPreviewSizes = mCameraParams.getSupportedPreviewSizes();
             mPreviewSize = getSmallestPreviewSize(mSupportedPreviewSizes);
             mCameraParams.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-            mSupportedFlashModes = mCameraParams.getSupportedFlashModes();
+            // Flash modes supported by this camera
+            List<String> mSupportedFlashModes = mCameraParams.getSupportedFlashModes();
 
             // Set the camera to Auto Flash mode.
             if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {

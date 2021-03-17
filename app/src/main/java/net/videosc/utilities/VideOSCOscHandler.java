@@ -153,11 +153,11 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	}
 
 	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage) {
-		if (fbMessage.addrPattern().matches(
+		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
 			String sender = fbMessage.get(0).stringValue();
-			String pixel = fbMessage.addrPattern().split("/")[2];
+			String pixel = fbMessage.getAddress().split("/")[2];
 			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
 			if (pixel.matches("^red[0-9]+")) {

@@ -80,6 +80,7 @@ import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import net.videosc.utilities.TcpAddress;
 import net.videosc.utilities.UdpAddress;
 import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.GestureModes;
 import net.videosc.utilities.enums.InteractionModes;
@@ -124,7 +125,7 @@ public class VideOSCMainActivity extends FragmentActivity
     public Enum<GestureModes> mGestureMode = GestureModes.SWAP;
 
     // ListView for the tools drawer
-    private List<BitmapDrawable> mToolsList = new ArrayList<>();
+    private final List<BitmapDrawable> mToolsList = new ArrayList<>();
     private ListView mToolsDrawerList;
     //	public HashMap<Integer, Integer> mToolsDrawerListState = new HashMap<>();
     // toolbar status
@@ -151,6 +152,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
     public SQLiteDatabase mDb;
     final private HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
+    private VideOSCOscHandler mOscHelper;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -169,7 +171,7 @@ public class VideOSCMainActivity extends FragmentActivity
 //		requestSettingsPermission();
 
         mApp = (VideOSCApplication) getApplicationContext();
-//		final VideOSCOscHandler oscHelper = mApp.getOscHelper();
+		mOscHelper = mApp.getOscHelper();
 
         backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
         if (VideOSCUIHelpers.hasFrontsideCamera()) {
@@ -521,9 +523,15 @@ public class VideOSCMainActivity extends FragmentActivity
         oscFeedbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//				VideOSCOscHandler oscHelper = mApp.getOscHelper();
                 mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
                 view.setActivated(mApp.getOSCFeedbackActivated());
+                if (mApp.getOSCFeedbackActivated()) {
+                    mOscHelper.addOscUdpEventListener();
+                    mOscHelper.addOscTcpEventListener();
+                } else {
+                    mOscHelper.removeOscUdpEventListener();
+                    mOscHelper.removeOscTcpEventListener();
+                }
             }
         });
 
