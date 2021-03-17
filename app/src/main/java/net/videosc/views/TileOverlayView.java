@@ -163,114 +163,118 @@ public class TileOverlayView extends View {
 					);
 				}
 				mPaint.clearShadowLayer();
-				switch (colorMode) {
-					case R:
-						if (mRedMixValues.get(i) != null && mRedMixValues.get(i) > 0.0) {
-							// draw bitmap - RGB corner (white)
-							bitmap = mRGBCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						}
-						break;
-					case G:
-						if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) > 0.0) {
-							// draw bitmap - RGB corner (white)
-							bitmap = mRGBCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						}
-						break;
-					case B:
-						if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
-							// draw bitmap - RGB corner (white)
-							bitmap = mRGBCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						}
-						break;
-					default: // RGB
-						if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) == null && mRedMixValues.get(i) > 0.0) {
-							// draw red corner bitmap
-							bitmap = mRCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null && mGreenMixValues.get(i) > 0.0) {
-							// draw green corner bitmap
-							bitmap = mGBCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
-							// draw blue corner bitmap
-							bitmap = mBCorner;
-							drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null) {
-							if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0) {
-								// draw yellow corner bitmap (rg)
-								bitmap = mRGCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0) {
-								// draw green corner bitmap
-								bitmap = mGCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0) {
-								// draw red corner bitmap
-								bitmap = mRCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} // else both values are 0.0 - do nothing
-						} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
-							if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw light blue corner bitmap
-								bitmap = mGBCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw blue corner bitmap
-								bitmap = mBCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
-								// draw green corner bitmap
-								bitmap = mGCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} // do nothing
-						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null) {
-							if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw magenta corner bitmap
-								bitmap = mRBCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw blue corner bitmap
-								bitmap = mBCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
-								// draw red corner bitmap
-								bitmap = mRCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} // do nothing
-						} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
-							if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw white corner bitmap (RGB)
+
+				// protect against IndexOutOfBounds errors (crashes) first
+				if (mRedMixValues.size() > i && mGreenMixValues.size() > i && mBlueMixValues.size() > i) {
+					switch (colorMode) {
+						case R:
+							if (mRedMixValues.get(i) != null && mRedMixValues.get(i) > 0.0) {
+								// draw bitmap - RGB corner (white)
 								bitmap = mRGBCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
-								// draw yellow corner bitmap (rg)
-								bitmap = mRGCorner;
+							}
+							break;
+						case G:
+							if (mGreenMixValues.get(i) != null && mGreenMixValues.get(i) > 0.0) {
+								// draw bitmap - RGB corner (white)
+								bitmap = mRGBCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw light blue corner bitmap (gb)
-								bitmap = mGBCorner;
+							}
+							break;
+						case B:
+							if (mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
+								// draw bitmap - RGB corner (white)
+								bitmap = mRGBCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
-								// draw magenta corner bitmap
-								bitmap = mRBCorner;
-								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) == 0.0) {
+							}
+							break;
+						default: // RGB
+							if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) == null && mRedMixValues.get(i) > 0.0) {
 								// draw red corner bitmap
 								bitmap = mRCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+							} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null && mGreenMixValues.get(i) > 0.0) {
 								// draw green corner bitmap
-								bitmap = mGCorner;
+								bitmap = mGBCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+							} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
 								// draw blue corner bitmap
 								bitmap = mBCorner;
 								drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
-							} // else do nothing
-						} // else all values == null - do nothing
+							} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null) {
+								if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0) {
+									// draw yellow corner bitmap (rg)
+									bitmap = mRGCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0) {
+									// draw green corner bitmap
+									bitmap = mGCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0) {
+									// draw red corner bitmap
+									bitmap = mRCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} // else both values are 0.0 - do nothing
+							} else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
+								if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw light blue corner bitmap
+									bitmap = mGBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw blue corner bitmap
+									bitmap = mBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+									// draw green corner bitmap
+									bitmap = mGCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} // do nothing
+							} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null) {
+								if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw magenta corner bitmap
+									bitmap = mRBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw blue corner bitmap
+									bitmap = mBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+									// draw red corner bitmap
+									bitmap = mRCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} // do nothing
+							} else if (mRedMixValues.get(i) != null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) != null) {
+								if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw white corner bitmap (RGB)
+									bitmap = mRGBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+									// draw yellow corner bitmap (rg)
+									bitmap = mRGCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw light blue corner bitmap (gb)
+									bitmap = mGBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw magenta corner bitmap
+									bitmap = mRBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) == 0.0) {
+									// draw red corner bitmap
+									bitmap = mRCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
+									// draw green corner bitmap
+									bitmap = mGCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} else if (mRedMixValues.get(i) == 0.0 && mGreenMixValues.get(i) == 0.0 && mBlueMixValues.get(i) > 0.0) {
+									// draw blue corner bitmap
+									bitmap = mBCorner;
+									drawCornerBitmap(canvas, i, bitmap, resolution, pixelSize);
+								} // else do nothing
+							} // else all values == null - do nothing
+					}
 				}
 			}
 		}
