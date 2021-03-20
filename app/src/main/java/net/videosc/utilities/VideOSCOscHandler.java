@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
@@ -18,6 +19,7 @@ import oscP5.OscP5;
  */
 public class VideOSCOscHandler/* implements OscEventListener*/ {
 	final private static String TAG = "VideOSCOscHandler";
+	final private HashMap<Integer, HashMap<String, HashMap<String, Integer>>> mFbStringOccurences = new HashMap<>();
 
 	private final OscP5 mTcpListener, mUdpListener;
 //	private final VideOSCMainActivity mActivity;
@@ -28,7 +30,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final static int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
 //	private int mBroadcastPort = 57120; // default port to send to, updated via settings
 //	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
-	private OscEventListener mOscEventListener;
+	private OscEventListener mUdpEventListener, mTcpEventListener;
 
 	private final SparseArray<ArrayList<String>> mFbStringsR = new SparseArray<>();
 	private final SparseArray<ArrayList<String>> mFbStringsG = new SparseArray<>();
@@ -79,33 +81,33 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 //	}
 
 	public void addOscUdpEventListener() {
-		mOscEventListener = new OscEventListener() {
+		mUdpEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc udp message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
 			}
 		};
-		mUdpListener.addListener(mOscEventListener);
+		mUdpListener.addListener(mUdpEventListener);
 	}
 
 	public void addOscTcpEventListener() {
-		mOscEventListener = new OscEventListener() {
+		mTcpEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc tcp message: " + oscMessage);
 				createOscFeedbackStrings(oscMessage);
 			}
 		};
-		mTcpListener.addListener(mOscEventListener);
+		mTcpListener.addListener(mTcpEventListener);
 	}
 
 	public void removeOscUdpEventListener() {
-		mUdpListener.removeListener(mOscEventListener);
+		mUdpListener.removeListener(mUdpEventListener);
 	}
 
 	public void removeOscTcpEventListener() {
-		mTcpListener.removeListener(mOscEventListener);
+		mTcpListener.removeListener(mTcpEventListener);
 	}
 
 //	public void setBroadcastAddr(int key, OscP5 oscP5) {
@@ -156,9 +158,25 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
-			String sender = fbMessage.get(0).stringValue();
+			String sender = String.valueOf(fbMessage.get(0));
+			Log.d(TAG, "sender: " + sender);
 			String pixel = fbMessage.getAddress().split("/")[2];
 			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
+
+			if (mFbStringOccurences.get(index) == null) {
+				mFbStringOccurences.put(index, new HashMap<String, HashMap<String, Integer>>());
+			}
+			/*HashMap<String, HashMap<String, Integer>> indexMap = mFbStringOccurences.get(index);
+			if (indexMap.get(netAddress) == null) {
+				indexMap.put(netAddress, new HashMap<String, Integer>());
+			}
+			HashMap<String, Integer> cmdMap = indexMap.get(netAddress);
+			if (cmdMap.get(sender) == null) {
+				cmdMap.put(sender, 1);
+			} else {
+				int val = cmdMap.get(sender);
+				cmdMap.put(sender, val++);
+			}*/
 
 			if (pixel.matches("^red[0-9]+")) {
 				if (mFbStringsR.get(index) == null)
