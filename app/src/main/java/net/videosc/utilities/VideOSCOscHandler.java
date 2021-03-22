@@ -158,7 +158,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
-			String sender = String.valueOf(fbMessage.get(0));
+			String sender = fbMessage.get(0).stringValue();
 			Log.d(TAG, "sender: " + sender);
 			String pixel = fbMessage.getAddress().split("/")[2];
 			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;

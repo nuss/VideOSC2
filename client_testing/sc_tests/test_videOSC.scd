@@ -80,10 +80,11 @@ fork ({
 }, AppClock)
 )
 
-// a simple OSC feedback test
+// a simple feedback example
 (
-n ?? { n = NetAddr("192.168.0.201", 32000) };
+n ?? { n = NetAddr("192.168.0.199", 32000) };
 OSCdef(\videosc, { |msg, time, addr, recvPort|
-	n.sendMsg((msg[0] ++ '/name').asSymbol, "sent in response to OSC coming from" + msg[0]);
-}, '/vosc/blue9')
+	n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/red4')
 )
+
