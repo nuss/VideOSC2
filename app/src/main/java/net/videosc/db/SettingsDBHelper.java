@@ -38,7 +38,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc'," +
 					SettingsContract.SettingsEntries.UDP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32000'," +
 					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32100'," +
-					SettingsContract.SettingsEntries.TCP_PASSWORD + " TEXT DEFAULT 'my_secret')";
+					SettingsContract.SettingsEntries.TCP_PASSWORD + " TEXT)";
 
 	private static final String SQL_SETTINGS_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.SettingsEntries.TABLE_NAME;
@@ -77,7 +77,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 65;
+	private static final int DATABASE_VERSION = 79;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

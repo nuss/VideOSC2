@@ -104,18 +104,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         mAddIPAddress = view.findViewById(R.id.add_remote_ip);
         mAddPort = view.findViewById(R.id.add_remote_port);
-//        mAddProtocol = view.findViewById(R.id.set_protocol);
-//        final String[] protocols = new String[] {"UDP", "TCP/IP"};
-//        mProtocolsAdapter = new ArrayAdapter<>(mActivity, R.layout.protocols_select_item, protocols);
-//        mProtocolsPopUp = showProtocolsList(mProtocolsAdapter);
-//        mAddProtocol.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mProtocolsPopUp.showAsDropDown(v, 0, 0);
-//            }
-//        });
-//        ListView protocolsList = (ListView) mProtocolsPopUp.getContentView();
-//        protocolsList.setOnItemClickListener(new ProtocolsOnItemClickListener());
 
         final Button addAddress = view.findViewById(R.id.add_address_button);
 
@@ -129,7 +117,8 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 SettingsContract.SettingsEntries._ID,
                 SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
                 SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
-                SettingsContract.SettingsEntries.ROOT_CMD
+                SettingsContract.SettingsEntries.ROOT_CMD,
+                SettingsContract.SettingsEntries.TCP_PASSWORD
         };
 
         mAddressesCursor = queryAddresses();
@@ -173,10 +162,12 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             final int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
             final int tcpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
             final String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+            final String tcpPasswd = cursor.getString((cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_PASSWORD)));
             setting.setRowId(rowId);
             setting.setUdpReceivePort(udpReceivePort);
             setting.setTcpReceivePort(tcpReceivePort);
             setting.setRootCmd(cmd);
+            setting.setTcpPassword(tcpPasswd);
             settings.add(setting);
         }
 
@@ -193,7 +184,15 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 TextView.BufferType.EDITABLE
         );
         final EditText rootCmdField = view.findViewById(R.id.root_cmd_name_field);
-        rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
+        rootCmdField.setText(
+                settings.get(0).getRootCmd(),
+                TextView.BufferType.EDITABLE
+        );
+        final EditText tcpPasswdField = view.findViewById(R.id.tcp_passwd);
+        tcpPasswdField.setText(
+                settings.get(0).getTcpPassword(),
+                TextView.BufferType.EDITABLE
+        );
         final TextView deviceIP = view.findViewById(R.id.device_ip_address);
         deviceIP.setText(KetaiNet.getIP());
 
@@ -263,7 +262,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             @Override
             public void onFocusChange(View v, boolean b) {
                 if (!b && !rootCmdField.getText().toString().equals(settings.get(0).getRootCmd())) {
-                    String rootCmd = rootCmdField.getText().toString();
+                    final String rootCmd = rootCmdField.getText().toString();
                     values.put(
                             SettingsContract.SettingsEntries.ROOT_CMD,
                             rootCmd
@@ -278,6 +277,27 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                     settings.get(0).setRootCmd(rootCmd);
                     assert cameraView != null;
                     cameraView.setColorOscCmds(rootCmd);
+                }
+            }
+        });
+
+        tcpPasswdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !tcpPasswdField.getText().toString().equals(settings.get(0).getTcpPassword())) {
+                    final String passwd = tcpPasswdField.getText().toString();
+                    values.put(
+                            SettingsContract.SettingsEntries.TCP_PASSWORD,
+                            passwd
+                    );
+                    mDb.update(
+                            SettingsContract.SettingsEntries.TABLE_NAME,
+                            values,
+                            SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                            null
+                    );
+                    values.clear();
+                    settings.get(0).setTcpPassword(passwd);
                 }
             }
         });
@@ -500,13 +520,14 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         }
 
         private void addAddressMappings(SQLiteDatabase db, long addressIndex) {
-            VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
-            Point resolution = app.getResolution();
+            final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+            final Point resolution = app.getResolution();
             // number of mappings: resolution.x * resolution.y * 3 - we have 3 channels: red, green and blue
-            StringBuilder mappings = new StringBuilder(resolution.x * resolution.y * 3);
+            final StringBuilder mappingsBuilder = new StringBuilder(resolution.x * resolution.y * 3);
             for (int i = 0; i < resolution.x * resolution.y * 3; i++) {
-                mappings.append('1');
+                mappingsBuilder.append('1');
             }
+            final String mappings = String.valueOf(mappingsBuilder);
             ContentValues values = new ContentValues();
             values.put(
                     SettingsContract.AddressCommandsMappings.ADDRESS,
@@ -514,14 +535,15 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             );
             values.put(
                     SettingsContract.AddressCommandsMappings.MAPPINGS,
-                    String.valueOf(mappings)
+                    mappings
             );
-            db.insert(
+            long result = db.insert(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
                     null,
                     values
             );
             values.clear();
+            app.addCommandMappings((int) result, mappings);
         }
     }
 

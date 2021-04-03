@@ -3,6 +3,7 @@ package net.videosc.adapters;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;

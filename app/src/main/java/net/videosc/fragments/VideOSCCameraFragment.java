@@ -480,6 +480,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         private Thread mGreenOscSender;
         private Thread mBlueOscSender;
 
+        private SparseArray<NetAddress> mOscClients;
+
         private final FragmentManager mManager;
 
         private OscBundle mOscBundleR, mOscBundleG, mOscBundleB;
@@ -767,6 +769,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     public void onPreviewFrame(byte[] data, Camera camera) {
                         Point resolution = mApp.getResolution();
                         int previewSize = resolution.x * resolution.y;
+                        mOscClients = mApp.getBroadcastClients();
                         mMappings = mApp.getCommandMappings();
                         int diff = previewSize - mRedValues.size();
                         if (diff != 0) pad(diff);
@@ -1386,7 +1389,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     } else {
                         RedOscRunnable.setDebugPixelOsc(false);
                     }
-                    mRedOscRunnable.mOscClients = mApp.getBroadcastClients();
+                    mRedOscRunnable.mOscClients = mOscClients;
                     // send bundles once we've iterated over all client addresses
                     if (i == mMappings.size() - 1) {
                         synchronized (mRedOscRunnable.mOscLock) {
@@ -1429,7 +1432,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     } else {
                         GreenOscRunnable.setDebugPixelOsc(false);
                     }
-                    mGreenOscRunnable.mOscClients = mApp.getBroadcastClients();
+                    mGreenOscRunnable.mOscClients = mOscClients;
                     if (i == mMappings.size() - 1) {
                         synchronized (mGreenOscRunnable.mOscLock) {
                             mGreenOscRunnable.mOscHelper = mOscHelper;
@@ -1471,7 +1474,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     } else {
                         BlueOscRunnable.setDebugPixelOsc(false);
                     }
-                    mBlueOscRunnable.mOscClients = mApp.getBroadcastClients();
+                    mBlueOscRunnable.mOscClients = mOscClients;
                     if (i == mMappings.size() - 1) {
                         synchronized (mBlueOscRunnable.mOscLock) {
                             mBlueOscRunnable.mOscHelper = mOscHelper;
@@ -1530,7 +1533,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         bundle.add(mDebugMsg);
                                     }
                                     final NetAddress client = mOscClients.valueAt(i);
-                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
+                                    mOscHelper.getUdpListener().send(bundle, client.address(), client.port());
                                 }
                             }
                         }
@@ -1580,7 +1583,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         bundle.add(mDebugMsg);
                                     }
                                     final NetAddress client = mOscClients.valueAt(i);
-                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
+                                    mOscHelper.getUdpListener().send(bundle, client.address(), client.port());
                                 }
                             }
                         }
@@ -1630,7 +1633,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         bundle.add(mDebugMsg);
                                     }
                                     final NetAddress client = mOscClients.valueAt(i);
-                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
+                                    mOscHelper.getUdpListener().send(bundle, client.address(), client.port());
                                 }
                             }
                         }

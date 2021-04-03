@@ -238,6 +238,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         private String mRootCmd;
         private int mUdpReceivePort;
         private int mTcpReceivePort;
+        private String mTcpPassword;
 
         Settings() {
         }
@@ -282,6 +283,8 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
             this.mTcpReceivePort = port;
         }
 
+        void setTcpPassword(String passwd) { this.mTcpPassword = passwd; }
+
         long getRowId() {
             return this.mRowId;
         }
@@ -320,6 +323,10 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
 
         int getTcpReceivePort() {
             return this.mTcpReceivePort;
+        }
+
+        String getTcpPassword() {
+            return this.mTcpPassword;
         }
     }
 

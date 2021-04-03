@@ -96,6 +96,10 @@ public class VideOSCApplication extends Application {
 		this.mCommandMappings = mappings;
 	}
 
+	public void addCommandMappings(int key, String mappings) {
+		this.mCommandMappings.put(key, mappings);
+	}
+
 	public void removeCommandMappingsAt(int key) {
 		this.mCommandMappings.delete(key);
 	}
