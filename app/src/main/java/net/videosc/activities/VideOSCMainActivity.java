@@ -77,8 +77,6 @@ import net.videosc.db.SettingsDBHelper;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.fragments.VideOSCSelectSnapshotFragment;
-import net.videosc.utilities.TcpAddress;
-import net.videosc.utilities.UdpAddress;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
@@ -95,6 +93,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import netP5.NetAddress;
 import oscP5.OscP5;
 
 /**
@@ -160,7 +159,6 @@ public class VideOSCMainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Object client;
 
         // immersive fullscreen
         mDecorView = getWindow().getDecorView();
@@ -171,7 +169,7 @@ public class VideOSCMainActivity extends FragmentActivity
 //		requestSettingsPermission();
 
         mApp = (VideOSCApplication) getApplicationContext();
-		mOscHelper = mApp.getOscHelper();
+        mOscHelper = mApp.getOscHelper();
 
         backsideCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
         if (VideOSCUIHelpers.hasFrontsideCamera()) {
@@ -188,8 +186,7 @@ public class VideOSCMainActivity extends FragmentActivity
         String[] settingsFields = new String[]{
                 SettingsContract.SettingsEntries._ID,
                 SettingsContract.AddressSettingsEntries.IP_ADDRESS,
-                SettingsContract.AddressSettingsEntries.PORT,
-                SettingsContract.AddressSettingsEntries.PROTOCOL
+                SettingsContract.AddressSettingsEntries.PORT
         };
 
         Cursor cursor = mDb.query(
@@ -202,37 +199,16 @@ public class VideOSCMainActivity extends FragmentActivity
                 null
         );
 
-        // for now we only have one address stored in the addresses table
-        // protocol will be UDP
         while (cursor.moveToNext()) {
             final int key = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
-            int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-
-            if (protocol == OscP5.TCP) {
-                client = new TcpAddress(
-                        cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
-                );
-            } else {
-                client = new UdpAddress(
-                        cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
-                );
-            }
-
-//			final OscP5 value = new OscP5(
-//					this,
-//					cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-//					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)),
-//					cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL))
-//			);
-
+            final NetAddress client = new NetAddress(
+                    cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
+            );
             mApp.putBroadcastClient(key, client);
         }
 
         cursor.close();
-
-        Log.d(TAG, "broadcast Addresses: " + mApp.getBroadcastClients());
 
         settingsFields = new String[]{
                 SettingsContract.AddressCommandsMappings._ID,
@@ -959,4 +935,5 @@ public class VideOSCMainActivity extends FragmentActivity
 		final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		Log.d(TAG, "camera fragment: " + cameraFragment.mPreview);
 	}*/
+
 }

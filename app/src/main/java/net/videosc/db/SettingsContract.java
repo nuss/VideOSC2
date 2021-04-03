@@ -16,7 +16,7 @@ public class SettingsContract {
 		public static final String TABLE_NAME = "vosc_client_addresses";
 		public static final String IP_ADDRESS = "ip_address";
 		public static final String PORT = "port";
-		public static final String PROTOCOL = "protocol"; // TCP/IP or UDP
+//		public static final String PROTOCOL = "protocol"; // TCP/IP or UDP
 	}
 
 	public static class SettingsEntries implements BaseColumns {
@@ -31,6 +31,7 @@ public class SettingsContract {
 		public static final String ROOT_CMD = "root_cmd_name";
 		public static final String UDP_RECEIVE_PORT = "udp_receive_port";
 		public static final String TCP_RECEIVE_PORT = "tcp_receive_port";
+		public static final String TCP_PASSWORD = "tcp_password";
 	}
 
 	public static class SensorSettingsEntries implements BaseColumns {

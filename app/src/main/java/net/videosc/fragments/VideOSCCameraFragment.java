@@ -61,8 +61,6 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
-import net.videosc.utilities.TcpAddress;
-import net.videosc.utilities.UdpAddress;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
@@ -80,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
+import netP5.NetAddress;
 import oscP5.OscBundle;
 import oscP5.OscMessage;
 
@@ -1495,7 +1494,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
     // or http://www.androiddesignpatterns.com/2013/04/activitys-threads-memory-leaks.html
     private static class RedOscRunnable implements Runnable {
         private VideOSCOscHandler mOscHelper;
-        private SparseArray<Object> mOscClients;
+        private SparseArray<NetAddress> mOscClients;
         //		private int mAddrKey;
         private ArrayList<OscBundle> mBundles;
         private OscMessage mDebugMsg;
@@ -1530,12 +1529,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         mDebugMsg.add(++mCountSentR);
                                         bundle.add(mDebugMsg);
                                     }
-                                    final Object client = mOscClients.valueAt(i);
-                                    if (client instanceof TcpAddress) {
-                                        mOscHelper.getTcpListener().send(bundle, ((TcpAddress) client).address(), ((TcpAddress) client).port());
-                                    } else {
-                                        mOscHelper.getUdpListener().send(bundle, ((UdpAddress) client).address(), ((UdpAddress) client).port());
-                                    }
+                                    final NetAddress client = mOscClients.valueAt(i);
+                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
                                 }
                             }
                         }
@@ -1550,7 +1545,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
     private static class GreenOscRunnable implements Runnable {
         private VideOSCOscHandler mOscHelper;
-        private SparseArray<Object> mOscClients;
+        private SparseArray<NetAddress> mOscClients;
         private ArrayList<OscBundle> mBundles;
         private OscMessage mDebugMsg;
         private final Object mOscLock = new Object();
@@ -1584,12 +1579,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         mDebugMsg.add(++mCountSentG);
                                         bundle.add(mDebugMsg);
                                     }
-                                    final Object client = mOscClients.valueAt(i);
-                                    if (client instanceof TcpAddress) {
-                                        mOscHelper.getTcpListener().send(bundle, ((TcpAddress) client).address(), ((TcpAddress) client).port());
-                                    } else {
-                                        mOscHelper.getUdpListener().send(bundle, ((UdpAddress) client).address(), ((UdpAddress) client).port());
-                                    }
+                                    final NetAddress client = mOscClients.valueAt(i);
+                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
                                 }
                             }
                         }
@@ -1604,7 +1595,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
     private static class BlueOscRunnable implements Runnable {
         private VideOSCOscHandler mOscHelper;
-        private SparseArray<Object> mOscClients;
+        private SparseArray<NetAddress> mOscClients;
         private ArrayList<OscBundle> mBundles;
         private volatile OscMessage mDebugMsg;
         private final Object mOscLock = new Object();
@@ -1638,12 +1629,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                                         mDebugMsg.add(++mCountSentB);
                                         bundle.add(mDebugMsg);
                                     }
-                                    final Object client = mOscClients.valueAt(i);
-                                    if (client instanceof TcpAddress) {
-                                        mOscHelper.getTcpListener().send(bundle, ((TcpAddress) client).address(), ((TcpAddress) client).port());
-                                    } else {
-                                        mOscHelper.getUdpListener().send(bundle, ((UdpAddress) client).address(), ((UdpAddress) client).port());
-                                    }
+                                    final NetAddress client = mOscClients.valueAt(i);
+                                    mOscHelper.getUdpListener().send(bundle, ((NetAddress) client).address(), ((NetAddress) client).port());
                                 }
                             }
                         }

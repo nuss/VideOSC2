@@ -69,102 +69,102 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
     }
 
     private class ToolsOnClickListener implements View.OnClickListener {
-        private final VideOSCApplication app;
+        private final VideOSCApplication mApp;
         private final int COLOR_MODE;
-        private final ImageView toolView;
+        private final ImageView mToolView;
         //		private final WeakReference<VideOSCMainActivity> activityRef;
-        private final ImageView rgbModeIndicator;
+        private final ImageView mRGBModeIndicator;
         private final VideOSCMainActivity mActivity;
 
         ToolsOnClickListener(VideOSCApplication app, int COLOR_MODE, ImageView toolView, Context context, ImageView rgbModeIndicator) {
-            this.app = app;
+            this.mApp = app;
             this.COLOR_MODE = COLOR_MODE;
-            this.toolView = toolView;
+            this.mToolView = toolView;
             this.mActivity = (VideOSCMainActivity) context;
-            this.rgbModeIndicator = rgbModeIndicator;
+            this.mRGBModeIndicator = rgbModeIndicator;
         }
 
         @Override
         public void onClick(View v) {
             final int id = v.getId();
             if (id == R.id.mode_rgb) {
-                app.setColorMode(RGBModes.RGB);
-                if (!app.getIsRGBPositive()) {
-                    app.setIsRGBPositive(true);
-                    app.setRGBHasChanged(true);
+                mApp.setColorMode(RGBModes.RGB);
+                if (!mApp.getIsRGBPositive()) {
+                    mApp.setIsRGBPositive(true);
+                    mApp.setRGBHasChanged(true);
                 }
                 mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-                toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb));
-                rgbModeIndicator.setImageResource(R.drawable.rgb_indicator);
+                mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb));
+                mRGBModeIndicator.setImageResource(R.drawable.rgb_indicator);
                 mActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
             } else if (id == R.id.mode_rgb_inv) {
-                app.setColorMode(RGBModes.RGB);
-                if (app.getIsRGBPositive()) {
-                    app.setIsRGBPositive(false);
-                    app.setRGBHasChanged(true);
+                mApp.setColorMode(RGBModes.RGB);
+                if (mApp.getIsRGBPositive()) {
+                    mApp.setIsRGBPositive(false);
+                    mApp.setRGBHasChanged(true);
                 }
                 mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb_inv);
-                toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb_inv));
-                rgbModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
+                mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb_inv));
+                mRGBModeIndicator.setImageResource(R.drawable.rgb_inv_indicator);
                 mActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB_INV;
             } else if (id == R.id.mode_r) {
-                app.setColorMode(RGBModes.R);
-                if (app.getIsRGBPositive()) {
+                mApp.setColorMode(RGBModes.R);
+                if (mApp.getIsRGBPositive()) {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.r);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.r));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.r));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.R;
                 } else {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.r_inv);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.r_inv));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.r_inv));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.R_INV;
                 }
             } else if (id == R.id.mode_g) {
-                app.setColorMode(RGBModes.G);
-                if (app.getIsRGBPositive()) {
+                mApp.setColorMode(RGBModes.G);
+                if (mApp.getIsRGBPositive()) {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.g);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.g));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.g));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.G;
                 } else {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.g_inv);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.g_inv));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.g_inv));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.G_INV;
                 }
             } else if (id == R.id.mode_b) {
-                app.setColorMode(RGBModes.B);
-                if (app.getIsRGBPositive()) {
+                mApp.setColorMode(RGBModes.B);
+                if (mApp.getIsRGBPositive()) {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.b);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.b));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.b));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.B;
                 } else {
                     mToolsDrawerListState.put(COLOR_MODE, R.drawable.b_inv);
-                    toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.b_inv));
+                    mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.b_inv));
                     mActivity.mColorModeToolsDrawer = RGBToolbarStatus.B_INV;
                 }
             } else {
-                app.setColorMode(RGBModes.RGB);
+                mApp.setColorMode(RGBModes.RGB);
                 mToolsDrawerListState.put(COLOR_MODE, R.drawable.rgb);
-                toolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb));
+                mToolView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.rgb));
                 mActivity.mColorModeToolsDrawer = RGBToolbarStatus.RGB;
             }
 //									v.clearFocus();
-            app.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(
+            mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(
                     mActivity.mModePanel, (FrameLayout) mActivity.mCamView
             ));
         }
     }
 
     private class ToolViewOnClickListener implements View.OnClickListener {
-        private final int position;
-        private final ImageView toolView;
-        private final ViewGroup adapterView;
+        private final int mPosition;
+        private final ImageView mToolView;
+        private final ViewGroup mAdapterView;
         private final VideOSCMainActivity mActivity;
         private final VideOSCDBHelpers mDBHelper;
 
         ToolViewOnClickListener(Context context, int position, ImageView toolView, ViewGroup adapterView) {
             this.mActivity = (VideOSCMainActivity) context;
-            this.position = position;
-            this.toolView = toolView;
-            this.adapterView = adapterView;
+            this.mPosition = position;
+            this.mToolView = toolView;
+            this.mAdapterView = adapterView;
             this.mDBHelper = new VideOSCDBHelpers(mActivity);
         }
 
@@ -182,26 +182,20 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             // no reflections needed
             final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
             HashMap<String, Integer> toolsDrawerKeys = mActivity.toolsDrawerKeys();
-            //noinspection ConstantConditions
             final int START_STOP = toolsDrawerKeys.get("startStop");
             final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
-            //noinspection ConstantConditions
             final int COLOR_MODE = toolsDrawerKeys.get("modeSelect");
-            //noinspection ConstantConditions
             final int INTERACTION = toolsDrawerKeys.get("mInteractionMode");
             final Integer SELECT_CAM = toolsDrawerKeys.containsKey("camSelect") ? toolsDrawerKeys.get("camSelect") : null;
-            //noinspection ConstantConditions
             final int INFO = toolsDrawerKeys.get("info");
-            //noinspection ConstantConditions
             final int SETTINGS = toolsDrawerKeys.get("prefs");
-            //noinspection ConstantConditions
             final int QUIT = toolsDrawerKeys.get("quit");
             BitmapDrawable img;
             assert cameraFragment != null;
             Camera camera = cameraFragment.mCamera;
             Camera.Parameters cameraParameters = camera.getParameters();
 
-            if (position == START_STOP) {
+            if (mPosition == START_STOP) {
                 mActivity.closeColorModePanel();
                 if (mDBHelper.countAddresses() > 0) {
                     if (!app.getCameraOSCisPlaying()) {
@@ -215,7 +209,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                         img = (BitmapDrawable) ContextCompat.getDrawable(mActivity, R.drawable.start);
                         oscIndicator.setImageResource(R.drawable.osc_paused);
                     }
-                    toolView.setImageDrawable(img);
+                    mToolView.setImageDrawable(img);
                 } else {
                     VideOSCDialogHelper.showWarning(
                             mActivity,
@@ -224,7 +218,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             app.getString(R.string.OK)
                     );
                 }
-            } else if (TORCH != null && position == TORCH) {
+            } else if (TORCH != null && mPosition == TORCH) {
                 mActivity.closeColorModePanel();
                 if (app.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
                     String flashMode = cameraParameters.getFlashMode();
@@ -241,9 +235,9 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                         torchIndicator.setImageResource(R.drawable.light_off_indicator);
                     }
                     camera.setParameters(cameraParameters);
-                    toolView.setImageDrawable(img);
+                    mToolView.setImageDrawable(img);
                 }
-            } else if (position == COLOR_MODE) {
+            } else if (mPosition == COLOR_MODE) {
                 if (!app.getIsColorModePanelOpen()) {
                     int y = (int) view.getY();
 
@@ -266,10 +260,10 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
 
                     for (int k = 0; k < mActivity.mModePanel.getChildCount(); k++) {
                         View button = mActivity.mModePanel.getChildAt(k);
-                        button.setOnClickListener(new ToolsOnClickListener(app, COLOR_MODE, toolView, mActivity, rgbModeIndicator));
+                        button.setOnClickListener(new ToolsOnClickListener(app, COLOR_MODE, mToolView, mActivity, rgbModeIndicator));
                     }
                 }
-            } else if (position == INTERACTION) {
+            } else if (mPosition == INTERACTION) {
                 mActivity.closeColorModePanel();
                 if (app.getInteractionMode().equals(InteractionModes.BASIC)) {
                     app.setInteractionMode(InteractionModes.SINGLE_PIXEL);
@@ -292,8 +286,8 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                     if (mActivity.mMultiSliderView != null)
                         fragmentManager.beginTransaction().remove(mActivity.mMultiSliderView).commit();
                 }
-                toolView.setImageDrawable(img);
-            } else if (SELECT_CAM != null && position == SELECT_CAM) {
+                mToolView.setImageDrawable(img);
+            } else if (SELECT_CAM != null && mPosition == SELECT_CAM) {
                 mActivity.closeColorModePanel();
                 BitmapDrawable noTorch = (BitmapDrawable) ContextCompat.getDrawable(mActivity, R.drawable.no_torch);
                 if (app.getCurrentCameraId() == VideOSCMainActivity.backsideCameraId) {
@@ -308,7 +302,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                         cameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                         torchIndicator.setImageResource(R.drawable.light_off_indicator);
                         if (TORCH != null) {
-                            ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
+                            ImageView torchSwitch = (ImageView) mAdapterView.getChildAt(TORCH);
                             torchSwitch.setImageDrawable(noTorch);
                         }
                     }
@@ -321,16 +315,16 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                     img = (BitmapDrawable) ContextCompat.getDrawable(mActivity, R.drawable.front_camera);
                     cameraIndicator.setImageResource(R.drawable.indicator_camera_back);
                     if (app.getHasTorch() && TORCH != null) {
-                        ImageView torchSwitch = (ImageView) adapterView.getChildAt(TORCH);
+                        ImageView torchSwitch = (ImageView) mAdapterView.getChildAt(TORCH);
                         BitmapDrawable torchOn = (BitmapDrawable) ContextCompat.getDrawable(mActivity, R.drawable.light_on);
                         torchSwitch.setImageDrawable(torchOn);
                     }
                 }
-                toolView.setImageDrawable(img);
+                mToolView.setImageDrawable(img);
                 // invoke setting of new camera
                 // camera ID should already have been set in currentCameraID
                 cameraFragment.safeCameraOpenInView(mActivity.mCamView);
-            } else if (position == INFO) {
+            } else if (mPosition == INFO) {
                 mActivity.closeColorModePanel();
                 if (app.getIsFPSCalcPanelOpen())
                     app.setIsFPSCalcPanelOpen(VideOSCUIHelpers.removeView(
@@ -344,7 +338,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             (FrameLayout) mActivity.mCamView
                     ));
                 }
-            } else if (position == SETTINGS) {
+            } else if (mPosition == SETTINGS) {
                 mActivity.closeColorModePanel();
                 mActivity.showBackButton();
                 VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment(mActivity);
@@ -354,7 +348,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .add(R.id.camera_preview, settings, "settings selection")
                             .commit();
-            } else if (position == QUIT) {
+            } else if (mPosition == QUIT) {
                 VideOSCDialogHelper.showQuitDialog(mActivity);
             }
             mActivity.mToolsDrawerLayout.closeDrawer(GravityCompat.END);

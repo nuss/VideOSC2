@@ -11,6 +11,8 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 
+import netP5.NetAddress;
+
 /**
  * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.
  */
@@ -30,7 +32,7 @@ public class VideOSCApplication extends Application {
 	private boolean mHasTorch;
 	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
-	private final SparseArray<Object> mBroadcastClients = new SparseArray<>();
+	private final SparseArray<NetAddress> mBroadcastClients = new SparseArray<>();
 	public Point mDimensions;
 
 	private boolean mIsTorchOn = false;
@@ -66,11 +68,11 @@ public class VideOSCApplication extends Application {
 		this.mOscHelper = new VideOSCOscHandler(this);
 	}
 
-	public SparseArray<Object> getBroadcastClients() {
+	public SparseArray<NetAddress> getBroadcastClients() {
 		return this.mBroadcastClients;
 	}
 
-	public void putBroadcastClient(int key, Object client) {
+	public void putBroadcastClient(int key, NetAddress client) {
 		this.mBroadcastClients.put(key, client);
 	}
 
@@ -78,7 +80,7 @@ public class VideOSCApplication extends Application {
 		this.mBroadcastClients.delete(key);
 	}
 
-	public Object getBroadcastClient(int key) {
+	public NetAddress getBroadcastClient(int key) {
 		return this.mBroadcastClients.get(key);
 	}
 

@@ -10,15 +10,12 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 
-import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.ArrayList;
-
-import oscP5.OscP5;
 
 public class MappingsTableDataSourceImpl implements MappingsTableDataSource<String, String, Character> {
     final private static String TAG = MappingsTableDataSourceImpl.class.getSimpleName();
@@ -153,8 +150,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         final String[] addrFields = new String[]{
                 SettingsContract.AddressSettingsEntries._ID,
                 SettingsContract.AddressSettingsEntries.IP_ADDRESS,
-                SettingsContract.AddressSettingsEntries.PORT,
-                SettingsContract.AddressSettingsEntries.PROTOCOL
+                SettingsContract.AddressSettingsEntries.PORT
         };
 
         final Cursor cursor = mDb.query(
@@ -171,9 +167,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
             final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
             final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
-            final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-            protocolName = protocol == OscP5.TCP ? "TCP/IP" : "UDP";
-            addresses.put((int) addrID, ip + ":" + port + String.format(res.getString(R.string.protocol_label), protocolName));
+            addresses.put((int) addrID, ip + ":" + port);
         }
 
         cursor.close();

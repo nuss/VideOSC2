@@ -9,7 +9,7 @@
 		android:id="@+id/remote_ip_address"
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"
-		android:layout_weight="0.45"
+		android:layout_weight="0.55"
 		android:paddingLeft="5dp"
 		android:paddingStart="5dp"
 		android:paddingBottom="15dp"
@@ -22,26 +22,13 @@
 		android:id="@+id/remote_port"
 		android:layout_height="wrap_content"
 		android:layout_width="0dp"
-		android:layout_weight="0.25"
+		android:layout_weight="0.35"
 		android:paddingLeft="5dp"
 		android:paddingStart="5dp"
 		android:paddingBottom="15dp"
 		android:paddingTop="15dp"
 		android:paddingRight="5dp"
 		android:paddingEnd="5dp"
-		android:textSize="16sp" />
-
-	<TextView
-		android:id="@+id/address_protocol"
-		android:layout_height="wrap_content"
-		android:layout_width="0dp"
-		android:layout_weight="0.2"
-		android:paddingLeft="5dp"
-		android:paddingStart="5dp"
-		android:paddingRight="5dp"
-		android:paddingEnd="5dp"
-		android:paddingBottom="15dp"
-		android:paddingTop="15dp"
 		android:textSize="16sp" />
 
 	<ImageButton

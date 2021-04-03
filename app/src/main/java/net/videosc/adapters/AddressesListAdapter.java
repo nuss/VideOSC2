@@ -19,8 +19,6 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.db.SettingsContract;
 
-import oscP5.OscP5;
-
 public class AddressesListAdapter extends ResourceCursorAdapter {
     final private static String TAG = "AddressesListAdapter";
     private final int mLayout;
@@ -28,7 +26,6 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
     private final String[] mAddrFields = new String[]{
             SettingsContract.AddressSettingsEntries.IP_ADDRESS,
             SettingsContract.AddressSettingsEntries.PORT,
-            SettingsContract.AddressSettingsEntries.PROTOCOL,
             SettingsContract.AddressSettingsEntries._ID
     };
     final private String mSortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
@@ -80,19 +77,14 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
         final VideOSCApplication app = (VideOSCApplication) context.getApplicationContext();
         final TextView ipText = view.findViewById(R.id.remote_ip_address);
         final TextView portText = view.findViewById(R.id.remote_port);
-        final TextView protocolText = view.findViewById(R.id.address_protocol);
         final ImageButton deleteButton = view.findViewById(R.id.delete_address);
 
         final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
         final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
         final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
-        final int protocol = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PROTOCOL));
-
-        protocolName = protocol == OscP5.TCP ? "TCP/IP" : "UDP";
 
         ipText.setText(ip);
         portText.setText(String.valueOf(port));
-        protocolText.setText(protocolName);
 
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override

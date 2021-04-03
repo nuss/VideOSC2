@@ -99,7 +99,8 @@
                 android:inputType="text"
                 android:paddingTop="3dp"
                 android:paddingBottom="10dp"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:nextFocusDown="@+id/tcp_passwd"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -108,6 +109,24 @@
                 android:layout_weight="0.7"
                 android:text="@string/sub_cmd_name" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/tcp_ip_password"/>
+
+        <EditText
+            android:id="@+id/tcp_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/tcp_ip_password_hint"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:autofillHints="my_secret" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -132,7 +151,7 @@
                 android:id="@+id/add_remote_ip"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5"
+                android:layout_weight="0.65"
                 android:autofillHints="IP address"
                 android:digits="0123456789."
                 android:hint="@string/add_ip_address"
@@ -146,23 +165,13 @@
                 android:id="@+id/add_remote_port"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.2"
+                android:layout_weight="0.35"
                 android:autofillHints="port"
                 android:hint="@string/add_port"
                 android:inputType="number"
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:maxLength="5" />
-
-            <Button
-                android:id="@+id/set_protocol"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/transparent"
-                android:layout_weight="0.3"
-                android:drawableEnd="@drawable/carret_down_white"
-                android:drawableRight="@drawable/carret_down_white"
-                android:text="UDP" />
 
         </LinearLayout>
 
@@ -182,23 +191,16 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.45"
+                android:layout_weight="0.55"
                 android:padding="5dp"
                 android:text="@string/list_header_ip_address"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
+                android:layout_weight="0.45"
                 android:padding="5dp"
                 android:text="@string/list_header_port"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:padding="5dp"
-                android:text="@string/list_header_protocol" />
 
         </LinearLayout>
 

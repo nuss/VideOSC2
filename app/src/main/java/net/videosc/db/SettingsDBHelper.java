@@ -20,10 +20,8 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.AddressSettingsEntries._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.AddressSettingsEntries.IP_ADDRESS + " TEXT NOT NULL," +
 					SettingsContract.AddressSettingsEntries.PORT + " INTEGER NOT NULL," +
-					SettingsContract.AddressSettingsEntries.PROTOCOL + " INTEGER NOT NULL," +
 					"UNIQUE (" + SettingsContract.AddressSettingsEntries.IP_ADDRESS + ", " +
-					SettingsContract.AddressSettingsEntries.PORT + ", " +
-					SettingsContract.AddressSettingsEntries.PROTOCOL + "))";
+					SettingsContract.AddressSettingsEntries.PORT + "))";
 
 	private static final String SQL_ADDRESSES_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntries.TABLE_NAME;
@@ -39,7 +37,8 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 //					SettingsContract.SettingsEntries.CALC_PERIOD + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc'," +
 					SettingsContract.SettingsEntries.UDP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32000'," +
-					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32100')";
+					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32100'," +
+					SettingsContract.SettingsEntries.TCP_PASSWORD + " TEXT DEFAULT 'my_secret')";
 
 	private static final String SQL_SETTINGS_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.SettingsEntries.TABLE_NAME;
@@ -78,7 +77,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 63;
+	private static final int DATABASE_VERSION = 65;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import oscP5.OscEventListener;
 import oscP5.OscMessage;
 import oscP5.OscP5;
+import oscP5.OscProperties;
 //import oscP5.OscStatus;
 
 /**
@@ -26,8 +27,8 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	//	private NetAddress mBroadcastAddr;
 //	private NetAddress mFeedbackAddr;
 //	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
-	private final static int mUDPListeningPort = 32000; // default port to listen on messages sent over UDP, updated via settings
-	private final static int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
+	private static int mUDPListeningPort = 32000; // default port to listen on messages sent over UDP, updated via settings
+	private static int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
 //	private int mBroadcastPort = 57120; // default port to send to, updated via settings
 //	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 	private OscEventListener mUdpEventListener, mTcpEventListener;
@@ -37,8 +38,8 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
 
 	public VideOSCOscHandler(Context context) {
-		this.mUdpListener = new OscP5(context, mUDPListeningPort, OscP5.UDP);
-		this.mTcpListener = new OscP5(context, mTCPListeningPort, OscP5.TCP);
+		this.mUdpListener = new OscP5(context, mUDPListeningPort, OscProperties.UDP);
+		this.mTcpListener = new OscP5(context, mTCPListeningPort, OscProperties.TCP);
 	}
 
 	public OscMessage makeMessage(OscMessage msg, String cmd) {
@@ -58,6 +59,14 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 
 	public OscP5 getTcpListener() {
 		return this.mTcpListener;
+	}
+
+	public static void setUdpListenerPort(int port) {
+		mUDPListeningPort = port;
+	}
+
+	public static void setTcpListenerPort(int port) {
+		mTCPListeningPort = port;
 	}
 
 	/* public OscBundle makeBundle(OscBundle bundle) {
