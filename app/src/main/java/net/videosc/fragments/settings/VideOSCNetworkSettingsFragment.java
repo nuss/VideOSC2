@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import net.netP5android.NetAddress;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
@@ -39,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 
 import ketai.net.KetaiNet;
-import netP5.NetAddress;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     final private static String TAG = "NetworkSettingsFragment";

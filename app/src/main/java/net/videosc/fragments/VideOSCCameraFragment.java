@@ -78,9 +78,9 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
-import netP5.NetAddress;
-import oscP5.OscBundle;
-import oscP5.OscMessage;
+import net.netP5android.NetAddress;
+import net.oscP5android.OscBundle;
+import net.oscP5android.OscMessage;
 
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCCameraFragment";

@@ -11,7 +11,7 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 
-import netP5.NetAddress;
+import net.netP5android.NetAddress;
 
 /**
  * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.

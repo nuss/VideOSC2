@@ -69,6 +69,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import net.netP5android.NetAddress;
+import net.oscP5android.OscP5;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.adapters.ToolsMenuAdapter;
@@ -92,9 +94,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import netP5.NetAddress;
-import oscP5.OscP5;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-15.

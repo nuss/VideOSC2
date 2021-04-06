@@ -6,13 +6,13 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 
+import net.oscP5android.OscEventListener;
+import net.oscP5android.OscMessage;
+import net.oscP5android.OscP5;
+import net.oscP5android.OscProperties;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import oscP5.OscEventListener;
-import oscP5.OscMessage;
-import oscP5.OscP5;
-import oscP5.OscProperties;
 //import oscP5.OscStatus;
 
 /**
@@ -93,7 +93,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mUdpEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc udp message: " + oscMessage);
+				Log.d(TAG, "osc udp message: " + oscMessage.netAddress());
 				createOscFeedbackStrings(oscMessage);
 			}
 		};
