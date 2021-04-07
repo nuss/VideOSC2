@@ -43,9 +43,9 @@ public abstract class OscPacket extends OscPatcher {
 
     protected static final int BUNDLE = 3;
 
-    protected InetAddress inetAddress;
-
     protected String hostAddress;
+
+    protected InetAddress inetAddress;
 
     protected int _myType;
 
@@ -70,7 +70,6 @@ public abstract class OscPacket extends OscPatcher {
             return null;
         }
         return new OscMessage("error");
-
     }
 
     private static int evaluatePacket(byte[] theBytes) {
@@ -107,6 +106,10 @@ public abstract class OscPacket extends OscPatcher {
     public NetAddress netAddress() {
         Log.d(TAG, "inetAddress: " + inetAddress);
         return new NetAddress(inetAddress, port);
+    }
+
+    public NetAddress hostNetAddress() {
+        return new NetAddress(hostAddress, port);
     }
 
     public String getAddress() {
