@@ -85,7 +85,9 @@ fork ({
 // n ?? { n = NetAddr("192.168.0.201", 32000) };
 n = NetAddr("10.42.0.237", 32000);
 OSCdef(\videosc, { |msg, time, addr, recvPort|
-	n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperCollider");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
 }, '/vosc/red4')
 )
 

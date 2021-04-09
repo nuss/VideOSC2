@@ -25,8 +25,6 @@
 
 package net.oscP5android;
 
-import android.util.Log;
-
 import net.netP5android.Bytes;
 
 import java.util.Map;
@@ -44,7 +42,6 @@ public class OscMessage extends OscPacket {
     protected boolean isPlugged = false;
 
     OscMessage(Map<String, Object> m) {
-        Log.d(TAG, "map m: " + m);
         parseMessage(bytes(m.get("data")));
         _myRef = m.get("socket-ref");
         hostAddress = s(m.get("socket-address"), null);
@@ -53,7 +50,6 @@ public class OscMessage extends OscPacket {
     }
 
     public OscMessage(final OscMessage theOscMessage) {
-
         inetAddress = theOscMessage.inetAddress;
         port = theOscMessage.port;
         hostAddress = theOscMessage.hostAddress;

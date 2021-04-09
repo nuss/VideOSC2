@@ -205,6 +205,7 @@ public class VideOSCMainActivity extends FragmentActivity
                     cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
             );
             mApp.putBroadcastClient(key, client);
+            mApp.putBroadcastClientKeys(client.toString(), key);
         }
 
         cursor.close();

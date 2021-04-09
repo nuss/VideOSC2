@@ -25,8 +25,6 @@
 
 package net.oscP5android;
 
-import android.util.Log;
-
 import net.netP5android.Bytes;
 
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public abstract class OscPatcher {
     protected static final byte ZEROBYTE = 0x00;
     protected static final byte KOMMA = 0x2c;
     protected static final long TIMETAG_OFFSET = 2208988800L;
-    protected static final long TIEMTAG_NOW = 1;
+    protected static final long TIMETAG_NOW = 1;
     protected List<OscMessage> messages;
     protected byte[] _myAddrPattern;
     protected int _myAddrInt = -1;
@@ -53,7 +51,6 @@ public abstract class OscPatcher {
     protected byte _myArrayType = 0X00;
 
     protected int parseBundle(Map<String, Object> m) {
-        Log.d(TAG, "map m: " + m);
         byte[] bytes = bytes(m.get("data"));
         if (bytes.length > OscBundle.BUNDLE_HEADER_SIZE) {
             timetag = Bytes.toLong(Bytes.copy(bytes, 8, 8));
@@ -94,7 +91,6 @@ public abstract class OscPatcher {
     }
 
     public void parseMessage(final byte[] theBytes) {
-
         int myLength = theBytes.length;
         int myIndex = 0;
         myIndex = parseAddrPattern(theBytes, myLength, myIndex);
@@ -107,7 +103,6 @@ public abstract class OscPatcher {
             _myArguments = parseArguments(_myData);
             isValid = true;
         }
-
     }
 
     protected int parseAddrPattern(final byte[] theBytes, final int theLength, final int theIndex) {

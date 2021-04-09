@@ -57,6 +57,9 @@ import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
+import net.netP5android.NetAddress;
+import net.oscP5android.OscBundle;
+import net.oscP5android.OscMessage;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
@@ -78,9 +81,6 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
-import net.netP5android.NetAddress;
-import net.oscP5android.OscBundle;
-import net.oscP5android.OscMessage;
 
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCCameraFragment";
@@ -484,7 +484,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
         private final FragmentManager mManager;
 
-        private OscBundle mOscBundleR, mOscBundleG, mOscBundleB;
         private SparseArray<String> mMappings;
 
         // debugging
@@ -498,10 +497,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             super(context);
 
             this.mActivity = (VideOSCMainActivity) context;
-            this.mOscHelper = new VideOSCOscHandler(mApp);
             this.mOscBundlesR = new ArrayList<>();
             this.mOscBundlesG = new ArrayList<>();
             this.mOscBundlesB = new ArrayList<>();
+            this.mOscHelper = new VideOSCOscHandler(mApp);
 
             Log.d(TAG, "CameraPreview(): " + camera);
             // Capture the context

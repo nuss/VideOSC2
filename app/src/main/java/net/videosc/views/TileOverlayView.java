@@ -284,18 +284,22 @@ public class TileOverlayView extends View {
 			mPaint.setTextSize(15f * mApp.getScreenDensity());
 			String text = "";
 			float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
-			int numRedFBStrings, numGreenFBStrings;
-			SparseArray<ArrayList<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
-			SparseArray<ArrayList<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
-			SparseArray<ArrayList<String>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
+			int numRedFBStrings, numGreenFBStrings, numBlueFBStrings;
+			SparseArray<SparseArray<ArrayList<String>>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
+			SparseArray<SparseArray<ArrayList<String>>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
+			SparseArray<SparseArray<ArrayList<String>>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
 			if (mApp.getColorMode().equals(RGBModes.RGB))
 				mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
 			for (int i = 0; i < numPixels; i++) {
 				if (redFeedbackStrings.get(i) != null) {
-					numRedFBStrings = redFeedbackStrings.get(i).size();
+					final SparseArray<ArrayList<String>> addressStrings = redFeedbackStrings.get(i);
+					numRedFBStrings = addressStrings.size();
 					// concat strings beforehand - probably a bit cheaper than drawing text multiple times
-					for (String redFBString : redFeedbackStrings.get(i)) {
-						text = redFBString.concat("\n");
+					for (int j = 0; j < numRedFBStrings; j++) {
+						ArrayList<String> fbStrings = addressStrings.valueAt(j);
+						for (String fbString : fbStrings) {
+							text = fbString.concat("\n");
+						}
 					}
 					// if we're in RGB mode set textcolor to the corresponding colorchannel
 					// otherwise text should be white
@@ -310,9 +314,14 @@ public class TileOverlayView extends View {
 					}
 				}
 				if (greenFeedbackStrings.get(i) != null) {
-					numGreenFBStrings = greenFeedbackStrings.get(i).size();
-					for (String greenFBString : greenFeedbackStrings.get(i)) {
-						text = greenFBString.concat("\n");
+					final SparseArray<ArrayList<String>> addressStrings = greenFeedbackStrings.get(i);
+					numGreenFBStrings = addressStrings.size();
+					// concat strings beforehand - probably a bit cheaper than drawing text multiple times
+					for (int j = 0; j < numGreenFBStrings; j++) {
+						ArrayList<String> fbStrings = addressStrings.valueAt(j);
+						for (String fbString : fbStrings) {
+							text = fbString.concat("\n");
+						}
 					}
 					if (mApp.getColorMode().equals(RGBModes.RGB))
 						mPaint.setColor(0xff00ff00);
@@ -323,8 +332,14 @@ public class TileOverlayView extends View {
 					}
 				}
 				if (blueFeedbackStrings.get(i) != null) {
-					for (String blueFBStrings : blueFeedbackStrings.get(i)) {
-						text = blueFBStrings.concat("\n");
+					final SparseArray<ArrayList<String>> addressStrings = blueFeedbackStrings.get(i);
+					numBlueFBStrings = addressStrings.size();
+					// concat strings beforehand - probably a bit cheaper than drawing text multiple times
+					for (int j = 0; j < numBlueFBStrings; j++) {
+						ArrayList<String> fbStrings = addressStrings.valueAt(j);
+						for (String fbString : fbStrings) {
+							text = fbString.concat("\n");
+						}
 					}
 					if (mApp.getColorMode().equals(RGBModes.RGB))
 						mPaint.setColor(0xff0000ff);

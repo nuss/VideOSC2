@@ -10,9 +10,9 @@ import net.oscP5android.OscEventListener;
 import net.oscP5android.OscMessage;
 import net.oscP5android.OscP5;
 import net.oscP5android.OscProperties;
+import net.videosc.VideOSCApplication;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 //import oscP5.OscStatus;
 
 /**
@@ -20,7 +20,6 @@ import java.util.HashMap;
  */
 public class VideOSCOscHandler/* implements OscEventListener*/ {
 	final private static String TAG = "VideOSCOscHandler";
-	final private HashMap<Integer, HashMap<String, HashMap<String, Integer>>> mFbStringOccurences = new HashMap<>();
 
 	private final OscP5 mTcpListener, mUdpListener;
 //	private final VideOSCMainActivity mActivity;
@@ -29,15 +28,19 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 //	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
 	private static int mUDPListeningPort = 32000; // default port to listen on messages sent over UDP, updated via settings
 	private static int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
-//	private int mBroadcastPort = 57120; // default port to send to, updated via settings
+	private final VideOSCApplication mApp;
+	//	private int mBroadcastPort = 57120; // default port to send to, updated via settings
 //	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 	private OscEventListener mUdpEventListener, mTcpEventListener;
 
-	private final SparseArray<ArrayList<String>> mFbStringsR = new SparseArray<>();
-	private final SparseArray<ArrayList<String>> mFbStringsG = new SparseArray<>();
-	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
+	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsR = new SparseArray<>();
+	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsG = new SparseArray<>();
+	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsB = new SparseArray<>();
+
+	private final ArrayList<String> mUdpFbBroadcasters = new ArrayList<>();
 
 	public VideOSCOscHandler(Context context) {
+		this.mApp = (VideOSCApplication) context; 
 		this.mUdpListener = new OscP5(context, mUDPListeningPort, OscProperties.UDP);
 		this.mTcpListener = new OscP5(context, mTCPListeningPort, OscProperties.TCP);
 	}
@@ -93,8 +96,12 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mUdpEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc udp message: " + oscMessage.netAddress());
-				createOscFeedbackStrings(oscMessage);
+				Log.d(TAG, "osc udp message: " + oscMessage.hostNetAddressName());
+				final String fbBroadcasterName = oscMessage.hostNetAddressName();
+				if (!mUdpFbBroadcasters.contains(fbBroadcasterName)) {
+					mUdpFbBroadcasters.add(fbBroadcasterName);
+				}
+				createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
 			}
 		};
 		mUdpListener.addListener(mUdpEventListener);
@@ -105,7 +112,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc tcp message: " + oscMessage);
-				createOscFeedbackStrings(oscMessage);
+				createOscFeedbackStrings(oscMessage, mApp.getBroadcastClientKey(oscMessage.hostNetAddressName()));
 			}
 		};
 		mTcpListener.addListener(mTcpEventListener);
@@ -145,15 +152,15 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	}
 */
 
-	public SparseArray<ArrayList<String>> getRedFeedbackStrings() {
+	public SparseArray<SparseArray<ArrayList<String>>> getRedFeedbackStrings() {
 		return mFbStringsR;
 	}
 
-	public SparseArray<ArrayList<String>> getGreenFeedbackStrings() {
+	public SparseArray<SparseArray<ArrayList<String>>> getGreenFeedbackStrings() {
 		return mFbStringsG;
 	}
 
-	public SparseArray<ArrayList<String>> getBlueFeedbackStrings() {
+	public SparseArray<SparseArray<ArrayList<String>>> getBlueFeedbackStrings() {
 		return mFbStringsB;
 	}
 
@@ -163,18 +170,20 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mFbStringsB.clear();
 	}
 
-	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage) {
+	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage, int clientId) {
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
-			String sender = fbMessage.get(0).stringValue();
-			Log.d(TAG, "sender: " + sender);
-			String pixel = fbMessage.getAddress().split("/")[2];
-			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
+			final String fbText = String.valueOf(fbMessage.get(0));
+			Log.d(TAG, "sender: " + fbText);
+			final String pixel = fbMessage.getAddress().split("/")[2];
+			final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
+/*
 			if (mFbStringOccurences.get(index) == null) {
 				mFbStringOccurences.put(index, new HashMap<String, HashMap<String, Integer>>());
 			}
+*/
 			/*HashMap<String, HashMap<String, Integer>> indexMap = mFbStringOccurences.get(index);
 			if (indexMap.get(netAddress) == null) {
 				indexMap.put(netAddress, new HashMap<String, Integer>());
@@ -188,21 +197,42 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			}*/
 
 			if (pixel.matches("^red[0-9]+")) {
-				if (mFbStringsR.get(index) == null)
-					mFbStringsR.put(index, new ArrayList<String>());
-				if (!mFbStringsR.get(index).contains(sender))
-					mFbStringsR.get(index).add(sender);
+				if (mFbStringsR.get(index) == null) {
+					final SparseArray<ArrayList<String>> clientStringsR = new SparseArray<>();
+					mFbStringsR.put(index, clientStringsR);
+				}
+				if (mFbStringsR.get(index).get(clientId) == null) {
+					mFbStringsR.get(index).put(clientId, new ArrayList<String>());
+				}
+				if (!mFbStringsR.get(index).get(clientId).contains(fbText)) {
+					mFbStringsR.get(index).get(clientId).add(fbText);
+				}
 			} else if (pixel.matches("^green[0-9]+")) {
-				if (mFbStringsG.get(index) == null)
-					mFbStringsG.put(index, new ArrayList<String>());
-				if (!mFbStringsG.get(index).contains(sender))
-					mFbStringsG.get(index).add(sender);
+				if (mFbStringsG.get(index) == null) {
+					final SparseArray<ArrayList<String>> clientStringsG = new SparseArray<>();
+					mFbStringsG.put(index, clientStringsG);
+				}
+				if (mFbStringsG.get(index).get(clientId) == null) {
+					mFbStringsG.get(index).put(clientId, new ArrayList<String>());
+				}
+				if (!mFbStringsG.get(index).get(clientId).contains(fbText)) {
+					mFbStringsG.get(index).get(clientId).add(fbText);
+				}
 			} else if (pixel.matches("^blue[0-9]+")) {
-				if (mFbStringsB.get(index) == null)
-					mFbStringsB.put(index, new ArrayList<String>());
-				if (!mFbStringsB.get(index).contains(sender))
-					mFbStringsB.get(index).add(sender);
+				if (mFbStringsB.get(index) == null) {
+					final SparseArray<ArrayList<String>> clientStringsB = new SparseArray<>();
+					mFbStringsB.put(index, clientStringsB);
+				}
+				if (mFbStringsB.get(index).get(clientId) == null) {
+					mFbStringsB.get(index).put(clientId, new ArrayList<String>());
+				}
+				if (!mFbStringsB.get(index).get(clientId).contains(fbText)) {
+					mFbStringsB.get(index).get(clientId).add(fbText);
+				}
 			}
+//			if (index == 3) {
+//				Log.d(TAG, "feedback strings for " + pixel + ": " + mFbStringsR);
+//			}
 		}
 	}
 }

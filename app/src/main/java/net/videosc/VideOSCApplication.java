@@ -4,6 +4,7 @@ import android.app.Application;
 import android.graphics.Point;
 import android.util.SparseArray;
 
+import net.netP5android.NetAddress;
 import net.videosc.db.SettingsDBHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.enums.CommandMappingsSortModes;
@@ -11,7 +12,7 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 
-import net.netP5android.NetAddress;
+import java.util.HashMap;
 
 /**
  * Created by stefan on 05.07.17, package net.videosc, project VideOSC22.
@@ -33,6 +34,8 @@ public class VideOSCApplication extends Application {
 	private boolean mIsTablet;
 	private InteractionModes mInterActionMode = InteractionModes.BASIC;
 	private final SparseArray<NetAddress> mBroadcastClients = new SparseArray<>();
+	private final HashMap<String, Integer> mBroadcastClientKeys = new HashMap<>();
+
 	public Point mDimensions;
 
 	private boolean mIsTorchOn = false;
@@ -82,6 +85,14 @@ public class VideOSCApplication extends Application {
 
 	public NetAddress getBroadcastClient(int key) {
 		return this.mBroadcastClients.get(key);
+	}
+
+	public void putBroadcastClientKeys(String netAddressString, int key) {
+		this.mBroadcastClientKeys.put(netAddressString, key);
+	}
+
+	public int getBroadcastClientKey(String netAddressString) {
+		return this.mBroadcastClientKeys.get(netAddressString);
 	}
 
 	public void setOscHelper(VideOSCOscHandler oscHelper) {

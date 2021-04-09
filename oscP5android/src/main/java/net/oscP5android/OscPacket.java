@@ -108,8 +108,8 @@ public abstract class OscPacket extends OscPatcher {
         return new NetAddress(inetAddress, port);
     }
 
-    public NetAddress hostNetAddress() {
-        return new NetAddress(hostAddress, port);
+    public String hostNetAddressName() {
+        return hostAddress + ":" + port;
     }
 
     public String getAddress() {
