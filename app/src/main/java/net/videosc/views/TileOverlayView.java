@@ -298,9 +298,10 @@ public class TileOverlayView extends View {
 					for (int j = 0; j < numRedFBStrings; j++) {
 						ArrayList<String> fbStrings = addressStrings.valueAt(j);
 						for (String fbString : fbStrings) {
-							text = fbString.concat("\n");
+							text = text.concat("\n").concat(fbString);
 						}
 					}
+					Log.d(TAG, "text for pixel " + i + ": " + text);
 					// if we're in RGB mode set textcolor to the corresponding colorchannel
 					// otherwise text should be white
 					if (mApp.getColorMode().equals(RGBModes.RGB))

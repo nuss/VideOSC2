@@ -201,6 +201,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 					final SparseArray<ArrayList<String>> clientStringsR = new SparseArray<>();
 					mFbStringsR.put(index, clientStringsR);
 				}
+				assert mFbStringsR.get(index) != null;
 				if (mFbStringsR.get(index).get(clientId) == null) {
 					mFbStringsR.get(index).put(clientId, new ArrayList<String>());
 				}
@@ -212,6 +213,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 					final SparseArray<ArrayList<String>> clientStringsG = new SparseArray<>();
 					mFbStringsG.put(index, clientStringsG);
 				}
+				assert mFbStringsG.get(index) != null;
 				if (mFbStringsG.get(index).get(clientId) == null) {
 					mFbStringsG.get(index).put(clientId, new ArrayList<String>());
 				}
@@ -223,7 +225,8 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 					final SparseArray<ArrayList<String>> clientStringsB = new SparseArray<>();
 					mFbStringsB.put(index, clientStringsB);
 				}
-				if (mFbStringsB.get(index).get(clientId) == null) {
+				assert mFbStringsB.get(index) != null;
+				if (mFbStringsB.get(index) != null && mFbStringsB.get(index).get(clientId) == null) {
 					mFbStringsB.get(index).put(clientId, new ArrayList<String>());
 				}
 				if (!mFbStringsB.get(index).get(clientId).contains(fbText)) {
