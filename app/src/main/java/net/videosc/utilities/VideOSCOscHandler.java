@@ -174,7 +174,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
-			final String fbText = String.valueOf(fbMessage.get(0));
+			final String fbText = clientId + ": " + fbMessage.get(0);
 			Log.d(TAG, "sender: " + fbText);
 			final String pixel = fbMessage.getAddress().split("/")[2];
 			final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
@@ -205,6 +205,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 				if (mFbStringsR.get(index).get(clientId) == null) {
 					mFbStringsR.get(index).put(clientId, new ArrayList<String>());
 				}
+				assert mFbStringsR.get(index).get(clientId) != null;
 				if (!mFbStringsR.get(index).get(clientId).contains(fbText)) {
 					mFbStringsR.get(index).get(clientId).add(fbText);
 				}
@@ -217,6 +218,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 				if (mFbStringsG.get(index).get(clientId) == null) {
 					mFbStringsG.get(index).put(clientId, new ArrayList<String>());
 				}
+				assert mFbStringsG.get(index).get(clientId) != null;
 				if (!mFbStringsG.get(index).get(clientId).contains(fbText)) {
 					mFbStringsG.get(index).get(clientId).add(fbText);
 				}
@@ -229,6 +231,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 				if (mFbStringsB.get(index) != null && mFbStringsB.get(index).get(clientId) == null) {
 					mFbStringsB.get(index).put(clientId, new ArrayList<String>());
 				}
+				assert mFbStringsB.get(index).get(clientId) != null;
 				if (!mFbStringsB.get(index).get(clientId).contains(fbText)) {
 					mFbStringsB.get(index).get(clientId).add(fbText);
 				}

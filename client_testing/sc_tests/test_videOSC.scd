@@ -83,13 +83,25 @@ fork ({
 // a simple feedback example
 (
 // n ?? { n = NetAddr("192.168.0.201", 32000) };
-n = NetAddr("10.42.0.237", 32000);
-OSCdef(\videosc, { |msg, time, addr, recvPort|
+n ?? { n = NetAddr("10.42.0.237", 32000) };
+OSCdef(\videoscR, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
-	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperCollider");
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderR");
 	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
-}, '/vosc/red4')
+}, '/vosc/red14');
+OSCdef(\videoscG, { |msg, time, addr, recvPort|
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderG");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/green14');
+OSCdef(\videoscB, { |msg, time, addr, recvPort|
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderB");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/blue14');
 )
+
+OSCdef.freeAll
 
 (
 // n ?? { n = NetAddr("192.168.0.201", 32000) };
