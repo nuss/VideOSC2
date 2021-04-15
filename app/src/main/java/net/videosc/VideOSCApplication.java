@@ -91,10 +91,6 @@ public class VideOSCApplication extends Application {
 		this.mBroadcastClientKeys.put(netAddressString, key);
 	}
 
-	public int getBroadcastClientKey(String netAddressString) {
-		return this.mBroadcastClientKeys.get(netAddressString);
-	}
-
 	public void setOscHelper(VideOSCOscHandler oscHelper) {
 		this.mOscHelper = oscHelper;
 	}

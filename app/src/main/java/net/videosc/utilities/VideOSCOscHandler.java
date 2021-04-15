@@ -3,6 +3,7 @@ package net.videosc.utilities;
 import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import androidx.annotation.NonNull;
 
@@ -33,11 +34,21 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 //	private final HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
 	private OscEventListener mUdpEventListener, mTcpEventListener;
 
-	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsR = new SparseArray<>();
-	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsG = new SparseArray<>();
-	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsB = new SparseArray<>();
+//	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsR = new SparseArray<>();
+//	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsG = new SparseArray<>();
+//	private final SparseArray<SparseArray<ArrayList<String>>> mFbStringsB = new SparseArray<>();
 
 	private final ArrayList<String> mUdpFbBroadcasters = new ArrayList<>();
+
+	private final ArrayList<SparseArray<String>> mFbStringsR = new ArrayList<>();
+	private final ArrayList<SparseArray<String>> mFbCheckStringsR = new ArrayList<>();
+	private final ArrayList<SparseIntArray> mThreshesR = new ArrayList<>();
+	private final ArrayList<SparseArray<String>> mFbStringsG = new ArrayList<>();
+	private final ArrayList<SparseArray<String>> mFbCheckStringsG = new ArrayList<>();
+	private final ArrayList<SparseIntArray> mThreshesG = new ArrayList<>();
+	private final ArrayList<SparseArray<String>> mFbStringsB = new ArrayList<>();
+	private final ArrayList<SparseArray<String>> mFbCheckStringsB = new ArrayList<>();
+	private final ArrayList<SparseIntArray> mThreshesB = new ArrayList<>();
 
 	public VideOSCOscHandler(Context context) {
 		this.mApp = (VideOSCApplication) context; 
@@ -72,39 +83,50 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mTCPListeningPort = port;
 	}
 
-	/* public OscBundle makeBundle(OscBundle bundle) {
-		if (bundle == null) {
-			bundle = new OscBundle();
-		}
-
-		return bundle;
-	} */
-
-//	public OscP5 getOscP5(int key) {
-//		return mBroadcastAddresses.get(key);
-//	}
-
-//	public HashMap<Integer, OscP5> getBroadcastAddresses() {
-//		return mBroadcastAddresses;
-//	}
-
-//	public void addBroadcastAddr(int key, OscP5 oscP5) {
-//		mBroadcastAddresses.put(key, oscP5);
-//	}
-
 	public void addOscUdpEventListener() {
+		final int numSlots = mApp.getResolution().x * mApp.getResolution().y;
 		mUdpEventListener = new OscEventListener() {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc udp message: " + oscMessage.hostNetAddressName());
+//				Log.d(TAG, "osc udp message: " + oscMessage.hostNetAddressName());
 				final String fbBroadcasterName = oscMessage.hostNetAddressName();
+
 				if (!mUdpFbBroadcasters.contains(fbBroadcasterName)) {
 					mUdpFbBroadcasters.add(fbBroadcasterName);
 				}
+
+				createOrAdjustFeedbackStringArrays(mFbStringsR, mFbCheckStringsR, mThreshesR, numSlots);
+				createOrAdjustFeedbackStringArrays(mFbStringsG, mFbCheckStringsG, mThreshesG, numSlots);
+				createOrAdjustFeedbackStringArrays(mFbStringsB, mFbCheckStringsB, mThreshesB, numSlots);
+
 				createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
 			}
 		};
 		mUdpListener.addListener(mUdpEventListener);
+	}
+
+	private void createOrAdjustFeedbackStringArrays(ArrayList<SparseArray<String>> feedBackStrings, ArrayList<SparseArray<String>> feedBackCheckStrings, ArrayList<SparseIntArray> threshes, int numSlots) {
+		final int numStringSlots = feedBackStrings.size();
+
+		if (numStringSlots == 0) {
+			for (int i = 0; i < numSlots; i++) {
+				feedBackStrings.add(i, new SparseArray<String>());
+				feedBackCheckStrings.add(i, new SparseArray<String>());
+				threshes.add(i, new SparseIntArray());
+			}
+		} else if (numStringSlots > numSlots) {
+			if (numStringSlots > numStringSlots - numSlots) {
+				feedBackStrings.subList(numStringSlots - numSlots, numStringSlots).clear();
+				feedBackCheckStrings.subList(numStringSlots - numSlots, numStringSlots).clear();
+				threshes.subList(numStringSlots - numSlots, numStringSlots).clear();
+			}
+		} else if (numStringSlots < numSlots) {
+			for (int i = numStringSlots; i < numSlots; i++) {
+				feedBackStrings.add(i, new SparseArray<String>());
+				feedBackCheckStrings.add(i, new SparseArray<String>());
+				threshes.add(i, new SparseIntArray());
+			}
+		}
 	}
 
 	public void addOscTcpEventListener() {
@@ -112,7 +134,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			@Override
 			public void oscEvent(OscMessage oscMessage) {
 				Log.d(TAG, "osc tcp message: " + oscMessage);
-				createOscFeedbackStrings(oscMessage, mApp.getBroadcastClientKey(oscMessage.hostNetAddressName()));
+//				createOscFeedbackStrings(oscMessage, mApp.getBroadcastClientKey(oscMessage.hostNetAddressName()));
 			}
 		};
 		mTcpListener.addListener(mTcpEventListener);
@@ -126,43 +148,43 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mTcpListener.removeListener(mTcpEventListener);
 	}
 
-//	public void setBroadcastAddr(int key, OscP5 oscP5) {
-//		mBroadcastAddresses.put(key, oscP5);
-//	}
 
-//	public OscP5 getBroadcastAddr(int key) {
-//		return mBroadcastAddresses.get(key);
-//	}
-
-/*
-	public void setBroadcastIP(String ip) {
-		mBroadcastIP = ip;
-	}
-
-	public String getBroadcastIP() {
-		return mBroadcastIP;
-	}
-
-	public void setBroadcastPort(int port) {
-		mBroadcastPort = port;
-	}
-
-	public int getBroadcastPort() {
-		return mBroadcastPort;
-	}
-*/
-
-	public SparseArray<SparseArray<ArrayList<String>>> getRedFeedbackStrings() {
+	public ArrayList<SparseArray<String>> getRedFeedbackStrings() {
 		return mFbStringsR;
 	}
 
-	public SparseArray<SparseArray<ArrayList<String>>> getGreenFeedbackStrings() {
+	public ArrayList<SparseArray<String>> getRedFeedbackCheckStrings() {
+		return mFbCheckStringsR;
+	}
+
+	public ArrayList<SparseArray<String>> getGreenFeedbackStrings() {
 		return mFbStringsG;
 	}
 
-	public SparseArray<SparseArray<ArrayList<String>>> getBlueFeedbackStrings() {
+	public ArrayList<SparseArray<String>> getGreenFeedbackCheckStrings() {
+		return mFbCheckStringsG;
+	}
+
+	public ArrayList<SparseArray<String>> getBlueFeedbackStrings() {
 		return mFbStringsB;
 	}
+
+	public ArrayList<SparseArray<String>> getBlueFeedbackCheckStrings() {
+		return mFbCheckStringsB;
+	}
+
+	public ArrayList<SparseIntArray> getRedThresholds() {
+		return mThreshesR;
+	}
+
+	public ArrayList<SparseIntArray> getGreenThresholds() {
+		return mThreshesG;
+	}
+
+	public ArrayList<SparseIntArray> getBlueThresholds() {
+		return mThreshesB;
+	}
+
 
 	public void resetFeedbackStrings() {
 		mFbStringsR.clear();
@@ -171,74 +193,53 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	}
 
 	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage, int clientId) {
+		SparseArray<String> fbMsgs, checkFbMsgs;
+		SparseIntArray fbThreshes;
+		int idx, thresh;
+
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
 			final String fbText = clientId + ": " + fbMessage.get(0);
-			Log.d(TAG, "sender: " + fbText);
+			Log.d(TAG, "feedback message: " + fbText);
 			final String pixel = fbMessage.getAddress().split("/")[2];
 			final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
-/*
-			if (mFbStringOccurences.get(index) == null) {
-				mFbStringOccurences.put(index, new HashMap<String, HashMap<String, Integer>>());
-			}
-*/
-			/*HashMap<String, HashMap<String, Integer>> indexMap = mFbStringOccurences.get(index);
-			if (indexMap.get(netAddress) == null) {
-				indexMap.put(netAddress, new HashMap<String, Integer>());
-			}
-			HashMap<String, Integer> cmdMap = indexMap.get(netAddress);
-			if (cmdMap.get(sender) == null) {
-				cmdMap.put(sender, 1);
-			} else {
-				int val = cmdMap.get(sender);
-				cmdMap.put(sender, val++);
-			}*/
-
+			// FIXME: handling threshes here is probably wrong as frames are painted in TileOverlayView
+			// if a certain message doesn't come along there the current thresh value should be lowered
+			// if it goes below 0 the message should not be displayed
 			if (pixel.matches("^red[0-9]+")) {
-				if (mFbStringsR.get(index) == null) {
-					final SparseArray<ArrayList<String>> clientStringsR = new SparseArray<>();
-					mFbStringsR.put(index, clientStringsR);
-				}
-				assert mFbStringsR.get(index) != null;
-				if (mFbStringsR.get(index).get(clientId) == null) {
-					mFbStringsR.get(index).put(clientId, new ArrayList<String>());
-				}
-				assert mFbStringsR.get(index).get(clientId) != null;
-				if (!mFbStringsR.get(index).get(clientId).contains(fbText)) {
-					mFbStringsR.get(index).get(clientId).add(fbText);
-				}
+				fbMsgs = mFbStringsR.get(index);
+				checkFbMsgs = mFbCheckStringsR.get(index);
+				fbThreshes = mThreshesR.get(index);
+				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
 			} else if (pixel.matches("^green[0-9]+")) {
-				if (mFbStringsG.get(index) == null) {
-					final SparseArray<ArrayList<String>> clientStringsG = new SparseArray<>();
-					mFbStringsG.put(index, clientStringsG);
-				}
-				assert mFbStringsG.get(index) != null;
-				if (mFbStringsG.get(index).get(clientId) == null) {
-					mFbStringsG.get(index).put(clientId, new ArrayList<String>());
-				}
-				assert mFbStringsG.get(index).get(clientId) != null;
-				if (!mFbStringsG.get(index).get(clientId).contains(fbText)) {
-					mFbStringsG.get(index).get(clientId).add(fbText);
-				}
+				fbMsgs = mFbStringsG.get(index);
+				checkFbMsgs = mFbCheckStringsG.get(index);
+				fbThreshes = mThreshesG.get(index);
+				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
 			} else if (pixel.matches("^blue[0-9]+")) {
-				if (mFbStringsB.get(index) == null) {
-					final SparseArray<ArrayList<String>> clientStringsB = new SparseArray<>();
-					mFbStringsB.put(index, clientStringsB);
-				}
-				assert mFbStringsB.get(index) != null;
-				if (mFbStringsB.get(index) != null && mFbStringsB.get(index).get(clientId) == null) {
-					mFbStringsB.get(index).put(clientId, new ArrayList<String>());
-				}
-				assert mFbStringsB.get(index).get(clientId) != null;
-				if (!mFbStringsB.get(index).get(clientId).contains(fbText)) {
-					mFbStringsB.get(index).get(clientId).add(fbText);
-				}
+				fbMsgs = mFbStringsB.get(index);
+				checkFbMsgs = mFbCheckStringsB.get(index);
+				fbThreshes = mThreshesB.get(index);
+				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
 			}
-//			if (index == 3) {
-//				Log.d(TAG, "feedback strings for " + pixel + ": " + mFbStringsR);
+//			Log.d(TAG, "feedback strings after fill:\nmFbStringsR: " + mFbStringsR + "\nmFbStringsG: " + mFbStringsG + "\nmFbStringsB: " + mFbStringsB);
+		}
+	}
+
+	private void checkAndAddText(SparseArray<String> list, SparseArray<String> checkList, SparseIntArray threshes, String text) {
+		if (checkList.indexOfValue(text.intern()) < 0) {
+//			Log.d(TAG, "checklist contains fb msg '" + text + "' at index " + checkList.indexOfValue(text) + "\ncheckList: " + checkList);
+//			for (int i = 0; i < checkList.size(); i++) {
+//				Log.d(TAG, "value at index " + i + ": " + checkList.valueAt(i) + "\nvalue " + checkList.valueAt(i) + " equals " + text + ": " + (text.intern() == checkList.valueAt(i)));
 //			}
+			checkList.put(checkList.size(), text);
+			list.put(list.size(), text);
+			threshes.put(list.size(), 4);
+		} else {
+//			Log.d(TAG, "match: checklist contains fb msg '" + text + "' at index " + checkList.indexOfValue(text.intern()) + "\ncheckList: " + checkList);
+			list.put(checkList.keyAt(checkList.indexOfValue(text.intern())), text);
 		}
 	}
 }
