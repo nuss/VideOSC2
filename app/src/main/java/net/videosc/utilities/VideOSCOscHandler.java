@@ -41,13 +41,13 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 	private final ArrayList<String> mUdpFbBroadcasters = new ArrayList<>();
 
 	private final ArrayList<SparseArray<String>> mFbStringsR = new ArrayList<>();
-	private final ArrayList<SparseArray<String>> mFbCheckStringsR = new ArrayList<>();
+//	private final ArrayList<SparseArray<String>> mFbCheckStringsR = new ArrayList<>();
 	private final ArrayList<SparseIntArray> mThreshesR = new ArrayList<>();
 	private final ArrayList<SparseArray<String>> mFbStringsG = new ArrayList<>();
-	private final ArrayList<SparseArray<String>> mFbCheckStringsG = new ArrayList<>();
+//	private final ArrayList<SparseArray<String>> mFbCheckStringsG = new ArrayList<>();
 	private final ArrayList<SparseIntArray> mThreshesG = new ArrayList<>();
 	private final ArrayList<SparseArray<String>> mFbStringsB = new ArrayList<>();
-	private final ArrayList<SparseArray<String>> mFbCheckStringsB = new ArrayList<>();
+//	private final ArrayList<SparseArray<String>> mFbCheckStringsB = new ArrayList<>();
 	private final ArrayList<SparseIntArray> mThreshesB = new ArrayList<>();
 
 	public VideOSCOscHandler(Context context) {
@@ -95,9 +95,9 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 					mUdpFbBroadcasters.add(fbBroadcasterName);
 				}
 
-				createOrAdjustFeedbackStringArrays(mFbStringsR, mFbCheckStringsR, mThreshesR, numSlots);
-				createOrAdjustFeedbackStringArrays(mFbStringsG, mFbCheckStringsG, mThreshesG, numSlots);
-				createOrAdjustFeedbackStringArrays(mFbStringsB, mFbCheckStringsB, mThreshesB, numSlots);
+				createOrAdjustFeedbackStringArrays(mFbStringsR, /*mFbCheckStringsR, */mThreshesR, numSlots);
+				createOrAdjustFeedbackStringArrays(mFbStringsG, /*mFbCheckStringsG, */mThreshesG, numSlots);
+				createOrAdjustFeedbackStringArrays(mFbStringsB, /*mFbCheckStringsB, */mThreshesB, numSlots);
 
 				createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
 			}
@@ -105,25 +105,25 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		mUdpListener.addListener(mUdpEventListener);
 	}
 
-	private void createOrAdjustFeedbackStringArrays(ArrayList<SparseArray<String>> feedBackStrings, ArrayList<SparseArray<String>> feedBackCheckStrings, ArrayList<SparseIntArray> threshes, int numSlots) {
+	private void createOrAdjustFeedbackStringArrays(ArrayList<SparseArray<String>> feedBackStrings, /*ArrayList<SparseArray<String>> feedBackCheckStrings, */ArrayList<SparseIntArray> threshes, int numSlots) {
 		final int numStringSlots = feedBackStrings.size();
 
 		if (numStringSlots == 0) {
 			for (int i = 0; i < numSlots; i++) {
 				feedBackStrings.add(i, new SparseArray<String>());
-				feedBackCheckStrings.add(i, new SparseArray<String>());
+//				feedBackCheckStrings.add(i, new SparseArray<String>());
 				threshes.add(i, new SparseIntArray());
 			}
 		} else if (numStringSlots > numSlots) {
 			if (numStringSlots > numStringSlots - numSlots) {
 				feedBackStrings.subList(numStringSlots - numSlots, numStringSlots).clear();
-				feedBackCheckStrings.subList(numStringSlots - numSlots, numStringSlots).clear();
+//				feedBackCheckStrings.subList(numStringSlots - numSlots, numStringSlots).clear();
 				threshes.subList(numStringSlots - numSlots, numStringSlots).clear();
 			}
 		} else if (numStringSlots < numSlots) {
 			for (int i = numStringSlots; i < numSlots; i++) {
 				feedBackStrings.add(i, new SparseArray<String>());
-				feedBackCheckStrings.add(i, new SparseArray<String>());
+//				feedBackCheckStrings.add(i, new SparseArray<String>());
 				threshes.add(i, new SparseIntArray());
 			}
 		}
@@ -153,25 +153,25 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 		return mFbStringsR;
 	}
 
-	public ArrayList<SparseArray<String>> getRedFeedbackCheckStrings() {
-		return mFbCheckStringsR;
-	}
+//	public ArrayList<SparseArray<String>> getRedFeedbackCheckStrings() {
+//		return mFbCheckStringsR;
+//	}
 
 	public ArrayList<SparseArray<String>> getGreenFeedbackStrings() {
 		return mFbStringsG;
 	}
 
-	public ArrayList<SparseArray<String>> getGreenFeedbackCheckStrings() {
-		return mFbCheckStringsG;
-	}
+//	public ArrayList<SparseArray<String>> getGreenFeedbackCheckStrings() {
+//		return mFbCheckStringsG;
+//	}
 
 	public ArrayList<SparseArray<String>> getBlueFeedbackStrings() {
 		return mFbStringsB;
 	}
 
-	public ArrayList<SparseArray<String>> getBlueFeedbackCheckStrings() {
-		return mFbCheckStringsB;
-	}
+//	public ArrayList<SparseArray<String>> getBlueFeedbackCheckStrings() {
+//		return mFbCheckStringsB;
+//	}
 
 	public ArrayList<SparseIntArray> getRedThresholds() {
 		return mThreshesR;
@@ -201,7 +201,7 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
 			final String fbText = clientId + ": " + fbMessage.get(0);
-			Log.d(TAG, "feedback message: " + fbText);
+//			Log.d(TAG, "feedback message: " + fbText);
 			final String pixel = fbMessage.getAddress().split("/")[2];
 			final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
@@ -210,36 +210,40 @@ public class VideOSCOscHandler/* implements OscEventListener*/ {
 			// if it goes below 0 the message should not be displayed
 			if (pixel.matches("^red[0-9]+")) {
 				fbMsgs = mFbStringsR.get(index);
-				checkFbMsgs = mFbCheckStringsR.get(index);
+//				checkFbMsgs = mFbCheckStringsR.get(index);
 				fbThreshes = mThreshesR.get(index);
-				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
+				checkAndAddText(fbMsgs, /*checkFbMsgs, */fbThreshes, fbText);
 			} else if (pixel.matches("^green[0-9]+")) {
 				fbMsgs = mFbStringsG.get(index);
-				checkFbMsgs = mFbCheckStringsG.get(index);
+//				checkFbMsgs = mFbCheckStringsG.get(index);
 				fbThreshes = mThreshesG.get(index);
-				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
+				checkAndAddText(fbMsgs, /*checkFbMsgs, */fbThreshes, fbText);
 			} else if (pixel.matches("^blue[0-9]+")) {
 				fbMsgs = mFbStringsB.get(index);
-				checkFbMsgs = mFbCheckStringsB.get(index);
+//				checkFbMsgs = mFbCheckStringsB.get(index);
 				fbThreshes = mThreshesB.get(index);
-				checkAndAddText(fbMsgs, checkFbMsgs, fbThreshes, fbText);
+				checkAndAddText(fbMsgs, /*checkFbMsgs, */fbThreshes, fbText);
 			}
 //			Log.d(TAG, "feedback strings after fill:\nmFbStringsR: " + mFbStringsR + "\nmFbStringsG: " + mFbStringsG + "\nmFbStringsB: " + mFbStringsB);
 		}
 	}
 
-	private void checkAndAddText(SparseArray<String> list, SparseArray<String> checkList, SparseIntArray threshes, String text) {
-		if (checkList.indexOfValue(text.intern()) < 0) {
-//			Log.d(TAG, "checklist contains fb msg '" + text + "' at index " + checkList.indexOfValue(text) + "\ncheckList: " + checkList);
-//			for (int i = 0; i < checkList.size(); i++) {
-//				Log.d(TAG, "value at index " + i + ": " + checkList.valueAt(i) + "\nvalue " + checkList.valueAt(i) + " equals " + text + ": " + (text.intern() == checkList.valueAt(i)));
-//			}
-			checkList.put(checkList.size(), text);
-			list.put(list.size(), text);
-			threshes.put(list.size(), 4);
+	private void checkAndAddText(@NonNull SparseArray<String> list, /*SparseArray<String> checkList, */@NonNull SparseIntArray threshes, @NonNull String text) {
+		final int index = list.indexOfValue(text.intern());
+		if (index < 0) {
+			final int i = list.size();
+			list.put(i, text);
+			threshes.put(i, 4);
+			Log.d(TAG, " \nfb msgs: " + list + "\nthresholds: " + threshes);
 		} else {
 //			Log.d(TAG, "match: checklist contains fb msg '" + text + "' at index " + checkList.indexOfValue(text.intern()) + "\ncheckList: " + checkList);
-			list.put(checkList.keyAt(checkList.indexOfValue(text.intern())), text);
+//			list.put(checkList.keyAt(checkList.indexOfValue(text.intern())), text);
+			final int thresh = threshes.valueAt(index);
+			final int key = threshes.keyAt(index);
+			if (thresh < 4) {
+				threshes.delete(key);
+				threshes.put(key, thresh + 1);
+			}
 		}
 	}
 }

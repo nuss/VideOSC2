@@ -151,7 +151,7 @@ public class TileOverlayView extends View {
         mPaint.setTextAlign(Paint.Align.LEFT);
         mPaint.setTypeface(mTypeFace);
         mPaint.setTextSize(12f * mApp.getScreenDensity());
-        int numPixels = mResolution.x * mResolution.y;
+        final int numPixels = mResolution.x * mResolution.y;
         boolean oscFeedbackActivated = mApp.getOSCFeedbackActivated();
 
         if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
@@ -287,10 +287,10 @@ public class TileOverlayView extends View {
             mPaint.setTextSize(15f * mApp.getScreenDensity());
             float nextY = mPaint.getTextSize() - 2 * mApp.getScreenDensity();
 
-            final ArrayList<SparseArray<String>> redFeedbackCheckStrings = oscHelper.getRedFeedbackCheckStrings();
+//            final ArrayList<SparseArray<String>> redFeedbackCheckStrings = oscHelper.getRedFeedbackCheckStrings();
 //            Log.d(TAG, "redFeedbackCheckStrings: " + redFeedbackCheckStrings);
-            final ArrayList<SparseArray<String>> greenFeedbackCheckStrings = oscHelper.getGreenFeedbackCheckStrings();
-            final ArrayList<SparseArray<String>> blueFeedbackCheckStrings = oscHelper.getBlueFeedbackCheckStrings();
+//            final ArrayList<SparseArray<String>> greenFeedbackCheckStrings = oscHelper.getGreenFeedbackCheckStrings();
+//            final ArrayList<SparseArray<String>> blueFeedbackCheckStrings = oscHelper.getBlueFeedbackCheckStrings();
 
             final ArrayList<SparseArray<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
             final ArrayList<SparseArray<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
@@ -305,42 +305,42 @@ public class TileOverlayView extends View {
             if (mApp.getColorMode().equals(RGBModes.RGB))
                 mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
             for (int i = 0; i < numPixels; i++) {
-                if (redFeedbackCheckStrings.size() == numPixels && redFeedbackCheckStrings.get(i) != null) {
-                    final SparseArray<String> checkStrings = redFeedbackCheckStrings.get(i);
+                if (redFeedbackStrings.size() == numPixels && redFeedbackStrings.get(i) != null) {
+//                    final SparseArray<String> checkStrings = redFeedbackCheckStrings.get(i);
                     final SparseArray<String> fbStrings = redFeedbackStrings.get(i);
                     final SparseIntArray threshes = redThreshes.get(i);
-                    final int numFbCheckStrings = checkStrings.size();
+                    final int numFbStrings = threshes.size();
 
                     // if we're in RGB mode set textcolor to the corresponding colorchannel
                     // otherwise text should be white
                     if (mApp.getColorMode().equals(RGBModes.RGB))
                         mPaint.setColor(0xffff0000);
 
-                    nextY = printOrRemoveFeedback(canvas, checkStrings, fbStrings, threshes, numFbCheckStrings, nextY);
+                    nextY = printOrRemoveFeedback(canvas, /*checkStrings, */fbStrings, threshes, numFbStrings, i, nextY);
                 }
 
-                if (greenFeedbackCheckStrings.size() == numPixels && greenFeedbackCheckStrings.get(i) != null) {
-                    final SparseArray<String> checkStrings = greenFeedbackCheckStrings.get(i);
+                if (greenFeedbackStrings.size() == numPixels && greenFeedbackStrings.get(i) != null) {
+//                    final SparseArray<String> checkStrings = greenFeedbackCheckStrings.get(i);
                     final SparseArray<String> fbStrings = greenFeedbackStrings.get(i);
                     final SparseIntArray threshes = greenThreshes.get(i);
-                    final int numFbCheckStrings = checkStrings.size();
+                    final int numFbStrings = threshes.size();
 
                     if (mApp.getColorMode().equals(RGBModes.RGB))
                         mPaint.setColor(0xff00ff00);
 
-                    nextY = printOrRemoveFeedback(canvas, checkStrings, fbStrings, threshes, numFbCheckStrings, nextY);
+                    nextY = printOrRemoveFeedback(canvas, /*checkStrings, */fbStrings, threshes, numFbStrings, i, nextY);
                 }
 
-                if (blueFeedbackCheckStrings.size() == numPixels && blueFeedbackCheckStrings.get(i) != null) {
-                    final SparseArray<String> checkStrings = blueFeedbackCheckStrings.get(i);
+                if (blueFeedbackStrings.size() == numPixels && blueFeedbackStrings.get(i) != null) {
+//                    final SparseArray<String> checkStrings = blueFeedbackCheckStrings.get(i);
                     final SparseArray<String> fbStrings = blueFeedbackStrings.get(i);
                     final SparseIntArray threshes = blueThreshes.get(i);
-                    final int numFbCheckStrings = checkStrings.size();
+                    final int numFbStrings = threshes.size();
 
                     if (mApp.getColorMode().equals(RGBModes.RGB))
                         mPaint.setColor(0xff0000ff);
 
-                    printOrRemoveFeedback(canvas, checkStrings, fbStrings, threshes, numFbCheckStrings, nextY);
+                    printOrRemoveFeedback(canvas, /*checkStrings, */fbStrings, threshes, numFbStrings, i, nextY);
                 }
 
                 // reset nextY
@@ -351,37 +351,23 @@ public class TileOverlayView extends View {
         }
     }
 
-    private float printOrRemoveFeedback(Canvas canvas, SparseArray<String> checkStrings, SparseArray<String> fbStrings, SparseIntArray threshes, int numFbCheckStrings, float nextY) {
-        Log.d(TAG, " \ncheckStrings: " + checkStrings + "\nfbStrings: " + fbStrings + "\nthreshes: " + threshes + "\nnumFbCheckStrings: " + numFbCheckStrings);
-        for (int i = 0; i < numFbCheckStrings; i++) {
-            String checkString = checkStrings.valueAt(i);
+    private float printOrRemoveFeedback(Canvas canvas, /*SparseArray<String> checkStrings, */SparseArray<String> fbStrings, SparseIntArray threshes, int numFbStrings, int pixel, float nextY) {
+        Log.d(TAG, " \nfbStrings: " + fbStrings + "\nthreshes: " + threshes);
+        for (int i = 0; i < numFbStrings; i++) {
             final int thresh = threshes.valueAt(i);
-            if (fbStrings.indexOfValue(checkString) < 0) {
-                // feedback string only exists as cached string - decrement threshold
-                if (thresh > 0) {
-                    // if threshold greater 0 print feedback to screen
-                    threshes.put(checkStrings.keyAt(i), thresh - 1);
-                } else {
-                    // feedback has probably been removed - delete checkString, don't print anymore
-                    checkStrings.delete(checkStrings.keyAt(i));
-                }
-            } else {
-                // feedback string has just been received via OSC - increment threshold
-                if (thresh < 4) {
-                    threshes.put(checkStrings.keyAt(i), thresh + 1);
-                }
-            }
+            final int threshKey = threshes.keyAt(i);
+            final String fbString = fbStrings.get(threshKey);
+            threshes.put(threshKey, thresh - 1);
             // if threshold is at least 0 print feedback
             // feedback might not necessarily have come in with last OSC message
             // but should still be cached in checkstrings
-            if (threshes.valueAt(i) >= 0 && (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R))) {
-                drawFeedbackStrings(canvas, i, String.valueOf(checkStrings.valueAt(i)), mResolution, mPixelSize, nextY);
+            if (thresh >= 0 && fbString != null && (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R))) {
+                drawFeedbackStrings(canvas, pixel, fbString, mResolution, mPixelSize, nextY);
                 // increment Y position by the number of lines already written
                 nextY += mPaint.getTextSize();
-            }
-
-            if (fbStrings.indexOfValue(checkString) >= 0) {
-                fbStrings.delete(fbStrings.keyAt(fbStrings.indexOfValue(checkString)));
+            } else {
+                fbStrings.delete(threshKey);
+                threshes.delete(threshKey);
             }
         }
 
