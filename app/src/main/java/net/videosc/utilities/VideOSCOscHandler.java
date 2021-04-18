@@ -162,7 +162,7 @@ public class VideOSCOscHandler {
 		if (fbMessage.getAddress().matches(
 				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
 		) && fbMessage.get(0) != null) {
-			String fbText = clientId + ": " + fbMessage.get(0);
+			String fbText = clientId + ":" + fbMessage.get(0);
 			final String pixel = fbMessage.getAddress().split("/")[2];
 			final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 

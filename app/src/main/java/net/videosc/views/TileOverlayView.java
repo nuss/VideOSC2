@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class TileOverlayView extends View {
     final private static String TAG = "TileOverlayView";
 
-    final Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    final private Paint mPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
     private BitmapShader mShaderSelected;
     final private Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
     private ArrayList<Rect> mSelectPixels = new ArrayList<>();
@@ -295,10 +295,6 @@ public class TileOverlayView extends View {
             final ArrayList<SparseIntArray> greenThreshes = oscHelper.getGreenThresholds();
             final ArrayList<SparseIntArray> blueThreshes = oscHelper.getBlueThresholds();
 
-            // TODO: get checkstrings and thresholds and process them
-
-            if (mApp.getColorMode().equals(RGBModes.RGB))
-                mPaint.setShadowLayer(5.0f, 2.5f, 2.5f, 0xff000000);
             for (int i = 0; i < numPixels; i++) {
                 if (redFeedbackStrings.size() == numPixels && redFeedbackStrings.get(i) != null) {
                     final SparseArray<String> fbStrings = redFeedbackStrings.get(i);
@@ -310,7 +306,7 @@ public class TileOverlayView extends View {
                     if (mApp.getColorMode().equals(RGBModes.RGB))
                         mPaint.setColor(0xffff0000);
 
-                    nextY = printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY);
+                    nextY = printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY, RGBModes.R);
                 }
 
                 if (greenFeedbackStrings.size() == numPixels && greenFeedbackStrings.get(i) != null) {
@@ -319,9 +315,10 @@ public class TileOverlayView extends View {
                     final int numFbStrings = threshes.size();
 
                     if (mApp.getColorMode().equals(RGBModes.RGB))
-                        mPaint.setColor(0xff00ff00);
+                        // make green background a bit darker for better readability
+                        mPaint.setColor(0xff00aa00);
 
-                    nextY = printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY);
+                    nextY = printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY, RGBModes.G);
                 }
 
                 if (blueFeedbackStrings.size() == numPixels && blueFeedbackStrings.get(i) != null) {
@@ -332,7 +329,7 @@ public class TileOverlayView extends View {
                     if (mApp.getColorMode().equals(RGBModes.RGB))
                         mPaint.setColor(0xff0000ff);
 
-                    printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY);
+                    printOrRemoveFeedback(canvas, fbStrings, threshes, numFbStrings, i, nextY, RGBModes.B);
                 }
 
                 // reset nextY
@@ -343,7 +340,7 @@ public class TileOverlayView extends View {
         }
     }
 
-    private float printOrRemoveFeedback(Canvas canvas, SparseArray<String> fbStrings, SparseIntArray threshes, int numFbStrings, int pixel, float nextY) {
+    private float printOrRemoveFeedback(Canvas canvas, SparseArray<String> fbStrings, SparseIntArray threshes, int numFbStrings, int pixel, float nextY, RGBModes mode) {
         for (int i = 0; i < numFbStrings; i++) {
             if (threshes.size() > 0) {
                 final int thresh = threshes.valueAt(i);
@@ -353,7 +350,7 @@ public class TileOverlayView extends View {
                 // if threshold is at least 0 print feedback
                 // feedback might not necessarily have come in with last OSC message
                 // but is still cached
-                if (thresh >= 0 && fbString != null && (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R))) {
+                if (thresh >= 0 && fbString != null && (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(mode))) {
                     drawFeedbackStrings(canvas, pixel, fbString, mResolution, mPixelSize, nextY);
                     // increment Y position by the number of lines already written
                     nextY += mPaint.getTextSize();
@@ -377,12 +374,14 @@ public class TileOverlayView extends View {
     }
 
     private void drawFeedbackStrings(Canvas canvas, int pixIndex, String text, Point resolution, Point pixelSize, float nextY) {
-        canvas.drawText(
-                text,
-                pixIndex % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity(),
-                (float) (pixIndex / resolution.x) * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY,
-                mPaint
-        );
+        final float left = pixIndex % resolution.x * pixelSize.x + 3.5f * mApp.getScreenDensity();
+        final float top = (float) (pixIndex / resolution.x) * pixelSize.y + 3.5f * mApp.getScreenDensity() + nextY;
+
+        if (mApp.getColorMode().equals(RGBModes.RGB)) {
+            canvas.drawRect(left - 3, top - 12f * mApp.getScreenDensity() - 3, left + mPaint.measureText(text) + 3, top + 3, mPaint);
+            mPaint.setColor(0xffffffff);
+        }
+        canvas.drawText(text, left, top, mPaint);
     }
 
     public void setSelectedRects(ArrayList<Rect> rects) {
