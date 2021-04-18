@@ -17,7 +17,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
-	private boolean[] mSlidersTouched;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
 	private double[] mValues;
@@ -85,7 +84,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);
 			int index = Integer.parseInt(child.getNum(), 10) - 1;
-			child.mAreaTop = 0 - getTop() - mParentTopMargin - 1;
+			child.mAreaTop = -getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;
 			if (mValues != null) {
 				child.setPixelValue(mValues[i]);

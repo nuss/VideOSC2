@@ -3,13 +3,13 @@ package net.videosc.adapters;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -24,6 +24,7 @@ import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.fragments.settings.VideOSCSettingsListFragment;
 import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.RGBModes;
@@ -179,6 +180,8 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             final ImageView interactionModeIndicator = indicators.findViewById(R.id.indicator_interaction);
             final ImageView cameraIndicator = indicators.findViewById(R.id.indicator_camera);
             final ImageView torchIndicator = indicators.findViewById(R.id.torch_status_indicator);
+            final ViewGroup basicToolsPalette = mActivity.mCamView.findViewById(R.id.snapshots_bar);
+            final ImageButton feedbackButton = basicToolsPalette.findViewById(R.id.osc_feedback_button);
             // cameraFragment provides all instance methods of the camera preview
             // no reflections needed
             final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
@@ -206,6 +209,11 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                         oscIndicator.setImageResource(R.drawable.osc_playing);
                     } else {
                         app.setCameraOSCisPlaying(false);
+                        VideOSCOscHandler oscHandler = app.getOscHelper();
+                        app.setOSCFeedbackActivated(false);
+                        feedbackButton.setActivated(false);
+                        oscHandler.removeOscUdpEventListener();
+                        oscHandler.removeOscTcpEventListener();
                         mToolsDrawerListState.put(START_STOP, R.drawable.start);
                         img = (BitmapDrawable) ContextCompat.getDrawable(mActivity, R.drawable.start);
                         oscIndicator.setImageResource(R.drawable.osc_paused);
