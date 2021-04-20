@@ -13,12 +13,10 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +32,7 @@ import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.utilities.VideOSCDialogHelper;
+import net.videosc.utilities.VideOSCOscHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +44,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     final private static String TAG = "NetworkSettingsFragment";
     private EditText mAddIPAddress;
     private EditText mAddPort;
-    private Button mAddProtocol;
-    private ArrayAdapter<String> mProtocolsAdapter;
-    private PopupWindow mProtocolsPopUp;
     private Cursor mAddressesCursor;
     private AddressesListAdapter mAddressesAdapter;
     private SQLiteDatabase mDb;
@@ -61,6 +57,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
+        this.mApp = (VideOSCApplication) mActivity.getApplication();
     }
 
     /**
@@ -101,6 +98,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         // in API 30 getting the cameraView only seems to work with fragmentManager retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
         mDb = mActivity.getDatabase();
+        final VideOSCOscHandler oscHelper = mApp.getOscHelper();
 
         mAddIPAddress = view.findViewById(R.id.add_remote_ip);
         mAddPort = view.findViewById(R.id.add_remote_port);

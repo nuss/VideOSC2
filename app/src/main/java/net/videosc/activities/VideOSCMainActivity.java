@@ -70,7 +70,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.netP5android.NetAddress;
-import net.oscP5android.OscP5;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.adapters.ToolsMenuAdapter;
@@ -149,7 +148,6 @@ public class VideOSCMainActivity extends FragmentActivity
     public ViewGroup mBasicToolbar;
 
     public SQLiteDatabase mDb;
-    final private HashMap<Integer, OscP5> mBroadcastAddresses = new HashMap<>();
     private VideOSCOscHandler mOscHelper;
 
     /**
@@ -179,16 +177,45 @@ public class VideOSCMainActivity extends FragmentActivity
         final float scale = getResources().getDisplayMetrics().density;
         mApp.setScreenDensity(scale);
 
+
+
         // keep db access open through the app's lifetime
         mDbHelper = new SettingsDBHelper(this);
         mDb = mDbHelper.getReadableDatabase();
+
+        // FIXME: clean up all these queries and move them to VideOSCDBHelpers?
         String[] settingsFields = new String[]{
-                SettingsContract.SettingsEntries._ID,
+                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT
+        };
+
+        Cursor cursor = mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        int udpPort = 0, tcpPort = 0;
+        while (cursor.moveToNext()) {
+            udpPort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+            tcpPort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
+        }
+
+        cursor.close();
+
+        mOscHelper.createListeners(udpPort, tcpPort);
+
+        settingsFields = new String[]{
+                SettingsContract.AddressSettingsEntries._ID,
                 SettingsContract.AddressSettingsEntries.IP_ADDRESS,
                 SettingsContract.AddressSettingsEntries.PORT
         };
 
-        Cursor cursor = mDb.query(
+        cursor = mDb.query(
                 SettingsContract.AddressSettingsEntries.TABLE_NAME,
                 settingsFields,
                 null,
@@ -227,6 +254,7 @@ public class VideOSCMainActivity extends FragmentActivity
         );
 
         SparseArray<String> mappings = new SparseArray<>();
+
         while (cursor.moveToNext()) {
             mappings.put(
                     cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS)),
@@ -471,7 +499,6 @@ public class VideOSCMainActivity extends FragmentActivity
                                                 numSnapshotsIndicator.setTextColor(0xffffffff);
                                             }
                                         }
-//										mDb.close();
                                         ((FrameLayout) mCamView).removeView(dialogView);
                                     }
                                 })

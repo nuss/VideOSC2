@@ -21,9 +21,7 @@ import java.util.ArrayList;
 public class VideOSCOscHandler {
     final private static String TAG = "VideOSCOscHandler";
 
-    private final OscP5 mTcpListener, mUdpListener;
-    private static int mUDPListeningPort = 32000; // default port to listen on messages sent over UDP, updated via settings
-    private static int mTCPListeningPort = 32100; // default port to listen on messages sent over TCP/IP, updated via settings
+    private OscP5 mTcpListener, mUdpListener;
     private final VideOSCApplication mApp;
     private OscEventListener mUdpEventListener, mTcpEventListener;
 
@@ -38,8 +36,11 @@ public class VideOSCOscHandler {
 
     public VideOSCOscHandler(Context context) {
         this.mApp = (VideOSCApplication) context;
-        this.mUdpListener = new OscP5(context, mUDPListeningPort, OscProperties.UDP);
-        this.mTcpListener = new OscP5(context, mTCPListeningPort, OscProperties.TCP);
+    }
+
+    public void createListeners(int udpPort, int tcpPort) {
+        this.mUdpListener = new OscP5(this.mApp, udpPort, OscProperties.UDP);
+        this.mTcpListener = new OscP5(this.mApp, tcpPort, OscProperties.TCP);
     }
 
     public OscMessage makeMessage(OscMessage msg, String cmd) {
@@ -61,13 +62,19 @@ public class VideOSCOscHandler {
         return this.mTcpListener;
     }
 
-    public static void setUdpListenerPort(int port) {
-        mUDPListeningPort = port;
+/*
+    public void setUdpListenerPort(int port) {
+        final OscProperties props = this.mUdpListener.getProperties().setListeningPort(port);
+        this.mUdpListener.setProperties(props);
+//        mUDPListeningPort = port;
     }
 
-    public static void setTcpListenerPort(int port) {
-        mTCPListeningPort = port;
+    public void setTcpListenerPort(int port) {
+        final OscProperties props = this.mTcpListener.getProperties().setListeningPort(port);
+        this.mTcpListener.setProperties(props);
+//        mTCPListeningPort = port;
     }
+*/
 
     public void addOscUdpEventListener() {
         mUdpEventListener = new OscEventListener() {
@@ -99,10 +106,8 @@ public class VideOSCOscHandler {
                 threshes.add(i, new SparseIntArray());
             }
         } else if (numStringSlots > numSlots) {
-            Log.d(TAG, "fb strings size before: " + feedBackStrings.size() + ", threshes size before: " + threshes.size());
             feedBackStrings.subList(numSlots, numStringSlots).clear();
             threshes.subList(numSlots, numStringSlots).clear();
-            Log.d(TAG, "fb strings size after: " + feedBackStrings.size() + ", threshes size after: " + threshes.size());
         } else if (numStringSlots < numSlots) {
             for (int i = numStringSlots; i < numSlots; i++) {
                 feedBackStrings.add(i, new SparseArray<String>());

@@ -500,7 +500,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             this.mOscBundlesR = new ArrayList<>();
             this.mOscBundlesG = new ArrayList<>();
             this.mOscBundlesB = new ArrayList<>();
-            this.mOscHelper = new VideOSCOscHandler(mApp);
+            this.mOscHelper = mApp.getOscHelper();
 
             Log.d(TAG, "CameraPreview(): " + camera);
             // Capture the context

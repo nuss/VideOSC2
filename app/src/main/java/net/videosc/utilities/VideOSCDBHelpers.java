@@ -8,6 +8,7 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 
 public class VideOSCDBHelpers {
+    private final static String TAG = VideOSCDBHelpers.class.getSimpleName();
     private final SQLiteDatabase mDb;
 
     public VideOSCDBHelpers(VideOSCMainActivity activity) {
@@ -44,12 +45,62 @@ public class VideOSCDBHelpers {
 
         while (cursor.moveToNext()) {
             final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS));
-            String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
+            final String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
             mappings.put((int) addrID, mappingsString);
         }
 
         cursor.close();
 
         return mappings;
+    }
+
+    public int getUdpReceivePort() {
+        String[] settingsFields = new String[]{
+                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT
+        };
+
+        Cursor cursor = mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+//        while (cursor.moveToNext()) {
+        final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+//        }
+
+        cursor.close();
+
+        return port;
+    }
+
+    public int getTcpReceivePort() {
+//        int port = 0;
+
+        String[] settingsFields = new String[]{
+                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT
+        };
+
+        Cursor cursor = mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+//        while (cursor.moveToNext()) {
+        final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
+//        }
+
+        cursor.close();
+
+        return port;
     }
 }

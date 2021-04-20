@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 
 /**
@@ -39,8 +40,9 @@ public class VideOSCBaseFragment extends Fragment {
     protected ViewGroup mContainer;
     protected View mView;
     protected LayoutInflater mInflater;
+	protected VideOSCApplication mApp;
 
-    /**
+	/**
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {

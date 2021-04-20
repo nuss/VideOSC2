@@ -67,7 +67,6 @@ public class VideOSCApplication extends Application {
 		// rather than initializing SettingsDBHelper statically retrieve
 		// settingsHelper instance with getSettingshelper (no memory leaks)
 		this.mSettingsHelper = new SettingsDBHelper(this);
-		// FIXME: VideOSCOscHandler should belong to Application too?
 		this.mOscHelper = new VideOSCOscHandler(this);
 	}
 

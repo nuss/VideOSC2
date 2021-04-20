@@ -98,7 +98,7 @@ OSCdef(\videoscB, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
 	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderB");
 	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
-}, '/vosc/blue14');
+}, '/vosc/blue25');
 )
 
 OSCdef.freeAll
