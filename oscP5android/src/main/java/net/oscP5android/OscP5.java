@@ -25,8 +25,6 @@
 
 package net.oscP5android;
 
-import android.util.Log;
-
 import net.netP5android.NetAddress;
 import net.netP5android.NetAddressList;
 import net.netP5android.NetInfo;
@@ -407,7 +405,6 @@ public class OscP5 implements Observer {
 
     public void process(Object o) {
         if (o instanceof Map) {
-            Log.d(TAG, "map o: " + o);
             process(OscPacket.parse((Map<String, Object>) o));
         }
     }
