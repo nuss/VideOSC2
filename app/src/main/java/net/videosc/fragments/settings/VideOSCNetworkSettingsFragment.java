@@ -31,8 +31,8 @@ import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
-import net.videosc.utilities.VideOSCOscHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
+    private VideOSCDBHelpers mDbHelper;
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -97,15 +98,15 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         assert fragmentManager != null;
         // in API 30 getting the cameraView only seems to work with fragmentManager retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-        mDb = mActivity.getDatabase();
-        final VideOSCOscHandler oscHelper = mApp.getOscHelper();
+        this.mDbHelper = mActivity.getDbHelper();
+        this.mDb = mDbHelper.getDatabase();
 
-        mAddIPAddress = view.findViewById(R.id.add_remote_ip);
-        mAddPort = view.findViewById(R.id.add_remote_port);
+        this.mAddIPAddress = view.findViewById(R.id.add_remote_ip);
+        this.mAddPort = view.findViewById(R.id.add_remote_port);
 
         final Button addAddress = view.findViewById(R.id.add_address_button);
 
-        mAddresses = new ArrayList<>();
+        this.mAddresses = new ArrayList<>();
         final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
         final ContentValues values = new ContentValues();
 

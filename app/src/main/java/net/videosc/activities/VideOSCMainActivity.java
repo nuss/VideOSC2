@@ -69,15 +69,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import net.netP5android.NetAddress;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.adapters.ToolsMenuAdapter;
 import net.videosc.db.SettingsContract;
-import net.videosc.db.SettingsDBHelper;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.fragments.VideOSCSelectSnapshotFragment;
+import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
@@ -134,7 +133,8 @@ public class VideOSCMainActivity extends FragmentActivity
     public ViewGroup mFrameRateCalculationPanel;
 
     // settings, retrieved from sqlite db
-    public SettingsDBHelper mDbHelper;
+//    public SettingsDBHelper mDbHelper;
+    VideOSCDBHelpers mDbHelper;
 
     Intent starterIntent;
     private static final int CODE_WRITE_SETTINGS_PERMISSION = 111;
@@ -177,93 +177,17 @@ public class VideOSCMainActivity extends FragmentActivity
         final float scale = getResources().getDisplayMetrics().density;
         mApp.setScreenDensity(scale);
 
-
-
         // keep db access open through the app's lifetime
-        mDbHelper = new SettingsDBHelper(this);
-        mDb = mDbHelper.getReadableDatabase();
+        mDbHelper = new VideOSCDBHelpers(this);
+        mDb = mDbHelper.getDatabase();
 
-        // FIXME: clean up all these queries and move them to VideOSCDBHelpers?
-        String[] settingsFields = new String[]{
-                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT
-        };
-
-        Cursor cursor = mDb.query(
-                SettingsContract.SettingsEntries.TABLE_NAME,
-                settingsFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        int udpPort = 0, tcpPort = 0;
-        while (cursor.moveToNext()) {
-            udpPort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
-            tcpPort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
-        }
-
-        cursor.close();
-
+        final int udpPort = mDbHelper.getUdpReceivePort();
+        final int tcpPort = mDbHelper.getTcpReceivePort();
         mOscHelper.createListeners(udpPort, tcpPort);
 
-        settingsFields = new String[]{
-                SettingsContract.AddressSettingsEntries._ID,
-                SettingsContract.AddressSettingsEntries.IP_ADDRESS,
-                SettingsContract.AddressSettingsEntries.PORT
-        };
+        mDbHelper.setBroadcastClients();
 
-        cursor = mDb.query(
-                SettingsContract.AddressSettingsEntries.TABLE_NAME,
-                settingsFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        while (cursor.moveToNext()) {
-            final int key = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
-            final NetAddress client = new NetAddress(
-                    cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT))
-            );
-            mApp.putBroadcastClient(key, client);
-            mApp.putBroadcastClientKeys(client.toString(), key);
-        }
-
-        cursor.close();
-
-        settingsFields = new String[]{
-                SettingsContract.AddressCommandsMappings._ID,
-                SettingsContract.AddressCommandsMappings.ADDRESS,
-                SettingsContract.AddressCommandsMappings.MAPPINGS
-        };
-
-        cursor = mDb.query(
-                SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                settingsFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        SparseArray<String> mappings = new SparseArray<>();
-
-        while (cursor.moveToNext()) {
-            mappings.put(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS)),
-                    cursor.getString((cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS)))
-            );
-        }
-
-        cursor.close();
-
+        final SparseArray<String> mappings = mDbHelper.getMappings();
         mApp.setCommandMappings(mappings);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -390,35 +314,8 @@ public class VideOSCMainActivity extends FragmentActivity
         loadSnapshotsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final MatrixCursor extras = new MatrixCursor(new String[]{
-                        SettingsContract.PixelSnapshotEntries._ID,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
-                });
-                extras.addRow(new String[]{"-1", null, null, null, null, null, null, "export snapshots set...", null});
-                extras.addRow(new String[]{"-2", null, null, null, null, null, null, "load snapshots set...", null});
-                final String[] settingsFields = new String[]{
-                        SettingsContract.PixelSnapshotEntries._ID,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
-                        SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE
-                };
-                final Cursor cursor = mDb.query(
-                        SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-                        settingsFields,
-                        null, null, null, null, SettingsContract.PixelSnapshotEntries._ID + " DESC"
-                );
+                final MatrixCursor extras = mDbHelper.getSnapshotsMatrixCursor();
+                final Cursor cursor = mDbHelper.getSnapshotsCursor();
                 final Cursor[] cursors = {cursor, extras};
                 final MergeCursor mergedCursor = new MergeCursor(cursors);
                 VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
@@ -795,12 +692,16 @@ public class VideOSCMainActivity extends FragmentActivity
         mApp.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
         // close db
         mDb.close();
-        mDbHelper.close();
+//        mDbHelper.close();
         super.onDestroy();
     }
 
     public Enum<RGBToolbarStatus> getColorModeToolsDrawer() {
         return this.mColorModeToolsDrawer;
+    }
+
+    public VideOSCDBHelpers getDbHelper() {
+        return this.mDbHelper;
     }
 
     public SQLiteDatabase getDatabase() {
