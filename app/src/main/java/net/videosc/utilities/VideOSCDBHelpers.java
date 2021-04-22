@@ -38,6 +38,37 @@ public class VideOSCDBHelpers {
         return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.AddressSettingsEntries.TABLE_NAME);
     }
 
+    public SparseArray<String> getAddresses() {
+        final SparseArray<String> addresses = new SparseArray<>();
+
+        final String[] addrFields = new String[]{
+                SettingsContract.AddressSettingsEntries._ID,
+                SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+                SettingsContract.AddressSettingsEntries.PORT
+        };
+
+        final Cursor cursor = mDb.query(
+                SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                addrFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        while (cursor.moveToNext()) {
+            final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+            final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
+            addresses.put((int) addrID, ip + ":" + port);
+        }
+
+        cursor.close();
+
+        return addresses;
+    }
+
     public SparseArray<String> getMappings() {
         final SparseArray<String> mappings = new SparseArray<>();
 
@@ -67,8 +98,8 @@ public class VideOSCDBHelpers {
 
         return mappings;
     }
-    
-    public void setBroadcastClients() {
+
+    public void getBroadcastClients() {
         final String[] settingsFields = new String[]{
                 SettingsContract.AddressSettingsEntries._ID,
                 SettingsContract.AddressSettingsEntries.IP_ADDRESS,
@@ -187,4 +218,85 @@ public class VideOSCDBHelpers {
                 null, null, null, null, SettingsContract.PixelSnapshotEntries._ID + " DESC"
         );
     }
+
+    public Cursor queryAddresses(String[] fields) {
+        String sortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
+        return mDb.query(
+                SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                fields,
+                null,
+                null,
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    public Cursor queryNetworkSettings() {
+        final String[] settingsFields = new String[]{
+                SettingsContract.SettingsEntries._ID,
+                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
+                SettingsContract.SettingsEntries.ROOT_CMD,
+                SettingsContract.SettingsEntries.TCP_PASSWORD
+        };
+
+        return mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public Cursor queryResolutionSettings() {
+        final String[] settingsFields = new String[]{
+                SettingsContract.SettingsEntries._ID,
+                SettingsContract.SettingsEntries.RES_H,
+                SettingsContract.SettingsEntries.RES_V,
+                SettingsContract.SettingsEntries.FRAMERATE_RANGE,
+                SettingsContract.SettingsEntries.NORMALIZE,
+                SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
+        };
+
+        return mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public String getRootCmd() {
+        String rootCmd = "vosc";
+
+        String[] settingsFields = new String[]{
+                SettingsContract.SettingsEntries.ROOT_CMD
+        };
+
+        Cursor cursor = mDb.query(
+                SettingsContract.SettingsEntries.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst())
+            rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+
+        cursor.close();
+
+        return rootCmd;
+    }
+
+
 }

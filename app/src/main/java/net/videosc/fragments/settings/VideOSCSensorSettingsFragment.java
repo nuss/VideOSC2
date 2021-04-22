@@ -28,6 +28,7 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 	public VideOSCSensorSettingsFragment(Context context) {
     	this.mActivity = (VideOSCMainActivity) context;
+    	this.mDbHelper = mActivity.getDbHelper();
     }
 
 	/**
@@ -61,7 +62,7 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		final SQLiteDatabase db = mActivity.getDatabase();
+		final SQLiteDatabase db = mDbHelper.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 
 		final Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.SensorSettingsEntries.TABLE_NAME, null);
@@ -349,25 +350,7 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	private void setPlaceholder(View container, SQLiteDatabase db) {
 		Resources res = getResources();
 		SparseIntArray idsAndStrings = new SparseIntArray(11);
-		String rootCmd = "vosc";
-		String[] settingsFields = new String[]{
-				SettingsContract.SettingsEntries.ROOT_CMD
-		};
-
-		Cursor cursor = db.query(
-				SettingsContract.SettingsEntries.TABLE_NAME,
-				settingsFields,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
-		if (cursor.moveToFirst())
-			rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-
-		cursor.close();
+		String rootCmd = mDbHelper.getRootCmd();
 
 		idsAndStrings.append(R.id.orientation_sensor, R.string.orientation_sensor);
 		idsAndStrings.append(R.id.accelerometer, R.string.accelerometer);

@@ -1,7 +1,6 @@
 package net.videosc.interfaces.mappings_data_source;
 
 import android.content.ContentValues;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -13,6 +12,7 @@ import androidx.annotation.NonNull;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
+import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.enums.CommandMappingsSortModes;
 
 import java.util.ArrayList;
@@ -21,19 +21,18 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     final private static String TAG = MappingsTableDataSourceImpl.class.getSimpleName();
     final private SQLiteDatabase mDb;
     final private VideOSCApplication mApp;
-    private final VideOSCMainActivity mActivity;
+    private final VideOSCDBHelpers mDbHelper;
     private SparseArray<String> mMappings;
     private final SparseArray<String> mAddresses;
     private ArrayList<String> mCommands;
-    private String mRootCmd;
 
     public MappingsTableDataSourceImpl(VideOSCMainActivity activity) {
-        this.mActivity = activity;
-        this.mDb = activity.getDatabase();
+        this.mDbHelper = activity.getDbHelper();
+        this.mDb = mDbHelper.getDatabase();
         this.mApp = (VideOSCApplication) activity.getApplication();
         CommandMappingsSortModes sortMode = mApp.getCommandMappingsSortMode();
         this.mAddresses = getAddresses();
-        getCommands(sortMode);
+        sortCommands(sortMode);
         initSortMode();
     }
 
@@ -143,65 +142,17 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
     }
 
     private SparseArray<String> getAddresses() {
-        Resources res = mActivity.getResources();
-        final SparseArray<String> addresses = new SparseArray<>();
-        String protocolName;
-
-        final String[] addrFields = new String[]{
-                SettingsContract.AddressSettingsEntries._ID,
-                SettingsContract.AddressSettingsEntries.IP_ADDRESS,
-                SettingsContract.AddressSettingsEntries.PORT
-        };
-
-        final Cursor cursor = mDb.query(
-                SettingsContract.AddressSettingsEntries.TABLE_NAME,
-                addrFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        while (cursor.moveToNext()) {
-            final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
-            final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
-            final int port = cursor.getInt((cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT)));
-            addresses.put((int) addrID, ip + ":" + port);
-        }
-
-        cursor.close();
-
-        return addresses;
+        return mDbHelper.getAddresses();
     }
 
-    private void getCommands(CommandMappingsSortModes sortMode) {
-        final String[] rootCmdFields = new String[]{
-                SettingsContract.SettingsEntries._ID,
-                SettingsContract.SettingsEntries.ROOT_CMD
-        };
-
-        Cursor cursor = mDb.query(
-                SettingsContract.SettingsEntries.TABLE_NAME,
-                rootCmdFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        if (cursor.moveToFirst()) {
-            mRootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-        }
-
-        cursor.close();
-
-        sortCommands(sortMode);
-    }
+//    private void getCommands(CommandMappingsSortModes sortMode) {
+//        final String rootCmd = mDbHelper.getRootCmd();
+//        sortCommands(sortMode, rootCmd);
+//    }
 
     public void sortCommands(CommandMappingsSortModes sortMode) {
         mCommands = new ArrayList<>();
+        final String rootCmd = mDbHelper.getRootCmd();
         final String[] colors = new String[]{"red", "green", "blue"};
         final Point res = mApp.getResolution();
         final int size = res.x * res.y;
@@ -209,13 +160,13 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
         if (sortMode.equals(CommandMappingsSortModes.SORT_BY_COLOR)) {
             for (String color : colors) {
                 for (int i = 0; i < size;) {
-                    mCommands.add("/" + mRootCmd + "/" + color + (++i));
+                    mCommands.add("/" + rootCmd + "/" + color + (++i));
                 }
             }
         } else if (sortMode.equals(CommandMappingsSortModes.SORT_BY_NUM)) {
             for (int i = 0; i < size; i++) {
                 for (String color : colors) {
-                    mCommands.add("/" + mRootCmd + "/" + color + (i+1));
+                    mCommands.add("/" + rootCmd + "/" + color + (i+1));
                 }
             }
         }
@@ -223,33 +174,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
 
     @Override
     public void getMappings() {
-        final SparseArray<String> mappings = new SparseArray<>();
-
-        String[] mappingsFields = new String[]{
-                SettingsContract.AddressCommandsMappings._ID,
-                SettingsContract.AddressCommandsMappings.ADDRESS,
-                SettingsContract.AddressCommandsMappings.MAPPINGS
-        };
-
-        Cursor cursor = mDb.query(
-                SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                mappingsFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        while (cursor.moveToNext()) {
-            final long addrID = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.ADDRESS));
-            String mappingsString = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressCommandsMappings.MAPPINGS));
-            mappings.put((int) addrID, mappingsString);
-        }
-
-        cursor.close();
-
-        this.mMappings = mappings;
+        this.mMappings = mDbHelper.getMappings();
     }
 
     // if a row in VideOSC is sending to all clients
@@ -331,15 +256,14 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 SettingsContract.AddressCommandsMappings.MAPPINGS,
                 mappings
         );
-        long result;
         if (mMappings.size() == 0 || !checkIfEntryExists(addrID)) {
-            result = mDb.insert(
+            mDb.insert(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
                     null,
                     values
             );
         } else {
-            result = mDb.update(
+            mDb.update(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
                     values,
                     SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrID,

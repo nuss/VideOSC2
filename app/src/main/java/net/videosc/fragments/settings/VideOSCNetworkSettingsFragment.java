@@ -31,7 +31,6 @@ import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
-import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
 
 import java.util.ArrayList;
@@ -50,14 +49,13 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
     private final String[] mAddrFields = new String[]{
             SettingsContract.AddressSettingsEntries.IP_ADDRESS,
             SettingsContract.AddressSettingsEntries.PORT,
-//            SettingsContract.AddressSettingsEntries.PROTOCOL,
             SettingsContract.AddressSettingsEntries._ID
     };
     private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
-    private VideOSCDBHelpers mDbHelper;
 
     public VideOSCNetworkSettingsFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
+        this.mDbHelper = mActivity.getDbHelper();
         this.mApp = (VideOSCApplication) mActivity.getApplication();
     }
 
@@ -98,7 +96,6 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         assert fragmentManager != null;
         // in API 30 getting the cameraView only seems to work with fragmentManager retrieved through getFragmentManager, not getChildFragmentManager
         final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-        this.mDbHelper = mActivity.getDbHelper();
         this.mDb = mDbHelper.getDatabase();
 
         this.mAddIPAddress = view.findViewById(R.id.add_remote_ip);
@@ -112,15 +109,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         addAddress.setOnClickListener(new AddAddressButtonOnClickListener(mDb, values, mAddIPAddress, mAddPort));
 
-        final String[] settingsFields = new String[]{
-                SettingsContract.SettingsEntries._ID,
-                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
-                SettingsContract.SettingsEntries.ROOT_CMD,
-                SettingsContract.SettingsEntries.TCP_PASSWORD
-        };
-
-        mAddressesCursor = queryAddresses();
+        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
 
         mAddressesAdapter = new AddressesListAdapter(
                 getActivity(), R.layout.address_list_item, mAddressesCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
@@ -143,15 +132,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 
         mAddresses = getAddresses(mAddressesCursor);
 
-        Cursor cursor = mDb.query(
-                SettingsContract.SettingsEntries.TABLE_NAME,
-                settingsFields,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        Cursor cursor = mDbHelper.queryNetworkSettings();
 
         settings.clear();
 
@@ -302,6 +283,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
         });
     }
 
+/*
     private Cursor queryAddresses() {
         String sortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
         return mDb.query(
@@ -309,6 +291,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 mAddrFields, null, null, null, null, sortOrder
         );
     }
+*/
 
     private ArrayList<VideOSCSettingsListFragment.Address> getAddresses(Cursor cursor) {
         final ArrayList<VideOSCSettingsListFragment.Address> res = new ArrayList<>();
@@ -424,7 +407,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
 //                );
 //
                 final String[] compareString = new String[]{addAddressText, addPortVal/*, String.valueOf(protocol)*/};
-                mAddressesCursor = queryAddresses();
+                mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
                 final ArrayList<String[]> addressesStrings = getAddressesCompareStrings(mAddressesCursor);
                 final short compResult = compare(compareString, addressesStrings);
 //                final int innerProtocol = protocol;
@@ -446,7 +429,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                                             app.putBroadcastClient((int) ret, new NetAddress(addAddressText, Integer.parseInt(addPortVal)));
                                         }
                                         resetRemoteClientInputs();
-                                        mAddressesCursor = queryAddresses();
+                                        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
                                         mAddressesAdapter.changeCursor(mAddressesCursor);
                                         mAddressesAdapter.notifyDataSetChanged();
                                     }
@@ -473,7 +456,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                         }
                         resetRemoteClientInputs();
                         mValues.clear();
-                        mAddressesCursor = queryAddresses();
+                        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
                         mAddressesAdapter.changeCursor(mAddressesCursor);
                         mAddressesAdapter.notifyDataSetChanged();
                         break;

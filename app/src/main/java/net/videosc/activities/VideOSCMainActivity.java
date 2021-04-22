@@ -104,7 +104,6 @@ public class VideOSCMainActivity extends FragmentActivity
     private androidx.fragment.app.FragmentManager mFragmentManager;
 
     public View mCamView;
-    private Point mDimensions;
     public DrawerLayout mToolsDrawerLayout;
 
     private VideOSCCameraFragment mCameraPreview;
@@ -112,7 +111,6 @@ public class VideOSCMainActivity extends FragmentActivity
     // ID of currently opened camera
     public static int backsideCameraId;
     public static int frontsideCameraId;
-    public static int currentCameraID;
 
     // the global application, used to exchange various temporary data
     private VideOSCApplication mApp;
@@ -185,7 +183,7 @@ public class VideOSCMainActivity extends FragmentActivity
         final int tcpPort = mDbHelper.getTcpReceivePort();
         mOscHelper.createListeners(udpPort, tcpPort);
 
-        mDbHelper.setBroadcastClients();
+        mDbHelper.getBroadcastClients();
 
         final SparseArray<String> mappings = mDbHelper.getMappings();
         mApp.setCommandMappings(mappings);
@@ -437,8 +435,8 @@ public class VideOSCMainActivity extends FragmentActivity
 
         mToolsDrawerLayout.openDrawer(GravityCompat.END);
 
-        mDimensions = getAbsoluteScreenSize();
-        mApp.setDimensions(mDimensions);
+        final Point dimensions = getAbsoluteScreenSize();
+        mApp.setDimensions(dimensions);
 
         ImageButton menuButton = findViewById(R.id.show_menu);
         menuButton.setOnClickListener(new View.OnClickListener() {

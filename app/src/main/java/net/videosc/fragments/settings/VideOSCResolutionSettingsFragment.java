@@ -39,6 +39,7 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCStringHelpers;
 import net.videosc.utilities.VideOSCUIHelpers;
 
@@ -117,28 +118,11 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 //		Log.d(TAG, "onViewCreated() called");
 		final Camera.Parameters params = mCameraView.mCamera.getParameters();
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
-		mDb = mActivity.getDatabase();
+		final VideOSCDBHelpers dbHelper = mActivity.getDbHelper();
+		mDb = dbHelper.getDatabase();
 		mValues = new ContentValues();
 
-		final String[] settingsFields = new String[]{
-				SettingsContract.SettingsEntries._ID,
-				SettingsContract.SettingsEntries.RES_H,
-				SettingsContract.SettingsEntries.RES_V,
-				SettingsContract.SettingsEntries.FRAMERATE_RANGE,
-				SettingsContract.SettingsEntries.NORMALIZE,
-				SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
-		};
-
-		final Cursor cursor = mDb.query(
-				SettingsContract.SettingsEntries.TABLE_NAME,
-				settingsFields,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
+		final Cursor cursor = dbHelper.queryResolutionSettings();
 		// clear list of settings before adding new content
 		mSettings.clear();
 
