@@ -86,6 +86,7 @@ import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 import net.videosc.utilities.enums.RGBToolbarStatus;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -689,7 +690,15 @@ public class VideOSCMainActivity extends FragmentActivity
         mApp.setIsMultiSliderActive(false);
         mApp.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
         // close db
-        mDb.close();
+        mOscHelper.removeOscTcpEventListener();
+        mOscHelper.removeOscUdpEventListener();
+        try {
+            mOscHelper.close();
+            Log.d(TAG, "osc helper closed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mDbHelper.close();
 //        mDbHelper.close();
         super.onDestroy();
     }

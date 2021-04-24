@@ -13,12 +13,14 @@ import net.oscP5android.OscP5;
 import net.oscP5android.OscProperties;
 import net.videosc.VideOSCApplication;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * Created by stefan on 15.07.17, package net.videosc.utilities, project VideOSC22.
  */
-public class VideOSCOscHandler {
+public class VideOSCOscHandler implements Closeable {
     final private static String TAG = "VideOSCOscHandler";
 
     private OscP5 mTcpListener, mUdpListener;
@@ -201,5 +203,30 @@ public class VideOSCOscHandler {
                 threshes.put(key, thresh + 1);
             }
         }
+    }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     *
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *rem
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        mFbStringsR.clear();
+        mThreshesR.clear();
+        mFbStringsG.clear();
+        mThreshesG.clear();
+        mFbStringsB.clear();
+        mThreshesB.clear();
+        mTcpListener.dispose();
+        mUdpListener.dispose();
     }
 }

@@ -340,6 +340,17 @@ public class TileOverlayView extends View {
         }
     }
 
+    /**
+     * This is called when the view is detached from a window.  At this point it
+     * no longer has a surface for drawing.
+     *
+     * @see #onAttachedToWindow()
+     */
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+    }
+
     private float printOrRemoveFeedback(Canvas canvas, SparseArray<String> fbStrings, SparseIntArray threshes, int numFbStrings, int pixel, float nextY, RGBModes mode) {
         for (int i = 0; i < numFbStrings; i++) {
             if (threshes.size() > 0) {
