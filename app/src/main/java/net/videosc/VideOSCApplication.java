@@ -49,6 +49,7 @@ public class VideOSCApplication extends Application {
 	private PixelEditModes mPixelEditMode;
 	private VideOSCOscHandler mOscHelper;
 	private boolean mOSCFeedbackActivated = false;
+	private boolean mGroupSlidersActivated = false;
 
 	private CommandMappingsSortModes mCommandMappingsSortMode = CommandMappingsSortModes.SORT_BY_COLOR;
 	private SparseArray<String> mCommandMappings;
@@ -308,6 +309,14 @@ public class VideOSCApplication extends Application {
 
 	public boolean getOSCFeedbackActivated() {
 		return this.mOSCFeedbackActivated;
+	}
+
+	public void setGroupSlidersActivated(boolean activated) {
+		this.mGroupSlidersActivated = activated;
+	}
+
+	public boolean getGroupSlidersActivated() {
+		return this.mGroupSlidersActivated;
 	}
 
 	public void setIsTablet(boolean isTablet) {

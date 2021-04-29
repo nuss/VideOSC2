@@ -1,6 +1,7 @@
 package net.videosc.fragments;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,20 @@ import androidx.fragment.app.FragmentManager;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.utilities.VideOSCOscHandler;
+import net.videosc.views.SliderBarOverlay;
+
+import java.util.ArrayList;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
 	private ViewGroup mParentContainer;
+	protected int mNumSliders;
 	View mMSButtons;
 	View mLabelsView;
 	FragmentManager mManager;
 	VideOSCBaseFragment mFragment;
+
 
 	public VideOSCMSBaseFragment() { }
 
@@ -33,13 +40,32 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		final DrawerLayout toolsDrawer = mActivity.mToolsDrawerLayout;
-		ImageButton ok = mMSButtons.findViewById(R.id.ok);
-		ImageButton cancel = mMSButtons.findViewById(R.id.cancel);
+
+		final ImageButton ok = mMSButtons.findViewById(R.id.ok);
+		final ImageButton cancel = mMSButtons.findViewById(R.id.cancel);
+		final ImageButton groupSliders = mMSButtons.findViewById(R.id.group_sliders);
+
 		final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
 		final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
 		final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
 		final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
 		final VideOSCCameraFragment cameraPreview = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
+
+		// RGB views
+		final ViewGroup msViewLeftR = mParentContainer.findViewById(R.id.multislider_view_r_left);
+		final ViewGroup msViewLeftG = mParentContainer.findViewById(R.id.multislider_view_g_right);
+		final ViewGroup msViewLeftB = mParentContainer.findViewById(R.id.multislider_view_b_left);
+		// single channel view
+		final ViewGroup msViewLeft = mParentContainer.findViewById(R.id.multislider_view_left);
+
+		VideOSCOscHandler oscHelper = app.getOscHelper();
+		if (oscHelper.getNumUdpListeners() < 1) {
+			oscHelper.addOscUdpEventListener();
+		}
+		final ArrayList<SparseArray<String>> redFeedbackStrings = oscHelper.getRedFeedbackStrings();
+		final ArrayList<SparseArray<String>> greenFeedbackStrings = oscHelper.getGreenFeedbackStrings();
+		final ArrayList<SparseArray<String>> blueFeedbackStrings = oscHelper.getBlueFeedbackStrings();
+		Log.d(TAG, " \nred fb strings: " + redFeedbackStrings + "\ngreen fb strings: " + greenFeedbackStrings + "\nblue fb strings: " + blueFeedbackStrings);
 
 		mMSButtons.bringToFront();
 		mLabelsView.bringToFront();
@@ -96,6 +122,19 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				if (app.getIsFPSCalcPanelOpen())
 					fpsCalcPanel.setVisibility(View.VISIBLE);
 				toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+			}
+		});
+
+		groupSliders.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, " \nred fb strings: " + redFeedbackStrings + "\ngreen fb strings: " + greenFeedbackStrings + "\nblue fb strings: " + blueFeedbackStrings);
+				boolean groupSlidersActivated = app.getGroupSlidersActivated();
+				v.setActivated(!groupSlidersActivated);
+				app.setGroupSlidersActivated(!groupSlidersActivated);
+				for (int i = 0; i < mNumSliders; i++) {
+					SliderBarOverlay overlay = new SliderBarOverlay(mActivity);
+				}
 			}
 		});
 	}

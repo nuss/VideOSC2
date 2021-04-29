@@ -425,11 +425,21 @@ public class VideOSCMainActivity extends FragmentActivity
                 mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
                 view.setActivated(mApp.getOSCFeedbackActivated());
                 if (mApp.getOSCFeedbackActivated()) {
-                    mOscHelper.addOscUdpEventListener();
-                    mOscHelper.addOscTcpEventListener();
+                    if (mOscHelper.getNumUdpListeners() < 1) {
+                        mOscHelper.addOscUdpEventListener();
+                    }
+                    if (mOscHelper.getNumTcpListeners() < 1) {
+                        mOscHelper.addOscTcpEventListener();
+                    }
                 } else {
                     mOscHelper.removeOscUdpEventListener();
                     mOscHelper.removeOscTcpEventListener();
+                    mOscHelper.getRedFeedbackStrings().clear();
+                    mOscHelper.getRedThresholds().clear();
+                    mOscHelper.getGreenFeedbackStrings().clear();
+                    mOscHelper.getGreenThresholds().clear();
+                    mOscHelper.getBlueFeedbackStrings().clear();
+                    mOscHelper.getBlueThresholds().clear();
                 }
             }
         });
@@ -689,17 +699,15 @@ public class VideOSCMainActivity extends FragmentActivity
         mApp.setIsFPSCalcPanelOpen(false);
         mApp.setIsMultiSliderActive(false);
         mApp.setCurrentCameraId(VideOSCMainActivity.backsideCameraId);
-        // close db
         mOscHelper.removeOscTcpEventListener();
         mOscHelper.removeOscUdpEventListener();
         try {
             mOscHelper.close();
-            Log.d(TAG, "osc helper closed");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // close db
         mDbHelper.close();
-//        mDbHelper.close();
         super.onDestroy();
     }
 
