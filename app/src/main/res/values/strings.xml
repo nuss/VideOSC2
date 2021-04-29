@@ -174,5 +174,6 @@
     <string name="could_net_remove_mappings_for_given_client_address">Could not remove mappings for given client address!</string>
 	<string name="tcp_ip_password">TCP/IP password:</string>
 	<string name="tcp_ip_password_hint">my secret TCP/IP password</string>
+    <string name="group_sliders">group sliders</string>
 
 </resources>

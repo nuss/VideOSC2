@@ -1,7 +1,6 @@
 package net.videosc.interfaces.mappings_data_source;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.util.Log;
@@ -256,7 +255,7 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                 SettingsContract.AddressCommandsMappings.MAPPINGS,
                 mappings
         );
-        if (mMappings.size() == 0 || !checkIfEntryExists(addrID)) {
+        if (mMappings.size() == 0 || !mDbHelper.checkIfAddrEntryExists(addrID)) {
             mDb.insert(
                     SettingsContract.AddressCommandsMappings.TABLE_NAME,
                     null,
@@ -270,16 +269,6 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
                     null
             );
         }
-    }
-
-    private boolean checkIfEntryExists(long addrId) {
-        String query = "Select * from " + SettingsContract.AddressCommandsMappings.TABLE_NAME +
-                " where " + SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrId + ";";
-        Cursor cursor = mDb.rawQuery(query, null);
-        boolean ret = cursor.getCount() > 0;
-        cursor.close();
-
-        return ret;
     }
 
 }

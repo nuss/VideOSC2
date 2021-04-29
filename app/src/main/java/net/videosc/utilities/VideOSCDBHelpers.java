@@ -299,4 +299,13 @@ public class VideOSCDBHelpers {
     }
 
 
+    public boolean checkIfAddrEntryExists(long addrId) {
+        String query = "Select * from " + SettingsContract.AddressCommandsMappings.TABLE_NAME +
+                " where " + SettingsContract.AddressCommandsMappings.ADDRESS + " = " + addrId + ";";
+        Cursor cursor = mDb.rawQuery(query, null);
+        boolean ret = cursor.getCount() > 0;
+        cursor.close();
+
+        return ret;
+    }
 }

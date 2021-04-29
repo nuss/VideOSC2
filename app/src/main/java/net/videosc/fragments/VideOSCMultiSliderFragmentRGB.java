@@ -71,6 +71,8 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
 		final ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		assert sliderNums != null;
+		mNumSliders = sliderNums.size();
 
 		final double[] redVals = argsBundle.getDoubleArray("redVals");
 		final double[] redMixVals = argsBundle.getDoubleArray("redMixVals");
@@ -126,7 +128,6 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);
 
-		assert sliderNums != null;
 		for (int num : sliderNums) {
 			SliderBar barRedLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to

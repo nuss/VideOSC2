@@ -99,6 +99,14 @@ public class VideOSCOscHandler implements Closeable {
         mUdpListener.addListener(mUdpEventListener);
     }
 
+    public int getNumUdpListeners() {
+        return mUdpListener.listeners().size();
+    }
+
+    public int getNumTcpListeners() {
+        return mTcpListener.listeners().size();
+    }
+
     private void createOrAdjustFeedbackStringArrays(ArrayList<SparseArray<String>> feedBackStrings, ArrayList<SparseIntArray> threshes, int numSlots) {
         final int numStringSlots = feedBackStrings.size();
 

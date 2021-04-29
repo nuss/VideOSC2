@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class VideOSCMultiSliderView extends LinearLayout {
 	final static private String TAG = "MultiSliderView";
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
+	public ArrayList<SliderBarOverlay> mBarOverlays = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
 	private int mDisplayHeight;

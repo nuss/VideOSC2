@@ -68,6 +68,8 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
 		final ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
+		assert sliderNums != null;
+		mNumSliders = sliderNums.size();
 		switch (app.getColorMode()) {
 			case R:
 				vals = argsBundle.getDoubleArray("redVals");
@@ -120,21 +122,19 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 				break;
 		}
 
-		assert sliderNums != null;
-
-		for (int i = 0; i < sliderNums.size(); i++) {
+		for (int num : sliderNums) {
 			SliderBar barLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
 			barLeft.mScreenDensity = density;
-			barLeft.setNum(String.valueOf(sliderNums.get(i)));
+			barLeft.setNum(String.valueOf(num));
 			barLeft.setColor(color);
 			mMSViewLeft.mBars.add(barLeft);
 			mMSViewLeft.addView(barLeft);
 			SliderBar barRight = new SliderBar(mActivity);
 			barRight.mScreenDensity = density;
-			barRight.setNum(String.valueOf(sliderNums.get(i)));
+			barRight.setNum(String.valueOf(num));
 			barRight.setColor(color);
 			mMSViewRight.mBars.add(barRight);
 			mMSViewRight.addView(barRight);

@@ -10,27 +10,37 @@
               android:orientation="horizontal">
 
 	<ImageButton
-		android:id="@+id/cancel"
+		android:id="@+id/group_sliders"
 		android:layout_width="40dp"
 		android:layout_height="40dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginRight="8dp"
-		android:src="@drawable/cancel"
-		android:background="@drawable/cancel_button_shape"
-		android:focusable="true"
-		android:contentDescription="@string/apply_current_slider_settings"/>
+		android:layout_marginEnd="16dp"
+		android:layout_marginRight="16dp"
+		android:background="@drawable/group_sliders_button_shape"
+		android:contentDescription="@string/group_sliders"
+		android:src="@drawable/group_sliders"/>
 
 	<ImageButton
 		android:id="@+id/ok"
 		android:layout_width="40dp"
 		android:layout_height="40dp"
-		android:layout_marginEnd="4dp"
-		android:layout_marginRight="4dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
 		android:src="@drawable/ok"
 		android:background="@drawable/ok_button_shape"
 		android:clickable="true"
 		android:focusable="true"
 		android:contentDescription="@string/cancel_editing_pixel_values"/>
+
+	<ImageButton
+		android:id="@+id/cancel"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_marginEnd="4dp"
+		android:layout_marginRight="4dp"
+		android:src="@drawable/cancel"
+		android:background="@drawable/cancel_button_shape"
+		android:focusable="true"
+		android:contentDescription="@string/apply_current_slider_settings"/>
 
 	<ImageView
 		android:id="@+id/move_editor"
