@@ -158,6 +158,31 @@ public class VideOSCOscHandler implements Closeable {
         return mFbStringsB;
     }
 
+    // return a snapshot of current feedback strings
+    public ArrayList<SparseArray<String>> getRedFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsR) {
+            res.add(slot.clone());
+        }
+        return res;
+    }
+
+    public ArrayList<SparseArray<String>> getGreenFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsG) {
+            res.add(slot.clone());
+        }
+        return res;
+    }
+
+    public ArrayList<SparseArray<String>> getBlueFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsB) {
+            res.add(slot.clone());
+        }
+        return res;
+    }
+
     public ArrayList<SparseIntArray> getRedThresholds() {
         return mThreshesR;
     }
@@ -223,7 +248,7 @@ public class VideOSCOscHandler implements Closeable {
      * to relinquish the underlying resources and to internally
      * <em>mark</em> the {@code Closeable} as closed, prior to throwing
      * the {@code IOException}.
-     *rem
+     *
      * @throws IOException if an I/O error occurs
      */
     @Override

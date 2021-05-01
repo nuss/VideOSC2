@@ -2,17 +2,26 @@ package net.videosc.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
 
 public class SliderBarOverlay extends View {
     private static final String TAG = SliderBarOverlay.class.getSimpleName();
 
     private int mLeft, mTop, mRight, mBottom;
     final private Rect mArea = new Rect(mLeft, mTop, mRight, mBottom);
+    private VideOSCApplication mApp;
+    private Paint mPaint;
+    private float mScreenDensity;
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -22,6 +31,7 @@ public class SliderBarOverlay extends View {
      */
     public SliderBarOverlay(Context context) {
         super(context);
+        init(context);
     }
 
     /**
@@ -41,6 +51,7 @@ public class SliderBarOverlay extends View {
      */
     public SliderBarOverlay(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     /**
@@ -61,6 +72,13 @@ public class SliderBarOverlay extends View {
      */
     public SliderBarOverlay(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    private void init(Context context) {
+        this.mApp = (VideOSCApplication) ((VideOSCMainActivity) context).getApplication();
+        this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        this.mScreenDensity = mApp.getScreenDensity();
     }
 
     /**
@@ -71,6 +89,13 @@ public class SliderBarOverlay extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setColor(0x99000000);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            canvas.drawRoundRect((float) mLeft, (float) mTop, (float) mRight, (float) mBottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
+        else
+            canvas.drawRect(mLeft, mTop, mRight, mBottom, mPaint);
     }
 
     /**
@@ -94,5 +119,9 @@ public class SliderBarOverlay extends View {
         this.mTop = top;
         this.mRight = right;
         this.mBottom = bottom;
+    }
+
+    public void setText(String label) {
+        Log.d(TAG, "label text: " + label);
     }
 }

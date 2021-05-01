@@ -31,7 +31,6 @@ package net.videosc.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -501,6 +500,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             this.mOscBundlesG = new ArrayList<>();
             this.mOscBundlesB = new ArrayList<>();
             this.mOscHelper = mApp.getOscHelper();
+            mDbHelper = mActivity.getDbHelper();
 
             Log.d(TAG, "CameraPreview(): " + camera);
             // Capture the context
@@ -538,24 +538,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             }
 
             // get initial settings from database
-            String[] settingsFields = new String[]{
-                    SettingsContract.SettingsEntries.RES_H,
-                    SettingsContract.SettingsEntries.RES_V,
-                    SettingsContract.SettingsEntries.FRAMERATE_RANGE,
-                    SettingsContract.SettingsEntries.ROOT_CMD
-            };
-
-            final SQLiteDatabase db = ((VideOSCApplication) mActivity.getApplicationContext()).getSettingsHelper().getReadableDatabase();
-
-            Cursor cursor = db.query(
-                    SettingsContract.SettingsEntries.TABLE_NAME,
-                    settingsFields,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            );
+            Cursor cursor = mDbHelper.queryResolutionSettings();
 
             if (cursor.moveToFirst()) {
                 mApp.setResolution(
@@ -567,9 +550,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 setFramerateRange(
                         cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.FRAMERATE_RANGE))
                 );
-                setColorOscCmds(
-                        cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD))
-                );
+                setColorOscCmds(mDbHelper.getRootCmd());
             }
 
             cursor.close();

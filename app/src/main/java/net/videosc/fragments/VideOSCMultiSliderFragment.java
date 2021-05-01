@@ -56,6 +56,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		mFragmentClass = this.getClass();
 		int color = 0x66ffffff;
 		double[] vals = new double[]{};
 		double[] mixVals = new double[]{};
@@ -67,9 +68,9 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
-		final ArrayList<Integer> sliderNums = argsBundle.getIntegerArrayList("nums");
-		assert sliderNums != null;
-		mNumSliders = sliderNums.size();
+		mSliderNums = argsBundle.getIntegerArrayList("nums");
+		assert mSliderNums != null;
+
 		switch (app.getColorMode()) {
 			case R:
 				vals = argsBundle.getDoubleArray("redVals");
@@ -122,7 +123,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 				break;
 		}
 
-		for (int num : sliderNums) {
+		for (int num : mSliderNums) {
 			SliderBar barLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
@@ -140,7 +141,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 			mMSViewRight.addView(barRight);
 		}
 
-		setSliderProps(sliderNums);
+		setSliderProps(mSliderNums);
 
 		VideOSCUIHelpers.addView(mMSButtons, mContainer);
 		VideOSCUIHelpers.addView(mLabelsView, mContainer);

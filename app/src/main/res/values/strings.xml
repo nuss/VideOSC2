@@ -175,5 +175,6 @@
 	<string name="tcp_ip_password">TCP/IP password:</string>
 	<string name="tcp_ip_password_hint">my secret TCP/IP password</string>
     <string name="group_sliders">group sliders</string>
+	<string name="slider_overlay_string">%1$s</string>
 
 </resources>
