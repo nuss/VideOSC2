@@ -1,6 +1,7 @@
 package net.videosc.fragments;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,6 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
         final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
         final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
         final VideOSCCameraFragment cameraPreview = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
-
-        // RGB views
-        final ViewGroup msViewLeftR = mParentContainer.findViewById(R.id.multislider_view_r_left);
-        final ViewGroup msViewLeftG = mParentContainer.findViewById(R.id.multislider_view_g_right);
-        final ViewGroup msViewLeftB = mParentContainer.findViewById(R.id.multislider_view_b_left);
-        // single channel view
-        final ViewGroup msViewLeft = mParentContainer.findViewById(R.id.multislider_view_left);
 
         VideOSCOscHandler oscHelper = app.getOscHelper();
         if (oscHelper.getNumUdpListeners() < 1) {
@@ -134,14 +128,15 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
                 SparseArray<String> fbSlot;
                 v.setActivated(!groupSlidersActivated);
                 app.setGroupSlidersActivated(!groupSlidersActivated);
-                for (int i = 0; i < mSliderNums.size(); i++) {
-                    if (mFragmentClass == VideOSCMultiSliderFragment.class) {
-                        final VideOSCMultiSliderOverlayFragment overlay = new VideOSCMultiSliderOverlayFragment(mActivity);
-                        mManager.beginTransaction()
-                                .add(R.id.camera_preview, overlay, "MultiSliderOverlay")
-                                .commit();
+                final Bundle overlayArgsBundle = new Bundle();
+                overlayArgsBundle.putIntegerArrayList("nums", mSliderNums);
+                if (mFragmentClass == VideOSCMultiSliderFragment.class) {
+                    final VideOSCMultiSliderOverlayFragment overlay = new VideOSCMultiSliderOverlayFragment(mActivity);
+                    mManager.beginTransaction()
+                            .add(R.id.camera_preview, overlay, "MultiSliderOverlay")
+                            .commit();
+                    overlay.setArguments(overlayArgsBundle);
 
-                        //                        final SliderBarOverlay overlay = new SliderBarOverlay(mActivity);
 //                        switch (app.getColorMode()) {
 //                            case R:
 //                                fbSlot = redFeedbackStrings.get(mSliderNums.get(i) - 1);
@@ -164,16 +159,12 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 //                            default:
 //                        }
 //                        msViewLeft.addView(overlay);
-                    } else {
-                        final VideOSCMultiSliderOverlayRGBFragment overlay = new VideOSCMultiSliderOverlayRGBFragment(mActivity);
-                        mManager.beginTransaction()
-                                .add(R.id.camera_preview, overlay, "MultiSliderOverlayRGB")
-                                .commit();
-
-//                        final SliderBarOverlay overlayR = new SliderBarOverlay(mActivity);
-//                        final SliderBarOverlay overlayG = new SliderBarOverlay(mActivity);
-//                        final SliderBarOverlay overlayB = new SliderBarOverlay(mActivity);
-//
+                } else {
+                    final VideOSCMultiSliderOverlayRGBFragment overlay = new VideOSCMultiSliderOverlayRGBFragment(mActivity);
+                    mManager.beginTransaction()
+                            .add(R.id.camera_preview, overlay, "MultiSliderOverlayRGB")
+                            .commit();
+                    overlay.setArguments(overlayArgsBundle);
 //                        fbSlot = redFeedbackStrings.get(mSliderNums.get(i) - 1);
 //                        if (fbSlot.size() > 0) {
 //                            overlayR.setText(fbSlot.toString());
@@ -190,7 +181,6 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 //                        msViewLeftR.addView(overlayR);
 //                        msViewLeftG.addView(overlayG);
 //                        msViewLeftB.addView(overlayB);
-                    }
                 }
             }
         });

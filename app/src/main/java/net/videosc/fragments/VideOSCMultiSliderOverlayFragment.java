@@ -11,9 +11,14 @@ import androidx.annotation.Nullable;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.views.SliderBarOverlay;
+
+import java.util.ArrayList;
 
 public class VideOSCMultiSliderOverlayFragment extends VideOSCBaseFragment {
     private static final String TAG = VideOSCMultiSliderOverlayFragment.class.getSimpleName();
+    private ViewGroup mMSOverlays;
+    private ArrayList<Integer> mSliderNums;
 
     public VideOSCMultiSliderOverlayFragment() { }
 
@@ -62,6 +67,16 @@ public class VideOSCMultiSliderOverlayFragment extends VideOSCBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final Bundle argsBundle = this.getArguments();
+        assert argsBundle != null;
+        this.mSliderNums = argsBundle.getIntegerArrayList("nums");
+
+        this.mMSOverlays = view.findViewById(R.id.multislider_overlay_r_left);
+
+        for (int i = 0; i < mSliderNums.size(); i++) {
+            SliderBarOverlay sliderOverlayR = new SliderBarOverlay(mActivity);
+            mMSOverlays.addView(sliderOverlayR);
+        }
     }
 
     /**

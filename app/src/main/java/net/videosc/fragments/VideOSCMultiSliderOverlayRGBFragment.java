@@ -11,9 +11,14 @@ import androidx.annotation.Nullable;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.views.SliderBarOverlay;
+
+import java.util.ArrayList;
 
 public class VideOSCMultiSliderOverlayRGBFragment extends VideOSCBaseFragment {
     private final static String TAG = VideOSCMultiSliderOverlayRGBFragment.class.getSimpleName();
+    private ViewGroup mMSOverlaysR, mMSOverlaysG, mMSOverlaysB;
+    private ArrayList<Integer> mSliderNums;
 
     public VideOSCMultiSliderOverlayRGBFragment() { }
 
@@ -62,6 +67,23 @@ public class VideOSCMultiSliderOverlayRGBFragment extends VideOSCBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Bundle argsBundle = this.getArguments();
+        assert argsBundle != null;
+        this.mSliderNums = argsBundle.getIntegerArrayList("nums");
+
+        this.mMSOverlaysR = view.findViewById(R.id.multislider_overlay_r_left);
+        this.mMSOverlaysG = view.findViewById(R.id.multislider_overlay_g_left);
+        this.mMSOverlaysB = view.findViewById(R.id.multislider_overlay_b_left);
+
+        for (int i = 0; i < mSliderNums.size(); i++) {
+            SliderBarOverlay sliderOverlayR = new SliderBarOverlay(mActivity);
+            SliderBarOverlay sliderOverlayG = new SliderBarOverlay(mActivity);
+            SliderBarOverlay sliderOverlayB = new SliderBarOverlay(mActivity);
+            mMSOverlaysR.addView(sliderOverlayR);
+            mMSOverlaysG.addView(sliderOverlayG);
+            mMSOverlaysB.addView(sliderOverlayB);
+        }
     }
 
     /**

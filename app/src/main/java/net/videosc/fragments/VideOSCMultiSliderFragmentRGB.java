@@ -71,7 +71,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
-		 mSliderNums = argsBundle.getIntegerArrayList("nums");
+		mSliderNums = argsBundle.getIntegerArrayList("nums");
 		assert mSliderNums != null;
 
 		final double[] redVals = argsBundle.getDoubleArray("redVals");

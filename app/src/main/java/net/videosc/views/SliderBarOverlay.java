@@ -76,6 +76,7 @@ public class SliderBarOverlay extends View {
     }
 
     private void init(Context context) {
+        Log.d(TAG, "init: " + context);
         this.mApp = (VideOSCApplication) ((VideOSCMainActivity) context).getApplication();
         this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mScreenDensity = mApp.getScreenDensity();
@@ -89,9 +90,11 @@ public class SliderBarOverlay extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mPaint.setStyle(Paint.Style.FILL);
+        Log.d(TAG, "onDraw: " + canvas);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(2f);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setColor(0x99000000);
+        mPaint.setColor(0xff000000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             canvas.drawRoundRect((float) mLeft, (float) mTop, (float) mRight, (float) mBottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
         else
@@ -115,6 +118,7 @@ public class SliderBarOverlay extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        Log.d(TAG, "changed: " + changed + ", left: " + left + ", top: " + top + ", right: " + right + ", bottom: " + bottom);
         this.mLeft = left;
         this.mTop = top;
         this.mRight = right;
