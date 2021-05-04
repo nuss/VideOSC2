@@ -2,6 +2,7 @@ package net.videosc.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,10 +77,20 @@ public class VideOSCMultiSliderOverlayRGBFragment extends VideOSCBaseFragment {
         this.mMSOverlaysG = view.findViewById(R.id.multislider_overlay_g_left);
         this.mMSOverlaysB = view.findViewById(R.id.multislider_overlay_b_left);
 
+        final int overlayWidth = mMSOverlaysR.getWidth();
+        final int overlayHeight = mMSOverlaysR.getHeight();
+        final int totalGaps = mSliderNums.size() - 1;
+        final int sliderWidth = (overlayWidth - totalGaps) / mSliderNums.size();
+
+        Log.d(TAG, " \noverlay width: " + overlayWidth + "\noverlay height: " + overlayHeight + "\ntotal gaps: " + totalGaps + "\nslider width: " + sliderWidth);
+
         for (int i = 0; i < mSliderNums.size(); i++) {
             SliderBarOverlay sliderOverlayR = new SliderBarOverlay(mActivity);
+            sliderOverlayR.layout(i * sliderWidth, 0, (i + 1) * sliderWidth, overlayHeight);
             SliderBarOverlay sliderOverlayG = new SliderBarOverlay(mActivity);
+            sliderOverlayG.layout(i * sliderWidth, 0, (i + 1) * sliderWidth, overlayHeight);
             SliderBarOverlay sliderOverlayB = new SliderBarOverlay(mActivity);
+            sliderOverlayB.layout(i * sliderWidth, 0, (i + 1) * sliderWidth, overlayHeight);
             mMSOverlaysR.addView(sliderOverlayR);
             mMSOverlaysG.addView(sliderOverlayG);
             mMSOverlaysB.addView(sliderOverlayB);

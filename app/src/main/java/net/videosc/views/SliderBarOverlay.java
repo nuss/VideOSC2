@@ -22,6 +22,8 @@ public class SliderBarOverlay extends View {
     private VideOSCApplication mApp;
     private Paint mPaint;
     private float mScreenDensity;
+    private int mParentWidth;
+    private int mNumSliders;
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -92,13 +94,15 @@ public class SliderBarOverlay extends View {
         super.onDraw(canvas);
         Log.d(TAG, "onDraw: " + canvas);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(2f);
+        mPaint.setStrokeWidth(5f);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setColor(0xff000000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+//            canvas.drawRoundRect((float) mLeft, (float) mTop, (float) mRight, (float) mBottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
             canvas.drawRoundRect((float) mLeft, (float) mTop, (float) mRight, (float) mBottom, 5.0f * mScreenDensity, 5.0f * mScreenDensity, mPaint);
         else
             canvas.drawRect(mLeft, mTop, mRight, mBottom, mPaint);
+        Log.d(TAG, "get left: " + getLeft() + ", get top: " + getTop() + ", get right: " + getRight() + " get bottom: " + getBottom());
     }
 
     /**
@@ -118,6 +122,7 @@ public class SliderBarOverlay extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+
         Log.d(TAG, "changed: " + changed + ", left: " + left + ", top: " + top + ", right: " + right + ", bottom: " + bottom);
         this.mLeft = left;
         this.mTop = top;
