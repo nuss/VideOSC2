@@ -1,6 +1,7 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,19 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 
-import androidx.annotation.NonNull;
-
 public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
-	private View mView;
-	private VideOSCMainActivity mActivity;
+
+	public VideOSCSensorSettingsFragment() { }
+
+	public VideOSCSensorSettingsFragment(Context context) {
+    	this.mActivity = (VideOSCMainActivity) context;
+    	this.mDbHelper = mActivity.getDbHelper();
+    }
 
 	/**
 	 * @param savedInstanceState
@@ -30,7 +37,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 	}
 
 	/**
@@ -40,17 +46,29 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView = inflater.inflate(R.layout.sensor_settings, container, false);
+		return inflater.inflate(R.layout.sensor_settings, container, false);
+	}
 
-		mActivity = (VideOSCMainActivity) getActivity();
-		assert mActivity != null;
-		final SQLiteDatabase db = mActivity.getDatabase();
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		final SQLiteDatabase db = mDbHelper.getDatabase();
 		final VideOSCSettingsListFragment.Sensors sensors = new VideOSCSettingsListFragment.Sensors();
 
 		final Cursor cursor = db.rawQuery("SELECT * FROM " + SettingsContract.SensorSettingsEntries.TABLE_NAME, null);
 		final ContentValues values = new ContentValues();
 
-		setPlaceholder(mView, db);
+		setPlaceholder(view, db);
 
 		while (cursor.moveToNext()) {
 			switch (cursor.getString(cursor.getColumnIndex(SettingsContract.SensorSettingsEntries.SENSOR))) {
@@ -137,17 +155,17 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final Switch oriCB = mView.findViewById(R.id.orientation_sensor);
-		final Switch accCB = mView.findViewById(R.id.accelerometer);
-		final Switch linAccCB = mView.findViewById(R.id.linear_acceleration);
-		final Switch magCB = mView.findViewById(R.id.magnetic_field);
-		final Switch gravCB = mView.findViewById(R.id.gravity_sensor);
-		final Switch proxCB = mView.findViewById(R.id.proximity_sensor);
-		final Switch lightCB = mView.findViewById(R.id.light_sensor);
-		final Switch pressCB = mView.findViewById(R.id.air_pressure_sensor);
-		final Switch tempCB = mView.findViewById(R.id.temperature_sensor);
-		final Switch humCB = mView.findViewById(R.id.humidity_sensor);
-		final Switch locCB = mView.findViewById(R.id.geo_loc_sensor);
+		final SwitchCompat oriCB = view.findViewById(R.id.orientation_sensor);
+		final SwitchCompat accCB = view.findViewById(R.id.accelerometer);
+		final SwitchCompat linAccCB = view.findViewById(R.id.linear_acceleration);
+		final SwitchCompat magCB = view.findViewById(R.id.magnetic_field);
+		final SwitchCompat gravCB = view.findViewById(R.id.gravity_sensor);
+		final SwitchCompat proxCB = view.findViewById(R.id.proximity_sensor);
+		final SwitchCompat lightCB = view.findViewById(R.id.light_sensor);
+		final SwitchCompat pressCB = view.findViewById(R.id.air_pressure_sensor);
+		final SwitchCompat tempCB = view.findViewById(R.id.temperature_sensor);
+		final SwitchCompat humCB = view.findViewById(R.id.humidity_sensor);
+		final SwitchCompat locCB = view.findViewById(R.id.geo_loc_sensor);
 
 		oriCB.setChecked(sensors.getOrientationSensorActivated());
 		accCB.setChecked(sensors.getAccelerationSensorActivated());
@@ -327,38 +345,12 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 			}
 		});
 
-
-//		return super.onCreateView(inflater, container, savedInstanceState);
-		return mView;
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
 	}
 
 	private void setPlaceholder(View container, SQLiteDatabase db) {
 		Resources res = getResources();
 		SparseIntArray idsAndStrings = new SparseIntArray(11);
-		String rootCmd = "vosc";
-		String[] settingsFields = new String[]{
-				SettingsContract.SettingsEntries.ROOT_CMD
-		};
-
-		Cursor cursor = db.query(
-				SettingsContract.SettingsEntries.TABLE_NAME,
-				settingsFields,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
-		if (cursor.moveToFirst())
-			rootCmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-
-		cursor.close();
+		String rootCmd = mDbHelper.getRootCmd();
 
 		idsAndStrings.append(R.id.orientation_sensor, R.string.orientation_sensor);
 		idsAndStrings.append(R.id.accelerometer, R.string.accelerometer);
@@ -384,13 +376,6 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		mActivity = null;
+		this.mActivity = null;
 	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mView = null;
-	}
-
 }

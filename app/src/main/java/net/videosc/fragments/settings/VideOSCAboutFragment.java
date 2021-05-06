@@ -7,15 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import net.videosc.R;
 import net.videosc.fragments.VideOSCBaseFragment;
 
 import java.util.Calendar;
 
-import androidx.annotation.NonNull;
-
 public class VideOSCAboutFragment extends VideOSCBaseFragment {
-	private View mView;
+
+	public VideOSCAboutFragment() { }
 
 	/**
 	 * @param savedInstanceState
@@ -33,11 +35,23 @@ public class VideOSCAboutFragment extends VideOSCBaseFragment {
 	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView = inflater.inflate(R.layout.about, container, false);
-		setYear(mView);
+		return inflater.inflate(R.layout.about, container, false);
+	}
 
-//		return super.onCreateView(inflater, container, savedInstanceState);
-		return mView;
+	/**
+	 * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+	 * has returned, but before any saved state has been restored in to the view.
+	 * This gives subclasses a chance to initialize themselves once
+	 * they know their view hierarchy has been completely created.  The fragment's
+	 * view hierarchy is not however attached to its parent at this point.
+	 *
+	 * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+	 * @param savedInstanceState If non-null, this fragment is being re-constructed
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setYear(view);
 	}
 
 	@Override
@@ -54,11 +68,4 @@ public class VideOSCAboutFragment extends VideOSCBaseFragment {
 		String formatted = String.format(dateString, String.valueOf(currentYear));
 		tv.setText(formatted);
 	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mView = null;
-	}
-
 }

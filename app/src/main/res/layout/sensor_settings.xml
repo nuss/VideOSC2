@@ -5,7 +5,7 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/orientation_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/accelerometer"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/linear_acceleration"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/magnetic_field"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/gravity_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/proximity_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/light_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/air_pressure_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/temperature_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/humidity_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
 
 	<View style="@style/Divider"/>
 
-	<Switch
+	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/geo_loc_sensor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"

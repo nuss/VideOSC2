@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <padding
+                android:bottom="3dp"
+                android:left="3dp"
+                android:right="3dp"
+                android:top="3dp" />
+            <solid
+                android:color="@android:color/holo_green_dark" />
+            <stroke
+                android:width="2dp"
+                android:color="#eecccccc" />
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/osc_feedback_a" />
+</layer-list>

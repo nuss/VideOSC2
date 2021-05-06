@@ -16,14 +16,15 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String TAG = "SettingsDBHelper";
 
 	private static final String SQL_ADDRESSES_CREATE_ENTRIES =
-			"CREATE TABLE " + SettingsContract.AddressSettingsEntry.TABLE_NAME + " (" +
-					SettingsContract.AddressSettingsEntry._ID + " INTEGER PRIMARY KEY," +
-					SettingsContract.AddressSettingsEntry.IP_ADDRESS + " TEXT NOT NULL DEFAULT '192.168.1.1'," +
-					SettingsContract.AddressSettingsEntry.PORT + " INTEGER NOT NULL DEFAULT '57120'," +
-					SettingsContract.AddressSettingsEntry.PROTOCOL + " TEXT NOT NULL DEFAULT 'UDP')";
+			"CREATE TABLE " + SettingsContract.AddressSettingsEntries.TABLE_NAME + " (" +
+					SettingsContract.AddressSettingsEntries._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.AddressSettingsEntries.IP_ADDRESS + " TEXT NOT NULL," +
+					SettingsContract.AddressSettingsEntries.PORT + " INTEGER NOT NULL," +
+					"UNIQUE (" + SettingsContract.AddressSettingsEntries.IP_ADDRESS + ", " +
+					SettingsContract.AddressSettingsEntries.PORT + "))";
 
 	private static final String SQL_ADDRESSES_DELETE_ENTRIES =
-			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntry.TABLE_NAME;
+			"DROP TABLE IF EXISTS " + SettingsContract.AddressSettingsEntries.TABLE_NAME;
 
 	private static final String SQL_SETTINGS_CREATE_ENTRIES =
 			"CREATE TABLE " + SettingsContract.SettingsEntries.TABLE_NAME + " (" +
@@ -36,7 +37,8 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 //					SettingsContract.SettingsEntries.CALC_PERIOD + " INTEGER NOT NULL DEFAULT '1'," +
 					SettingsContract.SettingsEntries.ROOT_CMD + " TEXT NOT NULL DEFAULT 'vosc'," +
 					SettingsContract.SettingsEntries.UDP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32000'," +
-					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32001')";
+					SettingsContract.SettingsEntries.TCP_RECEIVE_PORT + " INTEGER NOT NULL DEFAULT '32100'," +
+					SettingsContract.SettingsEntries.TCP_PASSWORD + " TEXT)";
 
 	private static final String SQL_SETTINGS_DELETE_ENTRIES =
 			"DROP TABLE IF EXISTS " + SettingsContract.SettingsEntries.TABLE_NAME;
@@ -65,8 +67,17 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_PIXEL_SNAPSHOTS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.PixelSnapshotEntries.TABLE_NAME;
 
+	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE =
+			"CREATE TABLE " + SettingsContract.AddressCommandsMappings.TABLE_NAME + " (" +
+					SettingsContract.AddressCommandsMappings._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.AddressCommandsMappings.ADDRESS + " INTEGER NOT NULL," +
+					SettingsContract.AddressCommandsMappings.MAPPINGS + " TEXT NOT NULL)";
+
+	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
+
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 25;
+	private static final int DATABASE_VERSION = 79;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -89,16 +100,6 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		ContentValues values = new ContentValues();
 
-		// net address(es)
-		values.put(SettingsContract.AddressSettingsEntry.IP_ADDRESS, "192.168.1.1");
-		values.put(SettingsContract.AddressSettingsEntry.PORT, 57120);
-		values.put(SettingsContract.AddressSettingsEntry.PROTOCOL, "UDP");
-		newRowId = db.insert(SettingsContract.AddressSettingsEntry.TABLE_NAME, null, values);
-		Log.d(TAG, "new row ID: " + newRowId);
-
-		// reset
-		values.clear();
-
 		// create table for single value settings
 		db.execSQL(SQL_SETTINGS_CREATE_ENTRIES);
 
@@ -111,7 +112,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 //		values.put(SettingsContract.SettingsEntries.CALC_PERIOD, 1);
 		values.put(SettingsContract.SettingsEntries.ROOT_CMD, "vosc");
 		values.put(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT, 32000);
-		values.put(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT, 32001);
+		values.put(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT, 32100);
 		newRowId = db.insert(SettingsContract.SettingsEntries.TABLE_NAME, null, values);
 		Log.d(TAG, "new row ID: " + newRowId);
 
@@ -143,6 +144,9 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		// create snapshots table
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_CREATE);
+
+		// create address_commands_mappings table
+		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE);
 	}
 
 	/**
@@ -172,6 +176,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		db.execSQL(SQL_SETTINGS_DELETE_ENTRIES);
 		db.execSQL(SQL_SENSOR_SETTINGS_DELETE);
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_DELETE);
+		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE);
 		onCreate(db);
 	}
 

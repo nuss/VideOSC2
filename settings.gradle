@@ -1,1 +1,3 @@
+include ':netP5android'
+include ':oscP5android'
 include ':app'

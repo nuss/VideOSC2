@@ -79,3 +79,48 @@ fork ({
 	}
 }, AppClock)
 )
+
+// a simple feedback example
+(
+// n ?? { n = NetAddr("192.168.0.201", 32000) };
+n ?? { n = NetAddr("10.42.0.237", 32000) };
+OSCdef(\videoscR, { |msg, time, addr, recvPort|
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderR");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/red14');
+OSCdef(\videoscG, { |msg, time, addr, recvPort|
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderG");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/green14');
+OSCdef(\videoscB, { |msg, time, addr, recvPort|
+	[msg, time, addr, recvPort].postln;
+	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderB");
+	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/blue25');
+)
+
+OSCdef.freeAll
+
+(
+// n ?? { n = NetAddr("192.168.0.201", 32000) };
+t = NetAddr("10.42.0.237", 32100).tryConnectTCP(
+	{ t.sendMsg('/vosc/red4/name', "hello TCP!") },
+	{ "failed connecting to 10.42.0.237:32100 via TCP/IP".postln }
+);
+OSCdef(\videosc, { |msg, time, addr, recvPort|
+	n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/red4')
+)
+
+(
+// n ?? { n = NetAddr("192.168.0.201", 32000) };
+t = NetAddr("10.42.0.237", 32100).connect({
+	t.sendMsg('/server/disconnect')
+});
+OSCdef(\videosc, { |msg, time, addr, recvPort|
+	n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+}, '/vosc/red4')
+)
+

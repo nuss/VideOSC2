@@ -23,14 +23,28 @@
 package net.videosc.fragments;
 
 import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.fragment.app.Fragment;
+
+import net.videosc.VideOSCApplication;
+import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.utilities.VideOSCDBHelpers;
 
 /**
  * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
  */
 public class VideOSCBaseFragment extends Fragment {
+	protected VideOSCMainActivity mActivity;
+    protected ViewGroup mContainer;
+    protected View mView;
+    protected LayoutInflater mInflater;
+	protected VideOSCApplication mApp;
+    protected VideOSCDBHelpers mDbHelper;
 
-	/**
+    /**
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {

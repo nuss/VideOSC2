@@ -19,7 +19,7 @@ public class VideOSCCameraFragmentTest {
 
 	@Before
 	public void setUp() {
-		fragment = new VideOSCCameraFragment();
+		fragment = new VideOSCCameraFragment(this);
 		values.add(0.1);
 		values.add(0.2);
 		values.add(0.3);

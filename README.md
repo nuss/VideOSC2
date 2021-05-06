@@ -5,7 +5,7 @@ This repository is a complete rewrite of the app's first version (written using 
 
 Website: http://videosc.net  
 User documentation: http://pustota.basislager.org/coding/videosc/videosc-the-interface/
- 
+
 ![screenshot 1](https://github.com/nuss/VideOSC2/blob/develop/screenshots/Screenshot_2019-09-04_175813.jpg)
 
 

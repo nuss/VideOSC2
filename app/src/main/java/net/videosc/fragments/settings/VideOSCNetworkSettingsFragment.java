@@ -1,258 +1,537 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+
+import net.netP5android.NetAddress;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.adapters.AddressesListAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCDialogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import ketai.net.KetaiNet;
 
 public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
-	private View mView;
-	private VideOSCMainActivity mActivity;
-	/**
-	 * @param savedInstanceState
-	 * @deprecated
-	 */
+    final private static String TAG = "NetworkSettingsFragment";
+    private EditText mAddIPAddress;
+    private EditText mAddPort;
+    private Cursor mAddressesCursor;
+    private AddressesListAdapter mAddressesAdapter;
+    private SQLiteDatabase mDb;
+    private final String[] mAddrFields = new String[]{
+            SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+            SettingsContract.AddressSettingsEntries.PORT,
+            SettingsContract.AddressSettingsEntries._ID
+    };
+    private ArrayList<VideOSCSettingsListFragment.Address> mAddresses;
+
+    public VideOSCNetworkSettingsFragment(Context context) {
+        this.mActivity = (VideOSCMainActivity) context;
+        this.mDbHelper = mActivity.getDbHelper();
+        this.mApp = (VideOSCApplication) mActivity.getApplication();
+    }
+
+    /**
+     * @param savedInstanceState
+     * @deprecated
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    /**
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @deprecated
+     */
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.network_settings, container, false);
+    }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final FragmentManager fragmentManager = getFragmentManager();
+        assert fragmentManager != null;
+        // in API 30 getting the cameraView only seems to work with fragmentManager retrieved through getFragmentManager, not getChildFragmentManager
+        final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+        this.mDb = mDbHelper.getDatabase();
+
+        this.mAddIPAddress = view.findViewById(R.id.add_remote_ip);
+        this.mAddPort = view.findViewById(R.id.add_remote_port);
+
+        final Button addAddress = view.findViewById(R.id.add_address_button);
+
+        this.mAddresses = new ArrayList<>();
+        final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
+        final ContentValues values = new ContentValues();
+
+        addAddress.setOnClickListener(new AddAddressButtonOnClickListener(mDb, values, mAddIPAddress, mAddPort));
+
+        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
+
+        mAddressesAdapter = new AddressesListAdapter(
+                getActivity(), R.layout.address_list_item, mAddressesCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        );
+        mAddressesAdapter.setDatabase(mDb);
+
+        final ListView addressesList = view.findViewById(R.id.addresses_list);
+        addressesList.setAdapter(mAddressesAdapter);
+        mAddressesAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
+            }
+        });
+
+        mAddresses = getAddresses(mAddressesCursor);
+
+        Cursor cursor = mDbHelper.queryNetworkSettings();
+
+        settings.clear();
+
+        while (cursor.moveToNext()) {
+            final VideOSCSettingsListFragment.Settings setting = new VideOSCSettingsListFragment.Settings();
+            final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
+            final int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
+            final int tcpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_RECEIVE_PORT));
+            final String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
+            final String tcpPasswd = cursor.getString((cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.TCP_PASSWORD)));
+            setting.setRowId(rowId);
+            setting.setUdpReceivePort(udpReceivePort);
+            setting.setTcpReceivePort(tcpReceivePort);
+            setting.setRootCmd(cmd);
+            setting.setTcpPassword(tcpPasswd);
+            settings.add(setting);
+        }
+
+        cursor.close();
+
+        final EditText udpReceivePortField = view.findViewById(R.id.device_udp_port_field);
+        udpReceivePortField.setText(
+                String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
+                TextView.BufferType.EDITABLE
+        );
+        final EditText tcpReceivePortField = view.findViewById(R.id.device_tcp_port_field);
+        tcpReceivePortField.setText(
+                String.format(Locale.getDefault(), "%d", settings.get(0).getTcpReceivePort()),
+                TextView.BufferType.EDITABLE
+        );
+        final EditText rootCmdField = view.findViewById(R.id.root_cmd_name_field);
+        rootCmdField.setText(
+                settings.get(0).getRootCmd(),
+                TextView.BufferType.EDITABLE
+        );
+        final EditText tcpPasswdField = view.findViewById(R.id.tcp_passwd);
+        tcpPasswdField.setText(
+                settings.get(0).getTcpPassword(),
+                TextView.BufferType.EDITABLE
+        );
+        final TextView deviceIP = view.findViewById(R.id.device_ip_address);
+        deviceIP.setText(KetaiNet.getIP());
+
+        udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean b) {
+                final String udpPortString = udpReceivePortField.getText().toString();
+                if (!udpPortString.equals(tcpReceivePortField.getText().toString())) {
+                    if (!b && !udpPortString.equals(
+                            String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
+                        values.put(
+                                SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
+                                udpPortString
+                        );
+                        mDb.update(
+                                SettingsContract.SettingsEntries.TABLE_NAME,
+                                values,
+                                SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                                null
+                        );
+                        values.clear();
+                        mAddresses.get(0).setUdpReceivePort(Integer.parseInt(udpPortString, 10));
+                    }
+                } else {
+                    VideOSCDialogHelper.showWarning(
+                            mActivity,
+                            android.R.style.Theme_Holo_Light_Dialog,
+                            getString(R.string.udp_receive_port_should_differ),
+                            getString(R.string.OK)
+                    );
+                }
+            }
+        });
+
+        tcpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                final String tcpPortString = tcpReceivePortField.getText().toString();
+                if (!tcpPortString.equals(udpReceivePortField.getText().toString())) {
+                    if (!hasFocus && !tcpPortString.equals(
+                            String.format(Locale.getDefault(), "%d", settings.get(0).getTcpReceivePort()))) {
+                        values.put(
+                                SettingsContract.SettingsEntries.TCP_RECEIVE_PORT,
+                                tcpPortString
+                        );
+                        mDb.update(
+                                SettingsContract.SettingsEntries.TABLE_NAME,
+                                values,
+                                SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                                null
+                        );
+                        values.clear();
+                        mAddresses.get(0).setTcpReceivePort(Integer.parseInt(tcpPortString, 10));
+                    }
+                } else {
+                    VideOSCDialogHelper.showWarning(
+                            mActivity,
+                            android.R.style.Theme_Holo_Light_Dialog,
+                            getString(R.string.tcp_receive_port_should_differ),
+                            getString(R.string.OK)
+                    );
+                }
+            }
+        });
+
+        rootCmdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean b) {
+                if (!b && !rootCmdField.getText().toString().equals(settings.get(0).getRootCmd())) {
+                    final String rootCmd = rootCmdField.getText().toString();
+                    values.put(
+                            SettingsContract.SettingsEntries.ROOT_CMD,
+                            rootCmd
+                    );
+                    mDb.update(
+                            SettingsContract.SettingsEntries.TABLE_NAME,
+                            values,
+                            SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                            null
+                    );
+                    values.clear();
+                    settings.get(0).setRootCmd(rootCmd);
+                    assert cameraView != null;
+                    cameraView.setColorOscCmds(rootCmd);
+                }
+            }
+        });
+
+        tcpPasswdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !tcpPasswdField.getText().toString().equals(settings.get(0).getTcpPassword())) {
+                    final String passwd = tcpPasswdField.getText().toString();
+                    values.put(
+                            SettingsContract.SettingsEntries.TCP_PASSWORD,
+                            passwd
+                    );
+                    mDb.update(
+                            SettingsContract.SettingsEntries.TABLE_NAME,
+                            values,
+                            SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
+                            null
+                    );
+                    values.clear();
+                    settings.get(0).setTcpPassword(passwd);
+                }
+            }
+        });
+    }
+
+/*
+    private Cursor queryAddresses() {
+        String sortOrder = SettingsContract.AddressSettingsEntries._ID + " DESC";
+        return mDb.query(
+                SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                mAddrFields, null, null, null, null, sortOrder
+        );
+    }
+*/
+
+    private ArrayList<VideOSCSettingsListFragment.Address> getAddresses(Cursor cursor) {
+        final ArrayList<VideOSCSettingsListFragment.Address> res = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
+            final long addressId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries._ID));
+            final String addressIP = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+            address.setRowId(addressId);
+            address.setIP(addressIP);
+            address.setPort(port);
+
+            res.add(address);
+        }
+
+        return res;
+    }
+
+    private ArrayList<String[]> getAddressesCompareStrings(Cursor cursor) {
+        final ArrayList<String[]> res = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            final String addressIP = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.IP_ADDRESS));
+            final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntries.PORT));
+            res.add(new String[]{addressIP, String.valueOf(port)});
+        }
+
+        return res;
+    }
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
-	}
+    public void onDetach() {
+        super.onDetach();
+        this.mActivity = null;
+    }
 
-	/**
-	 * @param inflater
-	 * @param container
-	 * @param savedInstanceState
-	 * @deprecated
-	 */
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final FragmentManager fragmentManager = getChildFragmentManager();
-		final VideOSCCameraFragment cameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		mActivity = (VideOSCMainActivity) getActivity();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy called");
+        mAddressesCursor.close();
+    }
 
-		assert mActivity != null;
+    private class AddAddressButtonOnClickListener implements View.OnClickListener {
+        final private SQLiteDatabase mDb;
+        final private ContentValues mValues;
+        final private EditText mAddIPAddress;
+        final private EditText mAddPort;
+        private String[] mWarningStrings;
 
-		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
-		mView = inflater.inflate(R.layout.network_settings, container, false);
-		final SQLiteDatabase db = mActivity.getDatabase();
+        AddAddressButtonOnClickListener(SQLiteDatabase db, ContentValues values, EditText addIPAddress, EditText addPort) {
+            this.mDb = db;
+            this.mValues = values;
+            this.mAddIPAddress = addIPAddress;
+            this.mAddPort = addPort;
+        }
 
-		final List<VideOSCSettingsListFragment.Address> addresses = new ArrayList<>();
-		final List<VideOSCSettingsListFragment.Settings> settings = new ArrayList<>();
-		final ContentValues values = new ContentValues();
+        /**
+         * Called when a view has been clicked.
+         *
+         * @param v The view that was clicked.
+         */
+        @Override
+        public void onClick(View v) {
+            final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+            final String addAddressText = mAddIPAddress.getText().toString();
+            final String addPortVal = mAddPort.getText().toString();
+            int steps = 0;
+            String msg = getString(R.string.warning_address_header);
 
-		final String[] settingsFields = new String[]{
-				SettingsContract.SettingsEntries._ID,
-				SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-				SettingsContract.SettingsEntries.ROOT_CMD
-		};
+            if (addAddressText.length() > 0) {
+                if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
+                    steps++;
+                    mValues.put(
+                            SettingsContract.AddressSettingsEntries.IP_ADDRESS,
+                            addAddressText
+                    );
+                } else {
+                    msg = msg.concat(getString(R.string.warning_invalid_ip));
+                }
+            } else {
+                msg = msg.concat(getString(R.string.warning_empty_ip));
+            }
 
-		final String[] addrFields = new String[]{
-				SettingsContract.AddressSettingsEntry._ID,
-				SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-				SettingsContract.AddressSettingsEntry.PORT
-		};
-		final String sortOrder = SettingsContract.AddressSettingsEntry.IP_ADDRESS + " DESC";
+            if (addPortVal.length() > 0) {
+                int portVal = Integer.parseInt(mAddPort.getText().toString(), 10);
+                if (portVal >= 0 && portVal <= 65535) {
+                    steps++;
+                    mValues.put(
+                            SettingsContract.AddressSettingsEntries.PORT,
+                            addPortVal
+                    );
+                } else {
+                    msg = msg.concat(getString(R.string.warning_invalid_port));
+                }
+            } else {
+                msg = msg.concat(getString(R.string.warning_empty_port));
+            }
 
-		Cursor cursor = db.query(
-				SettingsContract.AddressSettingsEntry.TABLE_NAME,
-				addrFields,
-				null,
-				null,
-				null,
-				null,
-				sortOrder
-		);
+            if (steps == 2) {
+//                final String protocolName = mSetProtocol.getText().toString();
+//                int protocol;
+//
+//                if (protocolName.equals("TCP/IP")) {
+//                    protocol = OscP5.TCP;
+//                } else {
+//                    protocol = OscP5.UDP;
+//                }
+//
+//                mValues.put(
+//                        SettingsContract.AddressSettingsEntries.PROTOCOL,
+//                        protocol
+//                );
+//
+                final String[] compareString = new String[]{addAddressText, addPortVal/*, String.valueOf(protocol)*/};
+                mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
+                final ArrayList<String[]> addressesStrings = getAddressesCompareStrings(mAddressesCursor);
+                final short compResult = compare(compareString, addressesStrings);
+//                final int innerProtocol = protocol;
 
-		addresses.clear();
-
-		while (cursor.moveToNext()) {
-			final VideOSCSettingsListFragment.Address address = new VideOSCSettingsListFragment.Address();
-			final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry._ID));
-			final String ip = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.IP_ADDRESS));
-			final int port = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.AddressSettingsEntry.PORT));
-			address.setRowId(rowId);
-			address.setIP(ip);
-			address.setPort(port);
-			addresses.add(address);
-		}
-
-		cursor.close();
-
-		final EditText remoteIPField = mView.findViewById(R.id.remote_ip_field);
-		remoteIPField.setText(addresses.get(0).getIP(), TextView.BufferType.EDITABLE);
-		final EditText remotePortField = mView.findViewById(R.id.remote_port_field);
-		remotePortField.setText(
-				String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()),
-				TextView.BufferType.EDITABLE
-		);
-
-		cursor = db.query(
-				SettingsContract.SettingsEntries.TABLE_NAME,
-				settingsFields,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
-		settings.clear();
-
-		while (cursor.moveToNext()) {
-			final VideOSCSettingsListFragment.Settings setting = new VideOSCSettingsListFragment.Settings();
-			final long rowId = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries._ID));
-			final int udpReceivePort = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.UDP_RECEIVE_PORT));
-			final String cmd = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SettingsEntries.ROOT_CMD));
-			setting.setRowId(rowId);
-			setting.setUdpReceivePort(udpReceivePort);
-			setting.setRootCmd(cmd);
-			settings.add(setting);
-		}
-
-		cursor.close();
-
-		final EditText udpReceivePortField = mView.findViewById(R.id.device_port_field);
-		udpReceivePortField.setText(
-				String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()),
-				TextView.BufferType.EDITABLE
-		);
-		final EditText rootCmdField = mView.findViewById(R.id.root_cmd_name_field);
-		rootCmdField.setText(settings.get(0).getRootCmd(), TextView.BufferType.EDITABLE);
-		final TextView deviceIP = mView.findViewById(R.id.device_ip_address);
-		deviceIP.setText(KetaiNet.getIP());
-
-		remoteIPField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean b) {
-				if (!b && !remoteIPField.getText().toString().equals(addresses.get(0).getIP())) {
-					String remoteIP = remoteIPField.getText().toString();
-					values.put(
-							SettingsContract.AddressSettingsEntry.IP_ADDRESS,
-							remoteIP
-					);
-					db.update(
-							SettingsContract.AddressSettingsEntry.TABLE_NAME,
-							values,
-							SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					// update addresses immediately, so above if clause works correctly
-					// next time we try to set the IP address
-					addresses.get(0).setIP(remoteIP);
-					app.mOscHelper.setBroadcastAddr(remoteIP, app.mOscHelper.getBroadcastPort());
-				}
+                switch (compResult) {
+                    case 1:
+                    	Log.d(TAG, "case 1");
+                        VideOSCDialogHelper.showDialog(
+                                mActivity,
+                                android.R.style.Theme_Holo_Light_Dialog,
+                                String.format(getString(R.string.warning_same_address_different_protocol), mWarningStrings[0], mWarningStrings[1], mWarningStrings[2]),
+                                getString(R.string.OK),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final long ret = insertIntoDatabase(mDb, mValues);
+                                        if (ret > -1) {
+                                            addAddressMappings(mDb, ret);
+                                            app.putBroadcastClient((int) ret, new NetAddress(addAddressText, Integer.parseInt(addPortVal)));
+                                        }
+                                        resetRemoteClientInputs();
+                                        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
+                                        mAddressesAdapter.changeCursor(mAddressesCursor);
+                                        mAddressesAdapter.notifyDataSetChanged();
+                                    }
+                                },
+                                getString(R.string.cancel),
+                                null
+                        );
+                        break;
+                    case 2:
+                    	Log.d(TAG, "case 2");
+                        VideOSCDialogHelper.showWarning(
+                                mActivity,
+                                android.R.style.Theme_Holo_Light_Dialog,
+                                String.format(getString(R.string.warning_same_address_same_protocol), mWarningStrings[0], mWarningStrings[1], mWarningStrings[2]),
+                                getString(R.string.OK)
+                        );
+                        break;
+                    case 0:
+                    	Log.d(TAG, "case 0");
+                        final long ret = insertIntoDatabase(mDb, mValues);
+                        if (ret > -1) {
+                            addAddressMappings(mDb, ret);
+                            app.putBroadcastClient((int) ret, new NetAddress(addAddressText, Integer.parseInt(addPortVal)));
+                        }
+                        resetRemoteClientInputs();
+                        mValues.clear();
+                        mAddressesCursor = mDbHelper.queryAddresses(mAddrFields);
+                        mAddressesAdapter.changeCursor(mAddressesCursor);
+                        mAddressesAdapter.notifyDataSetChanged();
+                        break;
+                    default:
+                }
+            } else {
+				VideOSCDialogHelper.showWarning(
+						mActivity,
+						android.R.style.Theme_Holo_Light_Dialog,
+						msg,
+						getString(R.string.OK)
+				);
 			}
-		});
+        }
 
-		remotePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View view, boolean b) {
-				if (!b && !remotePortField.getText().toString().equals(String.format(Locale.getDefault(), "%d", addresses.get(0).getPort()))) {
-					String remotePort = remotePortField.getText().toString();
-					values.put(
-							SettingsContract.AddressSettingsEntry.PORT,
-							remotePort
-					);
-					db.update(
-							SettingsContract.AddressSettingsEntry.TABLE_NAME,
-							values,
-							SettingsContract.AddressSettingsEntry._ID + " = " + addresses.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					addresses.get(0).setPort(Integer.parseInt(remotePort, 10));
-					app.mOscHelper.setBroadcastAddr(app.mOscHelper.getBroadcastIP(), Integer.parseInt(remotePort, 10));
-				}
-			}
-		});
+        private short compare(String[] toMatch, ArrayList<String[]> matchStrings) {
+            for (String[] addr : matchStrings) {
+                if (addr[0].equals(toMatch[0]) && addr[1].equals(toMatch[1])) {
+                    setWarningStrings(addr[0], addr[1]);
+//                    if (!addr[2].equals(toMatch[2])) {
+//                        return 1;
+//                    } else {
+//                        return 2;
+//                    }
+                }
+            }
+            return 0;
+        }
 
-		udpReceivePortField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean b) {
-				if (!b && !udpReceivePortField.getText().toString().equals(
-						String.format(Locale.getDefault(), "%d", settings.get(0).getUdpReceivePort()))) {
-					String receivePort = udpReceivePortField.getText().toString();
-					values.put(
-							SettingsContract.SettingsEntries.UDP_RECEIVE_PORT,
-							receivePort
-					);
-					db.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					addresses.get(0).setReceivePort(Integer.parseInt(receivePort, 10));
-				}
-			}
-		});
+        private void setWarningStrings(String ip, String port) {
+            this.mWarningStrings = new String[]{ip, port};
+        }
 
-		rootCmdField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean b) {
-				if (!b && !rootCmdField.getText().toString().equals(settings.get(0).getRootCmd())) {
-					String rootCmd = rootCmdField.getText().toString();
-					values.put(
-							SettingsContract.SettingsEntries.ROOT_CMD,
-							rootCmd
-					);
-					db.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SettingsEntries._ID + " = " + settings.get(0).getRowId(),
-							null
-					);
-					values.clear();
-					settings.get(0).setRootCmd(rootCmd);
-					assert cameraView != null;
-					cameraView.setColorOscCmds(rootCmd);
-				}
-			}
-		});
+        private long insertIntoDatabase(SQLiteDatabase db, ContentValues values) {
+            long ret = db.insert(
+                    SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                    null,
+                    values
+            );
 
-		//		return super.onCreateView(inflater, container, savedInstanceState);
-		return mView;
-	}
+            values.clear();
+            return ret;
+        }
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mActivity = null;
-	}
+        private void addAddressMappings(SQLiteDatabase db, long addressIndex) {
+            final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
+            final Point resolution = app.getResolution();
+            // number of mappings: resolution.x * resolution.y * 3 - we have 3 channels: red, green and blue
+            final StringBuilder mappingsBuilder = new StringBuilder(resolution.x * resolution.y * 3);
+            for (int i = 0; i < resolution.x * resolution.y * 3; i++) {
+                mappingsBuilder.append('1');
+            }
+            final String mappings = String.valueOf(mappingsBuilder);
+            ContentValues values = new ContentValues();
+            values.put(
+                    SettingsContract.AddressCommandsMappings.ADDRESS,
+                    addressIndex
+            );
+            values.put(
+                    SettingsContract.AddressCommandsMappings.MAPPINGS,
+                    mappings
+            );
+            long result = db.insert(
+                    SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                    null,
+                    values
+            );
+            values.clear();
+            app.addCommandMappings((int) result, mappings);
+        }
+    }
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mView = null;
-	}
+    private void resetRemoteClientInputs() {
+        mAddIPAddress.setText("");
+        mAddPort.setText("");
+    }
 
-	/**
-	 * @deprecated
-	 */
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
 }

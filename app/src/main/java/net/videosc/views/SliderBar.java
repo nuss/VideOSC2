@@ -21,8 +21,10 @@ public class SliderBar extends View {
 	final static String TAG = "SliderBar";
 	private Paint mPaint;
 	private String mPixelNum;
-	private Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
-	private int mLeft = 0, mRight, mBottom;
+	private final Typeface mTypeFace = Typeface.create("sans-serif-light", Typeface.NORMAL);
+	private final int mLeft = 0;
+	private int mRight;
+	private int mBottom;
 	public int mAreaTop, mAreaBottom;
 	public Rect mArea = new Rect(mLeft, mAreaTop, mRight, mAreaBottom);
 	private int mTouchY;

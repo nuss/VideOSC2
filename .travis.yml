@@ -1,5 +1,6 @@
 language: android
-jdk: oraclejdk8
+# jdk: oraclejdk8
+jdk: openjdk8
 env:
   global:
     # install timeout in minutes (2 minutes by default)
@@ -14,12 +15,12 @@ android:
     - tools
 
     # The BuildTools version used by your project
-    - build-tools-29.0.3
+    - build-tools-30.0.3
     # - build-tools-26.0.1
 
     # ANDROID_BUILD_TOOLS=28.0.3
     # The SDK version used to compile your project
-    - android-29
+    - android-30
     - extra
     # Additional components
     - extra-google-google_play_services
@@ -34,7 +35,11 @@ android:
     # - sys-img-x86-google_apis_playstore-26
     # - sys-img-armeabi-v7a-google_apis-26
   before_install:
-    - yes | sdkmanager "platforms;android-29;default;armeabi-v7a"
+    - yes | sdkmanager "platforms;android-30"   
+    - yes | sdkmanager "build-tools;30.0.3"   
+    # - yes | sdkmanager --licenses && yes | sdkmanager --update
+    - yes | sdkmanager --update && yes | sdkmanager --licenses
+    # - yes | sdkmanager "platforms;android-30;default;armeabi-v7a"
     - mkdir "$ANDROID_HOME/licenses" || true
     - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
     - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"

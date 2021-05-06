@@ -6,11 +6,6 @@
               android:animateLayoutChanges="true"
               android:orientation="vertical">
 
-	<!--<WebView-->
-	<!--android:id="@+id/html_about"-->
-	<!--android:layout_width="match_parent"-->
-	<!--android:layout_height="wrap_content"/>-->
-
 	<ImageView
 		android:id="@+id/videosc_icon"
 		android:layout_width="match_parent"
@@ -47,17 +42,6 @@
 		android:layout_gravity="center"
 		android:maxWidth="500dp"
 		/>
-
-	<!--<Button-->
-		<!--android:layout_marginTop="15dp"-->
-		<!--android:layout_marginBottom="15dp"-->
-		<!--android:id="@+id/show_videosc_license"-->
-		<!--android:layout_width="wrap_content"-->
-		<!--android:layout_height="wrap_content"-->
-		<!--android:text="@string/show_license"-->
-		<!--android:layout_gravity="center"-->
-		<!--android:maxWidth="500dp"-->
-		<!--/>-->
 
 	<View
 		android:layout_width="wrap_content"
@@ -106,17 +90,6 @@
 		android:gravity="center"
 		/>
 
-	<!--<Button-->
-		<!--android:layout_marginTop="15dp"-->
-		<!--android:layout_marginBottom="15dp"-->
-		<!--android:layout_width="wrap_content"-->
-		<!--android:layout_height="wrap_content"-->
-		<!--android:layout_gravity="center"-->
-		<!--android:maxWidth="500dp"-->
-		<!--android:id="@+id/show_netp5_oscp5_license"-->
-		<!--android:text="@string/show_license"-->
-		<!--/>-->
-
 	<TextView
 		android:layout_marginTop="15dp"
 		android:layout_width="wrap_content"
@@ -144,17 +117,6 @@
 		android:gravity="center"
 		/>
 
-	<!--<Button-->
-		<!--android:layout_marginTop="15dp"-->
-		<!--android:layout_marginBottom="15dp"-->
-		<!--android:layout_width="wrap_content"-->
-		<!--android:layout_height="wrap_content"-->
-		<!--android:layout_gravity="center"-->
-		<!--android:maxWidth="500dp"-->
-		<!--android:id="@+id/show_gpuimage_license"-->
-		<!--android:text="@string/show_license"-->
-		<!--/>-->
-
 	<TextView
 		android:layout_marginTop="15dp"
 		android:layout_width="wrap_content"
@@ -181,17 +143,6 @@
 		android:textSize="14sp"
 		android:lineSpacingExtra="4dp"
 		/>
-
-	<!--<Button-->
-		<!--android:layout_marginTop="15dp"-->
-		<!--android:layout_marginBottom="15dp"-->
-		<!--android:layout_width="wrap_content"-->
-		<!--android:layout_height="wrap_content"-->
-		<!--android:layout_gravity="center"-->
-		<!--android:maxWidth="500dp"-->
-		<!--android:id="@+id/show_ketai_lib_license"-->
-		<!--android:text="@string/show_license"-->
-		<!--/>-->
 
 	<View
 		android:layout_width="wrap_content"
@@ -239,7 +190,6 @@
 		android:id="@+id/videosc_copyright"
 		android:text="@string/videosc_copyright"
 		android:textSize="14sp"
-		android:lineSpacingExtra="4dp"
-		/>
+		android:lineSpacingExtra="4dp" />
 
 </LinearLayout>

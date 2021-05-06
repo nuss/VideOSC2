@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="col_width">150dp</dimen>
+    <dimen name="row_height">40dp</dimen>
+    <dimen name="col_header_height">40dp</dimen>
+    <dimen name="row_header_width">150dp</dimen>
+</resources>

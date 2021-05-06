@@ -3,148 +3,230 @@ package net.videosc.utilities;
 import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import android.util.SparseIntArray;
 
 import androidx.annotation.NonNull;
-import netP5.NetAddress;
-import oscP5.OscEventListener;
-import oscP5.OscMessage;
-import oscP5.OscP5;
-//import oscP5.OscStatus;
+
+import net.oscP5android.OscEventListener;
+import net.oscP5android.OscMessage;
+import net.oscP5android.OscP5;
+import net.oscP5android.OscProperties;
+import net.videosc.VideOSCApplication;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by stefan on 15.07.17, package net.videosc.utilities, project VideOSC22.
  */
-public class VideOSCOscHandler/* implements OscEventListener*/ {
-	final private static String TAG = "VideOSCOscHandler";
+public class VideOSCOscHandler implements Closeable {
+    final private static String TAG = "VideOSCOscHandler";
 
-	private OscP5 mOscP5;
-	private NetAddress mBroadcastAddr;
-	private NetAddress mFeedbackAddr;
-	private String mBroadcastIP = "192.168.1.1"; // default IP, updated via settings
-	private int mListeningPort = 32000; // default port to listen on, updated via settings
-	private int mBroadcastPort = 57120; // default port to send to, updated via settings
-	private OscEventListener mOscEventListener;
+    private OscP5 mTcpListener, mUdpListener;
+    private final VideOSCApplication mApp;
+    private OscEventListener mUdpEventListener, mTcpEventListener;
 
-	private final SparseArray<ArrayList<String>> mFbStringsR = new SparseArray<>();
-	private final SparseArray<ArrayList<String>> mFbStringsG = new SparseArray<>();
-	private final SparseArray<ArrayList<String>> mFbStringsB = new SparseArray<>();
+    private final ArrayList<String> mUdpFbBroadcasters = new ArrayList<>();
 
-	public VideOSCOscHandler(Context context) {
-		final WeakReference<Context> contextRef = new WeakReference<>(context);
-		mOscP5 = new OscP5(contextRef.get(), mListeningPort);
-		// intermediate - should be invoked through user interaction
-		mBroadcastAddr = new NetAddress(mBroadcastIP, mBroadcastPort);
-	}
+    private final ArrayList<SparseArray<String>> mFbStringsR = new ArrayList<>();
+    private final ArrayList<SparseIntArray> mThreshesR = new ArrayList<>();
+    private final ArrayList<SparseArray<String>> mFbStringsG = new ArrayList<>();
+    private final ArrayList<SparseIntArray> mThreshesG = new ArrayList<>();
+    private final ArrayList<SparseArray<String>> mFbStringsB = new ArrayList<>();
+    private final ArrayList<SparseIntArray> mThreshesB = new ArrayList<>();
 
-	public OscMessage makeMessage(OscMessage msg, String cmd) {
-		if (msg == null) {
-			msg = new OscMessage(cmd);
-		} else {
-			msg.clear();
-			msg.setAddress(cmd);
-		}
+    public VideOSCOscHandler(Context context) {
+        this.mApp = (VideOSCApplication) context;
+    }
 
-		return msg;
-	}
+    public void createListeners(int udpPort, int tcpPort) {
+        this.mUdpListener = new OscP5(this.mApp, udpPort, OscProperties.UDP);
+        this.mTcpListener = new OscP5(this.mApp, tcpPort, OscProperties.TCP);
+    }
 
-	/* public OscBundle makeBundle(OscBundle bundle) {
-		if (bundle == null) {
-			bundle = new OscBundle();
-		}
+    public OscMessage makeMessage(OscMessage msg, String cmd) {
+        if (msg == null) {
+            msg = new OscMessage(cmd);
+        } else {
+            msg.clear();
+            msg.setAddress(cmd);
+        }
 
-		return bundle;
-	} */
+        return msg;
+    }
 
-	public OscP5 getOscP5() {
-		return mOscP5;
-	}
+    public OscP5 getUdpListener() {
+        return this.mUdpListener;
+    }
 
-	public void setBroadcastAddr(String ip, int port) {
-		mBroadcastIP = ip;
-		mBroadcastPort = port;
-		mBroadcastAddr = new NetAddress(ip, port);
-	}
+    public OscP5 getTcpListener() {
+        return this.mTcpListener;
+    }
 
-	public void addOscEventListener() {
-		mOscEventListener = new OscEventListener() {
-			@Override
-			public void oscEvent(OscMessage oscMessage) {
-				Log.d(TAG, "osc message: " + oscMessage);
-				createOscFeedbackStrings(oscMessage);
-			}
-		};
-		mOscP5.addListener(mOscEventListener);
-	}
+/*
+    public void setUdpListenerPort(int port) {
+        final OscProperties props = this.mUdpListener.getProperties().setListeningPort(port);
+        this.mUdpListener.setProperties(props);
+//        mUDPListeningPort = port;
+    }
 
-	public void removeOscEventListener() {
-		mOscP5.removeListener(mOscEventListener);
-	}
+    public void setTcpListenerPort(int port) {
+        final OscProperties props = this.mTcpListener.getProperties().setListeningPort(port);
+        this.mTcpListener.setProperties(props);
+//        mTCPListeningPort = port;
+    }
+*/
 
-	public NetAddress getBroadcastAddr() {
-		return mBroadcastAddr;
-	}
+    public void addOscUdpEventListener() {
+        mUdpEventListener = new OscEventListener() {
+            @Override
+            public void oscEvent(OscMessage oscMessage) {
+                final String fbBroadcasterName = oscMessage.hostNetAddressName();
+                final int numSlots = mApp.getResolution().x * mApp.getResolution().y;
 
-	public void setBroadcastIP(String ip) {
-		mBroadcastIP = ip;
-	}
+                if (!mUdpFbBroadcasters.contains(fbBroadcasterName)) {
+                    mUdpFbBroadcasters.add(fbBroadcasterName);
+                }
 
-	public String getBroadcastIP() {
-		return mBroadcastIP;
-	}
+                createOrAdjustFeedbackStringArrays(mFbStringsR, mThreshesR, numSlots);
+                createOrAdjustFeedbackStringArrays(mFbStringsG, mThreshesG, numSlots);
+                createOrAdjustFeedbackStringArrays(mFbStringsB, mThreshesB, numSlots);
 
-	public void setBroadcastPort(int port) {
-		mBroadcastPort = port;
-	}
+                createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
+            }
+        };
+        mUdpListener.addListener(mUdpEventListener);
+    }
 
-	public int getBroadcastPort() {
-		return mBroadcastPort;
-	}
+    private void createOrAdjustFeedbackStringArrays(ArrayList<SparseArray<String>> feedBackStrings, ArrayList<SparseIntArray> threshes, int numSlots) {
+        final int numStringSlots = feedBackStrings.size();
 
-	public SparseArray<ArrayList<String>> getRedFeedbackStrings() {
-		return mFbStringsR;
-	}
+        if (numStringSlots == 0) {
+            for (int i = 0; i < numSlots; i++) {
+                feedBackStrings.add(i, new SparseArray<String>());
+                threshes.add(i, new SparseIntArray());
+            }
+        } else if (numStringSlots > numSlots) {
+            feedBackStrings.subList(numSlots, numStringSlots).clear();
+            threshes.subList(numSlots, numStringSlots).clear();
+        } else if (numStringSlots < numSlots) {
+            for (int i = numStringSlots; i < numSlots; i++) {
+                feedBackStrings.add(i, new SparseArray<String>());
+                threshes.add(i, new SparseIntArray());
+            }
+        }
+    }
 
-	public SparseArray<ArrayList<String>> getGreenFeedbackStrings() {
-		return mFbStringsG;
-	}
+    public void addOscTcpEventListener() {
+        mTcpEventListener = new OscEventListener() {
+            @Override
+            public void oscEvent(OscMessage oscMessage) {
+                Log.d(TAG, "osc tcp message: " + oscMessage);
+//				createOscFeedbackStrings(oscMessage, mApp.getBroadcastClientKey(oscMessage.hostNetAddressName()));
+            }
+        };
+        mTcpListener.addListener(mTcpEventListener);
+    }
 
-	public SparseArray<ArrayList<String>> getBlueFeedbackStrings() {
-		return mFbStringsB;
-	}
+    public void removeOscUdpEventListener() {
+        mUdpListener.removeListener(mUdpEventListener);
+    }
 
-	public void resetFeedbackStrings() {
-		mFbStringsR.clear();
-		mFbStringsG.clear();
-		mFbStringsB.clear();
-	}
+    public void removeOscTcpEventListener() {
+        mTcpListener.removeListener(mTcpEventListener);
+    }
 
-	private void createOscFeedbackStrings(@NonNull OscMessage fbMessage) {
-		if (fbMessage.addrPattern().matches(
-				"^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
-		) && fbMessage.get(0) != null) {
-			String sender = fbMessage.get(0).stringValue();
-			String pixel = fbMessage.addrPattern().split("/")[2];
-			int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
 
-			if (pixel.matches("^red[0-9]+")) {
-				if (mFbStringsR.get(index) == null)
-					mFbStringsR.put(index, new ArrayList<String>());
-				if (mFbStringsR.get(index).indexOf(sender) < 0)
-					mFbStringsR.get(index).add(sender);
-			} else if (pixel.matches("^green[0-9]+")) {
-				if (mFbStringsG.get(index) == null)
-					mFbStringsG.put(index, new ArrayList<String>());
-				if (mFbStringsG.get(index).indexOf(sender) < 0)
-					mFbStringsG.get(index).add(sender);
-			} else if (pixel.matches("^blue[0-9]+")) {
-				if (mFbStringsB.get(index) == null)
-					mFbStringsB.put(index, new ArrayList<String>());
-				if (mFbStringsB.get(index).indexOf(sender) < 0)
-					mFbStringsB.get(index).add(sender);
-			}
-		}
-	}
+    public ArrayList<SparseArray<String>> getRedFeedbackStrings() {
+        return mFbStringsR;
+    }
+
+    public ArrayList<SparseArray<String>> getGreenFeedbackStrings() {
+        return mFbStringsG;
+    }
+
+    public ArrayList<SparseArray<String>> getBlueFeedbackStrings() {
+        return mFbStringsB;
+    }
+
+    public ArrayList<SparseIntArray> getRedThresholds() {
+        return mThreshesR;
+    }
+
+    public ArrayList<SparseIntArray> getGreenThresholds() {
+        return mThreshesG;
+    }
+
+    public ArrayList<SparseIntArray> getBlueThresholds() {
+        return mThreshesB;
+    }
+
+    private void createOscFeedbackStrings(@NonNull OscMessage fbMessage, int clientId) {
+        SparseArray<String> fbMsgs, checkFbMsgs;
+        SparseIntArray fbThreshes;
+
+        if (fbMessage.getAddress().matches(
+                "^/[a-zA-Z0-9_/]+/(red|green|blue)[0-9]+/name"
+        ) && fbMessage.get(0) != null) {
+            String fbText = clientId + ":" + fbMessage.get(0);
+            final String pixel = fbMessage.getAddress().split("/")[2];
+            final int index = Integer.parseInt(pixel.replaceAll("^\\D+", "")) - 1;
+
+            if (pixel.matches("^red[0-9]+")) {
+                fbMsgs = mFbStringsR.get(index);
+                fbThreshes = mThreshesR.get(index);
+                checkAndAddText(fbMsgs, fbThreshes, fbText);
+            } else if (pixel.matches("^green[0-9]+")) {
+                fbMsgs = mFbStringsG.get(index);
+                fbThreshes = mThreshesG.get(index);
+                checkAndAddText(fbMsgs, fbThreshes, fbText);
+            } else if (pixel.matches("^blue[0-9]+")) {
+                fbMsgs = mFbStringsB.get(index);
+                fbThreshes = mThreshesB.get(index);
+                checkAndAddText(fbMsgs, fbThreshes, fbText);
+            }
+        }
+    }
+
+    private void checkAndAddText(@NonNull SparseArray<String> list, @NonNull SparseIntArray threshes, @NonNull String text) {
+        final int index = list.indexOfValue(text.intern());
+        if (index < 0) {
+            final int i = list.size();
+            list.put(i, text.intern());
+            threshes.put(i, 100);
+        } else {
+            final int thresh = threshes.valueAt(index);
+            final int key = threshes.keyAt(index);
+            if (thresh < 100) {
+                threshes.delete(key);
+                threshes.put(key, thresh + 1);
+            }
+        }
+    }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     *
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *rem
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws IOException {
+        mFbStringsR.clear();
+        mThreshesR.clear();
+        mFbStringsG.clear();
+        mThreshesG.clear();
+        mFbStringsB.clear();
+        mThreshesB.clear();
+        mTcpListener.dispose();
+        mUdpListener.dispose();
+    }
 }

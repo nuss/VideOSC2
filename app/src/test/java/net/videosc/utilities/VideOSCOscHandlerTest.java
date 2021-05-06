@@ -25,7 +25,7 @@ public class VideOSCOscHandlerTest {
 	@Before
 	public void setUp() {
 		mMockContext = new ContextThemeWrapper();
-		mHandler = new VideOSCOscHandler(mMockContext);
+		mHandler = new VideOSCOscHandler(mMockContext, numPixels);
 	}
 
 	@After

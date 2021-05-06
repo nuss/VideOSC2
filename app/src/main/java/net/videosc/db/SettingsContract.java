@@ -9,15 +9,14 @@ public class SettingsContract {
 	final private static String TAG = "SettingsContract";
 
 	// prevent accidential instantiation
-	private SettingsContract() {
-	}
+	private SettingsContract() { }
 
 	/* Inner class that defines the table contents */
-	public static class AddressSettingsEntry implements BaseColumns {
+	public static class AddressSettingsEntries implements BaseColumns {
 		public static final String TABLE_NAME = "vosc_client_addresses";
 		public static final String IP_ADDRESS = "ip_address";
 		public static final String PORT = "port";
-		public static final String PROTOCOL = "protocol"; // TCP/IP or UDP
+//		public static final String PROTOCOL = "protocol"; // TCP/IP or UDP
 	}
 
 	public static class SettingsEntries implements BaseColumns {
@@ -32,6 +31,7 @@ public class SettingsContract {
 		public static final String ROOT_CMD = "root_cmd_name";
 		public static final String UDP_RECEIVE_PORT = "udp_receive_port";
 		public static final String TCP_RECEIVE_PORT = "tcp_receive_port";
+		public static final String TCP_PASSWORD = "tcp_password";
 	}
 
 	public static class SensorSettingsEntries implements BaseColumns {
@@ -50,6 +50,12 @@ public class SettingsContract {
 		public static final String SNAPSHOT_BLUE_VALUES = "snapshot_blue_values";
 		public static final String SNAPSHOT_BLUE_MIX_VALUES = "snapshot_blue_mix_values";
 		public static final String SNAPSHOT_SIZE = "snapshot_size";
+	}
+
+	public static class AddressCommandsMappings implements BaseColumns {
+		public static final String TABLE_NAME = "vosc_address_commands_mappings";
+		public static final String ADDRESS = "address_id";
+		public static final String MAPPINGS = "command_mappings";
 	}
 
 	// TODO

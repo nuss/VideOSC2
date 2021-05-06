@@ -1,6 +1,7 @@
 package net.videosc.fragments.settings;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -8,6 +9,7 @@ import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +25,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
@@ -33,29 +39,32 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.utilities.VideOSCDBHelpers;
+import net.videosc.utilities.VideOSCStringHelpers;
 import net.videosc.utilities.VideOSCUIHelpers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-
 public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	final private static String TAG = "ResolutionSettings";
 
-	private VideOSCMainActivity mActivity;
-	private View mView;
 	private PopupWindow mFrameRatePopUp;
 	private ContentValues mValues;
 	private SQLiteDatabase mDb;
 	final private List<VideOSCSettingsListFragment.Settings> mSettings = new ArrayList<>();
-	private ViewGroup mContainer;
 	private VideOSCCameraFragment mCameraView;
 	private Button mSelectFramerate;
 	private ArrayAdapter<String> mFpsAdapter;
+	private LayoutInflater mInflater;
+	private boolean mIsAutoExposureLockSupported;
+
+	public VideOSCResolutionSettingsFragment() { }
+
+	public VideOSCResolutionSettingsFragment(Context context) {
+		this.mActivity = (VideOSCMainActivity) context;
+	}
 
 	/**
 	 * @param savedInstanceState
@@ -63,8 +72,34 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 		Log.d(TAG, "onCreate() called");
+	}
+
+	/**
+	 * @param inflater
+	 * @param container
+	 * @param savedInstanceState
+	 */
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
+		View view;
+//		Log.d(TAG, "onCreateView() called");
+		this.mContainer = container;
+		this.mInflater = inflater;
+		// the settings view - can't be final as there are two different layouts possible
+		final FragmentManager fragmentManager = getFragmentManager();
+		assert fragmentManager != null;
+		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
+		assert mCameraView != null;
+		this.mIsAutoExposureLockSupported = mCameraView.mCamera.getParameters().isAutoExposureLockSupported();
+		if (mIsAutoExposureLockSupported) {
+			view = inflater.inflate(R.layout.resolution_settings, mContainer, false);
+		} else {
+			view = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, mContainer, false);
+		}
+
+		return view;
 	}
 
 	/**
@@ -78,62 +113,16 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	 * @param savedInstanceState If non-null, this fragment is being re-constructed
 	 */
 	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Log.d(TAG, "onViewCreated() called");
-	}
-
-	/**
-	 * @param inflater
-	 * @param container
-	 * @param savedInstanceState
-	 */
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
-		Log.d(TAG, "onCreateView() called");
-		// the settings view - can't be final as there are two different layouts possible
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
-		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		assert mCameraView != null;
+//		Log.d(TAG, "onViewCreated() called");
 		final Camera.Parameters params = mCameraView.mCamera.getParameters();
-		mActivity = (VideOSCMainActivity) getActivity();
-
-		assert mActivity != null;
-
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
-		mDb = mActivity.getDatabase();
+		final VideOSCDBHelpers dbHelper = mActivity.getDbHelper();
+		mDb = dbHelper.getDatabase();
 		mValues = new ContentValues();
-		mContainer = container;
 
-		final boolean isAutoExposureLockSupported = mCameraView.mCamera.getParameters().isAutoExposureLockSupported();
-
-		if (isAutoExposureLockSupported) {
-			mView = inflater.inflate(R.layout.resolution_settings, container, false);
-		} else
-			mView = inflater.inflate(R.layout.resolution_settings_no_autoexposure_lock, container, false);
-
-
-		final String[] settingsFields = new String[]{
-				SettingsContract.SettingsEntries._ID,
-				SettingsContract.SettingsEntries.RES_H,
-				SettingsContract.SettingsEntries.RES_V,
-				SettingsContract.SettingsEntries.FRAMERATE_RANGE,
-				SettingsContract.SettingsEntries.NORMALIZE,
-				SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES
-		};
-
-		final Cursor cursor = mDb.query(
-				SettingsContract.SettingsEntries.TABLE_NAME,
-				settingsFields,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-
+		final Cursor cursor = dbHelper.queryResolutionSettings();
 		// clear list of settings before adding new content
 		mSettings.clear();
 
@@ -157,18 +146,18 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 
 		cursor.close();
 
-		final EditText resHField = mView.findViewById(R.id.resolution_horizontal_field);
+		final EditText resHField = view.findViewById(R.id.resolution_horizontal_field);
 		resHField.setText(
 				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()),
 				TextView.BufferType.EDITABLE
 		);
-		final EditText resVField = mView.findViewById(R.id.resolution_vertical_field);
+		final EditText resVField = view.findViewById(R.id.resolution_vertical_field);
 		resVField.setText(
 				String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()),
 				TextView.BufferType.EDITABLE
 		);
 
-		mSelectFramerate = mView.findViewById(R.id.framerate_selection);
+		mSelectFramerate = view.findViewById(R.id.framerate_selection);
 		String buttonText = getResources().getString(R.string.select_framerate_min_max_1_s);
 		final short frameRateRangeIndex = mSettings.get(0).getFramerateRange();
 
@@ -193,13 +182,13 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
 		frameRatesList.setOnItemClickListener(new FrameRateOnItemClickListener());
 
-		final Switch normalizedCB = mView.findViewById(R.id.normalize_output_checkbox);
+		final SwitchCompat normalizedCB = view.findViewById(R.id.normalize_output_checkbox);
 		normalizedCB.setChecked(mSettings.get(0).getNormalized());
-		final Switch rememberPixelStatesCB = mView.findViewById(R.id.remember_activated_checkbox);
+		final SwitchCompat rememberPixelStatesCB = view.findViewById(R.id.remember_activated_checkbox);
 		rememberPixelStatesCB.setChecked(mSettings.get(0).getRememberPixelStates());
-		if (isAutoExposureLockSupported) {
-			final Switch fixExposureCB = mView.findViewById(R.id.fix_exposure_checkbox);
-			final View fixExposureButtonLayout = inflater.inflate(R.layout.cancel_ok_buttons, container, false);
+		if (mIsAutoExposureLockSupported) {
+			final SwitchCompat fixExposureCB = view.findViewById(R.id.fix_exposure_checkbox);
+			final View fixExposureButtonLayout = mInflater.inflate(R.layout.cancel_ok_buttons, mContainer, false);
 
 			fixExposureCB.setChecked(app.getExposureIsFixed());
 			fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -208,12 +197,12 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 					final Camera camera = mCameraView.mCamera;
 
 					if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
-						mView.setVisibility(View.INVISIBLE);
+						view.setVisibility(View.INVISIBLE);
 
 						Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
 						toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 						toast.show();
-						final ViewGroup bg = (ViewGroup) container.getParent();
+						final ViewGroup bg = (ViewGroup) mContainer.getParent();
 						bg.setBackgroundResource(0);
 
 						bg.addView(fixExposureButtonLayout);
@@ -228,7 +217,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
 								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
 								new Toast(getActivity());
-								mView.setVisibility(View.VISIBLE);
+								view.setVisibility(View.VISIBLE);
 							}
 						});
 						final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
@@ -236,7 +225,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 							@Override
 							public void onClick(View v) {
 								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
-								mView.setVisibility(View.VISIBLE);
+								view.setVisibility(View.VISIBLE);
 								// setting exposure is only possible if exposure
 								// isn't already fixed. As a consequence cancelling
 								// setting exposure can only result in *not* fixing
@@ -281,6 +270,27 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 									app.getResolution().y
 							)
 					);
+					// adjust mappings to new resolution
+					SparseArray<String> mappings = app.getCommandMappings();
+					Log.d(TAG, "mappings before setting width: " + mappings);
+					Point resolution = app.getResolution();
+					for (int i = 0; i < mappings.size(); i++) {
+						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
+						mValues.put(
+								SettingsContract.AddressCommandsMappings.MAPPINGS,
+								paddedMappings
+						);
+						mDb.update(
+								SettingsContract.AddressCommandsMappings.TABLE_NAME,
+								mValues,
+								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
+								null
+						);
+						mValues.clear();
+						mappings.put(mappings.keyAt(i), paddedMappings);
+					}
+					app.setCommandMappings(mappings);
+					Log.d(TAG, "mappings after setting width: " + app.getCommandMappings());
 				}
 			}
 		});
@@ -310,6 +320,25 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 									Integer.parseInt(resV)
 							)
 					);
+					// adjust mappings to new resolution
+					SparseArray<String> mappings = app.getCommandMappings();
+					Point resolution = app.getResolution();
+					for (int i = 0; i < mappings.size(); i++) {
+						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
+						mValues.put(
+								SettingsContract.AddressCommandsMappings.MAPPINGS,
+								paddedMappings
+						);
+						mDb.update(
+								SettingsContract.AddressCommandsMappings.TABLE_NAME,
+								mValues,
+								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
+								null
+						);
+						mValues.clear();
+						mappings.put(mappings.keyAt(i), paddedMappings);
+					}
+					app.setCommandMappings(mappings);
 				}
 			}
 		});
@@ -357,17 +386,12 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 				}
 			}
 		});
-
-		return mView;
 	}
 
 	private PopupWindow showFrameRatesList(ArrayAdapter<String> adapter) {
 		final PopupWindow popUp = new PopupWindow(mActivity);
 		final ListView frameratesList = new ListView(mActivity);
 		frameratesList.setAdapter(adapter);
-
-		// TODO: set click listener
-
 		popUp.setFocusable(true);
 		popUp.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
 		popUp.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
@@ -386,31 +410,6 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 	public void onLowMemory() {
 		super.onLowMemory();
 		Log.d(TAG, "onLowMemory() called");
-	}
-
-	/**
-	 * Called when the view previously created by {@link #onCreateView} has
-	 * been detached from the fragment.  The next time the fragment needs
-	 * to be displayed, a new view will be created.  This is called
-	 * after {@link #onStop()} and before {@link #onDestroy()}.  It is called
-	 * <em>regardless</em> of whether {@link #onCreateView} returned a
-	 * non-null view.  Internally it is called after the view's state has
-	 * been saved but before it has been removed from its parent.
-	 */
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mView = null;
-	}
-
-	/**
-	 * Called when the fragment is no longer in use.  This is called
-	 * after {@link #onStop()} and before {@link #onDetach()}.
-	 */
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy() called");
 	}
 
 	/**

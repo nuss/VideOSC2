@@ -3,6 +3,7 @@
 	<array name="settings_select_items">
 		<item>@string/selection_network_settings</item>
 		<item>@string/selection_resolution_settings</item>
+		<item>@string/command_device_mappings</item>
 		<item>@string/selection_sensor_settings</item>
 		<item>@string/selection_debug_settings</item>
 		<item>@string/selection_about_videosc</item>

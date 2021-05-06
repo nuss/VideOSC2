@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:padding="5dp"
+            android:textSize="20sp"
+            android:text="@string/command_device_mappings"/>
+
+        <Button
+            android:id="@+id/sort_mode_switch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:background="@color/transparent"
+            android:drawableEnd="@drawable/carret_down_white"
+            android:drawableRight="@drawable/carret_down_white"
+            android:gravity="end"
+            android:paddingTop="15dp"
+            android:text="@string/sort_by_color" />
+    </LinearLayout>
+
+    <com.cleveroad.adaptivetablelayout.AdaptiveTableLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/address_command_mappings_table"
+        app:fixedHeaders="true"
+        app:solidRowHeaders="true"
+        app:dragAndDropEnabled="true"
+        app:cellMargin="1dp" />
+
+</LinearLayout>
