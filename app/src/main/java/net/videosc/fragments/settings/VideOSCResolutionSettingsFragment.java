@@ -173,12 +173,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		}
 		mFpsAdapter = new ArrayAdapter<>(mActivity, R.layout.framerate_selection_item, items);
 		mFrameRatePopUp = showFrameRatesList(mFpsAdapter);
-		mSelectFramerate.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				mFrameRatePopUp.showAsDropDown(view, 0, 0);
-			}
-		});
+		mSelectFramerate.setOnClickListener(view1 -> mFrameRatePopUp.showAsDropDown(view1, 0, 0));
 		ListView frameRatesList = (ListView) mFrameRatePopUp.getContentView();
 		frameRatesList.setOnItemClickListener(new FrameRateOnItemClickListener());
 
@@ -208,32 +203,26 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 						bg.addView(fixExposureButtonLayout);
 
 						final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
-						fixExposureButton.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								params.setAutoExposureLock(true);
-								camera.setParameters(params);
-								app.setExposureIsFixed(true);
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
-								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
-								new Toast(getActivity());
-								view.setVisibility(View.VISIBLE);
-							}
+						fixExposureButton.setOnClickListener(v -> {
+							params.setAutoExposureLock(true);
+							camera.setParameters(params);
+							app.setExposureIsFixed(true);
+							VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
+							bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
+							new Toast(getActivity());
+							view.setVisibility(View.VISIBLE);
 						});
 						final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
-						cancelExposureFixed.setOnClickListener((new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
-								view.setVisibility(View.VISIBLE);
-								// setting exposure is only possible if exposure
-								// isn't already fixed. As a consequence cancelling
-								// setting exposure can only result in *not* fixing
-								// exposure
-								app.setHasExposureSettingBeenCancelled(true);
-								bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
-								fixExposureCB.setChecked(false);
-							}
+						cancelExposureFixed.setOnClickListener((v -> {
+							VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
+							view.setVisibility(View.VISIBLE);
+							// setting exposure is only possible if exposure
+							// isn't already fixed. As a consequence cancelling
+							// setting exposure can only result in *not* fixing
+							// exposure
+							app.setHasExposureSettingBeenCancelled(true);
+							bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
+							fixExposureCB.setChecked(false);
 						}));
 					} else {
 						params.setAutoExposureLock(false);

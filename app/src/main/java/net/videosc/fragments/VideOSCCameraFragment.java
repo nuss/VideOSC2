@@ -691,15 +691,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             mSnapshotsBar = mActivity.mBasicToolbar;
             ViewGroup snapshotsBar = mActivity.mBasicToolbar;
             ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
-            applySelection.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mSelectedPixels.size() > 0) {
-                        mSelectedPixels.clear();
-                        mSnapshotsBar.setVisibility(View.INVISIBLE);
-                        mPixelEditor.setVisibility(View.INVISIBLE);
+            applySelection.setOnClickListener(v -> {
+                if (mSelectedPixels.size() > 0) {
+                    mSelectedPixels.clear();
+                    mSnapshotsBar.setVisibility(View.INVISIBLE);
+                    mPixelEditor.setVisibility(View.INVISIBLE);
+                    if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS))
                         createMultiSliders();
-                    }
                 }
             });
 

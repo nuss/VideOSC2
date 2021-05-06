@@ -264,173 +264,148 @@ public class VideOSCMainActivity extends FragmentActivity
         mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
         final ImageButton quickEditPixels = mPixelEditor.findViewById(R.id.quick_edit_pixels);
         final ImageButton deleteEditsInPixels = mPixelEditor.findViewById(R.id.delete_edits);
+        final ImageButton groupSliders = mPixelEditor.findViewById(R.id.group_sliders);
 
         final ImageButton oscFeedbackButton = mBasicToolbar.findViewById(R.id.osc_feedback_button);
         final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
         final ImageButton saveSnapshotButton = mBasicToolbar.findViewById(R.id.save_snapshot);
 
-        quickEditPixels.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setActivated(true);
-                editPixels.setActivated(false);
-                deleteEditsInPixels.setActivated(false);
-                applyPixelSelection.setActivated(false);
-                applyPixelSelection.setEnabled(false);
-                mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
+        quickEditPixels.setOnClickListener(v -> {
+            v.setActivated(true);
+            editPixels.setActivated(false);
+            deleteEditsInPixels.setActivated(false);
+            applyPixelSelection.setActivated(false);
+            applyPixelSelection.setEnabled(false);
+            mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
+        });
+
+        groupSliders.setOnClickListener(v -> {
+            v.setActivated(true);
+            quickEditPixels.setActivated(false);
+            deleteEditsInPixels.setActivated(false);
+            editPixels.setActivated(false);
+            applyPixelSelection.setActivated(true);
+            applyPixelSelection.setEnabled(true);
+        });
+
+        editPixels.setOnClickListener(v -> {
+            v.setActivated(true);
+            quickEditPixels.setActivated(false);
+            deleteEditsInPixels.setActivated(false);
+            applyPixelSelection.setActivated(true);
+            applyPixelSelection.setEnabled(true);
+            mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
+        });
+
+        deleteEditsInPixels.setOnClickListener(v -> {
+            v.setActivated(true);
+            quickEditPixels.setActivated(false);
+            editPixels.setActivated(false);
+            applyPixelSelection.setActivated(false);
+            applyPixelSelection.setEnabled(false);
+            final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
+            assert cameraFragment != null;
+            cameraFragment.getSelectedPixels().clear();
+            cameraFragment.getPixelNumbers().clear();
+            mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
+        });
+
+        loadSnapshotsButton.setOnClickListener(v -> {
+            final MatrixCursor extras = mDbHelper.getSnapshotsMatrixCursor();
+            final Cursor cursor = mDbHelper.getSnapshotsCursor();
+            final Cursor[] cursors = {cursor, extras};
+            final MergeCursor mergedCursor = new MergeCursor(cursors);
+            VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
+            snapshotSelect.setDatabase(mDb);
+            snapshotSelect.setCursors(mergedCursor, cursor, extras);
+            if (!snapshotSelect.isVisible()) {
+                mFragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .add(R.id.camera_preview, snapshotSelect, "snapshot select")
+                        .commit();
             }
         });
 
-        editPixels.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setActivated(true);
-                quickEditPixels.setActivated(false);
-                deleteEditsInPixels.setActivated(false);
-                applyPixelSelection.setActivated(true);
-                applyPixelSelection.setEnabled(true);
-                mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
-            }
-        });
+        saveSnapshotButton.setOnClickListener(v -> {
+            LayoutInflater inflater1 = LayoutInflater.from(VideOSCMainActivity.this);
+            final ViewGroup dialogView = (ViewGroup) inflater1.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
-        deleteEditsInPixels.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setActivated(true);
-                quickEditPixels.setActivated(false);
-                editPixels.setActivated(false);
-                applyPixelSelection.setActivated(false);
-                applyPixelSelection.setEnabled(false);
-                final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
-                assert cameraFragment != null;
-                cameraFragment.getSelectedPixels().clear();
-                cameraFragment.getPixelNumbers().clear();
-                mApp.setPixelEditMode(PixelEditModes.DELETE_EDITS);
-                Log.d(TAG, "delete edits");
-            }
-        });
+            // FIXME: Alert Dialogs should have a white backround like other dialogs
+            /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+                    new ContextThemeWrapper(
+                            VideOSCMainActivity.this, R.style.AlertDialogCustom
+                    )
+            );*/
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
+            dialogBuilder.setView(dialogView);
+            final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date now = new Date();
+            String nowString = df.format(now);
+            nameInput.setText(nowString);
 
-        loadSnapshotsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final MatrixCursor extras = mDbHelper.getSnapshotsMatrixCursor();
-                final Cursor cursor = mDbHelper.getSnapshotsCursor();
-                final Cursor[] cursors = {cursor, extras};
-                final MergeCursor mergedCursor = new MergeCursor(cursors);
-                VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
-                snapshotSelect.setDatabase(mDb);
-                snapshotSelect.setCursors(mergedCursor, cursor, extras);
-                if (!snapshotSelect.isVisible()) {
-                    mFragmentManager
-                            .beginTransaction()
-                            .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                            .add(R.id.camera_preview, snapshotSelect, "snapshot select")
-                            .commit();
-                }
-            }
-        });
-
-        saveSnapshotButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LayoutInflater inflater = LayoutInflater.from(VideOSCMainActivity.this);
-                final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
-
-                // FIXME: Alert Dialogs should have a white backround like other dialogs
-				/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
-						new ContextThemeWrapper(
-								VideOSCMainActivity.this, R.style.AlertDialogCustom
-						)
-				);*/
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
-                dialogBuilder.setView(dialogView);
-                final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                Date now = new Date();
-                String nowString = df.format(now);
-                nameInput.setText(nowString);
-
-                dialogBuilder
-                        .setCancelable(true)
-                        .setPositiveButton(R.string.save_snapshot,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        final ContentValues values = new ContentValues();
-                                        final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
-                                        String valuesString;
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
-                                        // red values
-                                        assert cameraFragment != null;
-                                        valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
-                                        // red mix values
-                                        valuesString = convertPixelValuesToString(cameraFragment.getRedMixValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES, valuesString);
-                                        // green values
-                                        valuesString = convertPixelValuesToString(cameraFragment.getGreenValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES, valuesString);
-                                        // green mix values
-                                        valuesString = convertPixelValuesToString(cameraFragment.getGreenMixValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES, valuesString);
-                                        // blue values
-                                        valuesString = convertPixelValuesToString(cameraFragment.getBlueValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES, valuesString);
-                                        // blue mix values
-                                        valuesString = convertPixelValuesToString(cameraFragment.getBlueMixValues());
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES, valuesString);
-                                        Point resolution = mApp.getResolution();
-                                        values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE, resolution.x * resolution.y);
-                                        long result = mDb.insert(
-                                                SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-                                                null,
-                                                values
-                                        );
-                                        if (result > 0) {
-                                            long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
-                                            if (numSnapshots > 0) {
-                                                TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
-                                                numSnapshotsIndicator.setActivated(true);
-                                                numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
-                                                numSnapshotsIndicator.setTextColor(0xffffffff);
-                                            }
-                                        }
-                                        ((FrameLayout) mCamView).removeView(dialogView);
+            dialogBuilder
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.save_snapshot,
+                            (dialog, which) -> {
+                                final ContentValues values = new ContentValues();
+                                final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
+                                String valuesString;
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
+                                // red values
+                                assert cameraFragment != null;
+                                valuesString = convertPixelValuesToString(cameraFragment.getRedValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES, valuesString);
+                                // red mix values
+                                valuesString = convertPixelValuesToString(cameraFragment.getRedMixValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES, valuesString);
+                                // green values
+                                valuesString = convertPixelValuesToString(cameraFragment.getGreenValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES, valuesString);
+                                // green mix values
+                                valuesString = convertPixelValuesToString(cameraFragment.getGreenMixValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES, valuesString);
+                                // blue values
+                                valuesString = convertPixelValuesToString(cameraFragment.getBlueValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES, valuesString);
+                                // blue mix values
+                                valuesString = convertPixelValuesToString(cameraFragment.getBlueMixValues());
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES, valuesString);
+                                Point resolution = mApp.getResolution();
+                                values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE, resolution.x * resolution.y);
+                                long result = mDb.insert(
+                                        SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+                                        null,
+                                        values
+                                );
+                                if (result > 0) {
+                                    long numSnapshots1 = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+                                    if (numSnapshots1 > 0) {
+                                        TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
+                                        numSnapshotsIndicator.setActivated(true);
+                                        numSnapshotsIndicator.setText(String.valueOf(numSnapshots1));
+                                        numSnapshotsIndicator.setTextColor(0xffffffff);
                                     }
-                                })
-                        .setNegativeButton(R.string.cancel,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        ((FrameLayout) mCamView).removeView(dialogView);
-                                    }
-                                });
+                                }
+                                ((FrameLayout) mCamView).removeView(dialogView);
+                            })
+                    .setNegativeButton(R.string.cancel,
+                            (dialog, which) -> ((FrameLayout) mCamView).removeView(dialogView));
 
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
-            }
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
         });
 
-//		saveSnapshotButton.setOnLongClickListener(new View.OnLongClickListener() {
-//			@Override
-//			public boolean onLongClick(View view) {
-//				view.setOnTouchListener(VideOSCMainActivity.this);
-//				return true;
-//			}
-//		});
-
-        oscFeedbackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
-                view.setActivated(mApp.getOSCFeedbackActivated());
-                if (mApp.getOSCFeedbackActivated()) {
-                    mOscHelper.addOscUdpEventListener();
-                    mOscHelper.addOscTcpEventListener();
-                } else {
-                    mOscHelper.removeOscUdpEventListener();
-                    mOscHelper.removeOscTcpEventListener();
-                }
+        oscFeedbackButton.setOnClickListener(view -> {
+            mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
+            view.setActivated(mApp.getOSCFeedbackActivated());
+            if (mApp.getOSCFeedbackActivated()) {
+                mOscHelper.addOscUdpEventListener();
+                mOscHelper.addOscTcpEventListener();
+            } else {
+                mOscHelper.removeOscUdpEventListener();
+                mOscHelper.removeOscTcpEventListener();
             }
         });
 
@@ -440,14 +415,11 @@ public class VideOSCMainActivity extends FragmentActivity
         mApp.setDimensions(dimensions);
 
         ImageButton menuButton = findViewById(R.id.show_menu);
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END)) {
-                    mToolsDrawerLayout.openDrawer(GravityCompat.END);
-                }
-                closeColorModePanel();
+        menuButton.setOnClickListener(view -> {
+            if (!mToolsDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+                mToolsDrawerLayout.openDrawer(GravityCompat.END);
             }
+            closeColorModePanel();
         });
 
         int indicatorXMLiD = mApp.getHasTorch() ? R.layout.indicator_panel : R.layout.indicator_panel_no_torch;

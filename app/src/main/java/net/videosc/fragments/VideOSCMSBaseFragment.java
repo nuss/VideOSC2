@@ -46,57 +46,51 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		// move behaviour defined in VideOSCMainActivity > onTouch()
 		mMSButtons.setOnTouchListener(mActivity);
 
-		ok.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				app.setIsMultiSliderActive(false);
-				mManager.beginTransaction().remove(mFragment).commit();
-				mContainer.removeView(mMSButtons);
-				mContainer.removeView(mLabelsView);
-				indicatorPanel.setVisibility(View.VISIBLE);
-				pixelEditorToolbox.setVisibility(View.VISIBLE);
-				snapshotsBar.setVisibility(View.VISIBLE);
-				if (app.getIsFPSCalcPanelOpen())
-					fpsCalcPanel.setVisibility(View.VISIBLE);
-				toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-			}
+		ok.setOnClickListener(v -> {
+			app.setIsMultiSliderActive(false);
+			mManager.beginTransaction().remove(mFragment).commit();
+			mContainer.removeView(mMSButtons);
+			mContainer.removeView(mLabelsView);
+			indicatorPanel.setVisibility(View.VISIBLE);
+			pixelEditorToolbox.setVisibility(View.VISIBLE);
+			snapshotsBar.setVisibility(View.VISIBLE);
+			if (app.getIsFPSCalcPanelOpen())
+				fpsCalcPanel.setVisibility(View.VISIBLE);
+			toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		});
 
-		cancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				app.setIsMultiSliderActive(false);
+		cancel.setOnClickListener(v -> {
+			app.setIsMultiSliderActive(false);
 
-				assert cameraPreview != null;
-				SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
-				SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
-				for (int i = 0; i < redResetVals.size(); i++) {
-					cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.valueAt(i));
-					cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.valueAt(i));
-				}
-				SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
-				SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
-				for (int i = 0; i < greenResetVals.size(); i++) {
-					cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.valueAt(i));
-					cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.valueAt(i));
-				}
-				SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
-				SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
-				for (int i = 0; i < blueResetVals.size(); i++) {
-					cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.valueAt(i));
-					cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
-				}
-
-				mManager.beginTransaction().remove(mFragment).commit();
-				mContainer.removeView(mMSButtons);
-				mContainer.removeView(mLabelsView);
-				indicatorPanel.setVisibility(View.VISIBLE);
-				pixelEditorToolbox.setVisibility(View.VISIBLE);
-				snapshotsBar.setVisibility(View.VISIBLE);
-				if (app.getIsFPSCalcPanelOpen())
-					fpsCalcPanel.setVisibility(View.VISIBLE);
-				toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+			assert cameraPreview != null;
+			SparseArray<Double> redResetVals = cameraPreview.getRedResetValues();
+			SparseArray<Double> redResetMixVals = cameraPreview.getRedMixResetValues();
+			for (int i = 0; i < redResetVals.size(); i++) {
+				cameraPreview.setRedValue(redResetVals.keyAt(i), redResetVals.valueAt(i));
+				cameraPreview.setRedMixValue(redResetMixVals.keyAt(i), redResetMixVals.valueAt(i));
 			}
+			SparseArray<Double> greenResetVals = cameraPreview.getGreenResetValues();
+			SparseArray<Double> greenResetMixVals = cameraPreview.getGreenMixResetValues();
+			for (int i = 0; i < greenResetVals.size(); i++) {
+				cameraPreview.setGreenValue(greenResetVals.keyAt(i), greenResetVals.valueAt(i));
+				cameraPreview.setGreenMixValue(greenResetMixVals.keyAt(i), greenResetMixVals.valueAt(i));
+			}
+			SparseArray<Double> blueResetVals = cameraPreview.getBlueResetValues();
+			SparseArray<Double> blueResetMixVals = cameraPreview.getBlueMixResetValues();
+			for (int i = 0; i < blueResetVals.size(); i++) {
+				cameraPreview.setBlueValue(blueResetVals.keyAt(i), blueResetVals.valueAt(i));
+				cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
+			}
+
+			mManager.beginTransaction().remove(mFragment).commit();
+			mContainer.removeView(mMSButtons);
+			mContainer.removeView(mLabelsView);
+			indicatorPanel.setVisibility(View.VISIBLE);
+			pixelEditorToolbox.setVisibility(View.VISIBLE);
+			snapshotsBar.setVisibility(View.VISIBLE);
+			if (app.getIsFPSCalcPanelOpen())
+				fpsCalcPanel.setVisibility(View.VISIBLE);
+			toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		});
 	}
 

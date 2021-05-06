@@ -86,68 +86,65 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
         ipText.setText(ip);
         portText.setText(String.valueOf(port));
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int ret = mDb.delete(
-                        SettingsContract.AddressSettingsEntries.TABLE_NAME,
-                        SettingsContract.AddressSettingsEntries._ID + " = " + id,
+        deleteButton.setOnClickListener(v -> {
+            int ret = mDb.delete(
+                    SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                    SettingsContract.AddressSettingsEntries._ID + " = " + id,
+                    null
+            );
+            if (ret > 0) {
+                // we don't know if a mappings entry for the given address exists
+                // so we don't make progress dependent on a successful deletion
+                mDb.delete(
+                        SettingsContract.AddressCommandsMappings.TABLE_NAME,
+                        SettingsContract.AddressCommandsMappings.ADDRESS + " = " + id,
                         null
                 );
-                if (ret > 0) {
-                    // we don't know if a mappings entry for the given address exists
-                    // so we don't make progress dependent on a successful deletion
-                    mDb.delete(
+
+                Cursor cursor1 = mDb.query(
+                        SettingsContract.AddressSettingsEntries.TABLE_NAME,
+                        mAddrFields,
+                        null,
+                        null,
+                        null,
+                        null,
+                        mSortOrder
+                );
+
+                changeCursor(cursor1);
+                app.removeBroadcastClient((int) id);
+                app.removeCommandMappingsAt((int) id);
+                SparseArray<String> cmdMappings = app.getCommandMappings();
+                Log.d(TAG, "mappings before: " + app.getCommandMappings());
+
+                if (cmdMappings.size() == 1) {
+                    // only one *un-editable* slot left, hence reset all commands
+                    int key = cmdMappings.keyAt(0);
+                    Point resolution = app.getResolution();
+                    StringBuilder mappings = new StringBuilder(resolution.x * resolution.y * 3);
+                    for (int i = 0; i < resolution.x * resolution.y * 3; i++) {
+                        mappings.append('1');
+                    }
+                    cmdMappings.setValueAt(0, String.valueOf(mappings));
+                    ContentValues values = new ContentValues();
+                    values.put(
+                            SettingsContract.AddressCommandsMappings.ADDRESS,
+                            key
+                    );
+                    values.put(
+                            SettingsContract.AddressCommandsMappings.MAPPINGS,
+                            String.valueOf(mappings)
+                    );
+                    mDb.update(
                             SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                            SettingsContract.AddressCommandsMappings.ADDRESS + " = " + id,
+                            values,
+                            SettingsContract.AddressCommandsMappings.ADDRESS + " = " + key,
                             null
                     );
-
-                    Cursor cursor = mDb.query(
-                            SettingsContract.AddressSettingsEntries.TABLE_NAME,
-                            mAddrFields,
-                            null,
-                            null,
-                            null,
-                            null,
-                            mSortOrder
-                    );
-
-                    changeCursor(cursor);
-                    app.removeBroadcastClient((int) id);
-                    app.removeCommandMappingsAt((int) id);
-                    SparseArray<String> cmdMappings = app.getCommandMappings();
-                    Log.d(TAG, "mappings before: " + app.getCommandMappings());
-
-                    if (cmdMappings.size() == 1) {
-                        // only one *un-editable* slot left, hence reset all commands
-                        int key = cmdMappings.keyAt(0);
-                        Point resolution = app.getResolution();
-                        StringBuilder mappings = new StringBuilder(resolution.x * resolution.y * 3);
-                        for (int i = 0; i < resolution.x * resolution.y * 3; i++) {
-                            mappings.append('1');
-                        }
-                        cmdMappings.setValueAt(0, String.valueOf(mappings));
-                        ContentValues values = new ContentValues();
-                        values.put(
-                                SettingsContract.AddressCommandsMappings.ADDRESS,
-                                key
-                        );
-                        values.put(
-                                SettingsContract.AddressCommandsMappings.MAPPINGS,
-                                String.valueOf(mappings)
-                        );
-                        mDb.update(
-                                SettingsContract.AddressCommandsMappings.TABLE_NAME,
-                                values,
-                                SettingsContract.AddressCommandsMappings.ADDRESS + " = " + key,
-                                null
-                        );
-                        values.clear();
-                    }
-                    Log.d(TAG, "mappings after: " + app.getCommandMappings());
-                    notifyDataSetChanged();
+                    values.clear();
                 }
+                Log.d(TAG, "mappings after: " + app.getCommandMappings());
+                notifyDataSetChanged();
             }
         });
     }

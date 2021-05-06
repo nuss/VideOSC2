@@ -3,7 +3,6 @@ package net.videosc.adapters;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -148,135 +147,123 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 			final ArrayList<Double> fBlueValues = blueValues;
 			final ArrayList<Double> fBlueMixValues = blueMixValues;
 
-			row.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Point res = mApp.getResolution();
-					int size = res.x * res.y;
-					mCameraFragment.setRedValues(fRedValues, size);
-					mCameraFragment.setRedMixValues(fRedMixValues, size);
-					mCameraFragment.setGreenValues(fGreenValues, size);
-					mCameraFragment.setGreenMixValues(fGreenMixValues, size);
-					mCameraFragment.setBlueValues(fBlueValues, size);
-					mCameraFragment.setBlueMixValues(fBlueMixValues, size);
+			row.setOnClickListener(v -> {
+				Point res = mApp.getResolution();
+				int size = res.x * res.y;
+				mCameraFragment.setRedValues(fRedValues, size);
+				mCameraFragment.setRedMixValues(fRedMixValues, size);
+				mCameraFragment.setGreenValues(fGreenValues, size);
+				mCameraFragment.setGreenMixValues(fGreenMixValues, size);
+				mCameraFragment.setBlueValues(fBlueValues, size);
+				mCameraFragment.setBlueMixValues(fBlueMixValues, size);
 
-					final VideOSCSelectSnapshotFragment snapShotSelectFragment =
-							(VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
-					assert snapShotSelectFragment != null;
-					mManager.beginTransaction()
-							.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-							.remove(snapShotSelectFragment)
-							.commit();
-					mActivity.setFullScreen();
-				}
+				final VideOSCSelectSnapshotFragment snapShotSelectFragment =
+						(VideOSCSelectSnapshotFragment) mManager.findFragmentByTag("snapshot select");
+				assert snapShotSelectFragment != null;
+				mManager.beginTransaction()
+						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+						.remove(snapShotSelectFragment)
+						.commit();
+				mActivity.setFullScreen();
 			});
 
-			row.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					LayoutInflater inflater = LayoutInflater.from(context);
-					final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, mParent, false);
+			row.setOnLongClickListener(v -> {
+				LayoutInflater inflater = LayoutInflater.from(context);
+				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, mParent, false);
 
-					// FIXME: AlertDialogs should look like other dialogs (white background, black text)
-					/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
-							new ContextThemeWrapper(context, R.style.AlertDialogCustom)
-					);*/
-					AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-					dialogBuilder.setView(dialogView);
-					final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
-					nameInput.setText(name);
+				// FIXME: AlertDialogs should look like other dialogs (white background, black text)
+				/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+						new ContextThemeWrapper(context, R.style.AlertDialogCustom)
+				);*/
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+				dialogBuilder.setView(dialogView);
+				final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
+				nameInput.setText(name);
 
-					final String[] fields = new String[]{
-							SettingsContract.PixelSnapshotEntries._ID,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
-							SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES
-					};
+				final String[] fields = new String[]{
+						SettingsContract.PixelSnapshotEntries._ID,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_RED_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_GREEN_MIX_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_VALUES,
+						SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES
+				};
 
 
-					final SQLiteDatabase db = mSnapshotListFragment.getDatabase();
+				final SQLiteDatabase db = mSnapshotListFragment.getDatabase();
 //					final MatrixCursor extrasCursor = mSnapshotListFragment.getExtrasCursor();
 
-					dialogBuilder
-							.setCancelable(true)
-							.setPositiveButton(R.string.rename_snapshot,
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											final ContentValues values = new ContentValues();
-											values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
-											int result = db.update(
-													SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-													values,
-													SettingsContract.PixelSnapshotEntries._ID + " = " + id,
-													null
-											);
-											if (result > 0) {
-												final Cursor newCursor = db.query(
-														SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-														fields,
-														null, null, null, null,
-														SettingsContract.PixelSnapshotEntries._ID + " DESC"
-												);
-												// FIXME: we can't use a merged cursor. Hence, we lose the "export"/"import" entries
+				dialogBuilder
+						.setCancelable(true)
+						.setPositiveButton(R.string.rename_snapshot,
+								(dialog, which) -> {
+									final ContentValues values = new ContentValues();
+									values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
+									int result = db.update(
+											SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+											values,
+											SettingsContract.PixelSnapshotEntries._ID + " = " + id,
+											null
+									);
+									if (result > 0) {
+										final Cursor newCursor = db.query(
+												SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+												fields,
+												null, null, null, null,
+												SettingsContract.PixelSnapshotEntries._ID + " DESC"
+										);
+										// FIXME: we can't use a merged cursor. Hence, we lose the "export"/"import" entries
 //												final Cursor[] cursors = {newCursor, extrasCursor};
 //												final MergeCursor mergedCursor = new MergeCursor(cursors);
 //												changeCursor(mergedCursor);
-												changeCursor(newCursor);
-												notifyDataSetChanged();
-												dialog.dismiss();
+										changeCursor(newCursor);
+										notifyDataSetChanged();
+										dialog.dismiss();
 //												mSnapshotListFragment.setDbCursor(newCursor);
-											}
-										}
-									})
-							.setNegativeButton(R.string.delete_snapshot,
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											int result = db.delete(SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-													SettingsContract.PixelSnapshotEntries._ID + " = " + id,
-													null
-											);
-											if (result > 0) {
-												Cursor newCursor = db.query(
-														SettingsContract.PixelSnapshotEntries.TABLE_NAME,
-														fields,
-														null, null, null, null,
-														SettingsContract.PixelSnapshotEntries._ID + " DESC"
-												);
+									}
+								})
+						.setNegativeButton(R.string.delete_snapshot,
+								(dialog, which) -> {
+									int result = db.delete(SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+											SettingsContract.PixelSnapshotEntries._ID + " = " + id,
+											null
+									);
+									if (result > 0) {
+										Cursor newCursor = db.query(
+												SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+												fields,
+												null, null, null, null,
+												SettingsContract.PixelSnapshotEntries._ID + " DESC"
+										);
 //												final Cursor[] cursors = {newCursor, extrasCursor};
 //												final MergeCursor mergedCursor = new MergeCursor(cursors);
 //												changeCursor(mergedCursor);
-												changeCursor(newCursor);
-												notifyDataSetChanged();
-												dialog.dismiss();
+										changeCursor(newCursor);
+										notifyDataSetChanged();
+										dialog.dismiss();
 
-												final long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
-												final TextView numSnapshotsIndicator = mActivity.mCamView.findViewById(R.id.num_snapshots);
-												if (numSnapshotsIndicator != null) {
-													numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
-													if (numSnapshots > 0) {
-														numSnapshotsIndicator.setActivated(true);
-														numSnapshotsIndicator.setTextColor(0xffffffff);
-													} else {
-														numSnapshotsIndicator.setActivated(false);
-														numSnapshotsIndicator.setTextColor(0x00ffffff);
-													}
-												}
+										final long numSnapshots = DatabaseUtils.queryNumEntries(db, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+										final TextView numSnapshotsIndicator = mActivity.mCamView.findViewById(R.id.num_snapshots);
+										if (numSnapshotsIndicator != null) {
+											numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
+											if (numSnapshots > 0) {
+												numSnapshotsIndicator.setActivated(true);
+												numSnapshotsIndicator.setTextColor(0xffffffff);
+											} else {
+												numSnapshotsIndicator.setActivated(false);
+												numSnapshotsIndicator.setTextColor(0x00ffffff);
 											}
 										}
-									});
+									}
+								});
 
-					final AlertDialog dialog = dialogBuilder.create();
-					dialog.show();
+				final AlertDialog dialog = dialogBuilder.create();
+				dialog.show();
 
-					return true;
-				}
+				return true;
 			});
 		}
 	}

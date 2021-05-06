@@ -21,6 +21,17 @@
 		android:contentDescription="@string/delete_edits_on_pixels"/>
 
 	<ImageButton
+		android:id="@+id/group_sliders"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		android:src="@drawable/group_sliders"
+		android:background="@drawable/editor_button_shape"
+		android:focusable="true"
+		android:contentDescription="@string/create_and_store_groups_of_sliders"/>
+
+	<ImageButton
 		android:id="@+id/quick_edit_pixels"
 		android:layout_width="40dp"
 		android:layout_height="40dp"

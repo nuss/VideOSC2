@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent">
+
+    <net.videosc.views.VideOSCSliderGroupView
+        android:id="@+id/red_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:background="#ffff0000"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp" />
+
+    <net.videosc.views.VideOSCSliderGroupView
+        android:id="@+id/green_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:background="#ff00ff00"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp" />
+
+    <net.videosc.views.VideOSCSliderGroupView
+        android:id="@+id/blue_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:background="#ff0000ff"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp" />
+
+</LinearLayout>

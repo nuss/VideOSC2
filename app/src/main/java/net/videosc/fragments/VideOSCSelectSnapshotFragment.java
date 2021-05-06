@@ -92,15 +92,12 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		});
 		final ImageButton close = view.findViewById(R.id.close);
 		close.bringToFront();
-		close.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				assert manager != null;
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-						.remove(VideOSCSelectSnapshotFragment.this)
-						.commit();
-			}
+		close.setOnClickListener(v -> {
+			assert manager != null;
+			manager.beginTransaction()
+					.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+					.remove(VideOSCSelectSnapshotFragment.this)
+					.commit();
 		});
 	}
 
