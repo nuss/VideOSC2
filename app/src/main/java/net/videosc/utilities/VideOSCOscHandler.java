@@ -79,22 +79,19 @@ public class VideOSCOscHandler implements Closeable {
 */
 
     public void addOscUdpEventListener() {
-        mUdpEventListener = new OscEventListener() {
-            @Override
-            public void oscEvent(OscMessage oscMessage) {
-                final String fbBroadcasterName = oscMessage.hostNetAddressName();
-                final int numSlots = mApp.getResolution().x * mApp.getResolution().y;
+        mUdpEventListener = oscMessage -> {
+            final String fbBroadcasterName = oscMessage.hostNetAddressName();
+            final int numSlots = mApp.getResolution().x * mApp.getResolution().y;
 
-                if (!mUdpFbBroadcasters.contains(fbBroadcasterName)) {
-                    mUdpFbBroadcasters.add(fbBroadcasterName);
-                }
-
-                createOrAdjustFeedbackStringArrays(mFbStringsR, mThreshesR, numSlots);
-                createOrAdjustFeedbackStringArrays(mFbStringsG, mThreshesG, numSlots);
-                createOrAdjustFeedbackStringArrays(mFbStringsB, mThreshesB, numSlots);
-
-                createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
+            if (!mUdpFbBroadcasters.contains(fbBroadcasterName)) {
+                mUdpFbBroadcasters.add(fbBroadcasterName);
             }
+
+            createOrAdjustFeedbackStringArrays(mFbStringsR, mThreshesR, numSlots);
+            createOrAdjustFeedbackStringArrays(mFbStringsG, mThreshesG, numSlots);
+            createOrAdjustFeedbackStringArrays(mFbStringsB, mThreshesB, numSlots);
+
+            createOscFeedbackStrings(oscMessage, mUdpFbBroadcasters.indexOf(fbBroadcasterName) + 1);
         };
         mUdpListener.addListener(mUdpEventListener);
     }
@@ -104,7 +101,7 @@ public class VideOSCOscHandler implements Closeable {
 
         if (numStringSlots == 0) {
             for (int i = 0; i < numSlots; i++) {
-                feedBackStrings.add(i, new SparseArray<String>());
+                feedBackStrings.add(i, new SparseArray<>());
                 threshes.add(i, new SparseIntArray());
             }
         } else if (numStringSlots > numSlots) {
@@ -112,19 +109,16 @@ public class VideOSCOscHandler implements Closeable {
             threshes.subList(numSlots, numStringSlots).clear();
         } else if (numStringSlots < numSlots) {
             for (int i = numStringSlots; i < numSlots; i++) {
-                feedBackStrings.add(i, new SparseArray<String>());
+                feedBackStrings.add(i, new SparseArray<>());
                 threshes.add(i, new SparseIntArray());
             }
         }
     }
 
     public void addOscTcpEventListener() {
-        mTcpEventListener = new OscEventListener() {
-            @Override
-            public void oscEvent(OscMessage oscMessage) {
-                Log.d(TAG, "osc tcp message: " + oscMessage);
+        mTcpEventListener = oscMessage -> {
+            Log.d(TAG, "osc tcp message: " + oscMessage);
 //				createOscFeedbackStrings(oscMessage, mApp.getBroadcastClientKey(oscMessage.hostNetAddressName()));
-            }
         };
         mTcpListener.addListener(mTcpEventListener);
     }
@@ -160,6 +154,31 @@ public class VideOSCOscHandler implements Closeable {
 
     public ArrayList<SparseIntArray> getBlueThresholds() {
         return mThreshesB;
+    }
+
+    // return a snapshot of current feedback strings
+    public ArrayList<SparseArray<String>> getRedFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsR) {
+            res.add(slot.clone());
+        }
+        return res;
+    }
+
+    public ArrayList<SparseArray<String>> getGreenFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsG) {
+            res.add(slot.clone());
+        }
+        return res;
+    }
+
+    public ArrayList<SparseArray<String>> getBlueFeedbackStringsSnapshot() {
+        final ArrayList<SparseArray<String>> res = new ArrayList<>();
+        for (SparseArray<String> slot : mFbStringsB) {
+            res.add(slot.clone());
+        }
+        return res;
     }
 
     private void createOscFeedbackStrings(@NonNull OscMessage fbMessage, int clientId) {

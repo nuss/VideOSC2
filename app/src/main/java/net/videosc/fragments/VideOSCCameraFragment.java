@@ -147,11 +147,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
     /**
      * Default empty constructor.
      */
-    public VideOSCCameraFragment() {
-    }
+    public VideOSCCameraFragment() { }
 
     public VideOSCCameraFragment(VideOSCMainActivity activity) {
-        super();
         this.mActivity = activity;
     }
 
@@ -696,8 +694,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     mSelectedPixels.clear();
                     mSnapshotsBar.setVisibility(View.INVISIBLE);
                     mPixelEditor.setVisibility(View.INVISIBLE);
-                    if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS))
+                    if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS)) {
                         createMultiSliders();
+                    } else if (mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS)) {
+                        createSliderGroupEditor();
+                    }
                 }
             });
 
@@ -854,7 +855,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 // clear selected pixels on up
                 if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)) {
                     mSelectedPixels.clear();
-                } else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS)) {
+                } else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) || mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS)) {
                     for (int i = 0; i < mLockedPixels.size(); i++)
                         mLockedPixels.set(i, false);
                     mPixelEditor.setVisibility(View.VISIBLE);
@@ -906,23 +907,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     Rect currRect = getCurrentPixelRect(currPixel);
                     final boolean isInQuickEditMode = mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS);
                     final boolean isInEditMode = mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS);
+                    final boolean isInGroupEditMode = mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS);
 
                     if (!mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
                         if (!mPixelIds.contains(currPixel + 1)) {
-                            if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+                            if (isInQuickEditMode || ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))) {
                                 mPixelIds.add(currPixel + 1);
                             }
                             Collections.sort(mPixelIds);
                         }
                         if (!containsRect(mSelectedPixels, currRect)) {
-                            if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+                            if (isInQuickEditMode || ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))) {
                                 mSelectedPixels.add(currRect);
-                                if (isInEditMode && !mLockedPixels.get(currPixel))
+                                if ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))
                                     mLockedPixels.set(currPixel, true);
                             }
                         } else {
                             // only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
-                            if (isInEditMode && !mLockedPixels.get(currPixel)) {
+                            if ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel)) {
                                 mPixelIds.remove(Integer.valueOf(currPixel + 1));
                                 removeRect(mSelectedPixels, currRect);
                                 mLockedPixels.set(currPixel, true);
@@ -1069,6 +1071,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mContainer));
                 mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
+        }
+
+        private void createSliderGroupEditor() {
+            final int numPixels = mApp.getResolution().x * mApp.getResolution().y;
+            if (mOscHelper.getUdpListener().listeners().isEmpty()) {
+                mOscHelper.addOscUdpEventListener();
+            }
+            if (mOscHelper.getTcpListener().listeners().isEmpty()) {
+                mOscHelper.addOscTcpEventListener();
+            }
+            VideOSCSliderGroupSelectFragment sliderGroupFragment = new VideOSCSliderGroupSelectFragment(mActivity);
+            mManager.beginTransaction()
+                    .add(R.id.camera_preview, sliderGroupFragment, "SliderGroupEditor")
+                    .commit();
+            final Bundle sliderGroupEditorArgs = new Bundle();
+            sliderGroupEditorArgs.putInt("numPixels", numPixels);
+            sliderGroupEditorArgs.putIntegerArrayList("pixelIds", (ArrayList<Integer>) mPixelIds);
+            sliderGroupFragment.setArguments(sliderGroupEditorArgs);
         }
 
         private boolean containsRect(ArrayList<Rect> rectList, Rect rect) {

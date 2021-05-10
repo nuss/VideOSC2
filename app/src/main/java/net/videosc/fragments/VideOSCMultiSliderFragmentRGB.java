@@ -35,7 +35,6 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 	public VideOSCMultiSliderFragmentRGB() { }
 
 	public VideOSCMultiSliderFragmentRGB(Context context) {
-		super(context);
 		this.mActivity = (VideOSCMainActivity) context;
 	}
 

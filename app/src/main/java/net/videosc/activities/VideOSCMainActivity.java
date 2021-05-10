@@ -274,6 +274,7 @@ public class VideOSCMainActivity extends FragmentActivity
             v.setActivated(true);
             editPixels.setActivated(false);
             deleteEditsInPixels.setActivated(false);
+            groupSliders.setActivated(false);
             applyPixelSelection.setActivated(false);
             applyPixelSelection.setEnabled(false);
             mApp.setPixelEditMode(PixelEditModes.QUICK_EDIT_PIXELS);
@@ -286,12 +287,14 @@ public class VideOSCMainActivity extends FragmentActivity
             editPixels.setActivated(false);
             applyPixelSelection.setActivated(true);
             applyPixelSelection.setEnabled(true);
+            mApp.setPixelEditMode(PixelEditModes.GROUP_SLIDERS);
         });
 
         editPixels.setOnClickListener(v -> {
             v.setActivated(true);
             quickEditPixels.setActivated(false);
             deleteEditsInPixels.setActivated(false);
+            groupSliders.setActivated(false);
             applyPixelSelection.setActivated(true);
             applyPixelSelection.setEnabled(true);
             mApp.setPixelEditMode(PixelEditModes.EDIT_PIXELS);
@@ -301,6 +304,7 @@ public class VideOSCMainActivity extends FragmentActivity
             v.setActivated(true);
             quickEditPixels.setActivated(false);
             editPixels.setActivated(false);
+            groupSliders.setActivated(false);
             applyPixelSelection.setActivated(false);
             applyPixelSelection.setEnabled(false);
             final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) mFragmentManager.findFragmentByTag("CamPreview");
@@ -401,8 +405,12 @@ public class VideOSCMainActivity extends FragmentActivity
             mApp.setOSCFeedbackActivated(!mApp.getOSCFeedbackActivated());
             view.setActivated(mApp.getOSCFeedbackActivated());
             if (mApp.getOSCFeedbackActivated()) {
-                mOscHelper.addOscUdpEventListener();
-                mOscHelper.addOscTcpEventListener();
+                if (mOscHelper.getUdpListener().listeners().isEmpty()) {
+                    mOscHelper.addOscUdpEventListener();
+                }
+                if (mOscHelper.getTcpListener().listeners().isEmpty()) {
+                    mOscHelper.addOscTcpEventListener();
+                }
             } else {
                 mOscHelper.removeOscUdpEventListener();
                 mOscHelper.removeOscTcpEventListener();
