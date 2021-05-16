@@ -88,17 +88,17 @@ OSCdef(\videoscR, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
 	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderR");
 	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
-}, '/vosc/red14');
+}, '/vosc/red4');
 OSCdef(\videoscG, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
 	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderG");
 	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
-}, '/vosc/green14');
+}, '/vosc/green13');
 OSCdef(\videoscB, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
 	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderB");
 	// n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
-}, '/vosc/blue25');
+}, '/vosc/blue13');
 )
 
 OSCdef.freeAll

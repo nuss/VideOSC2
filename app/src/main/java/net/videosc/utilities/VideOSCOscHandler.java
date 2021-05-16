@@ -182,7 +182,7 @@ public class VideOSCOscHandler implements Closeable {
     }
 
     private void createOscFeedbackStrings(@NonNull OscMessage fbMessage, int clientId) {
-        SparseArray<String> fbMsgs, checkFbMsgs;
+        SparseArray<String> fbMsgs;
         SparseIntArray fbThreshes;
 
         if (fbMessage.getAddress().matches(
@@ -215,11 +215,13 @@ public class VideOSCOscHandler implements Closeable {
             list.put(i, text.intern());
             threshes.put(i, 100);
         } else {
-            final int thresh = threshes.valueAt(index);
-            final int key = threshes.keyAt(index);
-            if (thresh < 100) {
-                threshes.delete(key);
-                threshes.put(key, thresh + 1);
+            if (threshes.size() > index) {
+                final int thresh = threshes.valueAt(index);
+                final int key = threshes.keyAt(index);
+                if (thresh < 100) {
+                    threshes.delete(key);
+                    threshes.put(key, thresh + 1);
+                }
             }
         }
     }

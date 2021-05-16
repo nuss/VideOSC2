@@ -72,7 +72,6 @@ public class AddressesListAdapter extends ResourceCursorAdapter {
      */
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-        String protocolName;
 
         final VideOSCApplication app = (VideOSCApplication) context.getApplicationContext();
         final TextView ipText = view.findViewById(R.id.remote_ip_address);

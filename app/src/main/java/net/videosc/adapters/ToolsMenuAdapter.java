@@ -56,7 +56,6 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_item, parent, false);
         }
-//		final ViewGroup adapterView = parent;
         // Lookup view for data population
         final ImageView toolView = convertView.findViewById(R.id.tool);
         // Populate the data into the template view using the data object
@@ -186,20 +185,20 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             // no reflections needed
             final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
             HashMap<String, Integer> toolsDrawerKeys = mActivity.toolsDrawerKeys();
-            final int START_STOP = toolsDrawerKeys.get("startStop");
+            final Integer START_STOP = toolsDrawerKeys.get("startStop");
             final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
-            final int COLOR_MODE = toolsDrawerKeys.get("modeSelect");
-            final int INTERACTION = toolsDrawerKeys.get("mInteractionMode");
+            final Integer COLOR_MODE = toolsDrawerKeys.get("modeSelect");
+            final Integer INTERACTION = toolsDrawerKeys.get("mInteractionMode");
             final Integer SELECT_CAM = toolsDrawerKeys.containsKey("camSelect") ? toolsDrawerKeys.get("camSelect") : null;
-            final int INFO = toolsDrawerKeys.get("info");
-            final int SETTINGS = toolsDrawerKeys.get("prefs");
-            final int QUIT = toolsDrawerKeys.get("quit");
+            final Integer INFO = toolsDrawerKeys.get("info");
+            final Integer SETTINGS = toolsDrawerKeys.get("prefs");
+            final Integer QUIT = toolsDrawerKeys.get("quit");
             BitmapDrawable img;
             assert cameraFragment != null;
             Camera camera = cameraFragment.mCamera;
             Camera.Parameters cameraParameters = camera.getParameters();
 
-            if (mPosition == START_STOP) {
+            if (START_STOP != null && mPosition == START_STOP) {
                 mActivity.closeColorModePanel();
                 if (mDBHelper.countAddresses() > 0) {
                     if (!app.getCameraOSCisPlaying()) {
@@ -246,7 +245,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                     camera.setParameters(cameraParameters);
                     mToolView.setImageDrawable(img);
                 }
-            } else if (mPosition == COLOR_MODE) {
+            } else if (COLOR_MODE != null && mPosition == COLOR_MODE) {
                 if (!app.getIsColorModePanelOpen()) {
                     int y = (int) view.getY();
 
@@ -272,7 +271,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                         button.setOnClickListener(new ToolsOnClickListener(app, COLOR_MODE, mToolView, mActivity, rgbModeIndicator));
                     }
                 }
-            } else if (mPosition == INTERACTION) {
+            } else if (INTERACTION != null && mPosition == INTERACTION) {
                 mActivity.closeColorModePanel();
                 if (app.getInteractionMode().equals(InteractionModes.BASIC)) {
                     app.setInteractionMode(InteractionModes.SINGLE_PIXEL);
@@ -333,7 +332,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                 // invoke setting of new camera
                 // camera ID should already have been set in currentCameraID
                 cameraFragment.safeCameraOpenInView(mActivity.mCamView);
-            } else if (mPosition == INFO) {
+            } else if (INFO != null && mPosition == INFO) {
                 mActivity.closeColorModePanel();
                 if (app.getIsFPSCalcPanelOpen())
                     app.setIsFPSCalcPanelOpen(VideOSCUIHelpers.removeView(
@@ -347,7 +346,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             (FrameLayout) mActivity.mCamView
                     ));
                 }
-            } else if (mPosition == SETTINGS) {
+            } else if (SETTINGS != null && mPosition == SETTINGS) {
                 mActivity.closeColorModePanel();
                 mActivity.showBackButton();
                 VideOSCSettingsListFragment settings = new VideOSCSettingsListFragment(mActivity);
@@ -357,7 +356,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                             .add(R.id.camera_preview, settings, "settings selection")
                             .commit();
-            } else if (mPosition == QUIT) {
+            } else if (QUIT != null && mPosition == QUIT) {
                 VideOSCDialogHelper.showQuitDialog(mActivity);
             }
             mActivity.mToolsDrawerLayout.closeDrawer(GravityCompat.END);

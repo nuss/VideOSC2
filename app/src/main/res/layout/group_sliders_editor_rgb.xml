@@ -3,9 +3,11 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent">
+    android:background="@color/colorDarkTransparentBackground"
+    android:baselineAligned="false">
 
-    <net.videosc.views.VideOSCSliderGroupView
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/red_channel"
         android:layout_height="match_parent"
         android:layout_width="0dp"
@@ -15,9 +17,18 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="2.5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp">
 
-    <net.videosc.views.VideOSCSliderGroupView
+        <ListView
+            android:id="@+id/red_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/green_channel"
         android:layout_height="match_parent"
         android:layout_width="0dp"
@@ -27,9 +38,18 @@
         android:layout_marginLeft="2.5dp"
         android:layout_marginRight="2.5dp"
         android:layout_marginStart="2.5dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp">
 
-    <net.videosc.views.VideOSCSliderGroupView
+        <ListView
+            android:id="@+id/green_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/blue_channel"
         android:layout_height="match_parent"
         android:layout_width="0dp"
@@ -39,6 +59,14 @@
         android:layout_marginLeft="2.5dp"
         android:layout_marginRight="5dp"
         android:layout_marginStart="2.5dp"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp">
+
+        <ListView
+            android:id="@+id/blue_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
 
 </LinearLayout>
