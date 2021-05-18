@@ -33,8 +33,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 
 		final VideOSCApplication app = (VideOSCApplication) mActivity.getApplication();
 		final DrawerLayout toolsDrawer = mActivity.mToolsDrawerLayout;
-		ImageButton ok = mMSButtons.findViewById(R.id.ok);
-		ImageButton cancel = mMSButtons.findViewById(R.id.cancel);
+		final ImageButton ok = mMSButtons.findViewById(R.id.ok);
+		final ImageButton cancel = mMSButtons.findViewById(R.id.cancel);
 		final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
 		final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
 		final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);

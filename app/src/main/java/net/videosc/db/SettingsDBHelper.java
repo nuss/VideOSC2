@@ -76,8 +76,28 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 	private static final String SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE =
 			"DROP TABLE IF EXISTS " + SettingsContract.AddressCommandsMappings.TABLE_NAME;
 
+	private static final String SQL_SLIDER_GROUPS_CREATE =
+			"CREATE TABLE " + SettingsContract.SliderGroups.TABLE_NAME + " (" +
+					SettingsContract.SliderGroups._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.SliderGroups.GROUP_NAME + " TEXT NOT NULL UNIQUE DEFAULT 'slider group 1')";
+
+	private static final String SQL_SLIDER_GROUPS_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.SliderGroups.TABLE_NAME;
+
+	private static final String SQL_SLIDER_GROUP_PROPERTIES_CREATE =
+			"CREATE TABLE " + SettingsContract.SliderGroupProperties.TABLE_NAME + " (" +
+					SettingsContract.SliderGroupProperties._ID + " INTEGER PRIMARY KEY," +
+					SettingsContract.SliderGroupProperties.GROUP_ID + " INTEGER NOT NULL," +
+					SettingsContract.SliderGroupProperties.COLOR_CHANNEL + " INTEGER NOT NULL," +
+					SettingsContract.SliderGroupProperties.SLIDER_ORDER + " INTEGER NOT NULL UNIQUE," +
+					SettingsContract.SliderGroupProperties.PIXEL_ID + " INTEGER NOT NULL," +
+					SettingsContract.SliderGroupProperties.LABEL_TEXT + " TEXT)";
+
+	private static final String SQL_SLIDER_GROUP_PROPERTIES_DELETE =
+			"DROP TABLE IF EXISTS " + SettingsContract.SliderGroupProperties.TABLE_NAME;
+
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 79;
+	private static final int DATABASE_VERSION = 83;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {
@@ -147,6 +167,12 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 
 		// create address_commands_mappings table
 		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_CREATE);
+
+		// create slider groups table
+		db.execSQL(SQL_SLIDER_GROUPS_CREATE);
+
+		// create slider group properties table
+		db.execSQL(SQL_SLIDER_GROUP_PROPERTIES_CREATE);
 	}
 
 	/**
@@ -177,6 +203,8 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 		db.execSQL(SQL_SENSOR_SETTINGS_DELETE);
 		db.execSQL(SQL_PIXEL_SNAPSHOTS_DELETE);
 		db.execSQL(SQL_ADDRESS_COMMANDS_MAPPINGS_DELETE);
+		db.execSQL(SQL_SLIDER_GROUPS_DELETE);
+		db.execSQL(SQL_SLIDER_GROUP_PROPERTIES_DELETE);
 		onCreate(db);
 	}
 

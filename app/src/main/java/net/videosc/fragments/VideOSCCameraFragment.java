@@ -1040,12 +1040,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     multiSliderFragment.setArguments(msArgsBundle);
                     multiSliderFragment.setParentContainer(mContainer);
                     if (multiSliderFragment.getView() == null) {
-                        multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
-                            @Override
-                            public void onCreateView() {
-                                mPixelIds.clear();
-                            }
-                        });
+                        multiSliderFragment.setCreateViewCallback(mPixelIds::clear);
                     } else mPixelIds.clear();
                 } else {
                     final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB(mActivity);
@@ -1074,7 +1069,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         }
 
         private void createSliderGroupEditor() {
-            final int numPixels = mApp.getResolution().x * mApp.getResolution().y;
             if (mOscHelper.getUdpListener().listeners().isEmpty()) {
                 mOscHelper.addOscUdpEventListener();
             }
@@ -1086,9 +1080,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     .add(R.id.camera_preview, sliderGroupFragment, "SliderGroupEditor")
                     .commit();
             final Bundle sliderGroupEditorArgs = new Bundle();
-            sliderGroupEditorArgs.putInt("numPixels", numPixels);
             sliderGroupEditorArgs.putIntegerArrayList("pixelIds", (ArrayList<Integer>) mPixelIds);
             sliderGroupFragment.setArguments(sliderGroupEditorArgs);
+            sliderGroupFragment.setParentContainer(mContainer);
+            mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
 
         private boolean containsRect(ArrayList<Rect> rectList, Rect rect) {

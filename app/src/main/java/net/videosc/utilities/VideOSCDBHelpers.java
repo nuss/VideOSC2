@@ -12,6 +12,8 @@ import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
 import net.videosc.db.SettingsDBHelper;
 
+import java.util.List;
+
 public class VideOSCDBHelpers {
     private final static String TAG = VideOSCDBHelpers.class.getSimpleName();
     private final SettingsDBHelper mDbHelper;
@@ -298,5 +300,7 @@ public class VideOSCDBHelpers {
         return rootCmd;
     }
 
-
+    public void addSliderGroup(List<SparseArray<String>> group) {
+        // TODO
+    }
 }

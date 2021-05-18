@@ -24,7 +24,6 @@ package net.videosc.fragments;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
@@ -39,7 +38,6 @@ import net.videosc.utilities.VideOSCDBHelpers;
 public class VideOSCBaseFragment extends Fragment {
 	protected VideOSCMainActivity mActivity;
     protected ViewGroup mContainer;
-    protected View mView;
     protected LayoutInflater mInflater;
 	protected VideOSCApplication mApp;
     protected VideOSCDBHelpers mDbHelper;

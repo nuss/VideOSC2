@@ -20,8 +20,6 @@
         android:layout_height="match_parent"
         android:layout_weight="0.85"
         android:background="@color/colorAccent"
-        android:clickable="true"
-        android:focusable="true"
         android:padding="10dp"
         android:textColor="#FFFFFF" />
 
