@@ -1,5 +1,6 @@
 package net.videosc.utilities;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
@@ -38,6 +39,10 @@ public class VideOSCDBHelpers {
 
     public int countAddresses() {
         return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.AddressSettingsEntries.TABLE_NAME);
+    }
+
+    public int countSliderGroups() {
+        return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.SliderGroups.TABLE_NAME);
     }
 
     public SparseArray<String> getAddresses() {
@@ -301,6 +306,7 @@ public class VideOSCDBHelpers {
     }
 
     public void addSliderGroup(List<SparseArray<String>> group) {
-        // TODO
+        final ContentValues value = new ContentValues();
+
     }
 }

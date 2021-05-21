@@ -1,5 +1,6 @@
 package net.videosc.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,7 +36,8 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
     final private static String TAG = VideOSCSliderGroupSelectFragment.class.getSimpleName();
     private ViewGroup mParentContainer;
 
-    public VideOSCSliderGroupSelectFragment() { }
+    public VideOSCSliderGroupSelectFragment() {
+    }
 
     public VideOSCSliderGroupSelectFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
@@ -151,7 +154,29 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
             if (mApp.getIsFPSCalcPanelOpen())
                 fpsCalcPanel.setVisibility(View.VISIBLE);
             toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            dbHelper.addSliderGroup(group);
+
+            final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity);
+            final ViewGroup dialogView = (ViewGroup) mInflater.inflate(R.layout.slider_group_dialogs, mParentContainer, false);
+            dialogBuilder.setView(dialogView);
+            final EditText nameInput = dialogView.findViewById(R.id.slider_group_name);
+            final int numSliderGroups = dbHelper.countSliderGroups();
+            final String defaultName = mActivity.getResources().getText(R.string.slider_group) + "" + numSliderGroups;
+            nameInput.setText(defaultName);
+
+            dialogBuilder
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.save_slider_group,
+                            (dialog, which) -> {
+                                // TODO
+                            })
+                    //            dbHelper.addSliderGroup(group);
+                    .setNegativeButton(R.string.cancel,
+                            (dialog, which) -> {
+                                mParentContainer.removeView(dialogView);
+                            });
+
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
         });
 
         cancel.setOnClickListener(v -> {

@@ -332,7 +332,7 @@ public class VideOSCMainActivity extends FragmentActivity
         });
 
         saveSnapshotButton.setOnClickListener(v -> {
-            LayoutInflater inflater1 = LayoutInflater.from(VideOSCMainActivity.this);
+            final LayoutInflater inflater1 = LayoutInflater.from(VideOSCMainActivity.this);
             final ViewGroup dialogView = (ViewGroup) inflater1.inflate(R.layout.snapshot_dialogs, (FrameLayout) mCamView, false);
 
             // FIXME: Alert Dialogs should have a white backround like other dialogs
@@ -344,9 +344,9 @@ public class VideOSCMainActivity extends FragmentActivity
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(VideOSCMainActivity.this);
             dialogBuilder.setView(dialogView);
             final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            Date now = new Date();
-            String nowString = df.format(now);
+            final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            final Date now = new Date();
+            final String nowString = df.format(now);
             nameInput.setText(nowString);
 
             dialogBuilder
