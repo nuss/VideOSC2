@@ -89,7 +89,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 					SettingsContract.SliderGroupProperties._ID + " INTEGER PRIMARY KEY," +
 					SettingsContract.SliderGroupProperties.GROUP_ID + " INTEGER NOT NULL," +
 					SettingsContract.SliderGroupProperties.COLOR_CHANNEL + " INTEGER NOT NULL," +
-					SettingsContract.SliderGroupProperties.SLIDER_ORDER + " INTEGER NOT NULL UNIQUE," +
+					SettingsContract.SliderGroupProperties.SLIDER_ORDER + " INTEGER NOT NULL," +
 					SettingsContract.SliderGroupProperties.PIXEL_ID + " INTEGER NOT NULL," +
 					SettingsContract.SliderGroupProperties.LABEL_TEXT + " TEXT)";
 
@@ -97,7 +97,7 @@ public class SettingsDBHelper extends SQLiteOpenHelper {
 			"DROP TABLE IF EXISTS " + SettingsContract.SliderGroupProperties.TABLE_NAME;
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 83;
+	private static final int DATABASE_VERSION = 85;
 	private static final String DATABASE_NAME = "VOSCSettings.db";
 
 	public SettingsDBHelper(Context context) {

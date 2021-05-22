@@ -24,7 +24,6 @@ public class VideOSCDBHelpers {
     public VideOSCDBHelpers(VideOSCMainActivity activity) {
         this.mApp = (VideOSCApplication) activity.getApplication();
         this.mDbHelper = new SettingsDBHelper(activity);
-//        this.mDb = activity.getDatabase();
         this.mDb = mDbHelper.getReadableDatabase();
     }
 
@@ -305,8 +304,52 @@ public class VideOSCDBHelpers {
         return rootCmd;
     }
 
-    public void addSliderGroup(List<SparseArray<String>> group) {
-        final ContentValues value = new ContentValues();
-
+    public void addSliderGroup(String groupName, List<SparseArray<String>> group) {
+        final ContentValues values = new ContentValues();
+        values.put(SettingsContract.SliderGroups.GROUP_NAME, groupName);
+        long result = mDb.insert(
+                SettingsContract.SliderGroups.TABLE_NAME,
+                null,
+                values
+        );
+        if (result > -1) {
+            values.clear();
+            int order = 0;
+            // group size will always be 3:
+            // slot 0: red channel
+            // slot 1: green channel
+            // slot 2: blue channel
+            for (int i = 0; i < group.size(); i++) {
+                SparseArray<String> colChan = group.get(i);
+                for (int j = 0; j < colChan.size(); j++) {
+                    values.put(SettingsContract.SliderGroupProperties.COLOR_CHANNEL, i);
+                    values.put(SettingsContract.SliderGroupProperties.GROUP_ID, result);
+                    values.put(SettingsContract.SliderGroupProperties.LABEL_TEXT, colChan.valueAt(j));
+                    values.put(SettingsContract.SliderGroupProperties.PIXEL_ID, colChan.keyAt(j));
+                    values.put(SettingsContract.SliderGroupProperties.SLIDER_ORDER, order);
+                    long propsInsertResult = mDb.insertOrThrow(
+                            SettingsContract.SliderGroupProperties.TABLE_NAME,
+                            null,
+                            values
+                    );
+                    values.clear();
+                    // something went wrong - undo everything
+                    if (propsInsertResult < 0) {
+                        mDb.delete(
+                                SettingsContract.SliderGroups.TABLE_NAME,
+                                SettingsContract.SliderGroups._ID + " = " + result,
+                                null
+                        );
+                        mDb.delete(
+                                SettingsContract.SliderGroupProperties.TABLE_NAME,
+                                SettingsContract.SliderGroupProperties.GROUP_ID + " = " + result,
+                                null
+                        );
+                        break;
+                    }
+                    order++;
+                }
+            }
+        }
     }
 }

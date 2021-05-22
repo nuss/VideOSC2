@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,8 +69,6 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
         final SparseArray<String> greenPixelItems = new SparseArray<>();
         final SparseArray<String> bluePixelItems = new SparseArray<>();
 
-        Log.d(TAG, " \npixel Ids: " + pixelIds + "\nredFbStrings: " + redFbStrings + "\ngreenFbStrings: " + greenFbStrings + "\nblueFbStrings: " + blueFbStrings);
-
         final ListView redPixelsList = view.findViewById(R.id.red_pixels_list);
         final ListView greenPixelsList = view.findViewById(R.id.green_pixels_list);
         final ListView bluePixelsList = view.findViewById(R.id.blue_pixels_list);
@@ -123,7 +120,6 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
         });
 
         bluePixelsList.setOnItemClickListener((parent, view1, position, id) -> {
-            Log.d(TAG, "clicked\nparent: " + parent + "\nview1: " + view1 + "\nposition: " + position + "\nid: " + id);
             final TextView tf = view1.findViewById(R.id.pixel_text);
             final SparseArray<String> blueSlot = group.get(2);
             if (view1.isActivated()) {
@@ -145,31 +141,30 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
         final DrawerLayout toolsDrawer = mActivity.mToolsDrawerLayout;
 
         ok.setOnClickListener(v -> {
-            assert manager != null;
-            manager.beginTransaction().remove(this).commit();
-            mContainer.removeView(buttons);
-            indicatorPanel.setVisibility(View.VISIBLE);
-            pixelEditorToolbox.setVisibility(View.VISIBLE);
-            snapshotsBar.setVisibility(View.VISIBLE);
-            if (mApp.getIsFPSCalcPanelOpen())
-                fpsCalcPanel.setVisibility(View.VISIBLE);
-            toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity);
             final ViewGroup dialogView = (ViewGroup) mInflater.inflate(R.layout.slider_group_dialogs, mParentContainer, false);
             dialogBuilder.setView(dialogView);
             final EditText nameInput = dialogView.findViewById(R.id.slider_group_name);
             final int numSliderGroups = dbHelper.countSliderGroups();
-            final String defaultName = mActivity.getResources().getText(R.string.slider_group) + "" + numSliderGroups;
+            final String defaultName = mActivity.getResources().getText(R.string.slider_group) + " " + (numSliderGroups + 1);
             nameInput.setText(defaultName);
 
             dialogBuilder
                     .setCancelable(true)
                     .setPositiveButton(R.string.save_slider_group,
                             (dialog, which) -> {
-                                // TODO
+                                dbHelper.addSliderGroup(nameInput.getText().toString(), group);
+                                assert manager != null;
+                                manager.beginTransaction().remove(this).commit();
+                                mContainer.removeView(buttons);
+                                indicatorPanel.setVisibility(View.VISIBLE);
+                                pixelEditorToolbox.setVisibility(View.VISIBLE);
+                                snapshotsBar.setVisibility(View.VISIBLE);
+                                if (mApp.getIsFPSCalcPanelOpen())
+                                    fpsCalcPanel.setVisibility(View.VISIBLE);
+                                toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                                clear(group);
                             })
-                    //            dbHelper.addSliderGroup(group);
                     .setNegativeButton(R.string.cancel,
                             (dialog, which) -> {
                                 mParentContainer.removeView(dialogView);
@@ -189,6 +184,7 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
             if (mApp.getIsFPSCalcPanelOpen())
                 fpsCalcPanel.setVisibility(View.VISIBLE);
             toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            clear(group);
         });
     }
 
@@ -214,9 +210,9 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
         this.mParentContainer = container;
     }
 
-//    private void setSliderProps(ArrayList<Integer> sliderNums) {
-//        mRedSelectorsView.setSliderNums(sliderNums);
-//        mGreenSelectorsView.setSliderNums(sliderNums);
-//        mBlueSelectorsView.setSliderNums(sliderNums);
-//    }
+    private void clear(List<SparseArray<String>> group) {
+        for (SparseArray<String> colChan : group) {
+            colChan.clear();
+        }
+    }
 }

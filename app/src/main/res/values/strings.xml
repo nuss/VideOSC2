@@ -176,7 +176,7 @@
 	<string name="tcp_ip_password_hint">my secret TCP/IP password</string>
     <string name="create_and_store_groups_of_sliders">create and store groups of sliders</string>
     <string name="name_this_slider_group">name this slider group</string>
-	<string name="slider_group">Slider Group </string>
+	<string name="slider_group">Slider Group</string>
 	<string name="save_slider_group">save slider group</string>
 
 </resources>
