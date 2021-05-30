@@ -40,6 +40,10 @@ public class VideOSCDBHelpers {
         return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.AddressSettingsEntries.TABLE_NAME);
     }
 
+    public int countSnapshots() {
+        return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+    }
+
     public int countSliderGroups() {
         return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.SliderGroups.TABLE_NAME);
     }
@@ -304,7 +308,7 @@ public class VideOSCDBHelpers {
         return rootCmd;
     }
 
-    public void addSliderGroup(String groupName, List<SparseArray<String>> group) {
+    public long addSliderGroup(String groupName, List<SparseArray<String>> group) {
         final ContentValues values = new ContentValues();
         values.put(SettingsContract.SliderGroups.GROUP_NAME, groupName);
         long result = mDb.insert(
@@ -351,5 +355,6 @@ public class VideOSCDBHelpers {
                 }
             }
         }
+        return result;
     }
 }

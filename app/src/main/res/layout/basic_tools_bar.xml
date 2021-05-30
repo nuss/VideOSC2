@@ -1,75 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/snapshots_bar"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="end"
-              android:layout_marginEnd="50dp"
-              android:layout_marginRight="50dp"
-              android:layout_marginTop="0dp"
-              android:orientation="horizontal">
+    android:id="@+id/snapshots_bar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:layout_marginTop="0dp"
+    android:layout_marginEnd="50dp"
+    android:layout_marginRight="50dp"
+    android:orientation="horizontal">
 
-	<ImageButton
-		android:id="@+id/osc_feedback_button"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_marginRight="4dp"
-		android:layout_marginEnd="4dp"
-		android:layout_marginTop="8dp"
-		android:background="@drawable/osc_feedback_button_selector"
-		android:contentDescription="@string/activate_or_deactivate_osc_feedback"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-	<RelativeLayout
-		android:id="@+id/saved_snapshots_wrapper"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-		<ImageButton
-			android:id="@+id/saved_snapshots_button"
-			android:layout_width="60dp"
-			android:layout_height="50dp"
-			android:layout_marginTop="3dp"
-			android:layout_marginBottom="3dp"
-			android:background="@drawable/saved_snapshots_button"
-			android:clickable="true"
-			android:contentDescription="@string/load_a_saved_snapshot"
-			android:focusable="true"
-			android:src="@drawable/saved_snapshots"/>
+            <RelativeLayout
+                android:id="@+id/saved_slider_groups_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-		<TextView
-			android:id="@+id/num_snapshots"
-			android:layout_height="24dp"
-			android:layout_width="24dp"
-			android:layout_alignEnd="@+id/saved_snapshots_button"
-			android:layout_alignRight="@+id/saved_snapshots_button"
-			android:layout_marginEnd="0dp"
-			android:layout_marginRight="0dp"
-			android:layout_marginTop="0dp"
-			android:gravity="center"
-			android:textSize="14sp"
-			android:textColor="#00ffffff"
-			android:background="@drawable/num_snapshots_shape_selector"
-			android:text="0"/>
+                <ImageButton
+                    android:id="@+id/saved_slider_groups_button"
+                    android:layout_width="60dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/saved_slider_groups_button"
+                    android:clickable="true"
+                    android:contentDescription="@string/load_a_saved_slider_group"
+                    android:focusable="true"
+                    android:src="@drawable/saved_slider_groups" />
 
-	</RelativeLayout>
+                <TextView
+                    android:id="@+id/num_slider_groups"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignEnd="@+id/saved_slider_groups_button"
+                    android:layout_alignRight="@+id/saved_slider_groups_button"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginRight="0dp"
+                    android:background="@drawable/num_snapshots_shape_selector"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#00ffffff"
+                    android:textSize="14sp" />
 
-	<ImageButton
-		android:id="@+id/save_snapshot"
-		android:layout_width="60dp"
-		android:layout_height="57dp"
-		android:background="@drawable/snapshot_button_selector"
-		android:clickable="true"
-		android:contentDescription="@string/make_a_snapshot"
-		android:focusable="true"
-		android:src="@drawable/snapshot"/>
+            </RelativeLayout>
 
-	<ImageView
-		android:id="@+id/move_snapshots_bar"
-		android:layout_marginTop="8dp"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:contentDescription="@string/move_the_snapshots_bar"
-		android:padding="8dp"
-		android:src="@drawable/move"/>
+            <RelativeLayout
+                android:id="@+id/saved_snapshots_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/saved_snapshots_button"
+                    android:layout_width="60dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/saved_snapshots_button"
+                    android:clickable="true"
+                    android:contentDescription="@string/load_a_saved_snapshot"
+                    android:focusable="true"
+                    android:src="@drawable/saved_snapshots" />
+
+                <TextView
+                    android:id="@+id/num_snapshots"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignEnd="@+id/saved_snapshots_button"
+                    android:layout_alignRight="@+id/saved_snapshots_button"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginRight="0dp"
+                    android:background="@drawable/num_snapshots_shape_selector"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="#00ffffff"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/osc_feedback_button"
+                android:layout_width="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/osc_feedback_button_selector"
+                android:contentDescription="@string/activate_or_deactivate_osc_feedback"
+                android:layout_marginStart="10dp" />
+
+            <ImageButton
+                android:id="@+id/save_snapshot"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="7dp"
+                android:background="@drawable/snapshot_button_selector"
+                android:clickable="true"
+                android:contentDescription="@string/make_a_snapshot"
+                android:focusable="true"
+                android:src="@drawable/snapshot"
+                android:layout_marginStart="7dp" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/play_stop"
+            android:layout_marginLeft="15dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/osc_play_button_selector"
+            android:contentDescription="@string/start_or_stop_sending_osc_messages"
+            android:layout_marginStart="20dp" />
+
+        <ImageView
+            android:id="@+id/move_snapshots_bar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/move_the_snapshots_bar"
+            android:padding="8dp"
+            android:src="@drawable/move_black"
+            android:layout_marginStart="20dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

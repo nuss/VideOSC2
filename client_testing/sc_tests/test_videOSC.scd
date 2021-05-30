@@ -82,8 +82,8 @@ fork ({
 
 // a simple feedback example
 (
-// n ?? { n = NetAddr("192.168.0.201", 32000) };
-n ?? { n = NetAddr("10.42.0.237", 32000) };
+n ?? { n = NetAddr("10.42.0.183", 32000) };
+// n ?? { n = NetAddr("10.42.0.237", 32000) };
 OSCdef(\videoscR, { |msg, time, addr, recvPort|
 	[msg, time, addr, recvPort].postln;
 	n.sendMsg((msg[0] ++ '/name').asSymbol, "SuperColliderR");

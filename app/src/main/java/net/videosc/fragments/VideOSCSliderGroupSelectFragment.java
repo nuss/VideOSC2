@@ -153,7 +153,12 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
                     .setCancelable(true)
                     .setPositiveButton(R.string.save_slider_group,
                             (dialog, which) -> {
-                                dbHelper.addSliderGroup(nameInput.getText().toString(), group);
+                                final long newGroupId = dbHelper.addSliderGroup(nameInput.getText().toString(), group);
+                                if (newGroupId > 0) {
+                                    final int numSliderGroups1 = dbHelper.countSliderGroups();
+                                    final TextView sliderGroupsIndicator = mParentContainer.findViewById(R.id.num_slider_groups);
+                                    sliderGroupsIndicator.setText(String.valueOf(numSliderGroups1));
+                                }
                                 assert manager != null;
                                 manager.beginTransaction().remove(this).commit();
                                 mContainer.removeView(buttons);
@@ -166,9 +171,7 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
                                 clear(group);
                             })
                     .setNegativeButton(R.string.cancel,
-                            (dialog, which) -> {
-                                mParentContainer.removeView(dialogView);
-                            });
+                            (dialog, which) -> mParentContainer.removeView(dialogView));
 
             AlertDialog dialog = dialogBuilder.create();
             dialog.show();

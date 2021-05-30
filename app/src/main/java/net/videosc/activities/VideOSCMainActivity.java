@@ -31,7 +31,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -245,12 +244,20 @@ public class VideOSCMainActivity extends FragmentActivity
 
         mBasicToolbar = (ViewGroup) inflater.inflate(R.layout.basic_tools_bar, (FrameLayout) mCamView, false);
         VideOSCUIHelpers.addView(mBasicToolbar, (FrameLayout) mCamView);
-        long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+//        long numSnapshots = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+        final int numSnapshots = mDbHelper.countSnapshots();
         if (numSnapshots > 0) {
-            TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
+            final TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
             numSnapshotsIndicator.setActivated(true);
             numSnapshotsIndicator.setText(String.valueOf(numSnapshots));
             numSnapshotsIndicator.setTextColor(0xffffffff);
+        }
+        final int numSliderGroups = mDbHelper.countSliderGroups();
+        if (numSliderGroups > 0) {
+            final TextView numSliderGroupsIndicator = mBasicToolbar.findViewById(R.id.num_slider_groups);
+            numSliderGroupsIndicator.setActivated(true);
+            numSliderGroupsIndicator.setText(String.valueOf(numSliderGroups));
+            numSliderGroupsIndicator.setTextColor(0xffffffff);
         }
 
         mBasicToolbar.requestDisallowInterceptTouchEvent(true);
@@ -378,15 +385,15 @@ public class VideOSCMainActivity extends FragmentActivity
                                 values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_BLUE_MIX_VALUES, valuesString);
                                 Point resolution = mApp.getResolution();
                                 values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE, resolution.x * resolution.y);
-                                long result = mDb.insert(
+                                final long result = mDb.insert(
                                         SettingsContract.PixelSnapshotEntries.TABLE_NAME,
                                         null,
                                         values
                                 );
                                 if (result > 0) {
-                                    long numSnapshots1 = DatabaseUtils.queryNumEntries(mDb, SettingsContract.PixelSnapshotEntries.TABLE_NAME);
+                                    final int numSnapshots1 = mDbHelper.countSnapshots();
                                     if (numSnapshots1 > 0) {
-                                        TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
+                                        final TextView numSnapshotsIndicator = mBasicToolbar.findViewById(R.id.num_snapshots);
                                         numSnapshotsIndicator.setActivated(true);
                                         numSnapshotsIndicator.setText(String.valueOf(numSnapshots1));
                                         numSnapshotsIndicator.setTextColor(0xffffffff);
@@ -465,7 +472,7 @@ public class VideOSCMainActivity extends FragmentActivity
      * @return True if the listener has consumed the event, false otherwise.
      */
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(@NonNull View v, MotionEvent event) {
         v.performClick();
         final int x = (int) event.getRawX();
         final int y = (int) event.getRawY();

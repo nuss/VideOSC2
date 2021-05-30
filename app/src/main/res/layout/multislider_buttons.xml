@@ -38,6 +38,6 @@
 		android:layout_height="40dp"
 		android:contentDescription="@string/move_the_editor"
 		android:padding="8dp"
-		android:src="@drawable/move"/>
+		android:src="@drawable/move_black"/>
 
 </LinearLayout>
