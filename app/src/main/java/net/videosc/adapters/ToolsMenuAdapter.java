@@ -24,7 +24,6 @@ import net.videosc.fragments.VideOSCCameraFragment;
 import net.videosc.fragments.settings.VideOSCSettingsListFragment;
 import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
-import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.RGBModes;
@@ -185,7 +184,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             // no reflections needed
             final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
             HashMap<String, Integer> toolsDrawerKeys = mActivity.toolsDrawerKeys();
-            final Integer START_STOP = toolsDrawerKeys.get("startStop");
+//            final Integer START_STOP = toolsDrawerKeys.get("startStop");
             final Integer TORCH = toolsDrawerKeys.containsKey("torch") ? toolsDrawerKeys.get("torch") : null;
             final Integer COLOR_MODE = toolsDrawerKeys.get("modeSelect");
             final Integer INTERACTION = toolsDrawerKeys.get("mInteractionMode");
@@ -198,6 +197,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             Camera camera = cameraFragment.mCamera;
             Camera.Parameters cameraParameters = camera.getParameters();
 
+/*
             if (START_STOP != null && mPosition == START_STOP) {
                 mActivity.closeColorModePanel();
                 if (mDBHelper.countAddresses() > 0) {
@@ -226,7 +226,9 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
                             app.getString(R.string.OK)
                     );
                 }
-            } else if (TORCH != null && mPosition == TORCH) {
+            } else
+*/
+            if (TORCH != null && mPosition == TORCH) {
                 mActivity.closeColorModePanel();
                 if (app.getCurrentCameraId() == Camera.CameraInfo.CAMERA_FACING_BACK) {
                     String flashMode = cameraParameters.getFlashMode();

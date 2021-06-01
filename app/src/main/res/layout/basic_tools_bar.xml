@@ -18,6 +18,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/osc_feedback_button"
+                android:layout_width="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/osc_feedback_button_selector"
+                android:contentDescription="@string/activate_or_deactivate_osc_feedback"
+                android:layout_marginStart="10dp" />
+
+            <ImageButton
+                android:id="@+id/save_snapshot"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="7dp"
+                android:layout_marginBottom="-10dp"
+                android:background="@drawable/snapshot_button_selector"
+                android:clickable="true"
+                android:contentDescription="@string/make_a_snapshot"
+                android:focusable="true"
+                android:src="@drawable/snapshot"
+                android:layout_marginStart="7dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <RelativeLayout
                 android:id="@+id/saved_slider_groups_wrapper"
                 android:layout_width="wrap_content"
@@ -88,37 +120,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/osc_feedback_button"
-                android:layout_width="40dp"
-                android:layout_marginLeft="10dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
-                android:background="@drawable/osc_feedback_button_selector"
-                android:contentDescription="@string/activate_or_deactivate_osc_feedback"
-                android:layout_marginStart="10dp" />
-
-            <ImageButton
-                android:id="@+id/save_snapshot"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="7dp"
-                android:background="@drawable/snapshot_button_selector"
-                android:clickable="true"
-                android:contentDescription="@string/make_a_snapshot"
-                android:focusable="true"
-                android:src="@drawable/snapshot"
-                android:layout_marginStart="7dp" />
-
-
-        </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -127,26 +128,27 @@
         android:orientation="vertical">
 
         <ImageButton
-            android:id="@+id/play_stop"
-            android:layout_marginLeft="15dp"
+            android:id="@+id/play_pause"
             android:layout_width="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/osc_play_button_selector"
             android:contentDescription="@string/start_or_stop_sending_osc_messages"
-            android:layout_marginStart="20dp" />
+            android:layout_marginStart="10dp" />
 
         <ImageView
             android:id="@+id/move_snapshots_bar"
             android:layout_width="40dp"
-            android:layout_height="40dp"
             android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
             android:layout_gravity="center_vertical"
             android:contentDescription="@string/move_the_snapshots_bar"
             android:padding="8dp"
             android:src="@drawable/move_black"
-            android:layout_marginStart="20dp" />
+            android:layout_marginStart="15dp" />
 
     </LinearLayout>
 

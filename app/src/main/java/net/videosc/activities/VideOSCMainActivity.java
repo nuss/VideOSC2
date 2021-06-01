@@ -54,6 +54,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -277,6 +278,8 @@ public class VideOSCMainActivity extends FragmentActivity
         final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
         final ImageButton saveSnapshotButton = mBasicToolbar.findViewById(R.id.save_snapshot);
 
+        final ImageButton playButton = mBasicToolbar.findViewById(R.id.play_pause);
+
         quickEditPixels.setOnClickListener(v -> {
             v.setActivated(true);
             editPixels.setActivated(false);
@@ -421,6 +424,34 @@ public class VideOSCMainActivity extends FragmentActivity
             } else {
                 mOscHelper.removeOscUdpEventListener();
                 mOscHelper.removeOscTcpEventListener();
+            }
+        });
+
+        playButton.setOnClickListener(v -> {
+            this.closeColorModePanel();
+            final ImageView oscIndicator = mCamView.findViewById(R.id.indicator_osc);
+            if (mDbHelper.countAddresses() > 0) {
+                if (!mApp.getCameraOSCisPlaying()) {
+                    mApp.setCameraOSCisPlaying(true);
+                    oscIndicator.setImageResource(R.drawable.osc_playing);
+                    v.setActivated(true);
+                } else {
+                    mApp.setCameraOSCisPlaying(false);
+                    VideOSCOscHandler oscHandler = mApp.getOscHelper();
+                    mApp.setOSCFeedbackActivated(false);
+                    oscFeedbackButton.setActivated(false);
+                    oscHandler.removeOscUdpEventListener();
+                    oscHandler.removeOscTcpEventListener();
+                    oscIndicator.setImageResource(R.drawable.osc_paused);
+                    v.setActivated(false);
+                }
+            } else {
+                VideOSCDialogHelper.showWarning(
+                        this,
+                        android.R.style.Theme_Holo_Light_Dialog,
+                        mApp.getString(R.string.define_client_address),
+                        mApp.getString(R.string.OK)
+                );
             }
         });
 
@@ -644,16 +675,15 @@ public class VideOSCMainActivity extends FragmentActivity
         HashMap<String, Integer> toolsDrawerKeys = new HashMap<>();
         int index = 0;
 
-        toolsDrawerKeys.put("startStop", index);
         if (mApp.getHasTorch())
-            toolsDrawerKeys.put("torch", ++index);
-        toolsDrawerKeys.put("modeSelect", ++index);
-        toolsDrawerKeys.put("mInteractionMode", ++index);
+            toolsDrawerKeys.put("torch", index++);
+        toolsDrawerKeys.put("modeSelect", index++);
+        toolsDrawerKeys.put("mInteractionMode", index++);
         if (VideOSCUIHelpers.hasFrontsideCamera())
-            toolsDrawerKeys.put("camSelect", ++index);
-        toolsDrawerKeys.put("info", ++index);
-        toolsDrawerKeys.put("prefs", ++index);
-        toolsDrawerKeys.put("quit", ++index);
+            toolsDrawerKeys.put("camSelect", index++);
+        toolsDrawerKeys.put("info", index++);
+        toolsDrawerKeys.put("prefs", index++);
+        toolsDrawerKeys.put("quit", index);
 
         return toolsDrawerKeys;
     }
@@ -748,6 +778,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(
