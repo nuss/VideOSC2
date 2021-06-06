@@ -75,6 +75,7 @@ import net.videosc.adapters.ToolsMenuAdapter;
 import net.videosc.db.SettingsContract;
 import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
+import net.videosc.fragments.VideOSCSelectGroupFragment;
 import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
@@ -276,6 +277,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
         final ImageButton oscFeedbackButton = mBasicToolbar.findViewById(R.id.osc_feedback_button);
         final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
+        final ImageButton loadGroupsButton = mBasicToolbar.findViewById(R.id.saved_slider_groups_button);
         final ImageButton saveSnapshotButton = mBasicToolbar.findViewById(R.id.save_snapshot);
 
         final ImageButton playButton = mBasicToolbar.findViewById(R.id.play_pause);
@@ -329,7 +331,7 @@ public class VideOSCMainActivity extends FragmentActivity
             final Cursor cursor = mDbHelper.getSnapshotsCursor();
             final Cursor[] cursors = {cursor, extras};
             final MergeCursor mergedCursor = new MergeCursor(cursors);
-            VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
+            final VideOSCSelectSnapshotFragment snapshotSelect = new VideOSCSelectSnapshotFragment(VideOSCMainActivity.this);
             snapshotSelect.setDatabase(mDb);
             snapshotSelect.setCursors(mergedCursor, cursor, extras);
             if (!snapshotSelect.isVisible()) {
@@ -337,6 +339,20 @@ public class VideOSCMainActivity extends FragmentActivity
                         .beginTransaction()
                         .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         .add(R.id.camera_preview, snapshotSelect, "snapshot select")
+                        .commit();
+            }
+        });
+
+        loadGroupsButton.setOnClickListener(v -> {
+            final Cursor cursor = mDbHelper.getSliderGroupsListCursor();
+            final VideOSCSelectGroupFragment groupSelect = new VideOSCSelectGroupFragment(VideOSCMainActivity.this);
+            groupSelect.setDatabase(mDb);
+            groupSelect.setCursor(cursor);
+            if (!groupSelect.isVisible()) {
+                mFragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .add(R.id.camera_preview, groupSelect, "group select")
                         .commit();
             }
         });

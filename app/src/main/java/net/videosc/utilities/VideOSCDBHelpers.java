@@ -357,4 +357,21 @@ public class VideOSCDBHelpers {
         }
         return result;
     }
+
+    public Cursor getSliderGroupsListCursor() {
+        final String[] settingsFields = new String[]{
+                SettingsContract.SliderGroups._ID,
+                SettingsContract.SliderGroups.GROUP_NAME
+        };
+
+        return mDb.query(
+                SettingsContract.SliderGroups.TABLE_NAME,
+                settingsFields,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 }

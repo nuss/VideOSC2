@@ -116,29 +116,23 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 			List<String> convertList;
 
 			convertList = Arrays.asList(newRed.split(",", -1));
-			if (redValues.size() == 0) {
-				convertStringValuesToDouble(convertList, redValues);
-			}
+//			redValues.size();
+			convertStringValuesToDouble(convertList, redValues);
 			convertList = Arrays.asList(newRedMix.split(",", -1));
-			if (redMixValues.size() == 0) {
-				convertStringValuesToDouble(convertList, redMixValues);
-			}
+//			redMixValues.size();
+			convertStringValuesToDouble(convertList, redMixValues);
 			convertList = Arrays.asList(newGreen.split(",", -1));
-			if (greenValues.size() == 0) {
-				convertStringValuesToDouble(convertList, greenValues);
-			}
+//			greenValues.size();
+			convertStringValuesToDouble(convertList, greenValues);
 			convertList = Arrays.asList(newGreenMix.split(",", -1));
-			if (greenMixValues.size() == 0) {
-				convertStringValuesToDouble(convertList, greenMixValues);
-			}
+//			greenMixValues.size();
+			convertStringValuesToDouble(convertList, greenMixValues);
 			convertList = Arrays.asList(newBlue.split(",", -1));
-			if (blueValues.size() == 0) {
-				convertStringValuesToDouble(convertList, blueValues);
-			}
+//			blueValues.size();
+			convertStringValuesToDouble(convertList, blueValues);
 			convertList = Arrays.asList(newBlueMix.split(",", -1));
-			if (blueMixValues.size() == 0) {
-				convertStringValuesToDouble(convertList, blueMixValues);
-			}
+//			blueMixValues.size();
+			convertStringValuesToDouble(convertList, blueMixValues);
 
 			final ArrayList<Double> fRedValues = redValues;
 			final ArrayList<Double> fRedMixValues = redMixValues;

@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -83,12 +82,9 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		snapshotsListView.setAdapter(adapter);
 		VideOSCUIHelpers.setTransitionAnimation((ViewGroup) view);
 		// prevent underlying view from receiving touch events
-		view.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				v.performClick();
-				return true;
-			}
+		view.setOnTouchListener((v, event) -> {
+			v.performClick();
+			return true;
 		});
 		final ImageButton close = view.findViewById(R.id.close);
 		close.bringToFront();
