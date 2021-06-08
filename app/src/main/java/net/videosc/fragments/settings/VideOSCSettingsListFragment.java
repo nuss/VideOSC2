@@ -37,7 +37,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
     }
 
     /**
@@ -77,6 +77,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         // does the fade-in animation really work?...
         VideOSCUIHelpers.setTransitionAnimation(mContainer);
         view.setVisibility(View.VISIBLE);
+        view.bringToFront();
 
         settingsListView.setOnItemClickListener(new SettingsListOnItemClickListener());
 
