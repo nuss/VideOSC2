@@ -77,7 +77,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         // does the fade-in animation really work?...
         VideOSCUIHelpers.setTransitionAnimation(mContainer);
         view.setVisibility(View.VISIBLE);
-        view.bringToFront();
+//        view.bringToFront();
 
         settingsListView.setOnItemClickListener(new SettingsListOnItemClickListener());
 
