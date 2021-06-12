@@ -38,7 +38,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -73,9 +72,8 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.adapters.ToolsMenuAdapter;
 import net.videosc.db.SettingsContract;
-import net.videosc.fragments.VideOSCBaseFragment;
 import net.videosc.fragments.VideOSCCameraFragment;
-import net.videosc.fragments.VideOSCSelectGroupFragment;
+import net.videosc.fragments.VideOSCSelectSliderGroupFragment;
 import net.videosc.fragments.VideOSCSelectSnapshotFragment;
 import net.videosc.utilities.VideOSCDBHelpers;
 import net.videosc.utilities.VideOSCDialogHelper;
@@ -99,7 +97,7 @@ import java.util.Locale;
  * Created by Stefan Nussbaumer on 2017-03-15.
  */
 public class VideOSCMainActivity extends FragmentActivity
-        implements VideOSCBaseFragment.OnFragmentInteractionListener, View.OnTouchListener {
+        implements View.OnTouchListener {
 
     static final String TAG = "VideOSCMainActivity";
 
@@ -345,7 +343,7 @@ public class VideOSCMainActivity extends FragmentActivity
 
         loadGroupsButton.setOnClickListener(v -> {
             final Cursor cursor = mDbHelper.getSliderGroupsListCursor();
-            final VideOSCSelectGroupFragment groupSelect = new VideOSCSelectGroupFragment(VideOSCMainActivity.this);
+            final VideOSCSelectSliderGroupFragment groupSelect = new VideOSCSelectSliderGroupFragment(VideOSCMainActivity.this);
             groupSelect.setDatabase(mDb);
             groupSelect.setCursor(cursor);
             if (!groupSelect.isVisible()) {
@@ -880,21 +878,6 @@ public class VideOSCMainActivity extends FragmentActivity
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-//		Log.d(TAG, "onFragmentInteraction, uri: " + uri);
-    }
-
-    @Override
-    public void onFragmentInteraction(String id) {
-//		Log.d(TAG, "onFragmentInteraction, id: " + id);
-    }
-
-    @Override
-    public void onFragmentInteraction(int actionId) {
-//		Log.d(TAG, "onFragmentInteraction, actionId: " + actionId);
     }
 
 	/*@Override

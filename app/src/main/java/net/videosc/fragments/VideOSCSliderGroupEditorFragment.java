@@ -31,14 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
-    final private static String TAG = VideOSCSliderGroupSelectFragment.class.getSimpleName();
+public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
+    final private static String TAG = VideOSCSliderGroupEditorFragment.class.getSimpleName();
     private ViewGroup mParentContainer;
 
-    public VideOSCSliderGroupSelectFragment() {
+    public VideOSCSliderGroupEditorFragment() {
     }
 
-    public VideOSCSliderGroupSelectFragment(Context context) {
+    public VideOSCSliderGroupEditorFragment(Context context) {
         this.mActivity = (VideOSCMainActivity) context;
     }
 
@@ -144,7 +144,7 @@ public class VideOSCSliderGroupSelectFragment extends VideOSCBaseFragment {
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity);
             final ViewGroup dialogView = (ViewGroup) mInflater.inflate(R.layout.slider_group_dialogs, mParentContainer, false);
             dialogBuilder.setView(dialogView);
-            final EditText nameInput = dialogView.findViewById(R.id.slider_group_name);
+            final EditText nameInput = dialogView.findViewById(R.id.save_slider_group_name);
             final int numSliderGroups = dbHelper.countSliderGroups();
             final String defaultName = mActivity.getResources().getText(R.string.slider_group) + " " + (numSliderGroups + 1);
             nameInput.setText(defaultName);

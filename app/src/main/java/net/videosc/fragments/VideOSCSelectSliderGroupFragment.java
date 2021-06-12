@@ -16,34 +16,35 @@ import androidx.fragment.app.FragmentManager;
 
 import net.videosc.R;
 import net.videosc.activities.VideOSCMainActivity;
-import net.videosc.adapters.GroupSelectAdapter;
+import net.videosc.adapters.SliderGroupSelectAdapter;
 import net.videosc.utilities.VideOSCUIHelpers;
 
-public class VideOSCSelectGroupFragment extends VideOSCBaseFragment {
+public class VideOSCSelectSliderGroupFragment extends VideOSCBaseFragment {
+    private final static String TAG = VideOSCSelectSliderGroupFragment.class.getSimpleName();
 
     private SQLiteDatabase mDb;
     private Cursor mCursor;
 
-    public VideOSCSelectGroupFragment() {
+    public VideOSCSelectSliderGroupFragment() {
     }
 
-    public VideOSCSelectGroupFragment(VideOSCMainActivity activity) {
+    public VideOSCSelectSliderGroupFragment(VideOSCMainActivity activity) {
         this.mActivity = activity;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.groups_list, container, false);
+        return inflater.inflate(R.layout.slider_groups_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final FragmentManager manager = getFragmentManager();
-        final ListView groupsListView = view.findViewById(R.id.groups_list);
-        final GroupSelectAdapter adapter = new GroupSelectAdapter(
-                mActivity, R.layout.groups_list, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        final ListView groupsListView = view.findViewById(R.id.slider_groups_list);
+        final SliderGroupSelectAdapter adapter = new SliderGroupSelectAdapter(
+                mActivity, R.layout.slider_group_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         );
         groupsListView.setAdapter(adapter);
         VideOSCUIHelpers.setTransitionAnimation((ViewGroup) view);
@@ -58,7 +59,7 @@ public class VideOSCSelectGroupFragment extends VideOSCBaseFragment {
             assert manager != null;
             manager.beginTransaction()
                     .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    .remove(VideOSCSelectGroupFragment.this)
+                    .remove(VideOSCSelectSliderGroupFragment.this)
                     .commit();
         });
 
@@ -74,11 +75,21 @@ public class VideOSCSelectGroupFragment extends VideOSCBaseFragment {
         super.onDetach();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        mCursor.close();
+    }
+
     public void setDatabase(SQLiteDatabase db) {
         this.mDb = db;
     }
 
     public void setCursor(Cursor cursor) {
         this.mCursor = cursor;
+    }
+
+    public SQLiteDatabase getDatabase() {
+        return this.mDb;
     }
 }

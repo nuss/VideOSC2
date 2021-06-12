@@ -1075,7 +1075,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             if (mOscHelper.getTcpListener().listeners().isEmpty()) {
                 mOscHelper.addOscTcpEventListener();
             }
-            VideOSCSliderGroupSelectFragment sliderGroupFragment = new VideOSCSliderGroupSelectFragment(mActivity);
+            VideOSCSliderGroupEditorFragment sliderGroupFragment = new VideOSCSliderGroupEditorFragment(mActivity);
             mManager.beginTransaction()
                     .add(R.id.camera_preview, sliderGroupFragment, "SliderGroupEditor")
                     .commit();

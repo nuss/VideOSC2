@@ -5,4 +5,4 @@
           android:paddingBottom="15dp"
           android:paddingTop="15dp"
           android:textSize="20sp"
-          android:id="@+id/group_item"/>
+          android:id="@+id/slider_group_item"/>

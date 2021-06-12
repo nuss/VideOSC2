@@ -88,7 +88,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 	@Override
 	public void bindView(View view, final Context context, final Cursor cursor) {
 		Log.d(TAG, "bindView called: " + cursor.getPosition());
-		TextView row = view.findViewById(R.id.snapshot_item);
+		final TextView row = view.findViewById(R.id.snapshot_item);
 		final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries._ID));
 		final int numPixels = cursor.getInt(cursor.getColumnIndexOrThrow(SettingsContract.PixelSnapshotEntries.SNAPSHOT_SIZE));
 		String text;
@@ -162,14 +162,14 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 			});
 
 			row.setOnLongClickListener(v -> {
-				LayoutInflater inflater = LayoutInflater.from(context);
+				final LayoutInflater inflater = LayoutInflater.from(context);
 				final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.snapshot_dialogs, mParent, false);
 
 				// FIXME: AlertDialogs should look like other dialogs (white background, black text)
 				/*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
 						new ContextThemeWrapper(context, R.style.AlertDialogCustom)
 				);*/
-				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+				final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 				dialogBuilder.setView(dialogView);
 				final EditText nameInput = dialogView.findViewById(R.id.save_snapshot_name);
 				nameInput.setText(name);
@@ -196,7 +196,7 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 								(dialog, which) -> {
 									final ContentValues values = new ContentValues();
 									values.put(SettingsContract.PixelSnapshotEntries.SNAPSHOT_NAME, nameInput.getText().toString());
-									int result = db.update(
+									final int result = db.update(
 											SettingsContract.PixelSnapshotEntries.TABLE_NAME,
 											values,
 											SettingsContract.PixelSnapshotEntries._ID + " = " + id,
@@ -221,12 +221,12 @@ public class SnapshotSelectAdapter extends ResourceCursorAdapter {
 								})
 						.setNegativeButton(R.string.delete_snapshot,
 								(dialog, which) -> {
-									int result = db.delete(SettingsContract.PixelSnapshotEntries.TABLE_NAME,
+									final int result = db.delete(SettingsContract.PixelSnapshotEntries.TABLE_NAME,
 											SettingsContract.PixelSnapshotEntries._ID + " = " + id,
 											null
 									);
 									if (result > 0) {
-										Cursor newCursor = db.query(
+										final Cursor newCursor = db.query(
 												SettingsContract.PixelSnapshotEntries.TABLE_NAME,
 												fields,
 												null, null, null, null,
