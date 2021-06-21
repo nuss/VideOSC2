@@ -98,14 +98,13 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		this.mParentContainer = container;
 	}
 
-	OnCreateViewCallback createViewCallback = null;
-
+/*
 	void setCreateViewCallback(OnCreateViewCallback createViewCallback) {
-		this.createViewCallback = createViewCallback;
+		this.mCreateViewCallback = createViewCallback;
 	}
 
 	public interface OnCreateViewCallback {
 		void onCreateView();
 	}
-
+*/
 }

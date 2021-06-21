@@ -42,7 +42,9 @@ public class VideOSCBaseFragment extends Fragment {
 	protected VideOSCApplication mApp;
     protected VideOSCDBHelpers mDbHelper;
 
-    /**
+	OnCreateViewCallback mCreateViewCallback = null;
+
+	/**
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {
@@ -59,5 +61,13 @@ public class VideOSCBaseFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		view.bringToFront();
+	}
+
+	void setCreateViewCallback(OnCreateViewCallback createViewCallback) {
+		this.mCreateViewCallback = createViewCallback;
+	}
+
+	public interface OnCreateViewCallback {
+		void onCreateView();
 	}
 }

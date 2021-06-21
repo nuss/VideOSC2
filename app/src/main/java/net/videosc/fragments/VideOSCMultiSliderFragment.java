@@ -151,9 +151,9 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (createViewCallback != null) {
-			createViewCallback.onCreateView();
-			createViewCallback = null;
+		if (mCreateViewCallback != null) {
+			mCreateViewCallback.onCreateView();
+			mCreateViewCallback = null;
 		}
 	}
 

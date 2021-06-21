@@ -79,6 +79,7 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
             checkAndFillItemsArray(index, greenPixelItems, greenFbStrings);
             checkAndFillItemsArray(index, bluePixelItems, blueFbStrings);
         }
+        pixelIds.clear();
 
         final SparseStringsAdapter redAdapter = new SparseStringsAdapter(mActivity, redPixelItems, RGBModes.R);
         final SparseStringsAdapter greenAdapter = new SparseStringsAdapter(mActivity, greenPixelItems, RGBModes.G);

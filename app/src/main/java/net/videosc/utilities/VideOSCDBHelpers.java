@@ -331,7 +331,7 @@ public class VideOSCDBHelpers {
                     values.put(SettingsContract.SliderGroupProperties.LABEL_TEXT, colChan.valueAt(j));
                     values.put(SettingsContract.SliderGroupProperties.PIXEL_ID, colChan.keyAt(j));
                     values.put(SettingsContract.SliderGroupProperties.SLIDER_ORDER, order);
-                    long propsInsertResult = mDb.insertOrThrow(
+                    long propsInsertResult = mDb.insert(
                             SettingsContract.SliderGroupProperties.TABLE_NAME,
                             null,
                             values

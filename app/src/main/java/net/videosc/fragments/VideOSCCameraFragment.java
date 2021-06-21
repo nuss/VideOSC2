@@ -1050,12 +1050,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     multiSliderFragment.setArguments(msArgsBundle);
                     multiSliderFragment.setParentContainer(mContainer);
                     if (multiSliderFragment.getView() == null) {
-                        multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
-                            @Override
-                            public void onCreateView() {
-                                mPixelIds.clear();
-                            }
-                        });
+                        multiSliderFragment.setCreateViewCallback(mPixelIds::clear);
                     } else mPixelIds.clear();
                 }
 
