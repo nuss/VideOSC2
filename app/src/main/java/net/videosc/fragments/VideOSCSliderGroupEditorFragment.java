@@ -79,6 +79,7 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
             checkAndFillItemsArray(index, greenPixelItems, greenFbStrings);
             checkAndFillItemsArray(index, bluePixelItems, blueFbStrings);
         }
+        // always clean up. Otherweise pixelIds will still contain old selected pixels after next selection
         pixelIds.clear();
 
         final SparseStringsAdapter redAdapter = new SparseStringsAdapter(mActivity, redPixelItems, RGBModes.R);
@@ -159,6 +160,8 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
                                     final int numSliderGroups1 = dbHelper.countSliderGroups();
                                     final TextView sliderGroupsIndicator = mParentContainer.findViewById(R.id.num_slider_groups);
                                     sliderGroupsIndicator.setText(String.valueOf(numSliderGroups1));
+                                    sliderGroupsIndicator.setTextColor(0xffffffff);
+                                    sliderGroupsIndicator.setActivated(true);
                                 }
                                 assert manager != null;
                                 manager.beginTransaction().remove(this).commit();
