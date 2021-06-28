@@ -65,7 +65,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 		final Point resolution = app.getResolution();
 		final int numTotalPixels = resolution.x * resolution.y;
 
-		mManager = getFragmentManager();
+		mManager = getParentFragmentManager();
 
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
