@@ -55,7 +55,7 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
         super.onViewCreated(view, savedInstanceState);
         this.mApp = (VideOSCApplication) mActivity.getApplication();
         final VideOSCDBHelpers dbHelper = mActivity.getDbHelper();
-        final FragmentManager manager = getFragmentManager();
+        final FragmentManager manager = getParentFragmentManager();
         final Bundle argsBundle = this.getArguments();
         assert argsBundle != null;
         final ArrayList<Integer> pixelIds = argsBundle.getIntegerArrayList("pixelIds");
@@ -163,7 +163,6 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
                                     sliderGroupsIndicator.setTextColor(0xffffffff);
                                     sliderGroupsIndicator.setActivated(true);
                                 }
-                                assert manager != null;
                                 manager.beginTransaction().remove(this).commit();
                                 mContainer.removeView(buttons);
                                 indicatorPanel.setVisibility(View.VISIBLE);
@@ -182,7 +181,6 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
         });
 
         cancel.setOnClickListener(v -> {
-            assert manager != null;
             manager.beginTransaction().remove(this).commit();
             mContainer.removeView(buttons);
             indicatorPanel.setVisibility(View.VISIBLE);

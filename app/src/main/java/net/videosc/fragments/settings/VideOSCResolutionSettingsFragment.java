@@ -88,8 +88,7 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 		this.mContainer = container;
 		this.mInflater = inflater;
 		// the settings view - can't be final as there are two different layouts possible
-		final FragmentManager fragmentManager = getFragmentManager();
-		assert fragmentManager != null;
+		final FragmentManager fragmentManager = getParentFragmentManager();
 		mCameraView = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
 		assert mCameraView != null;
 		this.mIsAutoExposureLockSupported = mCameraView.mCamera.getParameters().isAutoExposureLockSupported();

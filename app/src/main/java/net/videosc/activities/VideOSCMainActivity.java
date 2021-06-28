@@ -879,13 +879,4 @@ public class VideOSCMainActivity extends FragmentActivity
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
     }
-
-	/*@Override
-	public void onCompleteCameraFragment() {
-		Log.d(TAG, "onCompleteCameraFragment");
-		final FragmentManager fragmentManager = getFragmentManager();
-		final VideOSCCameraFragment cameraFragment = (VideOSCCameraFragment) fragmentManager.findFragmentByTag("CamPreview");
-		Log.d(TAG, "camera fragment: " + cameraFragment.mPreview);
-	}*/
-
 }

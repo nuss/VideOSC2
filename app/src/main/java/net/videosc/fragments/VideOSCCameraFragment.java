@@ -604,7 +604,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     mLockedPixels.add(false);
             }
 
-            mManager = getFragmentManager();
+            mManager = getParentFragmentManager();
         }
 
         /**

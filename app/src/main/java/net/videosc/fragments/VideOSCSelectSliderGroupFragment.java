@@ -41,7 +41,7 @@ public class VideOSCSelectSliderGroupFragment extends VideOSCBaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final FragmentManager manager = getFragmentManager();
+        final FragmentManager manager = getParentFragmentManager();
         final ListView groupsListView = view.findViewById(R.id.slider_groups_list);
         final SliderGroupSelectAdapter adapter = new SliderGroupSelectAdapter(
                 mActivity, R.layout.slider_group_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
@@ -56,7 +56,6 @@ public class VideOSCSelectSliderGroupFragment extends VideOSCBaseFragment {
         final ImageButton close = view.findViewById(R.id.close);
         close.bringToFront();
         close.setOnClickListener(v -> {
-            assert manager != null;
             manager.beginTransaction()
                     .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     .remove(VideOSCSelectSliderGroupFragment.this)

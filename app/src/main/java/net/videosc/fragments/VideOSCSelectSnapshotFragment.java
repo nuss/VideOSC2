@@ -74,7 +74,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		final FragmentManager manager = getFragmentManager();
+		final FragmentManager manager = getParentFragmentManager();
 		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(
 				mActivity, R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
@@ -89,7 +89,6 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		final ImageButton close = view.findViewById(R.id.close);
 		close.bringToFront();
 		close.setOnClickListener(v -> {
-			assert manager != null;
 			manager.beginTransaction()
 					.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
 					.remove(VideOSCSelectSnapshotFragment.this)
