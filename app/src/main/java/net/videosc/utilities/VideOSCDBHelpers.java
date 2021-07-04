@@ -374,4 +374,24 @@ public class VideOSCDBHelpers {
                 null
         );
     }
+
+    public Cursor getSliderGroupPropertiesCursor(long groupId) {
+        final String[] groupFields = new String[]{
+                SettingsContract.SliderGroupProperties._ID,
+                SettingsContract.SliderGroupProperties.SLIDER_ORDER,
+                SettingsContract.SliderGroupProperties.COLOR_CHANNEL,
+                SettingsContract.SliderGroupProperties.LABEL_TEXT,
+                SettingsContract.SliderGroupProperties.PIXEL_ID
+        };
+
+        return mDb.query(
+                SettingsContract.SliderGroupProperties.TABLE_NAME,
+                groupFields,
+                SettingsContract.SliderGroupProperties.GROUP_ID + "=" + groupId,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 }

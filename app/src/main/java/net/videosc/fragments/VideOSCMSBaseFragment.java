@@ -94,7 +94,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		});
 	}
 
-	void setParentContainer(ViewGroup container) {
+	public void setParentContainer(ViewGroup container) {
 		this.mParentContainer = container;
 	}
 

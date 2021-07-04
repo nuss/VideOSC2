@@ -98,11 +98,11 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		mMSViewLeft.setValues(vals);
 		mMSViewRight.setValues(mixVals);
 
-		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
-		int topMargin = lp.topMargin;
-		float density = app.getScreenDensity();
+		final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
+		final int topMargin = lp.topMargin;
+		final float density = app.getScreenDensity();
 
-		int displayHeight = app.getDimensions().y;
+		final int displayHeight = app.getDimensions().y;
 		mMSViewLeft.setParentTopMargin(topMargin);
 		mMSViewLeft.setDisplayHeight(displayHeight);
 		mMSViewRight.setParentTopMargin(topMargin);

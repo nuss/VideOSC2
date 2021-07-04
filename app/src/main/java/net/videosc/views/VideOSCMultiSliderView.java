@@ -75,11 +75,11 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		int numSliders = mSliderNums.size();
-		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
+		final int numSliders = mSliderNums.size();
+		final int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
 		// FIXME - after switching camera numSliders may be 0 because mNumSliders is empty
-		int barWidth = (getMeasuredWidth() - marginsTotal) / numSliders;
-		int barHeight = getMeasuredHeight();
+		final int barWidth = (getMeasuredWidth() - marginsTotal) / numSliders;
+		final int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
 			SliderBar child = (SliderBar) getChildAt(i);

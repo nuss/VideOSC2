@@ -447,6 +447,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         return this.mResetBlueMixVals;
     }
 
+    public ViewGroup getContainer() {
+        return this.mContainer;
+    }
+
 
     /**
      * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
@@ -973,7 +977,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             double[] greenMixVals = new double[numSelectedPixels];
             double[] blueVals = new double[numSelectedPixels];
             double[] blueMixVals = new double[numSelectedPixels];
-            Point res = mApp.getResolution();
+            final Point res = mApp.getResolution();
 
             mResetRedVals = new SparseArray<>();
             mResetRedMixVals = new SparseArray<>();
@@ -1016,7 +1020,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 }
             }
 
-            Bundle msArgsBundle = new Bundle();
+            final Bundle msArgsBundle = new Bundle();
             msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
             if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
                 msArgsBundle.putDoubleArray("redVals", redVals);
@@ -1033,7 +1037,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
             if (mManager.findFragmentByTag("MultiSliderView") == null) {
                 if (!mApp.getColorMode().equals(RGBModes.RGB)) {
-                    VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mActivity);
+                    final VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mActivity);
                     mManager.beginTransaction()
                             .add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
                             .commit();
@@ -1079,6 +1083,43 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             sliderGroupFragment.setArguments(sliderGroupEditorArgs);
             sliderGroupFragment.setParentContainer(mContainer);
             mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        // colorChannel: 0 -> red, 1 -> green, 2 -> blue
+        public double getColorChannelValueAt(int colorChannel, long id) {
+            final Point res = mApp.getResolution();
+            final int color = mBmp.getPixel((int) id % res.x, (int) id / res.x);
+            double value = 0.0;
+
+            switch (colorChannel) {
+                case 0:
+                    value = mRedValues.get((int) id) == null ? ((color >> 16) & 0xFF) / 255.0 : mRedValues.get((int) id);
+                    break;
+                case 1:
+                    value = mGreenValues.get((int) id) == null ? ((color >> 8) & 0xFF) / 255.0 : mGreenValues.get((int) id);
+                    break;
+                case 2:
+                    value = mBlueValues.get((int) id) == null ? (color & 0xFF) / 255.0 : mBlueValues.get((int) id);
+            }
+
+            return value;
+        }
+
+        public double getColorChannelMixValueAt(int colorChannel, long id) {
+            double mixValue = 1.0;
+
+            switch (colorChannel) {
+                case 0:
+                    mixValue = mRedMixValues.get((int) id) == null ? mixValue : mRedMixValues.get((int) id);
+                    break;
+                case 1:
+                    mixValue = mGreenMixValues.get((int) id) == null ? mixValue : mGreenMixValues.get((int) id);
+                    break;
+                case 2:
+                    mixValue = mBlueMixValues.get((int) id) == null ? mixValue : mBlueMixValues.get((int) id);
+            }
+
+            return mixValue;
         }
 
         private boolean containsRect(ArrayList<Rect> rectList, Rect rect) {
