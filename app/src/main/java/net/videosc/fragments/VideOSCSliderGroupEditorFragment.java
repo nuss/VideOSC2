@@ -95,6 +95,8 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
         final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
         final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
 
+        final ImageButton savedSliderGroupsButton = mParentContainer.findViewById(R.id.saved_slider_groups_button);
+
         final List<SparseArray<String>> group = Arrays.asList(new SparseArray<>(), new SparseArray<>(), new SparseArray<>());
 
         redPixelsList.setOnItemClickListener((parent, view1, position, id) -> {
@@ -162,6 +164,8 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
                                     sliderGroupsIndicator.setText(String.valueOf(numSliderGroups1));
                                     sliderGroupsIndicator.setTextColor(0xffffffff);
                                     sliderGroupsIndicator.setActivated(true);
+                                    savedSliderGroupsButton.setEnabled(true);
+                                    savedSliderGroupsButton.setAlpha(1.0f);
                                 }
                                 manager.beginTransaction().remove(this).commit();
                                 mContainer.removeView(buttons);

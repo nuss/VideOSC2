@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -59,6 +60,7 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter {
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
         final TextView row = view.findViewById(R.id.slider_group_item);
+        final ViewGroup container = mCameraFragment.getContainer();
         final long id = cursor.getLong(cursor.getColumnIndexOrThrow(SettingsContract.SliderGroups._ID));
         final String name = cursor.getString(cursor.getColumnIndexOrThrow(SettingsContract.SliderGroups.GROUP_NAME));
         row.setText(name);
@@ -71,7 +73,6 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter {
             final ArrayList<String> sliderLabels = new ArrayList<>();
             final ArrayList<Integer> colorChannels = new ArrayList<>();
             final ArrayList<Integer> sliderOrder = new ArrayList<>();
-            final ViewGroup container = mCameraFragment.getContainer();
             final ViewGroup indicators = container.findViewById(R.id.indicator_panel);
             final ViewGroup fpsRateCalcPanel = container.findViewById(R.id.fps_calc_period_indicator);
             final ViewGroup modePanel = container.findViewById(R.id.color_mode_panel);
@@ -121,7 +122,6 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter {
                         .remove(mGroupsListFragment)
                         .commit();
                 multiSliderFragment.setArguments(msArgsBundle);
-                // FIXME: what's the container???
                 multiSliderFragment.setParentContainer(container);
                 mApp.setIsMultiSliderActive(true);
                 indicators.setVisibility(View.INVISIBLE);
@@ -138,6 +138,7 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter {
         row.setOnLongClickListener(v -> {
             final LayoutInflater inflater = LayoutInflater.from(context);
             final ViewGroup dialogView = (ViewGroup) inflater.inflate(R.layout.slider_group_dialogs, mParent, false);
+            final ImageButton savedSliderGroupsButton = container.findViewById(R.id.saved_slider_groups_button);
 
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
             dialogBuilder.setView(dialogView);
@@ -215,6 +216,11 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter {
                                             } else {
                                                 numGroupsIndicator.setActivated(false);
                                                 numGroupsIndicator.setTextColor(0x00ffffff);
+                                                mManager.beginTransaction()
+                                                        .remove(mGroupsListFragment)
+                                                        .commit();
+                                                savedSliderGroupsButton.setEnabled(false);
+                                                savedSliderGroupsButton.setAlpha(0.3f);
                                             }
                                         }
                                     }

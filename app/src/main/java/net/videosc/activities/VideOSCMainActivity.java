@@ -253,11 +253,16 @@ public class VideOSCMainActivity extends FragmentActivity
             numSnapshotsIndicator.setTextColor(0xffffffff);
         }
         final int numSliderGroups = mDbHelper.countSliderGroups();
+        final ImageButton loadGroupsButton = mBasicToolbar.findViewById(R.id.saved_slider_groups_button);
+
         if (numSliderGroups > 0) {
             final TextView numSliderGroupsIndicator = mBasicToolbar.findViewById(R.id.num_slider_groups);
             numSliderGroupsIndicator.setActivated(true);
             numSliderGroupsIndicator.setText(String.valueOf(numSliderGroups));
             numSliderGroupsIndicator.setTextColor(0xffffffff);
+        } else {
+            loadGroupsButton.setEnabled(false);
+            loadGroupsButton.setAlpha(0.3f);
         }
 
         mBasicToolbar.requestDisallowInterceptTouchEvent(true);
@@ -275,7 +280,6 @@ public class VideOSCMainActivity extends FragmentActivity
 
         final ImageButton oscFeedbackButton = mBasicToolbar.findViewById(R.id.osc_feedback_button);
         final ImageButton loadSnapshotsButton = mBasicToolbar.findViewById(R.id.saved_snapshots_button);
-        final ImageButton loadGroupsButton = mBasicToolbar.findViewById(R.id.saved_slider_groups_button);
         final ImageButton saveSnapshotButton = mBasicToolbar.findViewById(R.id.save_snapshot);
 
         final ImageButton playButton = mBasicToolbar.findViewById(R.id.play_pause);
