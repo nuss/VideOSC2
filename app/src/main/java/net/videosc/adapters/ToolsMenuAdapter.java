@@ -178,7 +178,7 @@ public class ToolsMenuAdapter extends ArrayAdapter<BitmapDrawable> {
             final ImageView interactionModeIndicator = indicators.findViewById(R.id.indicator_interaction);
             final ImageView cameraIndicator = indicators.findViewById(R.id.indicator_camera);
             final ImageView torchIndicator = indicators.findViewById(R.id.torch_status_indicator);
-            final ViewGroup basicToolsPalette = mActivity.mCamView.findViewById(R.id.snapshots_bar);
+            final ViewGroup basicToolsPalette = mActivity.mCamView.findViewById(R.id.basic_tools_bar);
             final ImageButton feedbackButton = basicToolsPalette.findViewById(R.id.osc_feedback_button);
             // cameraFragment provides all instance methods of the camera preview
             // no reflections needed

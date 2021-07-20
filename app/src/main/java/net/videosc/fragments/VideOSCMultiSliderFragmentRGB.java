@@ -127,7 +127,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 
 		assert sliderNums != null;
 		for (int num : sliderNums) {
-			SliderBar barRedLeft = new SliderBar(mActivity);
+			final SliderBar barRedLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extent to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -136,14 +136,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barRedLeft.setNum(String.valueOf(num));
 			mMSViewRedLeft.mBars.add(barRedLeft);
 			mMSViewRedLeft.addView(barRedLeft);
-			SliderBar barRedRight = new SliderBar(mActivity);
+			final SliderBar barRedRight = new SliderBar(mActivity);
 			barRedRight.setColor(0x99ff0000);
 			barRedRight.mScreenDensity = density;
 			barRedRight.setNum(String.valueOf(num));
 			mMSViewRedRight.mBars.add(barRedRight);
 			mMSViewRedRight.addView(barRedRight);
 
-			SliderBar barGreenLeft = new SliderBar(mActivity);
+			final SliderBar barGreenLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -152,14 +152,14 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barGreenLeft.setNum(String.valueOf(num));
 			mMSViewGreenLeft.mBars.add(barGreenLeft);
 			mMSViewGreenLeft.addView(barGreenLeft);
-			SliderBar barGreenRight = new SliderBar(mActivity);
+			final SliderBar barGreenRight = new SliderBar(mActivity);
 			barGreenRight.setColor(0x9900ff00);
 			barGreenRight.mScreenDensity = density;
 			barGreenRight.setNum(String.valueOf(num));
 			mMSViewGreenRight.mBars.add(barGreenRight);
 			mMSViewGreenRight.addView(barGreenRight);
 
-			SliderBar barBlueLeft = new SliderBar(mActivity);
+			final SliderBar barBlueLeft = new SliderBar(mActivity);
 			// sensitive area for touch events should extend to
 			// full screenheight, otherwise it's hard to set sliders to
 			// minimum or maximum
@@ -168,7 +168,7 @@ public class VideOSCMultiSliderFragmentRGB extends VideOSCMSBaseFragment {
 			barBlueLeft.setNum(String.valueOf(num));
 			mMSViewBlueLeft.mBars.add(barBlueLeft);
 			mMSViewBlueLeft.addView(barBlueLeft);
-			SliderBar barBlueRight = new SliderBar(mActivity);
+			final SliderBar barBlueRight = new SliderBar(mActivity);
 			barBlueRight.setColor(0x990000ff);
 			barBlueRight.mScreenDensity = density;
 			barBlueRight.setNum(String.valueOf(num));

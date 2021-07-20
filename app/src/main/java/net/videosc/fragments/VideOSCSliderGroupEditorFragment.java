@@ -93,7 +93,7 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
         final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
         final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
         final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
-        final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
+        final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.basic_tools_bar);
 
         final ImageButton savedSliderGroupsButton = mParentContainer.findViewById(R.id.saved_slider_groups_button);
 

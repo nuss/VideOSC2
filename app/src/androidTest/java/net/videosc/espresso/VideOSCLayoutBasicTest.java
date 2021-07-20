@@ -176,7 +176,7 @@ public class VideOSCLayoutBasicTest {
 						childAtPosition(
 								allOf(withId(R.id.saved_snapshots_wrapper),
 										childAtPosition(
-												withId(R.id.snapshots_bar),
+												withId(R.id.basic_tools_bar),
 												0)),
 								0),
 						isDisplayed()));
@@ -187,7 +187,7 @@ public class VideOSCLayoutBasicTest {
 						childAtPosition(
 								allOf(withId(R.id.saved_snapshots_wrapper),
 										childAtPosition(
-												withId(R.id.snapshots_bar),
+												withId(R.id.basic_tools_bar),
 												0)),
 								1),
 						isDisplayed()));
@@ -394,7 +394,7 @@ public class VideOSCLayoutBasicTest {
 		ViewInteraction appCompatImageButton = onView(
 				allOf(withId(R.id.save_snapshot), withContentDescription("make a snapshot"),
 						childAtPosition(
-								allOf(withId(R.id.snapshots_bar),
+								allOf(withId(R.id.basic_tools_bar),
 										childAtPosition(
 												withId(R.id.camera_preview),
 												4)),

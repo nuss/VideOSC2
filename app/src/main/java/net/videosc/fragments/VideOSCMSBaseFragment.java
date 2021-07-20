@@ -1,6 +1,7 @@
 package net.videosc.fragments;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
+import net.videosc.utilities.enums.InteractionModes;
 
 public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 	final private static String TAG = "VideOSCMSBaseFragment";
@@ -38,7 +40,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 		final ViewGroup fpsCalcPanel = mParentContainer.findViewById(R.id.fps_calc_period_indicator);
 		final ViewGroup indicatorPanel = mParentContainer.findViewById(R.id.indicator_panel);
 		final ViewGroup pixelEditorToolbox = mParentContainer.findViewById(R.id.pixel_editor_toolbox);
-		final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.snapshots_bar);
+		final ViewGroup snapshotsBar = mParentContainer.findViewById(R.id.basic_tools_bar);
 		final VideOSCCameraFragment cameraPreview = (VideOSCCameraFragment) mManager.findFragmentByTag("CamPreview");
 
 		mMSButtons.bringToFront();
@@ -52,7 +54,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 			mContainer.removeView(mMSButtons);
 			mContainer.removeView(mLabelsView);
 			indicatorPanel.setVisibility(View.VISIBLE);
-			pixelEditorToolbox.setVisibility(View.VISIBLE);
+			if (app.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL))
+				pixelEditorToolbox.setVisibility(View.VISIBLE);
 			snapshotsBar.setVisibility(View.VISIBLE);
 			if (app.getIsFPSCalcPanelOpen())
 				fpsCalcPanel.setVisibility(View.VISIBLE);
@@ -82,11 +85,14 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
 			}
 
+			Log.d(TAG, " \nredResetVals: " + redResetVals + "\nredResetMixVals: " + redResetMixVals + "\ngreenResetVals: " + greenResetVals + "\ngreenResetMixVals: " + greenResetMixVals + "\nblueResetVals: " + blueResetVals + "\nblueResetMixVals: " + blueResetMixVals);
+
 			mManager.beginTransaction().remove(mFragment).commit();
 			mContainer.removeView(mMSButtons);
 			mContainer.removeView(mLabelsView);
 			indicatorPanel.setVisibility(View.VISIBLE);
-			pixelEditorToolbox.setVisibility(View.VISIBLE);
+			if (app.getInteractionMode().equals(InteractionModes.SINGLE_PIXEL))
+				pixelEditorToolbox.setVisibility(View.VISIBLE);
 			snapshotsBar.setVisibility(View.VISIBLE);
 			if (app.getIsFPSCalcPanelOpen())
 				fpsCalcPanel.setVisibility(View.VISIBLE);

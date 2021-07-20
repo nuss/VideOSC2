@@ -64,6 +64,7 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
+import net.videosc.interfaces.mappings_data_source.MultisliderCreator;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
@@ -423,24 +424,48 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
     /* reset values, needed to restore a setup if a pixel edit gets canceled by the user */
 
+    public void setRedResetValues(SparseArray<Double> values) {
+        this.mResetRedVals = values;
+    }
+
     public SparseArray<Double> getRedResetValues() {
         return this.mResetRedVals;
+    }
+
+    public void setRedMixResetValues(SparseArray<Double> values) {
+        this.mResetRedMixVals = values;
     }
 
     public SparseArray<Double> getRedMixResetValues() {
         return this.mResetRedMixVals;
     }
 
+    public void setGreenResetValues(SparseArray<Double> values) {
+        this.mResetGreenVals = values;
+    }
+
     public SparseArray<Double> getGreenResetValues() {
         return this.mResetGreenVals;
+    }
+
+    public void setGreenMixResetValues(SparseArray<Double> values) {
+        this.mResetGreenMixVals = values;
     }
 
     public SparseArray<Double> getGreenMixResetValues() {
         return this.mResetGreenMixVals;
     }
 
+    public void setBlueResetValues(SparseArray<Double> values) {
+        this.mResetBlueVals = values;
+    }
+
     public SparseArray<Double> getBlueResetValues() {
         return this.mResetBlueVals;
+    }
+
+    public void setBlueMixResetValues(SparseArray<Double> values) {
+        this.mResetBlueMixVals = values;
     }
 
     public SparseArray<Double> getBlueMixResetValues() {
@@ -458,7 +483,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
      * <p>
      * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
      */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback, MultisliderCreator {
 
         private final VideOSCMainActivity mActivity;
         private final ArrayList<OscBundle> mOscBundlesR, mOscBundlesG, mOscBundlesB;
@@ -965,6 +990,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             }
         }
 
+        @Override
         public void createMultiSliders() {
             final ViewGroup indicators = mContainer.findViewById(R.id.indicator_panel);
             final ViewGroup fpsRateCalcPanel = mContainer.findViewById(R.id.fps_calc_period_indicator);
@@ -1067,6 +1093,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             }
         }
 
+        @Override
+        public void createMultiSliders(long groupId) {
+
+        }
+
         private void createSliderGroupEditor() {
             if (mOscHelper.getUdpListener().listeners().isEmpty()) {
                 mOscHelper.addOscUdpEventListener();
@@ -1094,12 +1125,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             switch (colorChannel) {
                 case 0:
                     value = mRedValues.get((int) id) == null ? ((color >> 16) & 0xFF) / 255.0 : mRedValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", red value: " + value);
                     break;
                 case 1:
                     value = mGreenValues.get((int) id) == null ? ((color >> 8) & 0xFF) / 255.0 : mGreenValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", green value: " + value);
                     break;
                 case 2:
                     value = mBlueValues.get((int) id) == null ? (color & 0xFF) / 255.0 : mBlueValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", blue value: " + value);
             }
 
             return value;
