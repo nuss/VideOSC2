@@ -221,21 +221,21 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
                 case 0:
                     // FIXME: mId is the id of the slider group, not the id of the regarding pixel
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(0, pixelIds.get(i) - 1);
-                    redResetVals.put(pixelIds.get(i), values[i]);
+                    redResetVals.put(pixelIds.get(i), mCameraFragment.getRedValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(0, pixelIds.get(i) - 1);
-                    redResetMixVals.put(pixelIds.get(i), mixValues[i]);
+                    redResetMixVals.put(pixelIds.get(i), mCameraFragment.getRedMixValues().get(pixelIds.get(i) - 1));
                     break;
                 case 1:
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(1, pixelIds.get(i) - 1);
-                    greenResetVals.put(pixelIds.get(i), values[i]);
+                    greenResetVals.put(pixelIds.get(i), mCameraFragment.getGreenValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(1, pixelIds.get(i) - 1);
-                    greenResetMixVals.put(pixelIds.get(i), mixValues[i]);
+                    greenResetMixVals.put(pixelIds.get(i), mCameraFragment.getGreenMixValues().get(pixelIds.get(i) - 1));
                     break;
                 case 2:
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(2, pixelIds.get(i) - 1);
-                    blueResetVals.put(pixelIds.get(i), values[i]);
+                    blueResetVals.put(pixelIds.get(i), mCameraFragment.getBlueValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(2, pixelIds.get(i) - 1);
-                    blueResetMixVals.put(pixelIds.get(i), mixValues[i]);
+                    blueResetMixVals.put(pixelIds.get(i), mCameraFragment.getBlueMixValues().get(pixelIds.get(i) - 1));
             }
         }
 

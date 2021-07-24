@@ -1144,13 +1144,13 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
             switch (colorChannel) {
                 case 0:
-                    mixValue = mRedMixValues.get((int) id) == null ? mixValue : mRedMixValues.get((int) id);
+                    mixValue = mRedMixValues.get((int) id) == null ? 1.0 : mRedMixValues.get((int) id);
                     break;
                 case 1:
-                    mixValue = mGreenMixValues.get((int) id) == null ? mixValue : mGreenMixValues.get((int) id);
+                    mixValue = mGreenMixValues.get((int) id) == null ? 1.0 : mGreenMixValues.get((int) id);
                     break;
                 case 2:
-                    mixValue = mBlueMixValues.get((int) id) == null ? mixValue : mBlueMixValues.get((int) id);
+                    mixValue = mBlueMixValues.get((int) id) == null ? 1.0 : mBlueMixValues.get((int) id);
             }
 
             return mixValue;
