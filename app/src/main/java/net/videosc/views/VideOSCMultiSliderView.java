@@ -3,6 +3,7 @@ package net.videosc.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import net.videosc.R;
 import java.util.ArrayList;
 
 public class VideOSCMultiSliderView extends LinearLayout {
-	final static private String TAG = "MultiSliderView";
+	final static private String TAG = VideOSCMultiSliderView.class.getSimpleName();
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
@@ -166,6 +167,18 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public Double getSliderValueAt(int index) {
 		return this.mValuesArray[index];
+	}
+
+	public Integer getSliderColorAt(int index) {
+		final SparseArray<SliderBar> bars = new SparseArray<>(mBars.size());
+		for (SliderBar bar : mBars) {
+			// pixel numbering starts at 1, we want the true index
+			bars.put(Integer.parseInt(bar.getNum()) - 1, bar);
+		}
+
+		Log.d(TAG, "index: " + index + ", bars: " + bars);
+
+		return bars.get(index) == null ? null : bars.get(index).getColor();
 	}
 
 	public void setValues(double[] values) {

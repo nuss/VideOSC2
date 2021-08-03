@@ -21,6 +21,7 @@ public class VideOSCApplication extends Application {
 	private boolean mIsRGBPositive = true; // always init to true
 	private boolean mRGBHasChanged = false; // when switching RGB mode from negative to positive and vice versa
 	private RGBModes mColorMode = RGBModes.RGB;
+	private boolean mIsInSliderGroupEditMode = false;
 	private SettingsDBHelper mSettingsHelper;
 	private boolean mNormalized = false;
 	private boolean mHidePixelImage = false;
@@ -380,5 +381,13 @@ public class VideOSCApplication extends Application {
 
 	public CommandMappingsSortModes getCommandMappingsSortMode() {
 		return this.mCommandMappingsSortMode;
+	}
+
+	public void setSliderGroupEditMode(boolean active) {
+		this.mIsInSliderGroupEditMode = active;
+	}
+
+	public boolean getSliderGroupEditMode() {
+		return this.mIsInSliderGroupEditMode;
 	}
 }

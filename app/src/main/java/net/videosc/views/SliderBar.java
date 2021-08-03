@@ -115,6 +115,10 @@ public class SliderBar extends View {
 		this.mColor = color;
 	}
 
+	public int getColor() {
+		return this.mColor;
+	}
+
 	public int getBarHeight() {
 		return this.mBottom;
 	}

@@ -135,4 +135,20 @@ public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
         mMSViewLeft.setSliderNums(resNumbers);
         mMSViewRight.setSliderNums(resNumbers);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mApp.setSliderGroupEditMode(false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCreateViewCallback != null) {
+            mCreateViewCallback.onCreateView();
+            mCreateViewCallback = null;
+        }
+    }
+
 }

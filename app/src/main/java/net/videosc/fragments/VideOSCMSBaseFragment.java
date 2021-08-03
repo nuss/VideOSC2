@@ -27,6 +27,7 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 
 	public VideOSCMSBaseFragment(Context context) {
 		this.mActivity = (VideOSCMainActivity) context;
+		this.mApp = (VideOSCApplication) mActivity.getApplication();
 	}
 
 	@Override

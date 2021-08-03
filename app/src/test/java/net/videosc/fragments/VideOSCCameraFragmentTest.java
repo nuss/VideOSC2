@@ -1,12 +1,14 @@
 package net.videosc.fragments;
 
+import static org.junit.Assert.assertNotNull;
+
+import net.videosc.activities.VideOSCMainActivity;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by stefan on 14.07.17, package net.videosc.fragments, project VideOSC22.
@@ -15,11 +17,11 @@ public class VideOSCCameraFragmentTest {
 	private VideOSCCameraFragment fragment;
 	private final static String TAG = "VideOSCCameraFragmentTest";
 
-	private ArrayList<Double> values = new ArrayList<>(5);
+	private final ArrayList<Double> values = new ArrayList<>(5);
 
 	@Before
 	public void setUp() {
-		fragment = new VideOSCCameraFragment(this);
+		fragment = new VideOSCCameraFragment(new VideOSCMainActivity());
 		values.add(0.1);
 		values.add(0.2);
 		values.add(0.3);

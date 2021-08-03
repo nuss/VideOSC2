@@ -148,7 +148,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
     /**
      * Default empty constructor.
      */
-    public VideOSCCameraFragment() { }
+    public VideOSCCameraFragment() {
+    }
 
     public VideOSCCameraFragment(VideOSCMainActivity activity) {
         this.mActivity = activity;
@@ -1283,8 +1284,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             VideOSCMultiSliderView msRight = mContainer.findViewById(R.id.multislider_view_right);
 
             for (int i = 0; i < dimensions; i++) {
-                Double mixVal;
-
                 // only the downsampled image gets inverted as inverting the original would slow
                 // down the application considerably
                 int rPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
@@ -1294,65 +1293,73 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
                         : pixels[i] & 0xFF;
 
-                if (mApp.getColorMode().equals(RGBModes.RGB)
-                        && msRedLeft != null
-                        && msRedRight != null
-                        && msGreenLeft != null
-                        && msGreenRight != null
-                        && msBlueLeft != null
-                        && msBlueRight != null) {
+                if (!mApp.getSliderGroupEditMode()) {
+                    if (mApp.getColorMode().equals(RGBModes.RGB)
+                            && msRedLeft != null
+                            && msRedRight != null
+                            && msGreenLeft != null
+                            && msGreenRight != null
+                            && msBlueLeft != null
+                            && msBlueRight != null) {
 
-                    // color values
-                    redSliderVal = msRedLeft.getSliderValueAt(i);
-                    if (redSliderVal != null) {
-                        mRedValues.set(i, redSliderVal);
-                        // mix values: once a mix value has been set it should be remembered until it's set
-                        // to a new value (by moving the slider. Next time the regarding pixel is edited
-                        // the slider should be set to the value that has been stored on the last edit
-                        // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
-                        mixVal = msRedRight.getSliderValueAt(i);
-                        mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+                        // color values
+                        setValueAndMixValue(msRedLeft, msRedRight, 0x99ff0000, i);
+                        setValueAndMixValue(msGreenLeft, msGreenRight, 0x9900ff00, i);
+                        setValueAndMixValue(msBlueLeft, msBlueRight, 0x990000ff, i);
+//                        redSliderVal = msRedLeft.getSliderValueAt(i);
+//                        if (redSliderVal != null) {
+//                            mRedValues.set(i, redSliderVal);
+//                            mixVal = msRedRight.getSliderValueAt(i);
+//                            mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                        }
+//                        greenSliderVal = msGreenLeft.getSliderValueAt(i);
+//                        if (greenSliderVal != null) {
+//                            mGreenValues.set(i, greenSliderVal);
+//                            mixVal = msGreenRight.getSliderValueAt(i);
+//                            mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                        }
+//                        blueSliderVal = msBlueLeft.getSliderValueAt(i);
+//                        if (blueSliderVal != null) {
+//                            mBlueValues.set(i, blueSliderVal);
+//                            mixVal = msBlueRight.getSliderValueAt(i);
+//                            mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                        }
+                    } else if (!mApp.getColorMode().equals(RGBModes.RGB)
+                            && msLeft != null
+                            && msRight != null) {
+                        switch (mApp.getColorMode()) {
+                            case R:
+                                setValueAndMixValue(msLeft, msRight, 0x99ff0000, i);
+//                                redSliderVal = msLeft.getSliderValueAt(i);
+//                                if (redSliderVal != null) {
+//                                    mRedValues.set(i, redSliderVal);
+//                                    mixVal = msRight.getSliderValueAt(i);
+//                                    mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                                }
+                                break;
+                            case G:
+                                setValueAndMixValue(msLeft, msRight, 0x9900ff00, i);
+//                                greenSliderVal = msLeft.getSliderValueAt(i);
+//                                if (greenSliderVal != null) {
+//                                    mGreenValues.set(i, greenSliderVal);
+//                                    mixVal = msRight.getSliderValueAt(i);
+//                                    mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                                }
+                                break;
+                            case B:
+                                setValueAndMixValue(msLeft, msRight, 0x990000ff, i);
+//                                blueSliderVal = msLeft.getSliderValueAt(i);
+//                                if (blueSliderVal != null) {
+//                                    mBlueValues.set(i, blueSliderVal);
+//                                    mixVal = msRight.getSliderValueAt(i);
+//                                    mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+//                                }
+                                break;
+                        }
                     }
-                    greenSliderVal = msGreenLeft.getSliderValueAt(i);
-                    if (greenSliderVal != null) {
-                        mGreenValues.set(i, greenSliderVal);
-                        mixVal = msGreenRight.getSliderValueAt(i);
-                        mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                    }
-                    blueSliderVal = msBlueLeft.getSliderValueAt(i);
-                    if (blueSliderVal != null) {
-                        mBlueValues.set(i, blueSliderVal);
-                        mixVal = msBlueRight.getSliderValueAt(i);
-                        mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                    }
-                } else if (!mApp.getColorMode().equals(RGBModes.RGB)
-                        && msLeft != null
-                        && msRight != null) {
-                    switch (mApp.getColorMode()) {
-                        case R:
-                            redSliderVal = msLeft.getSliderValueAt(i);
-                            if (redSliderVal != null) {
-                                mRedValues.set(i, redSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
-                        case G:
-                            greenSliderVal = msLeft.getSliderValueAt(i);
-                            if (greenSliderVal != null) {
-                                mGreenValues.set(i, greenSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
-                        case B:
-                            blueSliderVal = msLeft.getSliderValueAt(i);
-                            if (blueSliderVal != null) {
-                                mBlueValues.set(i, blueSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
+                } else {
+                    if (msLeft != null && msRight != null) {
+                        setValueAndMixValue(msLeft, msRight, null, i);
                     }
                 }
 
@@ -1436,6 +1443,39 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
             bmp.setPixels(pixels, 0, width, 0, 0, width, height);
             return bmp;
+        }
+
+        private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, @Nullable Integer color, int index) {
+            final Double val = left.getSliderValueAt(index);
+            ArrayList<Double> values = null, mixValues = null;
+
+            if (color == null) {
+                color = left.getSliderColorAt(index);
+            }
+
+            if (color != null) {
+                if (color == 0x99ff0000) {
+                    values = mRedValues;
+                    mixValues = mRedMixValues;
+                } else if (color == 0x9900ff00) {
+                    values = mGreenValues;
+                    mixValues = mGreenMixValues;
+                } else if (color == 0x990000ff) {
+                    values = mBlueValues;
+                    mixValues = mBlueMixValues;
+                }
+
+                if (val != null) {
+                    assert values != null;
+                    values.set(index, val);
+                    // mix values: once a mix value has been set it should be remembered until it's set
+                    // to a new value (by moving the slider. Next time the regarding pixel is edited
+                    // the slider should be set to the value that has been stored on the last edit
+                    // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
+                    final Double mixVal = right.getSliderValueAt(index);
+                    mixValues.set(index, mixVal == null ? 1.0 : mixVal);
+                }
+            }
         }
 
         private void doSendRedOSC(double value, int count, int dimensions) {

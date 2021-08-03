@@ -216,6 +216,8 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
         final SparseArray<Double> blueResetVals = new SparseArray<>();
         final SparseArray<Double> blueResetMixVals = new SparseArray<>();
 
+        mApp.setSliderGroupEditMode(true);
+
         for (int i = 0; i < pixelIds.size(); i++) {
             switch (colorChannels.get(i)) {
                 case 0:
