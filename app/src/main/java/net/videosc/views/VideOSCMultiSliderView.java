@@ -176,8 +176,6 @@ public class VideOSCMultiSliderView extends LinearLayout {
 			bars.put(Integer.parseInt(bar.getNum()) - 1, bar);
 		}
 
-		Log.d(TAG, "index: " + index + ", bars: " + bars);
-
 		return bars.get(index) == null ? null : bars.get(index).getColor();
 	}
 

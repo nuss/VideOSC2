@@ -103,7 +103,7 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
                                 final int result = db.update(
                                         SettingsContract.SliderGroups.TABLE_NAME,
                                         values,
-                                        SettingsContract.SliderGroups._ID + " = " + mId,
+                                        SettingsContract.SliderGroups._ID + " = " + groupId,
                                         null
                                 );
                                 if (result > 0) {
@@ -125,13 +125,13 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
                             (dialog, which) -> {
                                 int result = db.delete(
                                         SettingsContract.SliderGroupProperties.TABLE_NAME,
-                                        SettingsContract.SliderGroupProperties.GROUP_ID + " = " + mId,
+                                        SettingsContract.SliderGroupProperties.GROUP_ID + " = " + groupId,
                                         null
                                 );
                                 if (result > 0) {
                                     result = db.delete(
                                             SettingsContract.SliderGroups.TABLE_NAME,
-                                            SettingsContract.SliderGroups._ID + " = " + mId,
+                                            SettingsContract.SliderGroups._ID + " = " + groupId,
                                             null
                                     );
                                     if (result > 0) {
@@ -203,7 +203,7 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
             sliderOrder.add(groupCursor.getInt(groupCursor.getColumnIndexOrThrow(SettingsContract.SliderGroupProperties.SLIDER_ORDER)));
         }
 
-        Log.d(TAG, " \npixelIds: " + pixelIds + "\nsliderLabels: " + sliderLabels + "\ncolorChannels: " + colorChannels + "\nsliderOrder: " + sliderOrder);
+//        Log.d(TAG, " \npixelIds: " + pixelIds + "\nsliderLabels: " + sliderLabels + "\ncolorChannels: " + colorChannels + "\nsliderOrder: " + sliderOrder);
 
         groupCursor.close();
 

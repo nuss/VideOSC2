@@ -1300,8 +1300,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                             && msGreenLeft != null
                             && msGreenRight != null
                             && msBlueLeft != null
-                            && msBlueRight != null) {
-
+                            && msBlueRight != null
+                    ) {
                         // color values
                         setValueAndMixValue(msRedLeft, msRedRight, red, i);
                         setValueAndMixValue(msGreenLeft, msGreenRight, green, i);
@@ -1420,12 +1420,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 if (color == 0x99ff0000) {
                     values = mRedValues;
                     mixValues = mRedMixValues;
+                    Log.d(TAG, " \nred values: " + mRedValues + "\nred mix values: " + mRedMixValues);
                 } else if (color == 0x9900ff00) {
                     values = mGreenValues;
                     mixValues = mGreenMixValues;
+                    Log.d(TAG, " \ngreen values: " + mGreenValues + "\ngreen mix values: " + mGreenMixValues);
                 } else if (color == 0x990000ff) {
                     values = mBlueValues;
                     mixValues = mBlueMixValues;
+                    Log.d(TAG, " \nblue values: " + mBlueValues + "\nblue mix values: " + mBlueMixValues);
                 }
 
                 if (val != null) {
