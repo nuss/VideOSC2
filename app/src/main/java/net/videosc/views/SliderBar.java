@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import net.videosc.VideOSCApplication;
@@ -124,7 +123,6 @@ public class SliderBar extends View {
 	}
 
 	public void setPixelValue(double value) {
-		Log.d(TAG, "raw value: " + value);
 		this.mPixelVal = 1.0 - value;
 	}
 }

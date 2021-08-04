@@ -1265,10 +1265,10 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         private Bitmap drawFrame(Bitmap bmp, int width, int height) {
             double rValue, gValue, bValue;
             double mixPowered, mixReciprPowered, mult;
-            Double redSliderVal, greenSliderVal, blueSliderVal;
             Point resolution = mApp.getResolution();
             int dimensions = resolution.x * resolution.y;
             int[] pixels = new int[width * height];
+            int red = 0x99ff0000, green = 0x9900ff00, blue = 0x990000ff;
 
             bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
@@ -1303,58 +1303,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                             && msBlueRight != null) {
 
                         // color values
-                        setValueAndMixValue(msRedLeft, msRedRight, 0x99ff0000, i);
-                        setValueAndMixValue(msGreenLeft, msGreenRight, 0x9900ff00, i);
-                        setValueAndMixValue(msBlueLeft, msBlueRight, 0x990000ff, i);
-//                        redSliderVal = msRedLeft.getSliderValueAt(i);
-//                        if (redSliderVal != null) {
-//                            mRedValues.set(i, redSliderVal);
-//                            mixVal = msRedRight.getSliderValueAt(i);
-//                            mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                        }
-//                        greenSliderVal = msGreenLeft.getSliderValueAt(i);
-//                        if (greenSliderVal != null) {
-//                            mGreenValues.set(i, greenSliderVal);
-//                            mixVal = msGreenRight.getSliderValueAt(i);
-//                            mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                        }
-//                        blueSliderVal = msBlueLeft.getSliderValueAt(i);
-//                        if (blueSliderVal != null) {
-//                            mBlueValues.set(i, blueSliderVal);
-//                            mixVal = msBlueRight.getSliderValueAt(i);
-//                            mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                        }
+                        setValueAndMixValue(msRedLeft, msRedRight, red, i);
+                        setValueAndMixValue(msGreenLeft, msGreenRight, green, i);
+                        setValueAndMixValue(msBlueLeft, msBlueRight, blue, i);
                     } else if (!mApp.getColorMode().equals(RGBModes.RGB)
                             && msLeft != null
                             && msRight != null) {
                         switch (mApp.getColorMode()) {
                             case R:
-                                setValueAndMixValue(msLeft, msRight, 0x99ff0000, i);
-//                                redSliderVal = msLeft.getSliderValueAt(i);
-//                                if (redSliderVal != null) {
-//                                    mRedValues.set(i, redSliderVal);
-//                                    mixVal = msRight.getSliderValueAt(i);
-//                                    mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                                }
+                                setValueAndMixValue(msLeft, msRight, red, i);
                                 break;
                             case G:
-                                setValueAndMixValue(msLeft, msRight, 0x9900ff00, i);
-//                                greenSliderVal = msLeft.getSliderValueAt(i);
-//                                if (greenSliderVal != null) {
-//                                    mGreenValues.set(i, greenSliderVal);
-//                                    mixVal = msRight.getSliderValueAt(i);
-//                                    mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                                }
+                                setValueAndMixValue(msLeft, msRight, green, i);
                                 break;
                             case B:
-                                setValueAndMixValue(msLeft, msRight, 0x990000ff, i);
-//                                blueSliderVal = msLeft.getSliderValueAt(i);
-//                                if (blueSliderVal != null) {
-//                                    mBlueValues.set(i, blueSliderVal);
-//                                    mixVal = msRight.getSliderValueAt(i);
-//                                    mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-//                                }
-                                break;
+                                setValueAndMixValue(msLeft, msRight, blue, i);
                         }
                     }
                 } else {

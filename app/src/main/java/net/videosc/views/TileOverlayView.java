@@ -87,8 +87,8 @@ public class TileOverlayView extends View {
         Bitmap patSrc = BitmapFactory.decodeResource(res, R.drawable.hover_rect_tile, options);
         mShaderSelected = new BitmapShader(patSrc, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
         mRCorner = BitmapFactory.decodeResource(res, R.drawable.r_corner);
-        mBCorner = BitmapFactory.decodeResource(res, R.drawable.b_corner);
         mGCorner = BitmapFactory.decodeResource(res, R.drawable.g_corner);
+        mBCorner = BitmapFactory.decodeResource(res, R.drawable.b_corner);
         mRGCorner = BitmapFactory.decodeResource(res, R.drawable.rg_corner);
         mRBCorner = BitmapFactory.decodeResource(res, R.drawable.rb_corner);
         mGBCorner = BitmapFactory.decodeResource(res, R.drawable.gb_corner);
@@ -198,7 +198,7 @@ public class TileOverlayView extends View {
                                 drawCornerBitmap(canvas, i, bitmap, mResolution, mPixelSize);
                             } else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) != null && mBlueMixValues.get(i) == null && mGreenMixValues.get(i) > 0.0) {
                                 // draw green corner bitmap
-                                bitmap = mGBCorner;
+                                bitmap = mGCorner;
                                 drawCornerBitmap(canvas, i, bitmap, mResolution, mPixelSize);
                             } else if (mRedMixValues.get(i) == null && mGreenMixValues.get(i) == null && mBlueMixValues.get(i) != null && mBlueMixValues.get(i) > 0.0) {
                                 // draw blue corner bitmap
