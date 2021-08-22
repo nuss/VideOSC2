@@ -169,10 +169,12 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return this.mValuesArray[index];
 	}
 
+	// FIXME:
 	public Integer getSliderColorAt(int index) {
 		final SparseArray<SliderBar> bars = new SparseArray<>(mBars.size());
 		for (SliderBar bar : mBars) {
 			// pixel numbering starts at 1, we want the true index
+			Log.d(TAG, "bar index: " + Integer.parseInt(bar.getNum()) + ", color: " + bar.getColor());
 			bars.put(Integer.parseInt(bar.getNum()) - 1, bar);
 		}
 

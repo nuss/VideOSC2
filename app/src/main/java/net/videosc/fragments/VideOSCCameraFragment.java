@@ -1322,6 +1322,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     }
                 } else {
                     if (msLeft != null && msRight != null) {
+                        // FIXME: parent method iterates over number of pixels, but one particular pixel can occur more than once
                         setValueAndMixValue(msLeft, msRight, null, i);
                     }
                 }

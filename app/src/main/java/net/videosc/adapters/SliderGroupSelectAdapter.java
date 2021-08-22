@@ -221,7 +221,6 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
         for (int i = 0; i < pixelIds.size(); i++) {
             switch (colorChannels.get(i)) {
                 case 0:
-                    // FIXME: mId is the id of the slider group, not the id of the regarding pixel
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(0, pixelIds.get(i) - 1);
                     redResetVals.put(pixelIds.get(i), mCameraFragment.getRedValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(0, pixelIds.get(i) - 1);
