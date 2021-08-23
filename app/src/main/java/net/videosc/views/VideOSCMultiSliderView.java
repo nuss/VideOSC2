@@ -169,19 +169,36 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return this.mValuesArray[index];
 	}
 
+	public Double[] getGroupSliderValuesAt(int index) {
+		// stub
+		return null;
+	}
+
 	// FIXME:
-	public Integer getSliderColorAt(int index) {
-		final SparseArray<SliderBar> bars = new SparseArray<>(mBars.size());
+	public ArrayList<Integer> getSliderColorsAt(int index) {
+		final SparseArray<ArrayList<SliderBar>> bars = new SparseArray<>(mBars.size());
+		final ArrayList<Integer> res = new ArrayList<>();
 		for (SliderBar bar : mBars) {
 			// pixel numbering starts at 1, we want the true index
 			Log.d(TAG, "bar index: " + Integer.parseInt(bar.getNum()) + ", color: " + bar.getColor());
-			bars.put(Integer.parseInt(bar.getNum()) - 1, bar);
-		}
+			int barIndex = Integer.parseInt(bar.getNum()) - 1;
+			if (bars.get(barIndex) == null) {
+				bars.put(barIndex, new ArrayList<>());
+			}
+			bars.valueAt(barIndex).add(bar);
 
-		return bars.get(index) == null ? null : bars.get(index).getColor();
+			if (bars.get(index) != null) {
+				ArrayList<SliderBar> pixelBars = bars.get(index);
+				for (int i = 0; i < pixelBars.size(); i++) {
+					res.add(pixelBars.get(i).getColor());
+				}
+			}
+		}
+		return res;
 	}
 
-	public void setValues(double[] values) {
+
+		public void setValues(double[] values) {
 		this.mValues = values;
 	}
 

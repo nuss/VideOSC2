@@ -1322,8 +1322,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     }
                 } else {
                     if (msLeft != null && msRight != null) {
-                        // FIXME: parent method iterates over number of pixels, but one particular pixel can occur more than once
-                        setValueAndMixValue(msLeft, msRight, null, i);
+                        // FIXME: Likely this needs an entirely different method
+                        setGroupValuesAndMixValues(msLeft, msRight, i);
                     }
                 }
 
@@ -1409,39 +1409,39 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             return bmp;
         }
 
-        private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, @Nullable Integer color, int index) {
+        private void setGroupValuesAndMixValues(VideOSCMultiSliderView msLeft, VideOSCMultiSliderView msRight, int index) {
+            ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
+            // TODO: getSliderValueAt(index) queries for exactly one value at one index but our indices may occur more than once in one group?
+            msLeft.getGroupSliderValuesAt(index);
+        }
+
+        private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, int color, int index) {
             final Double val = left.getSliderValueAt(index);
             ArrayList<Double> values = null, mixValues = null;
 
-            if (color == null) {
-                color = left.getSliderColorAt(index);
+            if (color == 0x99ff0000) {
+                values = mRedValues;
+                mixValues = mRedMixValues;
+                Log.d(TAG, " \nred values: " + mRedValues + "\nred mix values: " + mRedMixValues);
+            } else if (color == 0x9900ff00) {
+                values = mGreenValues;
+                mixValues = mGreenMixValues;
+                Log.d(TAG, " \ngreen values: " + mGreenValues + "\ngreen mix values: " + mGreenMixValues);
+            } else if (color == 0x990000ff) {
+                values = mBlueValues;
+                mixValues = mBlueMixValues;
+                Log.d(TAG, " \nblue values: " + mBlueValues + "\nblue mix values: " + mBlueMixValues);
             }
 
-            if (color != null) {
-                if (color == 0x99ff0000) {
-                    values = mRedValues;
-                    mixValues = mRedMixValues;
-                    Log.d(TAG, " \nred values: " + mRedValues + "\nred mix values: " + mRedMixValues);
-                } else if (color == 0x9900ff00) {
-                    values = mGreenValues;
-                    mixValues = mGreenMixValues;
-                    Log.d(TAG, " \ngreen values: " + mGreenValues + "\ngreen mix values: " + mGreenMixValues);
-                } else if (color == 0x990000ff) {
-                    values = mBlueValues;
-                    mixValues = mBlueMixValues;
-                    Log.d(TAG, " \nblue values: " + mBlueValues + "\nblue mix values: " + mBlueMixValues);
-                }
-
-                if (val != null) {
-                    assert values != null;
-                    values.set(index, val);
-                    // mix values: once a mix value has been set it should be remembered until it's set
-                    // to a new value (by moving the slider. Next time the regarding pixel is edited
-                    // the slider should be set to the value that has been stored on the last edit
-                    // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
-                    final Double mixVal = right.getSliderValueAt(index);
-                    mixValues.set(index, mixVal == null ? 1.0 : mixVal);
-                }
+            if (val != null) {
+                assert values != null;
+                values.set(index, val);
+                // mix values: once a mix value has been set it should be remembered until it's set
+                // to a new value (by moving the slider. Next time the regarding pixel is edited
+                // the slider should be set to the value that has been stored on the last edit
+                // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
+                final Double mixVal = right.getSliderValueAt(index);
+                mixValues.set(index, mixVal == null ? 1.0 : mixVal);
             }
         }
 
