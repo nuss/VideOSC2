@@ -1411,8 +1411,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
         private void setGroupValuesAndMixValues(VideOSCMultiSliderView msLeft, VideOSCMultiSliderView msRight, int index) {
             ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
-            // TODO: getSliderValueAt(index) queries for exactly one value at one index but our indices may occur more than once in one group?
-            msLeft.getGroupSliderValuesAt(index);
+            ArrayList<Double> values = msLeft.getGroupSliderValuesAt(index);
+            ArrayList<Double> mixValues = msRight.getGroupSliderValuesAt(index);
+            // TODO: yada yada...
         }
 
         private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, int color, int index) {

@@ -169,36 +169,48 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return this.mValuesArray[index];
 	}
 
-	public Double[] getGroupSliderValuesAt(int index) {
-		// stub
-		return null;
-	}
-
-	// FIXME:
-	public ArrayList<Integer> getSliderColorsAt(int index) {
-		final SparseArray<ArrayList<SliderBar>> bars = new SparseArray<>(mBars.size());
-		final ArrayList<Integer> res = new ArrayList<>();
-		for (SliderBar bar : mBars) {
-			// pixel numbering starts at 1, we want the true index
-			Log.d(TAG, "bar index: " + Integer.parseInt(bar.getNum()) + ", color: " + bar.getColor());
-			int barIndex = Integer.parseInt(bar.getNum()) - 1;
-			if (bars.get(barIndex) == null) {
-				bars.put(barIndex, new ArrayList<>());
-			}
-			bars.valueAt(barIndex).add(bar);
-
-			if (bars.get(index) != null) {
-				ArrayList<SliderBar> pixelBars = bars.get(index);
-				for (int i = 0; i < pixelBars.size(); i++) {
-					res.add(pixelBars.get(i).getColor());
-				}
+	public ArrayList<Double> getGroupSliderValuesAt(int index) {
+		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
+		final ArrayList<Double> res = new ArrayList<>(bars.get(index).size());
+		if (bars.get(index) != null) {
+			for (int i = 0; i < mBars.size(); i++) {
+				int sliderNum = Integer.parseInt(mBars.get(i).getNum(), 10) - 1;
+				if (sliderNum == index) {
+					res.add(mValues[i]);
+				};
 			}
 		}
 		return res;
 	}
 
+	public ArrayList<Integer> getSliderColorsAt(int index) {
+		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
+		final ArrayList<Integer> res = new ArrayList<>();
+		if (bars.get(index) != null) {
+			ArrayList<SliderBar> pixelBars = bars.get(index);
+			for (SliderBar bar1 : pixelBars) {
+				res.add(bar1.getColor());
+			}
+		}
 
-		public void setValues(double[] values) {
+		return res;
+	}
+
+	private SparseArray<ArrayList<SliderBar>> getSliderGroupBars() {
+		final SparseArray<ArrayList<SliderBar>> bars = new SparseArray<>();
+		for (SliderBar bar : mBars) {
+			// pixel numbering starts at 1, we want the true index
+			int barIndex = Integer.parseInt(bar.getNum(), 10) - 1;
+			if (bars.get(barIndex) == null) {
+				bars.put(barIndex, new ArrayList<>());
+			}
+			bars.get(barIndex).add(bar);
+		}
+
+		return bars;
+	}
+
+	public void setValues(double[] values) {
 		this.mValues = values;
 	}
 
