@@ -29,7 +29,6 @@
 package net.videosc.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -85,6 +84,8 @@ import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCCameraFragment";
+
+    private final static int mBarRed = 0x99ff0000, mBarGreen = 0x9900ff00, mBarBlue = 0x990000ff;
 
     private long mNow, mPrev = 0;
     private float mFrameRate;
@@ -227,13 +228,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     android.R.style.Theme_Holo_Light_Dialog,
                     getString(R.string.msg_on_camera_open_fail),
                     getString(R.string.OK),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mActivity.finish();
-                        }
-
-                    }, null, null
+                    (dialog, which) -> mActivity.finish(), null, null
             );
         }
     }
@@ -792,47 +787,44 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
 
                 mViewCamera.setParameters(parameters);
-                mViewCamera.setPreviewCallback(new Camera.PreviewCallback() {
-                    @Override
-                    public void onPreviewFrame(byte[] data, Camera camera) {
-                        Point resolution = mApp.getResolution();
-                        int previewSize = resolution.x * resolution.y;
-                        mOscClients = mApp.getBroadcastClients();
-                        mMappings = mApp.getCommandMappings();
-                        int diff = previewSize - mRedValues.size();
-                        if (diff != 0) pad(diff);
-                        mNow = System.currentTimeMillis();
-                        mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
-                        mPrev = mNow;
-                        TextView frameRateText = mContainer.findViewById(R.id.fps);
-                        if (frameRateText != null)
-                            frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
-                        TextView zoomText = mContainer.findViewById(R.id.zoom);
-                        if (zoomText != null)
-                            zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
-                        Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        int[] out = new int[mPreviewSize.width * mPreviewSize.height];
-                        GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
-                        Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
-                        bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-                        mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, resolution.x, resolution.y, true), resolution.x, resolution.y);
+                mViewCamera.setPreviewCallback((data, camera) -> {
+                    Point resolution = mApp.getResolution();
+                    int previewSize = resolution.x * resolution.y;
+                    mOscClients = mApp.getBroadcastClients();
+                    mMappings = mApp.getCommandMappings();
+                    int diff = previewSize - mRedValues.size();
+                    if (diff != 0) pad(diff);
+                    mNow = System.currentTimeMillis();
+                    mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
+                    mPrev = mNow;
+                    TextView frameRateText = mContainer.findViewById(R.id.fps);
+                    if (frameRateText != null)
+                        frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
+                    TextView zoomText = mContainer.findViewById(R.id.zoom);
+                    if (zoomText != null)
+                        zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
+                    Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    int[] out = new int[mPreviewSize.width * mPreviewSize.height];
+                    GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
+                    Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
+                    bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
+                    mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, resolution.x, resolution.y, true), resolution.x, resolution.y);
 //                        Log.d(TAG, "\nnew bitmap is identical to old bitmap: " + (mBmp.sameAs(debugPrevBmp)) + "\n");
 //                        debugPrevBmp = mBmp;
-                        BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
-                        bmpDraw.setAntiAlias(false);
-                        bmpDraw.setDither(false);
-                        bmpDraw.setFilterBitmap(false);
-                        mImage.bringToFront();
-                        mImage.setImageDrawable(bmpDraw);
-                        Point dimensions = mApp.getDimensions();
-                        // provide neccessary information for overlay
-                        mOverlayView.setRedMixValues(mRedMixValues);
-                        mOverlayView.setGreenMixValues(mGreenMixValues);
-                        mOverlayView.setBlueMixValues(mBlueMixValues);
+                    BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
+                    bmpDraw.setAntiAlias(false);
+                    bmpDraw.setDither(false);
+                    bmpDraw.setFilterBitmap(false);
+                    mImage.bringToFront();
+                    mImage.setImageDrawable(bmpDraw);
+                    Point dimensions = mApp.getDimensions();
+                    // provide neccessary information for overlay
+                    mOverlayView.setRedMixValues(mRedMixValues);
+                    mOverlayView.setGreenMixValues(mGreenMixValues);
+                    mOverlayView.setBlueMixValues(mBlueMixValues);
 
-                        mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
-                        mOverlayView.invalidate();
-                    }
+                    mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
+                    mOverlayView.invalidate();
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1268,7 +1260,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             Point resolution = mApp.getResolution();
             int dimensions = resolution.x * resolution.y;
             int[] pixels = new int[width * height];
-            int red = 0x99ff0000, green = 0x9900ff00, blue = 0x990000ff;
 
             bmp.getPixels(pixels, 0, width, 0, 0, width, height);
 
@@ -1303,21 +1294,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                             && msBlueRight != null
                     ) {
                         // color values
-                        setValueAndMixValue(msRedLeft, msRedRight, red, i);
-                        setValueAndMixValue(msGreenLeft, msGreenRight, green, i);
-                        setValueAndMixValue(msBlueLeft, msBlueRight, blue, i);
+                        setValueAndMixValue(msRedLeft, msRedRight, mBarRed, i);
+                        setValueAndMixValue(msGreenLeft, msGreenRight, mBarGreen, i);
+                        setValueAndMixValue(msBlueLeft, msBlueRight, mBarBlue, i);
                     } else if (!mApp.getColorMode().equals(RGBModes.RGB)
                             && msLeft != null
                             && msRight != null) {
                         switch (mApp.getColorMode()) {
                             case R:
-                                setValueAndMixValue(msLeft, msRight, red, i);
+                                setValueAndMixValue(msLeft, msRight, mBarRed, i);
                                 break;
                             case G:
-                                setValueAndMixValue(msLeft, msRight, green, i);
+                                setValueAndMixValue(msLeft, msRight, mBarGreen, i);
                                 break;
                             case B:
-                                setValueAndMixValue(msLeft, msRight, blue, i);
+                                setValueAndMixValue(msLeft, msRight, mBarBlue, i);
                         }
                     }
                 } else {
@@ -1410,25 +1401,45 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         }
 
         private void setGroupValuesAndMixValues(VideOSCMultiSliderView msLeft, VideOSCMultiSliderView msRight, int index) {
-            ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
-            ArrayList<Double> values = msLeft.getGroupSliderValuesAt(index);
-            ArrayList<Double> mixValues = msRight.getGroupSliderValuesAt(index);
-            // TODO: yada yada...
+            final ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
+            final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
+            final ArrayList<Double> vals = msLeft.getGroupSliderValuesAt(index);
+            ArrayList<Double> values = null, mixValues = null;
+
+            for (int i = 0; i < colors.size(); i++) {
+                int color = colors.get(i);
+                if (color == mBarRed) {
+                    values = mRedValues;
+                    mixValues = mRedMixValues;
+                } else if (color == mBarGreen) {
+                    values = mGreenValues;
+                    mixValues = mGreenMixValues;
+                } else if (color == mBarBlue) {
+                    values = mBlueValues;
+                    mixValues = mBlueMixValues;
+                }
+
+                if (vals.get(i) != null) {
+                    assert values != null;
+                    values.set(index, vals.get(i));
+                    mixValues.set(index, mixVals.get(i));
+                }
+            }
         }
 
         private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, int color, int index) {
             final Double val = left.getSliderValueAt(index);
             ArrayList<Double> values = null, mixValues = null;
 
-            if (color == 0x99ff0000) {
+            if (color == mBarRed) {
                 values = mRedValues;
                 mixValues = mRedMixValues;
                 Log.d(TAG, " \nred values: " + mRedValues + "\nred mix values: " + mRedMixValues);
-            } else if (color == 0x9900ff00) {
+            } else if (color == mBarGreen) {
                 values = mGreenValues;
                 mixValues = mGreenMixValues;
                 Log.d(TAG, " \ngreen values: " + mGreenValues + "\ngreen mix values: " + mGreenMixValues);
-            } else if (color == 0x990000ff) {
+            } else if (color == mBarBlue) {
                 values = mBlueValues;
                 mixValues = mBlueMixValues;
                 Log.d(TAG, " \nblue values: " + mBlueValues + "\nblue mix values: " + mBlueMixValues);

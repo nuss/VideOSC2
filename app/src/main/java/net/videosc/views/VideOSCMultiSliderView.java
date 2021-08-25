@@ -169,9 +169,10 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return this.mValuesArray[index];
 	}
 
+	// we need a different logic for slider groups as there can be more than one slider bar at one index
 	public ArrayList<Double> getGroupSliderValuesAt(int index) {
 		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
-		final ArrayList<Double> res = new ArrayList<>(bars.get(index).size());
+		final ArrayList<Double> res = new ArrayList<>();
 		if (bars.get(index) != null) {
 			for (int i = 0; i < mBars.size(); i++) {
 				int sliderNum = Integer.parseInt(mBars.get(i).getNum(), 10) - 1;
@@ -183,6 +184,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return res;
 	}
 
+	// special case slider group
 	public ArrayList<Integer> getSliderColorsAt(int index) {
 		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
 		final ArrayList<Integer> res = new ArrayList<>();
@@ -196,6 +198,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		return res;
 	}
 
+	// slider group: return a SparseArray with pixel indices as keys and an ArrayList of bars as values
 	private SparseArray<ArrayList<SliderBar>> getSliderGroupBars() {
 		final SparseArray<ArrayList<SliderBar>> bars = new SparseArray<>();
 		for (SliderBar bar : mBars) {
