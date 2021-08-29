@@ -138,8 +138,8 @@ public class TileOverlayView extends View {
         Bitmap bitmap;
         mResolution = mApp.getResolution();
         mPixelSize = mApp.getPixelSize();
-        InteractionModes interactionMode = mApp.getInteractionMode();
-        RGBModes colorMode = mApp.getColorMode();
+        final InteractionModes interactionMode = mApp.getInteractionMode();
+        final RGBModes colorMode = mApp.getColorMode();
 
         mPaint.setColor(0xff000000);
         mPaint.setStyle(Paint.Style.FILL);
@@ -153,6 +153,8 @@ public class TileOverlayView extends View {
         mPaint.setTextSize(12f * mApp.getScreenDensity());
         final int numPixels = mResolution.x * mResolution.y;
         boolean oscFeedbackActivated = mApp.getOSCFeedbackActivated();
+
+//        Log.d(TAG, " \nmRedMixValues: " + mRedMixValues + "\nmGreenMixValues: " + mRedMixValues + "\nmBlueMixValues: " + mBlueMixValues);
 
         if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
             for (int i = 0; i < numPixels; i++) {
@@ -251,6 +253,7 @@ public class TileOverlayView extends View {
                                     // draw white corner bitmap (RGB)
                                     bitmap = mRGBCorner;
                                     drawCornerBitmap(canvas, i, bitmap, mResolution, mPixelSize);
+                                    Log.d(TAG, "drawCorner");
                                 } else if (mRedMixValues.get(i) > 0.0 && mGreenMixValues.get(i) > 0.0 && mBlueMixValues.get(i) == 0.0) {
                                     // draw yellow corner bitmap (rg)
                                     bitmap = mRGCorner;

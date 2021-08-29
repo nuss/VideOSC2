@@ -86,7 +86,8 @@ public class VideOSCMSBaseFragment extends VideOSCBaseFragment {
 				cameraPreview.setBlueMixValue(blueResetMixVals.keyAt(i), blueResetMixVals.valueAt(i));
 			}
 
-			Log.d(TAG, " \nredResetVals: " + redResetVals + "\nredResetMixVals: " + redResetMixVals + "\ngreenResetVals: " + greenResetVals + "\ngreenResetMixVals: " + greenResetMixVals + "\nblueResetVals: " + blueResetVals + "\nblueResetMixVals: " + blueResetMixVals);
+//			Log.d(TAG, " \nredResetVals: " + cameraPreview.getRedResetValues());
+//			Log.d(TAG, " \nredVals: " + cameraPreview.getRedValues() + "\nredMixVals: " + cameraPreview.getRedMixValues() + "\ngreenVals: " + cameraPreview.getGreenValues() + "\ngreenMixVals: " + cameraPreview.getGreenMixValues() + "\nblueVals: " + cameraPreview.getBlueValues() + "\nblueMixVals: " + cameraPreview.getBlueMixValues());
 
 			mManager.beginTransaction().remove(mFragment).commit();
 			mContainer.removeView(mMSButtons);

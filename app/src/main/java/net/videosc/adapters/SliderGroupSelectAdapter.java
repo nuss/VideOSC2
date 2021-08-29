@@ -222,21 +222,21 @@ public class SliderGroupSelectAdapter extends ResourceCursorAdapter implements M
             switch (colorChannels.get(i)) {
                 case 0:
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(0, pixelIds.get(i) - 1);
-                    redResetVals.put(pixelIds.get(i), mCameraFragment.getRedValues().get(pixelIds.get(i) - 1));
+                    redResetVals.put(pixelIds.get(i) - 1, mCameraFragment.getRedValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(0, pixelIds.get(i) - 1);
-                    redResetMixVals.put(pixelIds.get(i), mCameraFragment.getRedMixValues().get(pixelIds.get(i) - 1));
+                    redResetMixVals.put(pixelIds.get(i) - 1, mCameraFragment.getRedMixValues().get(pixelIds.get(i) - 1));
                     break;
                 case 1:
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(1, pixelIds.get(i) - 1);
-                    greenResetVals.put(pixelIds.get(i), mCameraFragment.getGreenValues().get(pixelIds.get(i) - 1));
+                    greenResetVals.put(pixelIds.get(i) - 1, mCameraFragment.getGreenValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(1, pixelIds.get(i) - 1);
-                    greenResetMixVals.put(pixelIds.get(i), mCameraFragment.getGreenMixValues().get(pixelIds.get(i) - 1));
+                    greenResetMixVals.put(pixelIds.get(i) - 1, mCameraFragment.getGreenMixValues().get(pixelIds.get(i) - 1));
                     break;
                 case 2:
                     values[i] = mCameraFragment.mPreview.getColorChannelValueAt(2, pixelIds.get(i) - 1);
-                    blueResetVals.put(pixelIds.get(i), mCameraFragment.getBlueValues().get(pixelIds.get(i) - 1));
+                    blueResetVals.put(pixelIds.get(i) - 1, mCameraFragment.getBlueValues().get(pixelIds.get(i) - 1));
                     mixValues[i] = mCameraFragment.mPreview.getColorChannelMixValueAt(2, pixelIds.get(i) - 1);
-                    blueResetMixVals.put(pixelIds.get(i), mCameraFragment.getBlueMixValues().get(pixelIds.get(i) - 1));
+                    blueResetMixVals.put(pixelIds.get(i) - 1, mCameraFragment.getBlueMixValues().get(pixelIds.get(i) - 1));
             }
         }
 

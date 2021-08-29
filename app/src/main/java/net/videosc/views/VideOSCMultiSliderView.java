@@ -178,7 +178,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 				int sliderNum = Integer.parseInt(mBars.get(i).getNum(), 10) - 1;
 				if (sliderNum == index) {
 					res.add(mValues[i]);
-				};
+				}
 			}
 		}
 		return res;
