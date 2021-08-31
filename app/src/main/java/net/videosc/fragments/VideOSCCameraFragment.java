@@ -71,6 +71,7 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 import net.videosc.views.TileOverlayView;
+import net.videosc.views.VideOSCMultiSliderGroupView;
 import net.videosc.views.VideOSCMultiSliderView;
 
 import java.io.IOException;
@@ -1273,6 +1274,9 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             // color mode R, G or B
             VideOSCMultiSliderView msLeft = mContainer.findViewById(R.id.multislider_view_left);
             VideOSCMultiSliderView msRight = mContainer.findViewById(R.id.multislider_view_right);
+            // slider groups
+            VideOSCMultiSliderGroupView msGroupLeft = mContainer.findViewById(R.id.multislider_group_view_left);
+            VideOSCMultiSliderGroupView msGroupRight = mContainer.findViewById(R.id.multislider_group_view_right);
 
             for (int i = 0; i < dimensions; i++) {
                 // only the downsampled image gets inverted as inverting the original would slow
@@ -1312,9 +1316,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                         }
                     }
                 } else {
-                    if (msLeft != null && msRight != null) {
-                        // FIXME: Likely this needs an entirely different method
-                        setGroupValuesAndMixValues(msLeft, msRight, i);
+                    if (msGroupLeft != null && msGroupRight != null) {
+                        setGroupValuesAndMixValues(msGroupLeft, msGroupRight, i);
                     }
                 }
 
@@ -1400,7 +1403,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             return bmp;
         }
 
-        private void setGroupValuesAndMixValues(VideOSCMultiSliderView msLeft, VideOSCMultiSliderView msRight, int index) {
+        private void setGroupValuesAndMixValues(VideOSCMultiSliderGroupView msLeft, VideOSCMultiSliderGroupView msRight, int index) {
             final ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
             final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
             final ArrayList<Double> vals = msLeft.getGroupSliderValuesAt(index);

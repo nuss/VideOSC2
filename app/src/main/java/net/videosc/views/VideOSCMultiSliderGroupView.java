@@ -3,6 +3,7 @@ package net.videosc.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,8 @@ import net.videosc.R;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class VideOSCMultiSliderView extends LinearLayout {
-	final static private String TAG = VideOSCMultiSliderView.class.getSimpleName();
+public class VideOSCMultiSliderGroupView extends LinearLayout {
+	final static private String TAG = VideOSCMultiSliderGroupView.class.getSimpleName();
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
@@ -23,17 +24,17 @@ public class VideOSCMultiSliderView extends LinearLayout {
 	private double[] mValues;
 	private ViewGroup mContainer;
 
-	public VideOSCMultiSliderView(Context context) {
+	public VideOSCMultiSliderGroupView(Context context) {
 		super(context);
 		init();
 	}
 
-	public VideOSCMultiSliderView(Context context, AttributeSet attrs) {
+	public VideOSCMultiSliderGroupView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
 
-	public VideOSCMultiSliderView(Context context, AttributeSet attrs, int defStyleAttr) {
+	public VideOSCMultiSliderGroupView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		init();
 	}
@@ -169,6 +170,50 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	public Double getSliderValueAt(int index) {
 		return this.mValuesArray[index];
+	}
+
+	// we need a different logic for slider groups as there can be more than one slider bar at one index
+	public ArrayList<Double> getGroupSliderValuesAt(int index) {
+		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
+		final ArrayList<Double> res = new ArrayList<>();
+		if (bars.get(index) != null) {
+			for (int i = 0; i < mBars.size(); i++) {
+				int sliderNum = Integer.parseInt(mBars.get(i).getNum(), 10) - 1;
+				if (sliderNum == index) {
+					res.add(mValues[i]);
+				}
+			}
+		}
+		return res;
+	}
+
+	// special case slider group
+	public ArrayList<Integer> getSliderColorsAt(int index) {
+		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
+		final ArrayList<Integer> res = new ArrayList<>();
+		if (bars.get(index) != null) {
+			ArrayList<SliderBar> pixelBars = bars.get(index);
+			for (SliderBar bar1 : pixelBars) {
+				res.add(bar1.getColor());
+			}
+		}
+
+		return res;
+	}
+
+	// slider group: return a SparseArray with pixel indices as keys and an ArrayList of bars as values
+	private SparseArray<ArrayList<SliderBar>> getSliderGroupBars() {
+		final SparseArray<ArrayList<SliderBar>> bars = new SparseArray<>();
+		for (SliderBar bar : mBars) {
+			// pixel numbering starts at 1, we want the true index
+			int barIndex = Integer.parseInt(bar.getNum(), 10) - 1;
+			if (bars.get(barIndex) == null) {
+				bars.put(barIndex, new ArrayList<>());
+			}
+			bars.get(barIndex).add(bar);
+		}
+
+		return bars;
 	}
 
 	public void setValues(double[] values) {

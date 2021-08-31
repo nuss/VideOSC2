@@ -154,8 +154,6 @@ public class TileOverlayView extends View {
         final int numPixels = mResolution.x * mResolution.y;
         boolean oscFeedbackActivated = mApp.getOSCFeedbackActivated();
 
-//        Log.d(TAG, " \nmRedMixValues: " + mRedMixValues + "\nmGreenMixValues: " + mRedMixValues + "\nmBlueMixValues: " + mBlueMixValues);
-
         if (mRedMixValues != null && mGreenMixValues != null && mBlueMixValues != null) {
             for (int i = 0; i < numPixels; i++) {
                 if (interactionMode.equals(InteractionModes.SINGLE_PIXEL)) {

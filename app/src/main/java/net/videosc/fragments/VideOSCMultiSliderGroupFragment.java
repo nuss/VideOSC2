@@ -15,15 +15,15 @@ import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.views.SliderBar;
-import net.videosc.views.VideOSCMultiSliderView;
+import net.videosc.views.VideOSCMultiSliderGroupView;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
     private final static String TAG = VideOSCMultiSliderGroupFragment.class.getSimpleName();
-    private VideOSCMultiSliderView mMSViewRight;
-    private VideOSCMultiSliderView mMSViewLeft;
+    private VideOSCMultiSliderGroupView mMSViewRight;
+    private VideOSCMultiSliderGroupView mMSViewLeft;
 
     public VideOSCMultiSliderGroupFragment() { }
 
@@ -37,7 +37,7 @@ public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.mContainer = container;
         this.mInflater = inflater;
-        return inflater.inflate(R.layout.multislider_view, container, false);
+        return inflater.inflate(R.layout.multislider_group_view, container, false);
     }
 
     @Override
@@ -63,11 +63,11 @@ public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
         final ArrayList<Integer> sliderOrder = argsBundle.getIntegerArrayList("sliderOrder");
         final ArrayList<Integer> colorChannels = argsBundle.getIntegerArrayList("colorChannels");
 
-        mMSViewLeft = view.findViewById(R.id.multislider_view_left);
+        mMSViewLeft = view.findViewById(R.id.multislider_group_view_left);
         mMSViewLeft.setValuesArray(numTotalPixels);
         mMSViewLeft.setContainerView(mContainer);
 
-        mMSViewRight = view.findViewById(R.id.multislider_view_right);
+        mMSViewRight = view.findViewById(R.id.multislider_group_view_right);
         mMSViewRight.setValuesArray(numTotalPixels);
         mMSViewRight.setContainerView(mContainer);
 
