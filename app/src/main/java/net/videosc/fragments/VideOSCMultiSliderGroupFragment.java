@@ -64,11 +64,11 @@ public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
         final ArrayList<Integer> colorChannels = argsBundle.getIntegerArrayList("colorChannels");
 
         mMSViewLeft = view.findViewById(R.id.multislider_group_view_left);
-        mMSViewLeft.setValuesArray(numTotalPixels);
+        mMSViewLeft.setValuesArrays(numTotalPixels);
         mMSViewLeft.setContainerView(mContainer);
 
         mMSViewRight = view.findViewById(R.id.multislider_group_view_right);
-        mMSViewRight.setValuesArray(numTotalPixels);
+        mMSViewRight.setValuesArrays(numTotalPixels);
         mMSViewRight.setContainerView(mContainer);
 
         mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);

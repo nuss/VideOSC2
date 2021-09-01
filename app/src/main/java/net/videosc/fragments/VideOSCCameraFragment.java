@@ -1404,28 +1404,21 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         }
 
         private void setGroupValuesAndMixValues(VideOSCMultiSliderGroupView msLeft, VideOSCMultiSliderGroupView msRight, int index) {
-            final ArrayList<Integer> colors = msLeft.getSliderColorsAt(index);
-            final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
             final ArrayList<Double> vals = msLeft.getGroupSliderValuesAt(index);
-            ArrayList<Double> values = null, mixValues = null;
+            final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
 
-            for (int i = 0; i < colors.size(); i++) {
-                int color = colors.get(i);
-                if (color == mBarRed) {
-                    values = mRedValues;
-                    mixValues = mRedMixValues;
-                } else if (color == mBarGreen) {
-                    values = mGreenValues;
-                    mixValues = mGreenMixValues;
-                } else if (color == mBarBlue) {
-                    values = mBlueValues;
-                    mixValues = mBlueMixValues;
+            if (vals.size() > 0) {
+                if (vals.get(0) != null) {
+                    mRedValues.set(index, vals.get(0));
+                    mRedMixValues.set(index, mixVals.get(0));
                 }
-
-                if (vals.get(i) != null) {
-                    assert values != null;
-                    values.set(index, vals.get(i));
-                    mixValues.set(index, mixVals.get(i));
+                if (vals.get(1) != null) {
+                    mGreenValues.set(index, vals.get(1));
+                    mGreenMixValues.set(index, mixVals.get(1));
+                }
+                if (vals.get(2) != null) {
+                    mBlueValues.set(index, vals.get(2));
+                    mBlueMixValues.set(index, mixVals.get(2));
                 }
             }
         }

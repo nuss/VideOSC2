@@ -12,13 +12,13 @@ import android.widget.LinearLayout;
 import net.videosc.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class VideOSCMultiSliderGroupView extends LinearLayout {
 	final static private String TAG = VideOSCMultiSliderGroupView.class.getSimpleName();
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
+	private Double[] mRedValuesArray, mGreenValuesArray, mBlueValuesArray;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
 	private double[] mValues;
@@ -91,7 +91,17 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 			if (mValues != null) {
 				child.setPixelValue(mValues[i]);
 				// get value immediately on create
-				this.mValuesArray[index] = mValues[i];
+				switch (child.getColor()) {
+					case 0x99ff0000:
+						this.mRedValuesArray[index] = mValues[i];
+						break;
+					case 0x9900ff00:
+						this.mGreenValuesArray[index] = mValues[i];
+						break;
+					case 0x990000ff:
+						this.mBlueValuesArray[index] = mValues[i];
+				}
+//				this.mValuesArray[index] = mValues[i];
 			}
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
@@ -135,9 +145,19 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 					sliderValue = 0.0;
 				else
 					sliderValue = ((double) barHeight - (double) tempTouchY) / (double) barHeight;
-				// FIXME: in a slider group we have mor ethan one color but mValuesArray contains values for only one color channel
-				mValuesArray[index] = sliderValue;
-				Log.d(TAG, "values: " + Arrays.toString(mValuesArray));
+//				mValuesArray[index] = sliderValue;
+				switch (bar.getColor()) {
+					case 0x99ff0000:
+						this.mRedValuesArray[index] = sliderValue;
+						break;
+					case 0x9900ff00:
+						this.mGreenValuesArray[index] = sliderValue;
+						break;
+					case 0x990000ff:
+						this.mBlueValuesArray[index] = sliderValue;
+				}
+
+//				Log.d(TAG, " \nred: " + Arrays.toString(mRedValuesArray) + "\ngreen: " + Arrays.toString(mGreenValuesArray) + "\nblue: " + Arrays.toString(mBlueValuesArray));
 				bar.invalidate();
 			}
 		}
@@ -164,12 +184,10 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 		this.mSliderNums = sliderNums;
 	}
 
-	public void setValuesArray(int numPixels) {
-		this.mValuesArray = new Double[numPixels];
-	}
-
-	public Double getSliderValueAt(int index) {
-		return this.mValuesArray[index];
+	public void setValuesArrays(int numPixels) {
+		this.mRedValuesArray = new Double[numPixels];
+		this.mGreenValuesArray = new Double[numPixels];
+		this.mBlueValuesArray = new Double[numPixels];
 	}
 
 	// we need a different logic for slider groups as there can be more than one slider bar at one index
@@ -177,27 +195,10 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
 		final ArrayList<Double> res = new ArrayList<>();
 		if (bars.get(index) != null) {
-			for (int i = 0; i < mBars.size(); i++) {
-				int sliderNum = Integer.parseInt(mBars.get(i).getNum(), 10) - 1;
-				if (sliderNum == index) {
-					res.add(mValues[i]);
-				}
-			}
+			res.add(mRedValuesArray[index]);
+			res.add(mGreenValuesArray[index]);
+			res.add(mBlueValuesArray[index]);
 		}
-		return res;
-	}
-
-	// special case slider group
-	public ArrayList<Integer> getSliderColorsAt(int index) {
-		final SparseArray<ArrayList<SliderBar>> bars = getSliderGroupBars();
-		final ArrayList<Integer> res = new ArrayList<>();
-		if (bars.get(index) != null) {
-			ArrayList<SliderBar> pixelBars = bars.get(index);
-			for (SliderBar bar1 : pixelBars) {
-				res.add(bar1.getColor());
-			}
-		}
-
 		return res;
 	}
 
