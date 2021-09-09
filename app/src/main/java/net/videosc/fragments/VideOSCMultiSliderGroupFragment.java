@@ -95,9 +95,12 @@ public class VideOSCMultiSliderGroupFragment extends VideOSCMSBaseFragment {
             final SliderBar barLeft = new SliderBar(mActivity);
             barLeft.mScreenDensity = density;
             barLeft.setNum(String.valueOf(sliderNums.get(order)));
+            assert sliderLabels != null;
+            barLeft.setLabelText(sliderLabels.get(order));
             final SliderBar barRight = new SliderBar(mActivity);
             barRight.mScreenDensity = density;
             barRight.setNum(String.valueOf(sliderNums.get(order)));
+            barRight.setLabelText(sliderLabels.get(order));
             switch (Objects.requireNonNull(colorChannels).get(order)) {
                 case 0:
                     barLeft.setColor(red);

@@ -83,7 +83,7 @@ public class VideOSCMultiSliderView extends LinearLayout {
 		final int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
-			SliderBar child = (SliderBar) getChildAt(i);
+			final SliderBar child = (SliderBar) getChildAt(i);
 			int index = Integer.parseInt(child.getNum(), 10) - 1;
 			child.mAreaTop = -getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;

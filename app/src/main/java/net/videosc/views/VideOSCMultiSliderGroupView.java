@@ -17,7 +17,6 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 	final static private String TAG = VideOSCMultiSliderGroupView.class.getSimpleName();
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
-	private Double[] mValuesArray;
 	private Double[] mRedValuesArray, mGreenValuesArray, mBlueValuesArray;
 	private int mDisplayHeight;
 	private int mParentTopMargin;
@@ -101,7 +100,6 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 					case 0x990000ff:
 						this.mBlueValuesArray[index] = mValues[i];
 				}
-//				this.mValuesArray[index] = mValues[i];
 			}
 			child.layout(x, 0, x + barWidth, barHeight);
 			x += (barWidth + 1);
@@ -145,7 +143,6 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 					sliderValue = 0.0;
 				else
 					sliderValue = ((double) barHeight - (double) tempTouchY) / (double) barHeight;
-//				mValuesArray[index] = sliderValue;
 				switch (bar.getColor()) {
 					case 0x99ff0000:
 						this.mRedValuesArray[index] = sliderValue;
@@ -156,8 +153,6 @@ public class VideOSCMultiSliderGroupView extends LinearLayout {
 					case 0x990000ff:
 						this.mBlueValuesArray[index] = sliderValue;
 				}
-
-//				Log.d(TAG, " \nred: " + Arrays.toString(mRedValuesArray) + "\ngreen: " + Arrays.toString(mGreenValuesArray) + "\nblue: " + Arrays.toString(mBlueValuesArray));
 				bar.invalidate();
 			}
 		}

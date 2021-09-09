@@ -124,3 +124,17 @@ OSCdef(\videosc, { |msg, time, addr, recvPort|
 }, '/vosc/red4')
 )
 
+(
+n ?? { n = NetAddr("10.42.0.237", 32000) };
+(1..35).do { |i|
+	OSCdef((\videoscR ++ i).asSymbol, { |msg, time, addr, recvPort|
+		n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+	}, ('/vosc/red' ++ i).asSymbol);
+	OSCdef((\videoscG ++ i).asSymbol, { |msg, time, addr, recvPort|
+		n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+	}, ('/vosc/green' ++ i).asSymbol);
+	OSCdef((\videoscB ++ i).asSymbol, { |msg, time, addr, recvPort|
+		n.sendMsg((msg[0] ++ '/name').asSymbol, msg[0].asString);
+	}, ('/vosc/blue' ++ i).asSymbol);
+}
+)

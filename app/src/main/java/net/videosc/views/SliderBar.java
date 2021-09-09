@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import net.videosc.VideOSCApplication;
@@ -31,6 +32,7 @@ public class SliderBar extends View {
 	private int mColor = 0x66ffffff;
 	private double mPixelVal;
 	private VideOSCApplication mApp;
+	private String mLabelText;
 
 	public SliderBar(Context context) {
 		super(context);
@@ -83,6 +85,12 @@ public class SliderBar extends View {
 		mPaint.setTextSize((float) 12 * mApp.getScreenDensity());
 		mPaint.setColor(0xffffffff);
 		canvas.drawText(mPixelNum, (mRight - mLeft) / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
+//		Log.d(TAG, "mArea before: " + mArea);
+		canvas.rotate(-20, mArea.exactCenterX(), mArea.exactCenterY());
+		mPaint.setTextAlign(Paint.Align.LEFT);
+		Log.d(TAG, "mArea: " + mArea + "\nmArea right: " + mArea.right + ", mArea exact center y: " + mArea.exactCenterY());
+		canvas.drawText("abcdefghijklmno", 20, mArea.exactCenterY(), mPaint);
+//		canvas.drawText(mLabelText, 20, 0, mPaint);
 	}
 
 	@Override
@@ -104,6 +112,10 @@ public class SliderBar extends View {
 
 	public void setNum(String num) {
 		this.mPixelNum = num;
+	}
+
+	public void setLabelText(String labelText) {
+		this.mLabelText = labelText;
 	}
 
 	public String getNum() {
