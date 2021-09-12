@@ -84,13 +84,17 @@ public class SliderBar extends View {
 		mPaint.setTypeface(mTypeFace);
 		mPaint.setTextSize((float) 12 * mApp.getScreenDensity());
 		mPaint.setColor(0xffffffff);
-		canvas.drawText(mPixelNum, (mRight - mLeft) / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
-//		Log.d(TAG, "mArea before: " + mArea);
-		canvas.rotate(-20, mArea.exactCenterX(), mArea.exactCenterY());
-		mPaint.setTextAlign(Paint.Align.LEFT);
-		Log.d(TAG, "mArea: " + mArea + "\nmArea right: " + mArea.right + ", mArea exact center y: " + mArea.exactCenterY());
-		canvas.drawText("abcdefghijklmno", 20, mArea.exactCenterY(), mPaint);
-//		canvas.drawText(mLabelText, 20, 0, mPaint);
+		canvas.drawText(mPixelNum, mRight / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
+		canvas.rotate(-90, mRight / 2f , (mAreaTop + mBottom) / 2f);
+//		Log.d(TAG, "mArea: " + mArea.left + ", " + mArea.top + ", " + mArea.right + ", " + mArea.bottom + "\nmArea width: " + mArea.width() + ", height: " + mArea.height());
+//		Log.d(TAG, "rotation pivot point, x: " + (mRight - mLeft) / 2f + ", y: " + (mBottom - mAreaTop) / 2f);
+//		Log.d(TAG, "canvas, left: " + canvas.getClipBounds());
+		mPaint.setTextAlign(Paint.Align.RIGHT);
+//		Log.d(TAG, "mArea: " + mArea + "\nmArea right: " + mArea.right + ", mArea exact center y: " + mArea.exactCenterY());
+//		canvas.clipRect(mArea);
+		Log.d(TAG, "mBottom: " + mBottom + ", mAreaTop: " + mAreaTop);
+		canvas.drawText("abcdefghijklmno", (mAreaTop + mBottom) / 2f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
+//		canvas.drawText(mLabelText, (mAreaTop + mBottom) / 2f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
 	}
 
 	@Override
