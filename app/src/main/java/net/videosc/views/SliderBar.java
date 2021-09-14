@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import net.videosc.VideOSCApplication;
@@ -86,15 +85,10 @@ public class SliderBar extends View {
 		mPaint.setColor(0xffffffff);
 		canvas.drawText(mPixelNum, mRight / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
 		canvas.rotate(-90, mRight / 2f , (mAreaTop + mBottom) / 2f);
-//		Log.d(TAG, "mArea: " + mArea.left + ", " + mArea.top + ", " + mArea.right + ", " + mArea.bottom + "\nmArea width: " + mArea.width() + ", height: " + mArea.height());
-//		Log.d(TAG, "rotation pivot point, x: " + (mRight - mLeft) / 2f + ", y: " + (mBottom - mAreaTop) / 2f);
-//		Log.d(TAG, "canvas, left: " + canvas.getClipBounds());
 		mPaint.setTextAlign(Paint.Align.RIGHT);
-//		Log.d(TAG, "mArea: " + mArea + "\nmArea right: " + mArea.right + ", mArea exact center y: " + mArea.exactCenterY());
-//		canvas.clipRect(mArea);
-		Log.d(TAG, "mBottom: " + mBottom + ", mAreaTop: " + mAreaTop);
-		canvas.drawText("abcdefghijklmno", (mAreaTop + mBottom) / 2f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
-//		canvas.drawText(mLabelText, (mAreaTop + mBottom) / 2f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
+		// coordinate system is switched
+		// top position depends on width of slider bar, hence we add a correction mRight / 4f
+		canvas.drawText(mLabelText, (mAreaTop + mBottom) / 2f + mRight / 4f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
 	}
 
 	@Override
