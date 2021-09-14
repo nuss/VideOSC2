@@ -63,7 +63,7 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		final Point resolution = app.getResolution();
 		final int numTotalPixels = resolution.x * resolution.y;
 
-		mManager = getFragmentManager();
+		mManager = getParentFragmentManager();
 
 		final Bundle argsBundle = this.getArguments();
 		assert argsBundle != null;
@@ -83,14 +83,14 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 				break;
 		}
 
-		mMSViewLeft = view.findViewById(R.id.multislider_view_left);
+		mMSViewLeft = view.findViewById(R.id.multislider_group_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
 		mMSViewLeft.setContainerView(mContainer);
 
 		mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);
 		mLabelsView = mInflater.inflate(R.layout.multislider_labels, mContainer, false);
 
-		mMSViewRight = view.findViewById(R.id.multislider_view_right);
+		mMSViewRight = view.findViewById(R.id.multislider_group_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
 		mMSViewRight.setContainerView(mContainer);
 
@@ -98,11 +98,11 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 		mMSViewLeft.setValues(vals);
 		mMSViewRight.setValues(mixVals);
 
-		ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
-		int topMargin = lp.topMargin;
-		float density = app.getScreenDensity();
+		final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mMSViewLeft.getLayoutParams();
+		final int topMargin = lp.topMargin;
+		final float density = app.getScreenDensity();
 
-		int displayHeight = app.getDimensions().y;
+		final int displayHeight = app.getDimensions().y;
 		mMSViewLeft.setParentTopMargin(topMargin);
 		mMSViewLeft.setDisplayHeight(displayHeight);
 		mMSViewRight.setParentTopMargin(topMargin);
@@ -151,9 +151,9 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if (createViewCallback != null) {
-			createViewCallback.onCreateView();
-			createViewCallback = null;
+		if (mCreateViewCallback != null) {
+			mCreateViewCallback.onCreateView();
+			mCreateViewCallback = null;
 		}
 	}
 

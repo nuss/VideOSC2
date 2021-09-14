@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorDarkTransparentBackground"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/red_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="2.5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="2.5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp">
+
+        <ListView
+            android:id="@+id/red_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/green_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="2.5dp"
+        android:layout_marginLeft="2.5dp"
+        android:layout_marginRight="2.5dp"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginTop="5dp">
+
+        <ListView
+            android:id="@+id/green_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/blue_channel"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.333333333"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="2.5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="2.5dp"
+        android:layout_marginTop="5dp">
+
+        <ListView
+            android:id="@+id/blue_pixels_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="multipleChoice"/>
+
+    </LinearLayout>
+
+</LinearLayout>

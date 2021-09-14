@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<array name="drawer_icons">
-		<item>@drawable/start</item>
 		<item>@drawable/light_on</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interactionplus</item>
@@ -11,7 +10,6 @@
 		<item>@drawable/exit</item>
 	</array>
 	<array name="drawer_icons_no_torch">
-		<item>@drawable/start</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interactionplus</item>
 		<item>@drawable/front_camera</item>
@@ -20,7 +18,6 @@
 		<item>@drawable/exit</item>
 	</array>
 	<array name="drawer_icons_no_frontside_cam">
-		<item>@drawable/start</item>
 		<item>@drawable/light_on</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interactionplus</item>
@@ -29,7 +26,6 @@
 		<item>@drawable/exit</item>
 	</array>
 	<array name="drawer_icons_no_torch_no_frontside_cam">
-		<item>@drawable/start</item>
 		<item>@drawable/rgb</item>
 		<item>@drawable/interactionplus</item>
 		<item>@drawable/i</item>

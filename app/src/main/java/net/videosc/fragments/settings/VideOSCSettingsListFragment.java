@@ -37,7 +37,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
     }
 
     /**
@@ -77,6 +77,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
         // does the fade-in animation really work?...
         VideOSCUIHelpers.setTransitionAnimation(mContainer);
         view.setVisibility(View.VISIBLE);
+//        view.bringToFront();
 
         settingsListView.setOnItemClickListener(new SettingsListOnItemClickListener());
 
@@ -94,7 +95,7 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
     }
 
     class SettingsListOnItemClickListener implements AdapterView.OnItemClickListener {
-        private final FragmentManager mFragmentManager = getFragmentManager();
+        private final FragmentManager mFragmentManager = getParentFragmentManager();
 
         /**
          * Callback method to be invoked when an item in this AdapterView has
@@ -111,13 +112,9 @@ public class VideOSCSettingsListFragment extends VideOSCBaseFragment {
          */
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//			FragmentManager fragmentManager = getFragmentManager();
-//			assert mFragmentManager != null;
-
             if (!mApp.getIsTablet())
                 parent.setVisibility(View.INVISIBLE);
             parent.setBackgroundResource(R.color.colorDarkTransparentBackground);
-            assert mFragmentManager != null;
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
             switch (position) {
                 case 0:

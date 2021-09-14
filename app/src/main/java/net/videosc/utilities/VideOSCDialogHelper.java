@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.ContextThemeWrapper;
 
-import net.videosc.R;
-
 import androidx.legacy.app.ActivityCompat;
+
+import net.videosc.R;
 
 /**
  * Created by Stefan Nussbaumer on 2017-03-24
@@ -24,13 +24,7 @@ public class VideOSCDialogHelper {
 				new ContextThemeWrapper(activity, android.R.style.Theme_Holo_Light_Dialog)
 		)
 				.setMessage(R.string.quit_dialog_string)
-				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						activity.finish();
-					}
-
-				})
+				.setPositiveButton(R.string.yes, (dialog, which) -> activity.finish())
 				.setNegativeButton(R.string.no, null)
 				.show();
 	}
@@ -40,12 +34,7 @@ public class VideOSCDialogHelper {
 				new ContextThemeWrapper(activity, android.R.style.Theme_Holo_Light_Dialog)
 		)
 				.setMessage(message)
-				.setPositiveButton(R.string.grant, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						ActivityCompat.requestPermissions(activity, permissions, requestCode);
-					}
-				})
+				.setPositiveButton(R.string.grant, (dialog, which) -> ActivityCompat.requestPermissions(activity, permissions, requestCode))
 				.setNegativeButton(R.string.deny, null)
 				.show();
 	}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/save_slider_group_dialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    tools:theme="@android:style/Holo.Light.ButtonBar.AlertDialog">
+
+    <EditText
+        android:id="@+id/save_slider_group_name"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:hint="@string/name_this_slider_group"
+        android:inputType="text"
+        android:autofillHints="@string/name_this_slider_group"/>
+
+    <requestFocus/>
+
+</LinearLayout>

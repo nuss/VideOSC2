@@ -174,5 +174,14 @@
     <string name="could_net_remove_mappings_for_given_client_address">Could not remove mappings for given client address!</string>
 	<string name="tcp_ip_password">TCP/IP password:</string>
 	<string name="tcp_ip_password_hint">my secret TCP/IP password</string>
+    <string name="create_and_store_groups_of_sliders">create and store groups of sliders</string>
+    <string name="name_this_slider_group">name this slider group</string>
+	<string name="slider_group">Slider Group</string>
+	<string name="save_slider_group">save slider group</string>
+    <string name="load_a_saved_slider_group">load a saved slider group</string>
+    <string name="start_or_stop_sending_osc_messages">start or stop sending OSC messages</string>
+    <string name="rename_slider_group">rename slider group</string>
+	<string name="delete_slider_group">delete slider group</string>
+    <string name="slider_label_text">%1$s</string>
 
 </resources>

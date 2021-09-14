@@ -29,7 +29,6 @@
 package net.videosc.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -64,6 +63,7 @@ import net.videosc.R;
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.db.SettingsContract;
+import net.videosc.interfaces.mappings_data_source.MultisliderCreator;
 import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
@@ -71,6 +71,7 @@ import net.videosc.utilities.enums.InteractionModes;
 import net.videosc.utilities.enums.PixelEditModes;
 import net.videosc.utilities.enums.RGBModes;
 import net.videosc.views.TileOverlayView;
+import net.videosc.views.VideOSCMultiSliderGroupView;
 import net.videosc.views.VideOSCMultiSliderView;
 
 import java.io.IOException;
@@ -84,6 +85,8 @@ import jp.co.cyberagent.android.gpuimage.GPUImageNativeLibrary;
 
 public class VideOSCCameraFragment extends VideOSCBaseFragment {
     private final static String TAG = "VideOSCCameraFragment";
+
+    private final static int mBarRed = 0x99ff0000, mBarGreen = 0x9900ff00, mBarBlue = 0x990000ff;
 
     private long mNow, mPrev = 0;
     private float mFrameRate;
@@ -151,7 +154,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
     }
 
     public VideOSCCameraFragment(VideOSCMainActivity activity) {
-        super();
         this.mActivity = activity;
     }
 
@@ -227,13 +229,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     android.R.style.Theme_Holo_Light_Dialog,
                     getString(R.string.msg_on_camera_open_fail),
                     getString(R.string.OK),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mActivity.finish();
-                        }
-
-                    }, null, null
+                    (dialog, which) -> mActivity.finish(), null, null
             );
         }
     }
@@ -425,28 +421,56 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
     /* reset values, needed to restore a setup if a pixel edit gets canceled by the user */
 
+    public void setRedResetValues(SparseArray<Double> values) {
+        this.mResetRedVals = values;
+    }
+
     public SparseArray<Double> getRedResetValues() {
         return this.mResetRedVals;
+    }
+
+    public void setRedMixResetValues(SparseArray<Double> values) {
+        this.mResetRedMixVals = values;
     }
 
     public SparseArray<Double> getRedMixResetValues() {
         return this.mResetRedMixVals;
     }
 
+    public void setGreenResetValues(SparseArray<Double> values) {
+        this.mResetGreenVals = values;
+    }
+
     public SparseArray<Double> getGreenResetValues() {
         return this.mResetGreenVals;
+    }
+
+    public void setGreenMixResetValues(SparseArray<Double> values) {
+        this.mResetGreenMixVals = values;
     }
 
     public SparseArray<Double> getGreenMixResetValues() {
         return this.mResetGreenMixVals;
     }
 
+    public void setBlueResetValues(SparseArray<Double> values) {
+        this.mResetBlueVals = values;
+    }
+
     public SparseArray<Double> getBlueResetValues() {
         return this.mResetBlueVals;
     }
 
+    public void setBlueMixResetValues(SparseArray<Double> values) {
+        this.mResetBlueMixVals = values;
+    }
+
     public SparseArray<Double> getBlueMixResetValues() {
         return this.mResetBlueMixVals;
+    }
+
+    public ViewGroup getContainer() {
+        return this.mContainer;
     }
 
 
@@ -456,7 +480,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
      * <p>
      * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
      */
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback {
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback, MultisliderCreator {
 
         private final VideOSCMainActivity mActivity;
         private final ArrayList<OscBundle> mOscBundlesR, mOscBundlesG, mOscBundlesB;
@@ -606,7 +630,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     mLockedPixels.add(false);
             }
 
-            mManager = getFragmentManager();
+            mManager = getParentFragmentManager();
         }
 
         /**
@@ -691,14 +715,15 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             mSnapshotsBar = mActivity.mBasicToolbar;
             ViewGroup snapshotsBar = mActivity.mBasicToolbar;
             ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
-            applySelection.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mSelectedPixels.size() > 0) {
-                        mSelectedPixels.clear();
-                        mSnapshotsBar.setVisibility(View.INVISIBLE);
-                        mPixelEditor.setVisibility(View.INVISIBLE);
+            applySelection.setOnClickListener(v -> {
+                if (mSelectedPixels.size() > 0) {
+                    mSelectedPixels.clear();
+                    mSnapshotsBar.setVisibility(View.INVISIBLE);
+                    mPixelEditor.setVisibility(View.INVISIBLE);
+                    if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS)) {
                         createMultiSliders();
+                    } else if (mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS)) {
+                        createSliderGroupEditor();
                     }
                 }
             });
@@ -763,47 +788,44 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 parameters.setPreviewFpsRange(frameRates[0], frameRates[1]);
 
                 mViewCamera.setParameters(parameters);
-                mViewCamera.setPreviewCallback(new Camera.PreviewCallback() {
-                    @Override
-                    public void onPreviewFrame(byte[] data, Camera camera) {
-                        Point resolution = mApp.getResolution();
-                        int previewSize = resolution.x * resolution.y;
-                        mOscClients = mApp.getBroadcastClients();
-                        mMappings = mApp.getCommandMappings();
-                        int diff = previewSize - mRedValues.size();
-                        if (diff != 0) pad(diff);
-                        mNow = System.currentTimeMillis();
-                        mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
-                        mPrev = mNow;
-                        TextView frameRateText = mContainer.findViewById(R.id.fps);
-                        if (frameRateText != null)
-                            frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
-                        TextView zoomText = mContainer.findViewById(R.id.zoom);
-                        if (zoomText != null)
-                            zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
-                        Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        int[] out = new int[mPreviewSize.width * mPreviewSize.height];
-                        GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
-                        Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
-                        bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
-                        mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, resolution.x, resolution.y, true), resolution.x, resolution.y);
+                mViewCamera.setPreviewCallback((data, camera) -> {
+                    Point resolution = mApp.getResolution();
+                    int previewSize = resolution.x * resolution.y;
+                    mOscClients = mApp.getBroadcastClients();
+                    mMappings = mApp.getCommandMappings();
+                    int diff = previewSize - mRedValues.size();
+                    if (diff != 0) pad(diff);
+                    mNow = System.currentTimeMillis();
+                    mFrameRate = Math.round(1000.0f / (mNow - mPrev) * 10.0f) / 10.0f;
+                    mPrev = mNow;
+                    TextView frameRateText = mContainer.findViewById(R.id.fps);
+                    if (frameRateText != null)
+                        frameRateText.setText(String.format(Locale.getDefault(), "%.1f", mFrameRate));
+                    TextView zoomText = mContainer.findViewById(R.id.zoom);
+                    if (zoomText != null)
+                        zoomText.setText(String.format(Locale.getDefault(), "%.1f", mCamZoom));
+                    Bitmap.Config inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    int[] out = new int[mPreviewSize.width * mPreviewSize.height];
+                    GPUImageNativeLibrary.YUVtoRBGA(data, mPreviewSize.width, mPreviewSize.height, out);
+                    Bitmap bmp = Bitmap.createBitmap(mPreviewSize.width, mPreviewSize.height, inPreferredConfig);
+                    bmp.copyPixelsFromBuffer(IntBuffer.wrap(out));
+                    mBmp = drawFrame(Bitmap.createScaledBitmap(bmp, resolution.x, resolution.y, true), resolution.x, resolution.y);
 //                        Log.d(TAG, "\nnew bitmap is identical to old bitmap: " + (mBmp.sameAs(debugPrevBmp)) + "\n");
 //                        debugPrevBmp = mBmp;
-                        BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
-                        bmpDraw.setAntiAlias(false);
-                        bmpDraw.setDither(false);
-                        bmpDraw.setFilterBitmap(false);
-                        mImage.bringToFront();
-                        mImage.setImageDrawable(bmpDraw);
-                        Point dimensions = mApp.getDimensions();
-                        // provide neccessary information for overlay
-                        mOverlayView.setRedMixValues(mRedMixValues);
-                        mOverlayView.setGreenMixValues(mGreenMixValues);
-                        mOverlayView.setBlueMixValues(mBlueMixValues);
+                    BitmapDrawable bmpDraw = new BitmapDrawable(getResources(), mBmp);
+                    bmpDraw.setAntiAlias(false);
+                    bmpDraw.setDither(false);
+                    bmpDraw.setFilterBitmap(false);
+                    mImage.bringToFront();
+                    mImage.setImageDrawable(bmpDraw);
+                    Point dimensions = mApp.getDimensions();
+                    // provide neccessary information for overlay
+                    mOverlayView.setRedMixValues(mRedMixValues);
+                    mOverlayView.setGreenMixValues(mGreenMixValues);
+                    mOverlayView.setBlueMixValues(mBlueMixValues);
 
-                        mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
-                        mOverlayView.invalidate();
-                    }
+                    mOverlayView.layout(0, 0, dimensions.x, dimensions.y);
+                    mOverlayView.invalidate();
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -856,7 +878,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 // clear selected pixels on up
                 if (mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS)) {
                     mSelectedPixels.clear();
-                } else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS)) {
+                } else if (mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS) || mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS)) {
                     for (int i = 0; i < mLockedPixels.size(); i++)
                         mLockedPixels.set(i, false);
                     mPixelEditor.setVisibility(View.VISIBLE);
@@ -908,23 +930,24 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     Rect currRect = getCurrentPixelRect(currPixel);
                     final boolean isInQuickEditMode = mApp.getPixelEditMode().equals(PixelEditModes.QUICK_EDIT_PIXELS);
                     final boolean isInEditMode = mApp.getPixelEditMode().equals(PixelEditModes.EDIT_PIXELS);
+                    final boolean isInGroupEditMode = mApp.getPixelEditMode().equals(PixelEditModes.GROUP_SLIDERS);
 
                     if (!mApp.getPixelEditMode().equals(PixelEditModes.DELETE_EDITS)) {
                         if (!mPixelIds.contains(currPixel + 1)) {
-                            if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+                            if (isInQuickEditMode || ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))) {
                                 mPixelIds.add(currPixel + 1);
                             }
                             Collections.sort(mPixelIds);
                         }
                         if (!containsRect(mSelectedPixels, currRect)) {
-                            if (isInQuickEditMode || (isInEditMode && !mLockedPixels.get(currPixel))) {
+                            if (isInQuickEditMode || ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))) {
                                 mSelectedPixels.add(currRect);
-                                if (isInEditMode && !mLockedPixels.get(currPixel))
+                                if ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel))
                                     mLockedPixels.set(currPixel, true);
                             }
                         } else {
                             // only if pixels have been selected once resp. after UP and DOWN again one can deselect a pixel
-                            if (isInEditMode && !mLockedPixels.get(currPixel)) {
+                            if ((isInEditMode || isInGroupEditMode) && !mLockedPixels.get(currPixel)) {
                                 mPixelIds.remove(Integer.valueOf(currPixel + 1));
                                 removeRect(mSelectedPixels, currRect);
                                 mLockedPixels.set(currPixel, true);
@@ -961,6 +984,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             }
         }
 
+        @Override
         public void createMultiSliders() {
             final ViewGroup indicators = mContainer.findViewById(R.id.indicator_panel);
             final ViewGroup fpsRateCalcPanel = mContainer.findViewById(R.id.fps_calc_period_indicator);
@@ -973,7 +997,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             double[] greenMixVals = new double[numSelectedPixels];
             double[] blueVals = new double[numSelectedPixels];
             double[] blueMixVals = new double[numSelectedPixels];
-            Point res = mApp.getResolution();
+            final Point res = mApp.getResolution();
 
             mResetRedVals = new SparseArray<>();
             mResetRedMixVals = new SparseArray<>();
@@ -1016,7 +1040,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 }
             }
 
-            Bundle msArgsBundle = new Bundle();
+            final Bundle msArgsBundle = new Bundle();
             msArgsBundle.putIntegerArrayList("nums", (ArrayList<Integer>) mPixelIds);
             if (mApp.getColorMode().equals(RGBModes.RGB) || mApp.getColorMode().equals(RGBModes.R)) {
                 msArgsBundle.putDoubleArray("redVals", redVals);
@@ -1033,19 +1057,14 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
             if (mManager.findFragmentByTag("MultiSliderView") == null) {
                 if (!mApp.getColorMode().equals(RGBModes.RGB)) {
-                    VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mActivity);
+                    final VideOSCMultiSliderFragment multiSliderFragment = new VideOSCMultiSliderFragment(mActivity);
                     mManager.beginTransaction()
                             .add(R.id.camera_preview, multiSliderFragment, "MultiSliderView")
                             .commit();
                     multiSliderFragment.setArguments(msArgsBundle);
                     multiSliderFragment.setParentContainer(mContainer);
                     if (multiSliderFragment.getView() == null) {
-                        multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
-                            @Override
-                            public void onCreateView() {
-                                mPixelIds.clear();
-                            }
-                        });
+                        multiSliderFragment.setCreateViewCallback(mPixelIds::clear);
                     } else mPixelIds.clear();
                 } else {
                     final VideOSCMultiSliderFragmentRGB multiSliderFragment = new VideOSCMultiSliderFragmentRGB(mActivity);
@@ -1055,12 +1074,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                     multiSliderFragment.setArguments(msArgsBundle);
                     multiSliderFragment.setParentContainer(mContainer);
                     if (multiSliderFragment.getView() == null) {
-                        multiSliderFragment.setCreateViewCallback(new VideOSCMultiSliderFragmentRGB.OnCreateViewCallback() {
-                            @Override
-                            public void onCreateView() {
-                                mPixelIds.clear();
-                            }
-                        });
+                        multiSliderFragment.setCreateViewCallback(mPixelIds::clear);
                     } else mPixelIds.clear();
                 }
 
@@ -1071,6 +1085,69 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 mApp.setIsColorModePanelOpen(VideOSCUIHelpers.removeView(modePanel, mContainer));
                 mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
+        }
+
+        @Override
+        public void createMultiSliders(long groupId) {
+
+        }
+
+        private void createSliderGroupEditor() {
+            if (mOscHelper.getUdpListener().listeners().isEmpty()) {
+                mOscHelper.addOscUdpEventListener();
+            }
+            if (mOscHelper.getTcpListener().listeners().isEmpty()) {
+                mOscHelper.addOscTcpEventListener();
+            }
+            VideOSCSliderGroupEditorFragment sliderGroupFragment = new VideOSCSliderGroupEditorFragment(mActivity);
+            mManager.beginTransaction()
+                    .add(R.id.camera_preview, sliderGroupFragment, "SliderGroupEditor")
+                    .commit();
+            final Bundle sliderGroupEditorArgs = new Bundle();
+            sliderGroupEditorArgs.putIntegerArrayList("pixelIds", (ArrayList<Integer>) mPixelIds);
+            sliderGroupFragment.setArguments(sliderGroupEditorArgs);
+            sliderGroupFragment.setParentContainer(mContainer);
+            mToolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        // colorChannel: 0 -> red, 1 -> green, 2 -> blue
+        public double getColorChannelValueAt(int colorChannel, long id) {
+            final Point res = mApp.getResolution();
+            final int color = mBmp.getPixel((int) id % res.x, (int) id / res.x);
+            double value = 0.0;
+
+            switch (colorChannel) {
+                case 0:
+                    value = mRedValues.get((int) id) == null ? ((color >> 16) & 0xFF) / 255.0 : mRedValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", red value: " + value);
+                    break;
+                case 1:
+                    value = mGreenValues.get((int) id) == null ? ((color >> 8) & 0xFF) / 255.0 : mGreenValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", green value: " + value);
+                    break;
+                case 2:
+                    value = mBlueValues.get((int) id) == null ? (color & 0xFF) / 255.0 : mBlueValues.get((int) id);
+                    Log.d(TAG, "id: " + id + ", blue value: " + value);
+            }
+
+            return value;
+        }
+
+        public double getColorChannelMixValueAt(int colorChannel, long id) {
+            double mixValue = 1.0;
+
+            switch (colorChannel) {
+                case 0:
+                    mixValue = mRedMixValues.get((int) id) == null ? 1.0 : mRedMixValues.get((int) id);
+                    break;
+                case 1:
+                    mixValue = mGreenMixValues.get((int) id) == null ? 1.0 : mGreenMixValues.get((int) id);
+                    break;
+                case 2:
+                    mixValue = mBlueMixValues.get((int) id) == null ? 1.0 : mBlueMixValues.get((int) id);
+            }
+
+            return mixValue;
         }
 
         private boolean containsRect(ArrayList<Rect> rectList, Rect rect) {
@@ -1181,7 +1258,6 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
         private Bitmap drawFrame(Bitmap bmp, int width, int height) {
             double rValue, gValue, bValue;
             double mixPowered, mixReciprPowered, mult;
-            Double redSliderVal, greenSliderVal, blueSliderVal;
             Point resolution = mApp.getResolution();
             int dimensions = resolution.x * resolution.y;
             int[] pixels = new int[width * height];
@@ -1198,10 +1274,11 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             // color mode R, G or B
             VideOSCMultiSliderView msLeft = mContainer.findViewById(R.id.multislider_view_left);
             VideOSCMultiSliderView msRight = mContainer.findViewById(R.id.multislider_view_right);
+            // slider groups
+            VideOSCMultiSliderGroupView msGroupLeft = mContainer.findViewById(R.id.multislider_group_view_left);
+            VideOSCMultiSliderGroupView msGroupRight = mContainer.findViewById(R.id.multislider_group_view_right);
 
             for (int i = 0; i < dimensions; i++) {
-                Double mixVal;
-
                 // only the downsampled image gets inverted as inverting the original would slow
                 // down the application considerably
                 int rPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - ((pixels[i] >> 16) & 0xFF)
@@ -1211,65 +1288,36 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
                 int bPixVal = (!mApp.getIsRGBPositive()) ? 0xFF - (pixels[i] & 0xFF)
                         : pixels[i] & 0xFF;
 
-                if (mApp.getColorMode().equals(RGBModes.RGB)
-                        && msRedLeft != null
-                        && msRedRight != null
-                        && msGreenLeft != null
-                        && msGreenRight != null
-                        && msBlueLeft != null
-                        && msBlueRight != null) {
-
-                    // color values
-                    redSliderVal = msRedLeft.getSliderValueAt(i);
-                    if (redSliderVal != null) {
-                        mRedValues.set(i, redSliderVal);
-                        // mix values: once a mix value has been set it should be remembered until it's set
-                        // to a new value (by moving the slider. Next time the regarding pixel is edited
-                        // the slider should be set to the value that has been stored on the last edit
-                        // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
-                        mixVal = msRedRight.getSliderValueAt(i);
-                        mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
+                if (!mApp.getSliderGroupEditMode()) {
+                    if (mApp.getColorMode().equals(RGBModes.RGB)
+                            && msRedLeft != null
+                            && msRedRight != null
+                            && msGreenLeft != null
+                            && msGreenRight != null
+                            && msBlueLeft != null
+                            && msBlueRight != null
+                    ) {
+                        // color values
+                        setValueAndMixValue(msRedLeft, msRedRight, mBarRed, i);
+                        setValueAndMixValue(msGreenLeft, msGreenRight, mBarGreen, i);
+                        setValueAndMixValue(msBlueLeft, msBlueRight, mBarBlue, i);
+                    } else if (!mApp.getColorMode().equals(RGBModes.RGB)
+                            && msLeft != null
+                            && msRight != null) {
+                        switch (mApp.getColorMode()) {
+                            case R:
+                                setValueAndMixValue(msLeft, msRight, mBarRed, i);
+                                break;
+                            case G:
+                                setValueAndMixValue(msLeft, msRight, mBarGreen, i);
+                                break;
+                            case B:
+                                setValueAndMixValue(msLeft, msRight, mBarBlue, i);
+                        }
                     }
-                    greenSliderVal = msGreenLeft.getSliderValueAt(i);
-                    if (greenSliderVal != null) {
-                        mGreenValues.set(i, greenSliderVal);
-                        mixVal = msGreenRight.getSliderValueAt(i);
-                        mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                    }
-                    blueSliderVal = msBlueLeft.getSliderValueAt(i);
-                    if (blueSliderVal != null) {
-                        mBlueValues.set(i, blueSliderVal);
-                        mixVal = msBlueRight.getSliderValueAt(i);
-                        mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                    }
-                } else if (!mApp.getColorMode().equals(RGBModes.RGB)
-                        && msLeft != null
-                        && msRight != null) {
-                    switch (mApp.getColorMode()) {
-                        case R:
-                            redSliderVal = msLeft.getSliderValueAt(i);
-                            if (redSliderVal != null) {
-                                mRedValues.set(i, redSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mRedMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
-                        case G:
-                            greenSliderVal = msLeft.getSliderValueAt(i);
-                            if (greenSliderVal != null) {
-                                mGreenValues.set(i, greenSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mGreenMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
-                        case B:
-                            blueSliderVal = msLeft.getSliderValueAt(i);
-                            if (blueSliderVal != null) {
-                                mBlueValues.set(i, blueSliderVal);
-                                mixVal = msRight.getSliderValueAt(i);
-                                mBlueMixValues.set(i, mixVal == null ? 1.0 : mixVal);
-                            }
-                            break;
+                } else {
+                    if (msGroupLeft != null && msGroupRight != null) {
+                        setGroupValuesAndMixValues(msGroupLeft, msGroupRight, i);
                     }
                 }
 
@@ -1353,6 +1401,56 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
 
             bmp.setPixels(pixels, 0, width, 0, 0, width, height);
             return bmp;
+        }
+
+        private void setGroupValuesAndMixValues(VideOSCMultiSliderGroupView msLeft, VideOSCMultiSliderGroupView msRight, int index) {
+            final ArrayList<Double> vals = msLeft.getGroupSliderValuesAt(index);
+            final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
+
+            if (vals.size() > 0) {
+                if (vals.get(0) != null) {
+                    mRedValues.set(index, vals.get(0));
+                    mRedMixValues.set(index, mixVals.get(0));
+                }
+                if (vals.get(1) != null) {
+                    mGreenValues.set(index, vals.get(1));
+                    mGreenMixValues.set(index, mixVals.get(1));
+                }
+                if (vals.get(2) != null) {
+                    mBlueValues.set(index, vals.get(2));
+                    mBlueMixValues.set(index, mixVals.get(2));
+                }
+            }
+        }
+
+        private void setValueAndMixValue(@NonNull VideOSCMultiSliderView left, VideOSCMultiSliderView right, int color, int index) {
+            final Double val = left.getSliderValueAt(index);
+            ArrayList<Double> values = null, mixValues = null;
+
+            if (color == mBarRed) {
+                values = mRedValues;
+                mixValues = mRedMixValues;
+                Log.d(TAG, " \nred values: " + mRedValues + "\nred mix values: " + mRedMixValues);
+            } else if (color == mBarGreen) {
+                values = mGreenValues;
+                mixValues = mGreenMixValues;
+                Log.d(TAG, " \ngreen values: " + mGreenValues + "\ngreen mix values: " + mGreenMixValues);
+            } else if (color == mBarBlue) {
+                values = mBlueValues;
+                mixValues = mBlueMixValues;
+                Log.d(TAG, " \nblue values: " + mBlueValues + "\nblue mix values: " + mBlueMixValues);
+            }
+
+            if (val != null) {
+                assert values != null;
+                values.set(index, val);
+                // mix values: once a mix value has been set it should be remembered until it's set
+                // to a new value (by moving the slider. Next time the regarding pixel is edited
+                // the slider should be set to the value that has been stored on the last edit
+                // TODO: default value should maybe be settable in preferences to 1.0 or 0.0
+                final Double mixVal = right.getSliderValueAt(index);
+                mixValues.set(index, mixVal == null ? 1.0 : mixVal);
+            }
         }
 
         private void doSendRedOSC(double value, int count, int dimensions) {

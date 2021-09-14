@@ -22,50 +22,52 @@
 
 package net.videosc.fragments;
 
-import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.VideOSCDBHelpers;
 
-/**
- * Created by Rex St. John (on behalf of AirPair.com) on 3/4/14.
- */
 public class VideOSCBaseFragment extends Fragment {
 	protected VideOSCMainActivity mActivity;
     protected ViewGroup mContainer;
-    protected View mView;
     protected LayoutInflater mInflater;
 	protected VideOSCApplication mApp;
     protected VideOSCDBHelpers mDbHelper;
 
-    /**
+	OnCreateViewCallback mCreateViewCallback = null;
+
+	/**
 	 * Default empty constructor
 	 */
 	public VideOSCBaseFragment() {
 		super();
 	}
 
-	/**
-	 * This interface must be implemented by activities that contain this
-	 * mFragment to allow an interaction in this mFragment to be communicated
-	 * to the mActivity and potentially other fragments contained in that
-	 * mActivity.
-	 * <p>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
-	 */
-	public interface OnFragmentInteractionListener {
-		void onFragmentInteraction(Uri uri);
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
 
-		void onFragmentInteraction(String id);
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		view.bringToFront();
+	}
 
-		void onFragmentInteraction(int actionId);
+	void setCreateViewCallback(OnCreateViewCallback createViewCallback) {
+		this.mCreateViewCallback = createViewCallback;
+	}
+
+	public interface OnCreateViewCallback {
+		void onCreateView();
 	}
 }

@@ -7,59 +7,88 @@
               android:layout_marginEnd="50dp"
               android:layout_marginTop="100dp"
               android:layout_marginRight="50dp"
-              android:orientation="horizontal">
+              android:orientation="vertical">
 
-	<ImageButton
-		android:id="@+id/delete_edits"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginRight="8dp"
-		android:src="@drawable/delete"
-		android:background="@drawable/pixel_editor_delete_selector"
-		android:focusable="true"
-		android:contentDescription="@string/delete_edits_on_pixels"/>
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
 
-	<ImageButton
-		android:id="@+id/quick_edit_pixels"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginRight="8dp"
-		android:src="@drawable/pixel_quick_edit"
-		android:background="@drawable/editor_button_shape"
-		android:focusable="true"
-		android:contentDescription="@string/quickly_select_pixels"/>
+		<ImageButton
+			android:id="@+id/group_sliders"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginEnd="8dp"
+			android:layout_marginRight="8dp"
+			android:src="@drawable/group_sliders"
+			android:background="@drawable/editor_button_shape"
+			android:focusable="true"
+			android:contentDescription="@string/create_and_store_groups_of_sliders"/>
 
-	<ImageButton
-		android:id="@+id/edit_pixels"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginRight="8dp"
-		android:src="@drawable/pixel_edit"
-		android:background="@drawable/editor_button_shape"
-		android:focusable="true"
-		android:contentDescription="@string/select_pixels_stepwise"/>
+		<ImageButton
+			android:id="@+id/quick_edit_pixels"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginEnd="8dp"
+			android:layout_marginRight="8dp"
+			android:src="@drawable/pixel_quick_edit"
+			android:background="@drawable/editor_button_shape"
+			android:focusable="true"
+			android:contentDescription="@string/quickly_select_pixels"/>
 
-	<ImageButton
-		android:id="@+id/apply_pixel_selection"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_marginEnd="4dp"
-		android:layout_marginRight="4dp"
-		android:src="@drawable/ok"
-		android:background="@drawable/pixel_editor_ok_selector"
-		android:clickable="true"
-		android:focusable="true"
-		android:contentDescription="@string/apply_current_pixel_selection"/>
+		<ImageButton
+			android:id="@+id/edit_pixels"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginEnd="8dp"
+			android:layout_marginRight="8dp"
+			android:src="@drawable/pixel_edit"
+			android:background="@drawable/editor_button_shape"
+			android:focusable="true"
+			android:contentDescription="@string/select_pixels_stepwise"/>
 
-	<ImageView
-		android:id="@+id/move_editor"
-		android:layout_height="40dp"
-		android:layout_width="40dp"
-		android:padding="8dp"
-		android:src="@drawable/move"
-		android:contentDescription="@string/move_the_editor"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="5dp">
+
+		<ImageButton
+			android:id="@+id/delete_edits"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginEnd="8dp"
+			android:layout_marginRight="8dp"
+			android:src="@drawable/delete"
+			android:background="@drawable/pixel_editor_delete_selector"
+			android:focusable="true"
+			android:contentDescription="@string/delete_edits_on_pixels"/>
+
+		<ImageButton
+			android:id="@+id/apply_pixel_selection"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_marginEnd="4dp"
+			android:layout_marginRight="4dp"
+			android:src="@drawable/ok"
+			android:background="@drawable/pixel_editor_ok_selector"
+			android:clickable="true"
+			android:focusable="true"
+			android:contentDescription="@string/apply_current_pixel_selection"/>
+
+		<ImageView
+			android:id="@+id/move_editor"
+			android:layout_height="40dp"
+			android:layout_width="40dp"
+			android:padding="8dp"
+			android:layout_marginLeft="7dp"
+			android:src="@drawable/move_black"
+			android:contentDescription="@string/move_the_editor"
+			android:layout_marginStart="7dp" />
+
+	</LinearLayout>
 
 </LinearLayout>

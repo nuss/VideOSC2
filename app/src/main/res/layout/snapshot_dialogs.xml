@@ -13,7 +13,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:hint="@string/name_this_snapshot"
-		android:inputType="text">
+		android:inputType="text"
+		android:autofillHints="@string/name_this_snapshot">
 
 		<requestFocus/>
 	</EditText>

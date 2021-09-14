@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/multislider_group_view"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:animateLayoutChanges="true"
+              android:baselineAligned="false"
+              android:clickable="true"
+              android:focusable="true"
+              android:orientation="horizontal">
+
+	<net.videosc.views.VideOSCMultiSliderGroupView
+		android:id="@+id/multislider_group_view_left"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="15dp"
+		android:layout_marginEnd="5dp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="5dp"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="15dp"
+		android:layout_weight="0.5"
+		android:orientation="horizontal"/>
+
+	<net.videosc.views.VideOSCMultiSliderGroupView
+		android:id="@+id/multislider_group_view_right"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_marginBottom="15dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginStart="5dp"
+		android:layout_marginTop="15dp"
+		android:layout_weight="0.5"
+		android:orientation="horizontal"/>
+
+</LinearLayout>

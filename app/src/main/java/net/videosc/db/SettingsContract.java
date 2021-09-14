@@ -58,6 +58,20 @@ public class SettingsContract {
 		public static final String MAPPINGS = "command_mappings";
 	}
 
+	public static class SliderGroups implements BaseColumns {
+		public static final String TABLE_NAME = "vosc_slider_groups";
+		public static final String GROUP_NAME = "slider_group_name";
+	}
+
+	public static class SliderGroupProperties implements BaseColumns {
+		public static final String TABLE_NAME = "vosc_slider_group_properties";
+		public static final String GROUP_ID = "slider_group_id";
+		public static final String COLOR_CHANNEL = "color_channel";
+		public static final String SLIDER_ORDER = "slider_order";
+		public static final String PIXEL_ID = "pixel_id";
+		public static final String LABEL_TEXT = "label_text";
+	}
+
 	// TODO
 /*
 	public static class MultiTouchSettingEntries implements BaseColumns {

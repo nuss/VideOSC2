@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -226,12 +225,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
             };
             mSortSwitchAdapter = new ArrayAdapter<>(mActivity, R.layout.sort_mode_item, sortModes);
             mSortModesPopUp = showSortModesList(mSortSwitchAdapter);
-            mSortSwitcher.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSortModesPopUp.showAsDropDown(v, 0, 0);
-                }
-            });
+            mSortSwitcher.setOnClickListener(v -> mSortModesPopUp.showAsDropDown(v, 0, 0));
             ListView sortModesList = (ListView) mSortModesPopUp.getContentView();
             sortModesList.setOnItemClickListener(new SortModesOnItemClickListener());
         }

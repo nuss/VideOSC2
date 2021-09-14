@@ -11,9 +11,10 @@ import android.widget.LinearLayout;
 import net.videosc.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class VideOSCMultiSliderView extends LinearLayout {
-	final static private String TAG = "MultiSliderView";
+	final static private String TAG = VideOSCMultiSliderView.class.getSimpleName();
 	public ArrayList<SliderBar> mBars = new ArrayList<>();
 	private ArrayList<Integer> mSliderNums;
 	private Double[] mValuesArray;
@@ -75,14 +76,14 @@ public class VideOSCMultiSliderView extends LinearLayout {
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		int numSliders = mSliderNums.size();
-		int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
+		final int numSliders = mSliderNums.size();
+		final int marginsTotal = numSliders + 1; // 1 pixel spacing between each slider
 		// FIXME - after switching camera numSliders may be 0 because mNumSliders is empty
-		int barWidth = (getMeasuredWidth() - marginsTotal) / numSliders;
-		int barHeight = getMeasuredHeight();
+		final int barWidth = (getMeasuredWidth() - marginsTotal) / numSliders;
+		final int barHeight = getMeasuredHeight();
 		int x = 0;
 		for (int i = 0; i < getChildCount(); i++) {
-			SliderBar child = (SliderBar) getChildAt(i);
+			final SliderBar child = (SliderBar) getChildAt(i);
 			int index = Integer.parseInt(child.getNum(), 10) - 1;
 			child.mAreaTop = -getTop() - mParentTopMargin - 1;
 			child.mAreaBottom = mDisplayHeight;
@@ -133,7 +134,9 @@ public class VideOSCMultiSliderView extends LinearLayout {
 					sliderValue = 0.0;
 				else
 					sliderValue = ((double) barHeight - (double) tempTouchY) / (double) barHeight;
+				// FIXME: in a slider group we have mor ethan one color but mValuesArray contains values for only one color channel
 				mValuesArray[index] = sliderValue;
+				Log.d(TAG, "values: " + Arrays.toString(mValuesArray));
 				bar.invalidate();
 			}
 		}

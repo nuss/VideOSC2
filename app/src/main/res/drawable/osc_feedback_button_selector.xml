@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/osc_feedback_button_layer1"
+        android:drawable="@drawable/osc_feedback_button_active"
         android:state_activated="true"
         android:state_enabled="true" />
     <item
-        android:drawable="@drawable/osc_feedback_button_layer2" />
+        android:drawable="@drawable/osc_feedback_button_inactive" />
 </selector>

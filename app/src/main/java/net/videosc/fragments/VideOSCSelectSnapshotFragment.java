@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -75,7 +74,7 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		final FragmentManager manager = getFragmentManager();
+		final FragmentManager manager = getParentFragmentManager();
 		final ListView snapshotsListView = view.findViewById(R.id.snapshots_list);
 		final SnapshotSelectAdapter adapter = new SnapshotSelectAdapter(
 				mActivity, R.layout.snapshots_item, mCursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
@@ -83,24 +82,17 @@ public class VideOSCSelectSnapshotFragment extends VideOSCBaseFragment {
 		snapshotsListView.setAdapter(adapter);
 		VideOSCUIHelpers.setTransitionAnimation((ViewGroup) view);
 		// prevent underlying view from receiving touch events
-		view.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				v.performClick();
-				return true;
-			}
+		view.setOnTouchListener((v, event) -> {
+			v.performClick();
+			return true;
 		});
 		final ImageButton close = view.findViewById(R.id.close);
 		close.bringToFront();
-		close.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				assert manager != null;
-				manager.beginTransaction()
-						.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-						.remove(VideOSCSelectSnapshotFragment.this)
-						.commit();
-			}
+		close.setOnClickListener(v -> {
+			manager.beginTransaction()
+					.setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+					.remove(VideOSCSelectSnapshotFragment.this)
+					.commit();
 		});
 	}
 
