@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/slider_label"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:rotation="-90.0"
+        android:text="@string/slider_label_text"
+        android:paddingLeft="5dp"
+        android:paddingStart="5dp"
+        android:paddingRight="5dp"
+        android:paddingEnd="5dp"
+        android:textSize="13sp"
+        android:background="@drawable/black_rounded_rect" />
+
+</LinearLayout>

@@ -182,5 +182,6 @@
     <string name="start_or_stop_sending_osc_messages">start or stop sending OSC messages</string>
     <string name="rename_slider_group">rename slider group</string>
 	<string name="delete_slider_group">delete slider group</string>
+    <string name="slider_label_text">%1$s</string>
 
 </resources>
