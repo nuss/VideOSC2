@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,19 +63,9 @@ public class VideOSCDebugSettingsFragment extends VideOSCBaseFragment {
 		hidePixelImageCB.setChecked(app.getPixelImageHidden());
 		debugPixelOscSendingCB.setChecked(VideOSCApplication.getDebugPixelOsc());
 
-		hidePixelImageCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				app.setPixelImageHidden(isChecked);
-			}
-		});
+		hidePixelImageCB.setOnCheckedChangeListener((buttonView, isChecked) -> app.setPixelImageHidden(isChecked));
 
-		debugPixelOscSendingCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				VideOSCApplication.setDebugPixelOsc(isChecked);
-			}
-		});
+		debugPixelOscSendingCB.setOnCheckedChangeListener((buttonView, isChecked) -> VideOSCApplication.setDebugPixelOsc(isChecked));
 	}
 
 	/**

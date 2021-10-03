@@ -20,7 +20,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -185,193 +184,178 @@ public class VideOSCResolutionSettingsFragment extends VideOSCBaseFragment {
 			final View fixExposureButtonLayout = mInflater.inflate(R.layout.cancel_ok_buttons, mContainer, false);
 
 			fixExposureCB.setChecked(app.getExposureIsFixed());
-			fixExposureCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					final Camera camera = mCameraView.mCamera;
+			fixExposureCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+				final Camera camera = mCameraView.mCamera;
 
-					if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
-						view.setVisibility(View.INVISIBLE);
+				if (!app.getExposureIsFixed() && !app.getHasExposureSettingBeenCancelled() && !app.getBackPressed()) {
+					view.setVisibility(View.INVISIBLE);
 
-						Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
-						toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-						toast.show();
-						final ViewGroup bg = (ViewGroup) mContainer.getParent();
-						bg.setBackgroundResource(0);
+					Toast toast = Toast.makeText(getActivity(), R.string.exposure_toast_text, Toast.LENGTH_LONG);
+					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					toast.show();
+					final ViewGroup bg = (ViewGroup) mContainer.getParent();
+					bg.setBackgroundResource(0);
 
-						bg.addView(fixExposureButtonLayout);
+					bg.addView(fixExposureButtonLayout);
 
-						final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
-						fixExposureButton.setOnClickListener(v -> {
-							params.setAutoExposureLock(true);
-							camera.setParameters(params);
-							app.setExposureIsFixed(true);
-							VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
-							bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
-							new Toast(getActivity());
-							view.setVisibility(View.VISIBLE);
-						});
-						final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
-						cancelExposureFixed.setOnClickListener((v -> {
-							VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
-							view.setVisibility(View.VISIBLE);
-							// setting exposure is only possible if exposure
-							// isn't already fixed. As a consequence cancelling
-							// setting exposure can only result in *not* fixing
-							// exposure
-							app.setHasExposureSettingBeenCancelled(true);
-							bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
-							fixExposureCB.setChecked(false);
-						}));
-					} else {
-						params.setAutoExposureLock(false);
+					final ImageButton fixExposureButton = fixExposureButtonLayout.findViewById(R.id.ok);
+					fixExposureButton.setOnClickListener(v -> {
+						params.setAutoExposureLock(true);
 						camera.setParameters(params);
-						app.setExposureIsFixed(false);
-						app.setHasExposureSettingBeenCancelled(false);
-					}
+						app.setExposureIsFixed(true);
+						VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
+						bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
+						new Toast(getActivity());
+						view.setVisibility(View.VISIBLE);
+					});
+					final ImageButton cancelExposureFixed = fixExposureButtonLayout.findViewById(R.id.cancel);
+					cancelExposureFixed.setOnClickListener((v -> {
+						VideOSCUIHelpers.removeView(fixExposureButtonLayout, bg);
+						view.setVisibility(View.VISIBLE);
+						// setting exposure is only possible if exposure
+						// isn't already fixed. As a consequence cancelling
+						// setting exposure can only result in *not* fixing
+						// exposure
+						app.setHasExposureSettingBeenCancelled(true);
+						bg.setBackgroundResource(R.color.colorDarkTransparentBackground);
+						fixExposureCB.setChecked(false);
+					}));
+				} else {
+					params.setAutoExposureLock(false);
+					camera.setParameters(params);
+					app.setExposureIsFixed(false);
+					app.setHasExposureSettingBeenCancelled(false);
 				}
 			});
 		}
 
-		resHField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (!hasFocus && !resHField.getText().toString().equals(
-						String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()))) {
-					String resH = resHField.getText().toString();
+		resHField.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus && !resHField.getText().toString().equals(
+					String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionHorizontal()))) {
+				String resH = resHField.getText().toString();
+				mValues.put(
+						SettingsContract.SettingsEntries.RES_H,
+						resH
+				);
+				mDb.update(
+						SettingsContract.SettingsEntries.TABLE_NAME,
+						mValues,
+						SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+						null
+				);
+				mValues.clear();
+				mSettings.get(0).setResolutionHorizontal(Short.parseShort(resH));
+				// update camera preview immediately
+				app.setResolution(
+						new Point(
+								Integer.parseInt(resH),
+								app.getResolution().y
+						)
+				);
+				// adjust mappings to new resolution
+				SparseArray<String> mappings = app.getCommandMappings();
+				Log.d(TAG, "mappings before setting width: " + mappings);
+				Point resolution = app.getResolution();
+				for (int i = 0; i < mappings.size(); i++) {
+					final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
 					mValues.put(
-							SettingsContract.SettingsEntries.RES_H,
-							resH
+							SettingsContract.AddressCommandsMappings.MAPPINGS,
+							paddedMappings
 					);
 					mDb.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
+							SettingsContract.AddressCommandsMappings.TABLE_NAME,
 							mValues,
-							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+							SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
 							null
 					);
 					mValues.clear();
-					mSettings.get(0).setResolutionHorizontal(Short.parseShort(resH));
-					// update camera preview immediately
-					app.setResolution(
-							new Point(
-									Integer.parseInt(resH),
-									app.getResolution().y
-							)
-					);
-					// adjust mappings to new resolution
-					SparseArray<String> mappings = app.getCommandMappings();
-					Log.d(TAG, "mappings before setting width: " + mappings);
-					Point resolution = app.getResolution();
-					for (int i = 0; i < mappings.size(); i++) {
-						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
-						mValues.put(
-								SettingsContract.AddressCommandsMappings.MAPPINGS,
-								paddedMappings
-						);
-						mDb.update(
-								SettingsContract.AddressCommandsMappings.TABLE_NAME,
-								mValues,
-								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
-								null
-						);
-						mValues.clear();
-						mappings.put(mappings.keyAt(i), paddedMappings);
-					}
-					app.setCommandMappings(mappings);
-					Log.d(TAG, "mappings after setting width: " + app.getCommandMappings());
+					mappings.put(mappings.keyAt(i), paddedMappings);
 				}
+				app.setCommandMappings(mappings);
+				Log.d(TAG, "mappings after setting width: " + app.getCommandMappings());
 			}
 		});
 
-		resVField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if (!hasFocus && !resVField.getText().toString().equals(
-						String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()))) {
-					String resV = resVField.getText().toString();
+		resVField.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus && !resVField.getText().toString().equals(
+					String.format(Locale.getDefault(), "%d", mSettings.get(0).getResolutionVertical()))) {
+				String resV = resVField.getText().toString();
+				mValues.put(
+						SettingsContract.SettingsEntries.RES_V,
+						resV
+				);
+				mDb.update(
+						SettingsContract.SettingsEntries.TABLE_NAME,
+						mValues,
+						SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+						null
+				);
+				mValues.clear();
+				mSettings.get(0).setResolutionVertical(Short.parseShort(resV));
+				// update camera preview immediately
+				app.setResolution(
+						new Point(
+								app.getResolution().x,
+								Integer.parseInt(resV)
+						)
+				);
+				// adjust mappings to new resolution
+				SparseArray<String> mappings = app.getCommandMappings();
+				Point resolution = app.getResolution();
+				for (int i = 0; i < mappings.size(); i++) {
+					final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
 					mValues.put(
-							SettingsContract.SettingsEntries.RES_V,
-							resV
+							SettingsContract.AddressCommandsMappings.MAPPINGS,
+							paddedMappings
 					);
 					mDb.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
+							SettingsContract.AddressCommandsMappings.TABLE_NAME,
 							mValues,
-							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+							SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
 							null
 					);
 					mValues.clear();
-					mSettings.get(0).setResolutionVertical(Short.parseShort(resV));
-					// update camera preview immediately
-					app.setResolution(
-							new Point(
-									app.getResolution().x,
-									Integer.parseInt(resV)
-							)
-					);
-					// adjust mappings to new resolution
-					SparseArray<String> mappings = app.getCommandMappings();
-					Point resolution = app.getResolution();
-					for (int i = 0; i < mappings.size(); i++) {
-						final String paddedMappings = VideOSCStringHelpers.padMappingsString(mappings.valueAt(i), resolution.x * resolution.y, '1');
-						mValues.put(
-								SettingsContract.AddressCommandsMappings.MAPPINGS,
-								paddedMappings
-						);
-						mDb.update(
-								SettingsContract.AddressCommandsMappings.TABLE_NAME,
-								mValues,
-								SettingsContract.AddressCommandsMappings.ADDRESS + " = " + mappings.keyAt(i),
-								null
-						);
-						mValues.clear();
-						mappings.put(mappings.keyAt(i), paddedMappings);
-					}
-					app.setCommandMappings(mappings);
+					mappings.put(mappings.keyAt(i), paddedMappings);
 				}
+				app.setCommandMappings(mappings);
 			}
 		});
 
-		normalizedCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (normalizedCB.isChecked() != mSettings.get(0).getNormalized()) {
-					boolean isNormalized = normalizedCB.isChecked();
-					mValues.put(
-							SettingsContract.SettingsEntries.NORMALIZE,
-							isNormalized
-					);
-					mDb.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
-							mValues,
-							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
-							null
-					);
-					mValues.clear();
-					mSettings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
-					app.setNormalized(isNormalized);
-				}
+		normalizedCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (normalizedCB.isChecked() != mSettings.get(0).getNormalized()) {
+				boolean isNormalized = normalizedCB.isChecked();
+				mValues.put(
+						SettingsContract.SettingsEntries.NORMALIZE,
+						isNormalized
+				);
+				mDb.update(
+						SettingsContract.SettingsEntries.TABLE_NAME,
+						mValues,
+						SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+						null
+				);
+				mValues.clear();
+				mSettings.get(0).setNormalized(isNormalized ? (short) 1 : (short) 0);
+				app.setNormalized(isNormalized);
 			}
 		});
 
-		rememberPixelStatesCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (rememberPixelStatesCB.isChecked() != mSettings.get(0).getRememberPixelStates()) {
-					boolean rememberPixelStates = rememberPixelStatesCB.isChecked();
-					mValues.put(
-							SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
-							rememberPixelStatesCB.isChecked()
-					);
-					mDb.update(
-							SettingsContract.SettingsEntries.TABLE_NAME,
-							mValues,
-							SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
-							null
-					);
-					mValues.clear();
-					mSettings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
-					// TODO: this setting must be picked up on app init
-				}
+		rememberPixelStatesCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (rememberPixelStatesCB.isChecked() != mSettings.get(0).getRememberPixelStates()) {
+				boolean rememberPixelStates = rememberPixelStatesCB.isChecked();
+				mValues.put(
+						SettingsContract.SettingsEntries.REMEMBER_PIXEL_STATES,
+						rememberPixelStatesCB.isChecked()
+				);
+				mDb.update(
+						SettingsContract.SettingsEntries.TABLE_NAME,
+						mValues,
+						SettingsContract.SettingsEntries._ID + " = " + mSettings.get(0).getRowId(),
+						null
+				);
+				mValues.clear();
+				mSettings.get(0).setRememberPixelStates(rememberPixelStates ? (short) 1 : (short) 0);
+				// TODO: this setting must be picked up on app init
 			}
 		});
 	}

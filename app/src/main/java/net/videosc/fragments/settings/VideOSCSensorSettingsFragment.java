@@ -10,7 +10,6 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -179,169 +178,136 @@ public class VideOSCSensorSettingsFragment extends VideOSCBaseFragment {
 		humCB.setChecked(sensors.getHumiditySensorActivated());
 		locCB.setChecked(sensors.getLocationSensorActivated());
 
-		oriCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (oriCB.isChecked() != sensors.getOrientationSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, oriCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'ori'",
-							null
-					);
-					values.clear();
-				}
+		oriCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (oriCB.isChecked() != sensors.getOrientationSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, oriCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'ori'",
+						null
+				);
+				values.clear();
 			}
 		});
-		accCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (accCB.isChecked() != sensors.getAccelerationSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, accCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'acc'",
-							null
-					);
-					values.clear();
-				}
+		accCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (accCB.isChecked() != sensors.getAccelerationSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, accCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'acc'",
+						null
+				);
+				values.clear();
 			}
 		});
-		linAccCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (linAccCB.isChecked() != sensors.getLinAccelerationSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, linAccCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'lin_acc'",
-							null
-					);
-					values.clear();
-				}
+		linAccCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (linAccCB.isChecked() != sensors.getLinAccelerationSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, linAccCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'lin_acc'",
+						null
+				);
+				values.clear();
 			}
 		});
-		magCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (magCB.isChecked() != sensors.getMagneticSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, magCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'mag'",
-							null
-					);
-					values.clear();
-				}
+		magCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (magCB.isChecked() != sensors.getMagneticSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, magCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'mag'",
+						null
+				);
+				values.clear();
 			}
 		});
-		gravCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (gravCB.isChecked() != sensors.getGravitySensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, gravCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'grav'",
-							null
-					);
-					values.clear();
-				}
+		gravCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (gravCB.isChecked() != sensors.getGravitySensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, gravCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'grav'",
+						null
+				);
+				values.clear();
 			}
 		});
-		proxCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (proxCB.isChecked() != sensors.getProximitySensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, proxCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'prox'",
-							null
-					);
-					values.clear();
-				}
+		proxCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (proxCB.isChecked() != sensors.getProximitySensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, proxCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'prox'",
+						null
+				);
+				values.clear();
 			}
 		});
-		lightCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (lightCB.isChecked() != sensors.getLightSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, lightCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'light'",
-							null
-					);
-					values.clear();
-				}
+		lightCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (lightCB.isChecked() != sensors.getLightSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, lightCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'light'",
+						null
+				);
+				values.clear();
 			}
 		});
-		pressCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (pressCB.isChecked() != sensors.getPressureSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, pressCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'press'",
-							null
-					);
-					values.clear();
-				}
+		pressCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (pressCB.isChecked() != sensors.getPressureSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, pressCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'press'",
+						null
+				);
+				values.clear();
 			}
 		});
-		tempCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (tempCB.isChecked() != sensors.getTemperatureSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, tempCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'temp'",
-							null
-					);
-					values.clear();
-				}
+		tempCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (tempCB.isChecked() != sensors.getTemperatureSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, tempCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'temp'",
+						null
+				);
+				values.clear();
 			}
 		});
-		humCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (humCB.isChecked() != sensors.getHumiditySensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, humCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'hum'",
-							null
-					);
-					values.clear();
-				}
+		humCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (humCB.isChecked() != sensors.getHumiditySensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, humCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'hum'",
+						null
+				);
+				values.clear();
 			}
 		});
-		locCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (locCB.isChecked() != sensors.getLocationSensorActivated()) {
-					values.put(SettingsContract.SensorSettingsEntries.VALUE, locCB.isChecked());
-					db.update(
-							SettingsContract.SensorSettingsEntries.TABLE_NAME,
-							values,
-							SettingsContract.SensorSettingsEntries.SENSOR + " = 'loc'",
-							null
-					);
-					values.clear();
-				}
+		locCB.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			if (locCB.isChecked() != sensors.getLocationSensorActivated()) {
+				values.put(SettingsContract.SensorSettingsEntries.VALUE, locCB.isChecked());
+				db.update(
+						SettingsContract.SensorSettingsEntries.TABLE_NAME,
+						values,
+						SettingsContract.SensorSettingsEntries.SENSOR + " = 'loc'",
+						null
+				);
+				values.clear();
 			}
 		});
 
