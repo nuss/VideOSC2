@@ -13,17 +13,28 @@
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.55"
             android:padding="5dp"
             android:textSize="20sp"
             android:text="@string/command_device_mappings"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/range_switch"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:checked="true"
+            android:textSize="13sp"
+            android:text="@string/select_range"
+            android:paddingTop="17dp"
+            android:paddingBottom="10dp" />
 
         <Button
             android:id="@+id/sort_mode_switch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="0.5"
+            android:layout_weight="0.25"
             android:background="@color/transparent"
             android:drawableEnd="@drawable/carret_down_white"
             android:drawableRight="@drawable/carret_down_white"

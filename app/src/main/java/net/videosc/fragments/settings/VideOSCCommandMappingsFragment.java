@@ -19,6 +19,7 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.cleveroad.adaptivetablelayout.AdaptiveTableLayout;
 import com.cleveroad.adaptivetablelayout.OnItemClickListener;
@@ -92,6 +93,7 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
         if (mNumAddresses > 1) {
             final AdaptiveTableLayout tableLayout = view.findViewById(R.id.address_command_mappings_table);
             mSortSwitcher = view.findViewById(R.id.sort_mode_switch);
+            final SwitchCompat rangeSelectSwitch = view.findViewById(R.id.range_switch);
             mTableAdapter = new CommandMappingsTableAdapter(mActivity, mTableDataSource);
             mTableAdapter.setOnItemClickListener(new OnItemClickListener() {
                 private boolean firstClick = false;
@@ -104,12 +106,19 @@ public class VideOSCCommandMappingsFragment extends VideOSCBaseFragment {
                     mColumnChanges = tableLayout.getLinkedAdapterColumnsModifications();
                     final Integer rowCurrentPosition = MapHelper.getKeyByValue(mRowChanges, row);
                     final Integer columnCurrentPosition = MapHelper.getKeyByValue(mColumnChanges, column);
+                    boolean rangeSelectEnabled = rangeSelectSwitch.isChecked();
+                    if (!rangeSelectEnabled) tableLayout.setDragAndDropEnabled(true);
 
                     if (mTableDataSource.rowIsFull(row - 1)) {
-                        firstClick = !firstClick;
+                        if (rangeSelectEnabled) {
+                            firstClick = !firstClick;
+                        } else {
+                            firstClick = true;
+                        }
                         if (firstClick) {
                             // disable drag and drop while firstClick is true
-                            tableLayout.setDragAndDropEnabled(false);
+                            if (rangeSelectEnabled)
+                                tableLayout.setDragAndDropEnabled(false);
                             // cache start row
                             // consider changes in row order
                             firstRow = rowCurrentPosition == null ? row : rowCurrentPosition;
