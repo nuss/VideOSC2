@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30.0.3'
+    buildToolsVersion '31.0'
     defaultConfig {
         applicationId "net.videosc"
         minSdkVersion 16
@@ -50,5 +50,5 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.5.1'
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
     androidTestImplementation 'androidx.test:rules:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 }
