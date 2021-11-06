@@ -84,11 +84,13 @@ public class SliderBar extends View {
 		mPaint.setTextSize((float) 12 * mApp.getScreenDensity());
 		mPaint.setColor(0xffffffff);
 		canvas.drawText(mPixelNum, mRight / 2.0f, mBottom - 7 * mApp.getScreenDensity(), mPaint);
-		canvas.rotate(-90, mRight / 2f , (mAreaTop + mBottom) / 2f);
-		mPaint.setTextAlign(Paint.Align.RIGHT);
-		// coordinate system is switched
-		// top position depends on width of slider bar, hence we add a correction mRight / 4f
-		canvas.drawText(mLabelText, (mAreaTop + mBottom) / 2f + mRight / 4f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
+		if (mLabelText != null) {
+			canvas.rotate(-90, mRight / 2f, (mAreaTop + mBottom) / 2f);
+			mPaint.setTextAlign(Paint.Align.RIGHT);
+			// coordinate system is switched
+			// top position depends on width of slider bar, hence we add a correction mRight / 4f
+			canvas.drawText(mLabelText, (mAreaTop + mBottom) / 2f + mRight / 4f, (mAreaTop + mBottom) / 2f + 3 * mApp.getScreenDensity(), mPaint);
+		}
 	}
 
 	@Override
