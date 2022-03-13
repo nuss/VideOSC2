@@ -10,7 +10,8 @@ android {
         versionCode 19
         versionName "2.0alpha4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//        renderscriptTargetApi 21
+        multiDexEnabled true
+        //        renderscriptTargetApi 21
 //        renderscriptSupportModeEnabled truevideosc2
     }
      buildTypes {
@@ -25,6 +26,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(path: ':netP5android')
@@ -48,7 +50,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
     testImplementation 'org.robolectric:robolectric:4.5.1'
-    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
+//    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
     androidTestImplementation 'androidx.test:rules:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 }
