@@ -83,14 +83,14 @@ public class VideOSCMultiSliderFragment extends VideOSCMSBaseFragment {
 				break;
 		}
 
-		mMSViewLeft = view.findViewById(R.id.multislider_group_view_left);
+		mMSViewLeft = view.findViewById(R.id.multislider_view_left);
 		mMSViewLeft.setValuesArray(numTotalPixels);
 		mMSViewLeft.setContainerView(mContainer);
 
 		mMSButtons = mInflater.inflate(R.layout.multislider_buttons, mContainer, false);
 		mLabelsView = mInflater.inflate(R.layout.multislider_labels, mContainer, false);
 
-		mMSViewRight = view.findViewById(R.id.multislider_group_view_right);
+		mMSViewRight = view.findViewById(R.id.multislider_view_right);
 		mMSViewRight.setValuesArray(numTotalPixels);
 		mMSViewRight.setContainerView(mContainer);
 

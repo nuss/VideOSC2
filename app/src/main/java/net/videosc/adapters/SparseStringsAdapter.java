@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.videosc.R;
-import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.utilities.enums.RGBModes;
 
 public class SparseStringsAdapter extends SparseArrayAdapter<String> {
@@ -17,10 +16,8 @@ public class SparseStringsAdapter extends SparseArrayAdapter<String> {
 
     private final LayoutInflater mInflater;
     private final RGBModes mColor;
-    private final VideOSCMainActivity mActivity;
 
     public SparseStringsAdapter(Context context, SparseArray<String> data, RGBModes color) {
-        this.mActivity = (VideOSCMainActivity) context;
         this.mInflater = LayoutInflater.from(context);
         this.mColor = color;
         setData(data);
