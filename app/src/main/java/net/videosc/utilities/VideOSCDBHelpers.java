@@ -48,6 +48,16 @@ public class VideOSCDBHelpers {
         return (int) DatabaseUtils.queryNumEntries(mDb, SettingsContract.SliderGroups.TABLE_NAME);
     }
 
+    public boolean checkIfGroupNameExists(String name) {
+        boolean ret = false;
+        final String query = "Select * from " + SettingsContract.SliderGroups.TABLE_NAME +
+                " where " + SettingsContract.SliderGroups.GROUP_NAME + " = \"" + name + "\"";
+        final Cursor cursor = mDb.rawQuery(query, null);
+        if (cursor.getCount() > 0) ret = true;
+        cursor.close();
+        return ret;
+    }
+
     public SparseArray<String> getAddresses() {
         final SparseArray<String> addresses = new SparseArray<>();
 

@@ -72,12 +72,7 @@ public class VideOSCDialogHelper {
 				new ContextThemeWrapper(activity, style)
 		)
 				.setMessage(msg)
-				.setPositiveButton(confirm, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+				.setPositiveButton(confirm, (dialog, which) -> dialog.dismiss());
 
 		builder.show();
 	}

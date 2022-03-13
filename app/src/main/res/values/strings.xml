@@ -185,5 +185,6 @@
     <string name="slider_label_text">%1$s</string>
     <string name="select_range">select range</string>
 	<string name="receive_port">set the app\'s receiving port</string>
+    <string name="slider_group_exists">A slider group with the given name \'%1$s\' already exists. Please choose a different one.</string>
 
 </resources>

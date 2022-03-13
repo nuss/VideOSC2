@@ -23,6 +23,7 @@ import net.videosc.VideOSCApplication;
 import net.videosc.activities.VideOSCMainActivity;
 import net.videosc.adapters.SparseStringsAdapter;
 import net.videosc.utilities.VideOSCDBHelpers;
+import net.videosc.utilities.VideOSCDialogHelper;
 import net.videosc.utilities.VideOSCOscHandler;
 import net.videosc.utilities.VideOSCUIHelpers;
 import net.videosc.utilities.enums.RGBModes;
@@ -157,25 +158,35 @@ public class VideOSCSliderGroupEditorFragment extends VideOSCBaseFragment {
                     .setCancelable(true)
                     .setPositiveButton(R.string.save_slider_group,
                             (dialog, which) -> {
-                                final long newGroupId = dbHelper.addSliderGroup(nameInput.getText().toString(), group);
-                                if (newGroupId > 0) {
-                                    final int numSliderGroups1 = dbHelper.countSliderGroups();
-                                    final TextView sliderGroupsIndicator = mParentContainer.findViewById(R.id.num_slider_groups);
-                                    sliderGroupsIndicator.setText(String.valueOf(numSliderGroups1));
-                                    sliderGroupsIndicator.setTextColor(0xffffffff);
-                                    sliderGroupsIndicator.setActivated(true);
-                                    savedSliderGroupsButton.setEnabled(true);
-                                    savedSliderGroupsButton.setAlpha(1.0f);
+                                String groupName = nameInput.getText().toString();
+                                if (!dbHelper.checkIfGroupNameExists(groupName)) {
+                                    final long newGroupId = dbHelper.addSliderGroup(nameInput.getText().toString(), group);
+                                    if (newGroupId > 0) {
+                                        final int numSliderGroups1 = dbHelper.countSliderGroups();
+                                        final TextView sliderGroupsIndicator = mParentContainer.findViewById(R.id.num_slider_groups);
+                                        sliderGroupsIndicator.setText(String.valueOf(numSliderGroups1));
+                                        sliderGroupsIndicator.setTextColor(0xffffffff);
+                                        sliderGroupsIndicator.setActivated(true);
+                                        savedSliderGroupsButton.setEnabled(true);
+                                        savedSliderGroupsButton.setAlpha(1.0f);
+                                    }
+                                    manager.beginTransaction().remove(this).commit();
+                                    mContainer.removeView(buttons);
+                                    indicatorPanel.setVisibility(View.VISIBLE);
+                                    pixelEditorToolbox.setVisibility(View.VISIBLE);
+                                    snapshotsBar.setVisibility(View.VISIBLE);
+                                    if (mApp.getIsFPSCalcPanelOpen())
+                                        fpsCalcPanel.setVisibility(View.VISIBLE);
+                                    toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                                    clear(group);
+                                } else {
+                                    VideOSCDialogHelper.showWarning(
+                                            mActivity,
+                                            android.R.style.Theme_Holo_Light_Dialog,
+                                            String.format(getString(R.string.slider_group_exists), groupName),
+                                            "OK"
+                                    );
                                 }
-                                manager.beginTransaction().remove(this).commit();
-                                mContainer.removeView(buttons);
-                                indicatorPanel.setVisibility(View.VISIBLE);
-                                pixelEditorToolbox.setVisibility(View.VISIBLE);
-                                snapshotsBar.setVisibility(View.VISIBLE);
-                                if (mApp.getIsFPSCalcPanelOpen())
-                                    fpsCalcPanel.setVisibility(View.VISIBLE);
-                                toolsDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-                                clear(group);
                             })
                     .setNegativeButton(R.string.cancel,
                             (dialog, which) -> mParentContainer.removeView(dialogView));
