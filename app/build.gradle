@@ -23,6 +23,7 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    namespace 'net.videosc'
 }
 
 dependencies {
@@ -47,7 +48,7 @@ dependencies {
     implementation files('libs/Ketai.jar')
 //    implementation files('libs/oscP5.jar')
     implementation 'jp.co.cyberagent.android:gpuimage:2.1.0'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
     testImplementation 'org.robolectric:robolectric:4.5.1'
 //    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.12.1'
