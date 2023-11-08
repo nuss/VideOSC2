@@ -1216,8 +1216,8 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             return new Rect(left, top, right, bottom);
         }
 
-        // set the preview fps range and update framerate immediately
-        // format, w, h must be passed in explicitely as they're demanded by surfaceChanged()
+        // set the preview fps range and update frame rate immediately
+        // format, w, h must be passed in explicitly as they're demanded by surfaceChanged()
         private void setPreviewFpsRange(Camera.Parameters params, int[] range, int format, int w, int h) {
             params.setPreviewFpsRange(range[0], range[1]);
             surfaceChanged(mHolder, format, w, h);
