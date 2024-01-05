@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
     buildToolsVersion '33.0'
     defaultConfig {
         applicationId "net.videosc"
@@ -26,7 +26,7 @@ android {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(path: ':netP5android')
     implementation project(path: ':oscP5android')
@@ -46,7 +46,7 @@ dependencies {
     implementation files('libs/Ketai.jar')
 //    implementation files('libs/oscP5.jar')
     implementation 'jp.co.cyberagent.android:gpuimage:2.1.0'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.11.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
     testImplementation 'org.robolectric:robolectric:4.5.1'
     androidTestImplementation 'androidx.test:rules:1.5.0'
