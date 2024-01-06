@@ -3,10 +3,10 @@ plugins {
 }
 
 android {
-    compileSdk 34
-    buildToolsVersion "33.0"
+//    buildToolsVersion "33.0"
 
     defaultConfig {
+        compileSdk 34
         minSdkVersion 16
         targetSdkVersion 34
 

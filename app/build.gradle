@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 34
-    buildToolsVersion '33.0'
+//    buildToolsVersion '33.0'
     defaultConfig {
+        compileSdk 34
         applicationId "net.videosc"
         minSdkVersion 16
         targetSdkVersion 34
