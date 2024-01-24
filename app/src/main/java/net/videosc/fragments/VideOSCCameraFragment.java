@@ -603,7 +603,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             int numPixels = res.x * res.y;
 
             // TODO: if user has set to start app with settings stored on last quit
-            // values should be set to was stored on quit
+            // values should be set to what was stored on quit
             for (int i = 0; i < numPixels; i++) {
                 if (mRedValues.size() < numPixels)
                     mRedValues.add(null);
