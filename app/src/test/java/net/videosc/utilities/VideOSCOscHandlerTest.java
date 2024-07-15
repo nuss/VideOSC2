@@ -30,7 +30,7 @@ public class VideOSCOscHandlerTest {
 
 	@After
 	public void tearDown() {
-		mHandler.removeOscEventListener();
+		mHandler.removeOscTcpEventListener();
 		mHandler = null;
 	}
 
@@ -95,7 +95,7 @@ public class VideOSCOscHandlerTest {
 	public void addOscEventListener() {
 		OscP5 oscP5 = mHandler.getOscP5();
 		List<OscEventListener> listeners = oscP5.listeners();
-		assert (listeners.size() == 0);
+		assert (listeners.isEmpty());
 		mHandler.addOscEventListener();
 		assert (listeners.size() == 1);
 	}
@@ -106,6 +106,6 @@ public class VideOSCOscHandlerTest {
 		OscP5 oscP5 = mHandler.getOscP5();
 		List<OscEventListener> listeners = oscP5.listeners();
 		mHandler.removeOscEventListener();
-		assert (listeners.size() == 0);
+		assert (listeners.isEmpty());
 	}
 }
