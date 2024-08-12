@@ -67,18 +67,23 @@ public class MappingsTableDataSourceImpl implements MappingsTableDataSource<Stri
             for (int i = 0; i < mMappings.size(); i++) {
                 int key = mMappings.keyAt(i);
                 String oldMappings = mMappings.valueAt(i);
-                StringBuilder newMappings = new StringBuilder();
-                int colorBlockSize = oldMappings.length()/3;
-                for (int j = 0; j < colorBlockSize; j++) {
-                    // first we iterate over the block length...
-                    for (int k = 0; k < 3; k++) {
-                        // ... then we take the element at i + j * blocklength = same number in next color
-                        newMappings.append(oldMappings.charAt(j+(k*colorBlockSize)));
-                    }
-                }
+                StringBuilder newMappings = getStringBuilder(oldMappings);
                 mMappings.put(key, String.valueOf(newMappings));
             }
         }
+    }
+
+    private static @NonNull StringBuilder getStringBuilder(String oldMappings) {
+        StringBuilder newMappings = new StringBuilder();
+        int colorBlockSize = oldMappings.length()/3;
+        for (int j = 0; j < colorBlockSize; j++) {
+            // first we iterate over the block length...
+            for (int k = 0; k < 3; k++) {
+                // ... then we take the element at i + j * blocklength = same number in next color
+                newMappings.append(oldMappings.charAt(j+(k*colorBlockSize)));
+            }
+        }
+        return newMappings;
     }
 
     public SparseArray<String> getCachedMappings() {
