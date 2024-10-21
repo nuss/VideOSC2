@@ -14,7 +14,7 @@ android {
     defaultConfig {
         compileSdk 34
         applicationId "net.videosc"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 34
         versionCode 19
         versionName "2.0alpha4"
