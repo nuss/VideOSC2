@@ -478,7 +478,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
      * Surface on which the camera projects it's capture results. This is derived both from Google's docs and the
      * excellent StackOverflow answer provided below.
      * <p>
-     * Reference / Credit: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
+     * Reference / Credit: <a href="http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails">...</a>
      */
     public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, VideOSCMSBaseFragment.OnCreateViewCallback, MultisliderCreator {
 
@@ -716,7 +716,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             ViewGroup snapshotsBar = mActivity.mBasicToolbar;
             ImageButton applySelection = mPixelEditor.findViewById(R.id.apply_pixel_selection);
             applySelection.setOnClickListener(v -> {
-                if (mSelectedPixels.size() > 0) {
+                if (!mSelectedPixels.isEmpty()) {
                     mSelectedPixels.clear();
                     mSnapshotsBar.setVisibility(View.INVISIBLE);
                     mPixelEditor.setVisibility(View.INVISIBLE);
@@ -1407,7 +1407,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             final ArrayList<Double> vals = msLeft.getGroupSliderValuesAt(index);
             final ArrayList<Double> mixVals = msRight.getGroupSliderValuesAt(index);
 
-            if (vals.size() > 0) {
+            if (!vals.isEmpty()) {
                 if (vals.get(0) != null) {
                     mRedValues.set(index, vals.get(0));
                     mRedMixValues.set(index, mixVals.get(0));
@@ -1621,7 +1621,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             while (true) {
                 synchronized (mOscLock) {
                     try {
-                        if (mBundles != null && mBundles.size() > 0) {
+                        if (mBundles != null && !mBundles.isEmpty()) {
                             for (int i = 0; i < mBundles.size(); i++) {
                                 OscBundle bundle = mBundles.get(i);
                                 if (bundle.size() > 0) {
@@ -1671,7 +1671,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             while (true) {
                 synchronized (mOscLock) {
                     try {
-                        if (mBundles != null && mBundles.size() > 0) {
+                        if (mBundles != null && !mBundles.isEmpty()) {
                             for (int i = 0; i < mBundles.size(); i++) {
                                 OscBundle bundle = mBundles.get(i);
                                 if (bundle.size() > 0) {
@@ -1721,7 +1721,7 @@ public class VideOSCCameraFragment extends VideOSCBaseFragment {
             while (true) {
                 synchronized (mOscLock) {
                     try {
-                        if (mBundles != null && mBundles.size() > 0) {
+                        if (mBundles != null && !mBundles.isEmpty()) {
                             for (int i = 0; i < mBundles.size(); i++) {
                                 OscBundle bundle = mBundles.get(i);
                                 if (bundle.size() > 0) {
