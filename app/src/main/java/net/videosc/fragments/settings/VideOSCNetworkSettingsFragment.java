@@ -348,7 +348,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
             int steps = 0;
             String msg = getString(R.string.warning_address_header);
 
-            if (addAddressText.length() > 0) {
+            if (!addAddressText.isEmpty()) {
                 if (Patterns.IP_ADDRESS.matcher(addAddressText).matches()) {
                     steps++;
                     mValues.put(
@@ -362,7 +362,7 @@ public class VideOSCNetworkSettingsFragment extends VideOSCBaseFragment {
                 msg = msg.concat(getString(R.string.warning_empty_ip));
             }
 
-            if (addPortVal.length() > 0) {
+            if (!addPortVal.isEmpty()) {
                 int portVal = Integer.parseInt(mAddPort.getText().toString(), 10);
                 if (portVal >= 0 && portVal <= 65535) {
                     steps++;
